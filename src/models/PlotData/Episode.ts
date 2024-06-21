@@ -10,6 +10,10 @@ export const episodeSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "Translation",
   },
+  title: {
+    type: String,
+    required: true,
+  },
   episodeNumber: {
     type: Number,
   },

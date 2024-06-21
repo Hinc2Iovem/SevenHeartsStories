@@ -21,6 +21,10 @@ export const flowchartCommandSaySchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "Translation",
   },
+  text: {
+    type: String,
+    required: true,
+  },
 });
 
 type FlowchartCommandSay = InferSchemaType<typeof flowchartCommandSaySchema>;

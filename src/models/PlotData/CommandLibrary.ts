@@ -5,6 +5,10 @@ export const commandLibrarySchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  commandDescription: {
+    type: String,
+    required: true,
+  },
   translationId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Translation",

@@ -6,6 +6,10 @@ export const appearancePartSchema = new mongoose.Schema({
     ref: "Translation",
     required: true,
   },
+  name: {
+    type: String,
+    required: true,
+  },
   wardrobeId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Wardrobe",

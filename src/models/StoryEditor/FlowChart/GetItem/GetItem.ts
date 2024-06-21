@@ -9,6 +9,18 @@ export const getItemSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "Translation",
   },
+  itemName: {
+    type: String,
+    required: true,
+  },
+  itemDescription: {
+    type: String,
+    required: true,
+  },
+  buttonText: {
+    type: String,
+    required: true,
+  },
 });
 
 type GetItem = InferSchemaType<typeof getItemSchema>;

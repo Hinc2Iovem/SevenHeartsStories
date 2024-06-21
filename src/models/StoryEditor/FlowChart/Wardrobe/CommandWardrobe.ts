@@ -9,6 +9,9 @@ export const commandWardrobeSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "Translation",
   },
+  title: {
+    type: String,
+  },
 });
 
 type CommandWardrobe = InferSchemaType<typeof commandWardrobeSchema>;

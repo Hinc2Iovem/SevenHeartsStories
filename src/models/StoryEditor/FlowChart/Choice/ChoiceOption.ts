@@ -19,6 +19,10 @@ export const flowchartCommandChoiceOptionSchema = new mongoose.Schema({
     type: String,
     default: "common",
   },
+  option: {
+    type: String,
+    required: true,
+  },
 });
 
 type FlowchartCommandChoiceOption = InferSchemaType<

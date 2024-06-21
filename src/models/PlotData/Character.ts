@@ -12,6 +12,17 @@ export const characterSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "Translation",
   },
+  name: {
+    type: String,
+    required: true,
+  },
+  unknownName: {
+    type: String,
+  },
+  description: {
+    type: String,
+    required: true,
+  },
   nameTag: {
     type: String,
   },
