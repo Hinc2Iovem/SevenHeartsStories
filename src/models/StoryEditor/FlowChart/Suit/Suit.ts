@@ -1,14 +1,14 @@
-import mongoose, { InferSchemaType, model } from "mongoose";
+import mongoose, {InferSchemaType, model} from "mongoose";
 
 export const suitSchema = new mongoose.Schema({
-  flowchartCommandId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "FlowchartCommand",
-  },
-  suitName: {
-    type: String,
-    required: true,
-  },
+	flowchartCommandId: {
+		type: mongoose.Schema.Types.ObjectId,
+		ref: "FlowchartCommand",
+	},
+	suitName: {
+		type: String,
+		required: true,
+	},
 });
 
 type Suit = InferSchemaType<typeof suitSchema>;

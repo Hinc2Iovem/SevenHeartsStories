@@ -1,26 +1,26 @@
-import mongoose, { InferSchemaType, model } from "mongoose";
+import mongoose, {InferSchemaType, model} from "mongoose";
 
 export const getItemSchema = new mongoose.Schema({
-  flowchartCommandId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "FlowchartCommand",
-  },
-  translationId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Translation",
-  },
-  itemName: {
-    type: String,
-    required: true,
-  },
-  itemDescription: {
-    type: String,
-    required: true,
-  },
-  buttonText: {
-    type: String,
-    required: true,
-  },
+	flowchartCommandId: {
+		type: mongoose.Schema.Types.ObjectId,
+		ref: "FlowchartCommand",
+	},
+	translationId: {
+		type: mongoose.Schema.Types.ObjectId,
+		ref: "Translation",
+	},
+	itemName: {
+		type: String,
+		required: true,
+	},
+	itemDescription: {
+		type: String,
+		required: true,
+	},
+	buttonText: {
+		type: String,
+		required: true,
+	},
 });
 
 type GetItem = InferSchemaType<typeof getItemSchema>;

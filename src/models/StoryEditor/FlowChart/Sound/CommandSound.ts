@@ -1,13 +1,13 @@
-import mongoose, { InferSchemaType, model } from "mongoose";
+import mongoose, {InferSchemaType, model} from "mongoose";
 
 export const commandSoundSchema = new mongoose.Schema({
-  flowchartCommandId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "FlowchartCommand",
-  },
-  soundName: {
-    type: String,
-  },
+	flowchartCommandId: {
+		type: mongoose.Schema.Types.ObjectId,
+		ref: "FlowchartCommand",
+	},
+	soundName: {
+		type: String,
+	},
 });
 
 type CommandSound = InferSchemaType<typeof commandSoundSchema>;

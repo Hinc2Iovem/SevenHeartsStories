@@ -5,7 +5,7 @@ import express from "express";
 import cors from "cors";
 import mongoose from "mongoose";
 import env from "./utils/validateEnv";
-import { connectDB } from "./config/dbConn";
+import {connectDB} from "./config/dbConn";
 
 dotenv.config();
 
@@ -25,10 +25,10 @@ app.use(express.json());
 app.use(cookieParser());
 
 mongoose.connection.once("open", () => {
-  console.log("Connected");
-  app.listen(port, () => console.log(`Working on port ${port}`));
+	console.log("Connected");
+	app.listen(port, () => console.log(`Working on port ${port}`));
 });
 
 mongoose.connection.on("error", (err) => {
-  console.log(err);
+	console.log(err);
 });

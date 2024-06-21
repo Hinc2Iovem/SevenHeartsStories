@@ -1,13 +1,13 @@
-import mongoose, { InferSchemaType, model } from "mongoose";
+import mongoose, {InferSchemaType, model} from "mongoose";
 
 export const audioSchema = new mongoose.Schema({
-  storyId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Story",
-  },
-  audioName: {
-    type: String,
-  },
+	storyId: {
+		type: mongoose.Schema.Types.ObjectId,
+		ref: "Story",
+	},
+	audioName: {
+		type: String,
+	},
 });
 
 type Audio = InferSchemaType<typeof audioSchema>;
