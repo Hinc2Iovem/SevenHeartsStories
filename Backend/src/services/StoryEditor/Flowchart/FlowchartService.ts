@@ -1,13 +1,13 @@
 import createHttpError from "http-errors";
-import { validateMongoId } from "../utils/validateMongoId";
-import Flowchart from "../models/StoryEditor/Flowchart/Flowchart";
+import { validateMongoId } from "../../../utils/validateMongoId";
+import Flowchart from "../../../models/StoryEditor/Flowchart/Flowchart";
 
 type UpdateLanguageTypes = {
   currentLanguage: string | undefined;
   flowchartId: string;
 };
 
-export const flowchartControllerUpdateCurrentLanguageService = async ({
+export const flowchartUpdateCurrentLanguageService = async ({
   currentLanguage,
   flowchartId,
 }: UpdateLanguageTypes) => {

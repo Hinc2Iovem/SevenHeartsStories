@@ -1,5 +1,5 @@
 import { RequestHandler } from "express";
-import { flowchartControllerUpdateCurrentLanguageService } from "../services/FlowchartService";
+import { flowchartUpdateCurrentLanguageService } from "../../../services/StoryEditor/Flowchart/FlowchartService";
 
 type FlowchartUpdateParams = {
   flowchartId: string;
@@ -18,7 +18,7 @@ export const flowchartControllerUpdateCurrentLanguage: RequestHandler<
   unknown
 > = async (req, res, next) => {
   try {
-    const flowchart = await flowchartControllerUpdateCurrentLanguageService({
+    const flowchart = await flowchartUpdateCurrentLanguageService({
       currentLanguage: req.body.currentLanguage,
       flowchartId: req.params.flowchartId,
     });
