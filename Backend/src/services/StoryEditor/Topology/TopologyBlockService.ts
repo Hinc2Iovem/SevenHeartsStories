@@ -50,7 +50,7 @@ export const topologyBlockUpdateNameService = async ({
     throw createHttpError(400, "Such topologyBlock doesn't exist");
   }
 
-  if (!newName) {
+  if (!newName?.trim().length) {
     return existingTopologyBlock;
   }
 

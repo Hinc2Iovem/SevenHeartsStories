@@ -123,6 +123,8 @@ type CharacterDeleteParams = {
   characterId: string;
 };
 
+// @route DELETE http://localhost:3500/character/:characterId
+// @access Private
 export const characterDeleteController: RequestHandler<
   CharacterDeleteParams,
   unknown,

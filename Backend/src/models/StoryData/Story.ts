@@ -1,24 +1,28 @@
-import mongoose, {InferSchemaType, model} from "mongoose";
+import mongoose, { InferSchemaType, model } from "mongoose";
 
 export const storySchema = new mongoose.Schema({
-	translationId: {
-		type: mongoose.Schema.Types.ObjectId,
-		ref: "Translation",
-	},
-	title: {
-		type: String,
-		required: true,
-	},
-	amountOfEpisodes: {
-		type: Number,
-	},
-	genre: {
-		type: [String],
-		required: true,
-	},
-	imgUrl: {
-		type: String,
-	},
+  translationId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Translation",
+  },
+  title: {
+    type: String,
+    required: true,
+  },
+  amountOfEpisodes: {
+    type: Number,
+  },
+  genre: {
+    type: [String],
+    required: true,
+  },
+  imgUrl: {
+    type: String,
+  },
+  currentLanguage: {
+    type: String,
+    default: "russian",
+  },
 });
 
 type Story = InferSchemaType<typeof storySchema>;

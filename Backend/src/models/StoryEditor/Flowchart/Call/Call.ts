@@ -1,14 +1,14 @@
-import mongoose, {InferSchemaType, model} from "mongoose";
+import mongoose, { InferSchemaType, model } from "mongoose";
 
 export const callSchema = new mongoose.Schema({
-	flowchartCommandId: {
-		type: mongoose.Schema.Types.ObjectId,
-		ref: "FlowchartCommand",
-	},
-	targetBlockId: {
-		type: mongoose.Schema.Types.ObjectId,
-		ref: "TopologyBlock",
-	},
+  flowchartCommandId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "FlowchartCommand",
+  },
+  targetBlockId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "TopologyBlock",
+  },
 });
 
 type Call = InferSchemaType<typeof callSchema>;

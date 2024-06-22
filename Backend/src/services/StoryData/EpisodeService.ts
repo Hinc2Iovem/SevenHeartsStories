@@ -2,6 +2,10 @@ import createHttpError from "http-errors";
 import { validateMongoId } from "../../utils/validateMongoId";
 import Episode from "../../models/StoryData/Episode";
 import EpisodeInfo from "../../models/StoryData/EpisodeInfo";
+import TopologyBlock from "../../models/StoryEditor/Topology/TopologyBlock";
+import TopologyBlockInfo from "../../models/StoryEditor/Topology/TopologyBlockInfo";
+import FlowchartCommand from "../../models/StoryEditor/Flowchart/FlowchartCommand";
+import Flowchart from "../../models/StoryEditor/Flowchart/Flowchart";
 
 type EpisodeCreateTypes = {
   title: string | undefined;
@@ -27,6 +31,31 @@ export const episodeCreateService = async ({
 
   await EpisodeInfo.create({
     episodeId: newEpisode._id,
+  });
+
+  const firstTopologyBlock = await TopologyBlock.create({
+    coordinatesX: 50,
+    coordinatesY: 50,
+    episodeId: newEpisode._id,
+    name: "First",
+  });
+
+  await TopologyBlockInfo.create({
+    amountOfAchievements: 0,
+    amountOfAmethysts: 0,
+    amountOfAuthorWords: 0,
+    amountOfCharacterWords: 0,
+    amountOfWords: 0,
+    topologyBlockId: firstTopologyBlock._id,
+  });
+
+  const firstFlowChart = await Flowchart.create({
+    topologyBlockId: firstTopologyBlock._id,
+  });
+
+  await FlowchartCommand.create({
+    commandOrder: 1,
+    flowchartId: firstFlowChart._id,
   });
 
   return newEpisode;

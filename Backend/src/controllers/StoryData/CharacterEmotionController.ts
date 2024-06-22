@@ -8,6 +8,8 @@ type CharacterEmotionCreateBody = {
   emotionName: string | undefined;
 };
 
+// @route POST http://localhost:3500/characterEmotions
+// @access Private
 export const characterEmotionCreateController: RequestHandler<
   CharacterEmotionCreateParams,
   unknown,

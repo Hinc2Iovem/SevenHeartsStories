@@ -17,6 +17,10 @@ export const appearancePartSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  currentLanguage: {
+    type: String,
+    default: "russian",
+  },
 });
 
 type AppearancePart = InferSchemaType<typeof appearancePartSchema>;

@@ -9,7 +9,6 @@ export const flowchartCommandSchema = new mongoose.Schema({
   },
   command: {
     type: String,
-    default: "say",
   },
   commandOrder: {
     type: Number,

@@ -18,11 +18,7 @@ export const flowchartCommandCreateService = async ({
 
   const commandOrder = existingFlowchart.length ? existingFlowchart.length : 1;
 
-  if (!command?.trim().length) {
-    throw createHttpError(400, "Command is required");
-  }
-
-  return await FlowchartCommand.create({ command, flowchartId, commandOrder });
+  return await FlowchartCommand.create({ flowchartId, commandOrder });
 };
 
 type FlowchartCommandUpdateTypes = {
