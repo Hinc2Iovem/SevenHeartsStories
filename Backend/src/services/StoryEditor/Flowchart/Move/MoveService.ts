@@ -4,12 +4,10 @@ import { validateMongoId } from "../../../../utils/validateMongoId";
 import FlowchartCommand from "../../../../models/StoryEditor/Flowchart/FlowchartCommand";
 
 type CreateMoveTypes = {
-  moveValue: number | undefined;
   flowchartCommandId: string;
 };
 
 export const createMoveService = async ({
-  moveValue,
   flowchartCommandId,
 }: CreateMoveTypes) => {
   validateMongoId({ value: flowchartCommandId, valueName: "FlowchartCommand" });
@@ -21,14 +19,34 @@ export const createMoveService = async ({
     throw createHttpError(400, "FlowchartCommand with such id wasn't found");
   }
 
+  return await Move.create({
+    flowchartCommandId,
+  });
+};
+
+type UpdateMoveTypes = {
+  moveValue: number | undefined;
+  moveId: string;
+};
+
+export const updateMoveService = async ({
+  moveValue,
+  moveId,
+}: UpdateMoveTypes) => {
+  validateMongoId({ value: moveId, valueName: "Move" });
+
+  const existingMove = await Move.findById(moveId).exec();
+  if (!existingMove) {
+    throw createHttpError(400, "Move with such id wasn't found");
+  }
+
   if (!moveValue) {
     throw createHttpError(400, "MoveValue is required");
   }
 
-  return await Move.create({
-    moveValue,
-    flowchartCommandId,
-  });
+  existingMove.moveValue = moveValue;
+
+  return await existingMove.save();
 };
 
 type DeleteMoveTypes = {

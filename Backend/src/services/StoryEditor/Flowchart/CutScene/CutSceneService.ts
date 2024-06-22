@@ -4,12 +4,10 @@ import { validateMongoId } from "../../../../utils/validateMongoId";
 import FlowchartCommand from "../../../../models/StoryEditor/Flowchart/FlowchartCommand";
 
 type CreateCutSceneTypes = {
-  cutSceneName: string | undefined;
   flowchartCommandId: string;
 };
 
 export const createCutSceneService = async ({
-  cutSceneName,
   flowchartCommandId,
 }: CreateCutSceneTypes) => {
   validateMongoId({ value: flowchartCommandId, valueName: "FlowchartCommand" });
@@ -21,14 +19,34 @@ export const createCutSceneService = async ({
     throw createHttpError(400, "FlowchartCommand with such id wasn't found");
   }
 
+  return await CutScene.create({
+    flowchartCommandId,
+  });
+};
+
+type UpdateCutSceneTypes = {
+  cutSceneName: string | undefined;
+  cutSceneId: string;
+};
+
+export const updateCutSceneService = async ({
+  cutSceneName,
+  cutSceneId,
+}: UpdateCutSceneTypes) => {
+  validateMongoId({ value: cutSceneId, valueName: "CutScene" });
+
+  const existingCutScene = await CutScene.findById(cutSceneId).exec();
+  if (!existingCutScene) {
+    throw createHttpError(400, "CutScene with such id wasn't found");
+  }
+
   if (!cutSceneName?.trim().length) {
     throw createHttpError(400, "CutScene is required");
   }
 
-  return await CutScene.create({
-    cutSceneName,
-    flowchartCommandId,
-  });
+  existingCutScene.cutSceneName = cutSceneName;
+
+  return await existingCutScene.save();
 };
 
 type DeleteCutSceneTypes = {

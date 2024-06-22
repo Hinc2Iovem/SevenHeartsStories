@@ -3,11 +3,11 @@ import {
   createCallService,
   deleteCallService,
   updateCallService,
+  updateCallTargetBlockIdService,
 } from "../../../../services/StoryEditor/Flowchart/Call/CallService";
 
 type CreateCallParams = {
   flowchartCommandId: string;
-  targetBlockId: string;
 };
 
 export const createCallController: RequestHandler<
@@ -19,7 +19,6 @@ export const createCallController: RequestHandler<
   try {
     const call = await createCallService({
       flowchartCommandId: req.params.flowchartCommandId,
-      targetBlockId: req.params.targetBlockId,
     });
     if (call) {
       return res.status(201).json(call);
@@ -33,7 +32,7 @@ export const createCallController: RequestHandler<
 
 type UpdateCallParams = {
   callId: string;
-  newTargetBlockId: string;
+  targetBlockId: string;
 };
 
 export const updateCallController: RequestHandler<
@@ -44,6 +43,32 @@ export const updateCallController: RequestHandler<
 > = async (req, res, next) => {
   try {
     const call = await updateCallService({
+      callId: req.params.callId,
+      targetBlockId: req.params.targetBlockId,
+    });
+    if (call) {
+      return res.status(201).json(call);
+    } else {
+      return res.status(400).json({ message: "Something went wrong" });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
+type UpdateCallTargetBlockParams = {
+  callId: string;
+  newTargetBlockId: string;
+};
+
+export const updateCallTargetBlockIdController: RequestHandler<
+  UpdateCallTargetBlockParams,
+  unknown,
+  unknown,
+  unknown
+> = async (req, res, next) => {
+  try {
+    const call = await updateCallTargetBlockIdService({
       newTargetBlockId: req.params.newTargetBlockId,
       callId: req.params.callId,
     });

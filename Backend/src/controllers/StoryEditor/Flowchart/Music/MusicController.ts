@@ -2,26 +2,51 @@ import { RequestHandler } from "express";
 import {
   createMusicService,
   deleteMusicService,
+  updateMusicService,
 } from "../../../../services/StoryEditor/Flowchart/Music/MusicService";
 
 type CreateMusicParams = {
   flowchartCommandId: string;
 };
 
-type CreateMusicBody = {
-  musicName: string | undefined;
-};
-
 export const createMusicController: RequestHandler<
   CreateMusicParams,
   unknown,
-  CreateMusicBody,
+  unknown,
   unknown
 > = async (req, res, next) => {
   try {
     const music = await createMusicService({
-      musicName: req.body.musicName,
       flowchartCommandId: req.params.flowchartCommandId,
+    });
+    if (music) {
+      return res.status(201).json(music);
+    } else {
+      return res.status(400).json({ message: "Something went wrong" });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
+type UpdateMusicParams = {
+  musicId: string;
+};
+
+type UpdateMusicBody = {
+  musicName: string | undefined;
+};
+
+export const updateMusicController: RequestHandler<
+  UpdateMusicParams,
+  unknown,
+  UpdateMusicBody,
+  unknown
+> = async (req, res, next) => {
+  try {
+    const music = await updateMusicService({
+      musicName: req.body.musicName,
+      musicId: req.params.musicId,
     });
     if (music) {
       return res.status(201).json(music);

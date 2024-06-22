@@ -8,13 +8,11 @@ import ConditionValue from "../../../../models/StoryEditor/Flowchart/Condition/C
 type CreateConditionTypes = {
   targetBlockId: string;
   flowchartCommandId: string;
-  isElse: boolean | undefined;
 };
 
 export const createConditionService = async ({
   targetBlockId,
   flowchartCommandId,
-  isElse,
 }: CreateConditionTypes) => {
   validateMongoId({ value: flowchartCommandId, valueName: "FlowchartCommand" });
   validateMongoId({ value: targetBlockId, valueName: "Topology Block" });
@@ -32,21 +30,45 @@ export const createConditionService = async ({
     throw createHttpError(400, "TopologyBlock with such id wasn't found");
   }
 
-  if (isElse) {
-    const condition = await Condition.create({
-      flowchartCommandId,
-      isElse,
-      targetBlockId,
-    });
-    return condition;
-  } else {
-    const condition = await Condition.create({
-      flowchartCommandId,
-      targetBlockId,
-    });
-    await ConditionValue.create({ flowchartCommandConditionId: condition._id });
-    return condition;
+  await Condition.create({
+    flowchartCommandId,
+    isElse: true,
+    targetBlockId,
+  });
+  const condition = await Condition.create({
+    flowchartCommandId,
+    targetBlockId,
+  });
+  await ConditionValue.create({ flowchartCommandConditionId: condition._id });
+  return condition;
+};
+
+export const addAnotherBlockConditionService = async ({
+  targetBlockId,
+  flowchartCommandId,
+}: CreateConditionTypes) => {
+  validateMongoId({ value: flowchartCommandId, valueName: "FlowchartCommand" });
+  validateMongoId({ value: targetBlockId, valueName: "Topology Block" });
+
+  const existingFlowchartCommand = await FlowchartCommand.findById(
+    flowchartCommandId
+  ).lean();
+  if (!existingFlowchartCommand) {
+    throw createHttpError(400, "FlowchartCommand with such id wasn't found");
   }
+  const existingTargetBlock = await TopologyBlock.findById(
+    targetBlockId
+  ).lean();
+  if (!existingTargetBlock) {
+    throw createHttpError(400, "TopologyBlock with such id wasn't found");
+  }
+
+  const condition = await Condition.create({
+    flowchartCommandId,
+    targetBlockId,
+  });
+  await ConditionValue.create({ flowchartCommandConditionId: condition._id });
+  return condition;
 };
 
 type DeleteConditionTypes = {

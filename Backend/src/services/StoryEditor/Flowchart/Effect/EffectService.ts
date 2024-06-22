@@ -4,12 +4,10 @@ import { validateMongoId } from "../../../../utils/validateMongoId";
 import FlowchartCommand from "../../../../models/StoryEditor/Flowchart/FlowchartCommand";
 
 type CreateEffectTypes = {
-  effectName: string | undefined;
   flowchartCommandId: string;
 };
 
 export const createEffectService = async ({
-  effectName,
   flowchartCommandId,
 }: CreateEffectTypes) => {
   validateMongoId({ value: flowchartCommandId, valueName: "FlowchartCommand" });
@@ -21,14 +19,34 @@ export const createEffectService = async ({
     throw createHttpError(400, "FlowchartCommand with such id wasn't found");
   }
 
+  return await Effect.create({
+    flowchartCommandId,
+  });
+};
+
+type UpdateEffectTypes = {
+  effectName: string | undefined;
+  effectId: string;
+};
+
+export const updateEffectService = async ({
+  effectName,
+  effectId,
+}: UpdateEffectTypes) => {
+  validateMongoId({ value: effectId, valueName: "Effect" });
+
+  const existingEffect = await Effect.findById(effectId).exec();
+  if (!existingEffect) {
+    throw createHttpError(400, "Effect with such id wasn't found");
+  }
+
   if (!effectName?.trim().length) {
     throw createHttpError(400, "Effect is required");
   }
 
-  return await Effect.create({
-    effectName,
-    flowchartCommandId,
-  });
+  existingEffect.effectName = effectName;
+
+  return await existingEffect.save();
 };
 
 type DeleteEffectTypes = {

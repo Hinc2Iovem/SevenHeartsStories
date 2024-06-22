@@ -4,12 +4,10 @@ import { validateMongoId } from "../../../../utils/validateMongoId";
 import FlowchartCommand from "../../../../models/StoryEditor/Flowchart/FlowchartCommand";
 
 type CreateWaitTypes = {
-  waitValue: number | undefined;
   flowchartCommandId: string;
 };
 
 export const createWaitService = async ({
-  waitValue,
   flowchartCommandId,
 }: CreateWaitTypes) => {
   validateMongoId({ value: flowchartCommandId, valueName: "FlowchartCommand" });
@@ -21,14 +19,34 @@ export const createWaitService = async ({
     throw createHttpError(400, "FlowchartCommand with such id wasn't found");
   }
 
+  return await Wait.create({
+    flowchartCommandId,
+  });
+};
+
+type UpdateWaitTypes = {
+  waitValue: number | undefined;
+  waitId: string;
+};
+
+export const updateWaitService = async ({
+  waitValue,
+  waitId,
+}: UpdateWaitTypes) => {
+  validateMongoId({ value: waitId, valueName: "Wait" });
+
+  const existingWait = await Wait.findById(waitId).exec();
+  if (!existingWait) {
+    throw createHttpError(400, "Wait with such id wasn't found");
+  }
+
   if (!waitValue) {
     throw createHttpError(400, "WaitValue is required");
   }
 
-  return await Wait.create({
-    waitValue,
-    flowchartCommandId,
-  });
+  existingWait.waitValue = waitValue;
+
+  return await existingWait.save();
 };
 
 type DeleteWaitTypes = {

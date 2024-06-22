@@ -4,26 +4,47 @@ import ConditionValue from "../../../../models/StoryEditor/Flowchart/Condition/C
 import { validateMongoId } from "../../../../utils/validateMongoId";
 import { SignTypes } from "../../../../controllers/StoryEditor/Flowchart/Condition/ConditionValueController";
 
-const regexSign = /^(>|<|<=|>=|=)$/;
-
 type CreateConditionValueTypes = {
-  name: string | undefined;
-  sign: SignTypes | undefined;
-  value: number | undefined;
   conditionId: string;
 };
 
 export const createConditionValueService = async ({
   conditionId,
-  name,
-  sign,
-  value,
 }: CreateConditionValueTypes) => {
   validateMongoId({ value: conditionId, valueName: "Condition" });
 
   const existingCondition = await Condition.findById(conditionId).lean();
   if (!existingCondition) {
     throw createHttpError(400, "Condition with such id wasn't found");
+  }
+
+  return await ConditionValue.create({
+    flowchartCommandConditionId: conditionId,
+  });
+};
+
+const regexSign = /^(>|<|<=|>=|=)$/;
+
+type UpdateConditionValueTypes = {
+  name: string | undefined;
+  sign: SignTypes | undefined;
+  value: number | undefined;
+  conditionValueId: string;
+};
+
+export const updateConditionValueService = async ({
+  conditionValueId,
+  name,
+  sign,
+  value,
+}: UpdateConditionValueTypes) => {
+  validateMongoId({ value: conditionValueId, valueName: "ConditionValue" });
+
+  const existingConditionValue = await ConditionValue.findById(
+    conditionValueId
+  ).exec();
+  if (!existingConditionValue) {
+    throw createHttpError(400, "ConditionValue with such id wasn't found");
   }
 
   if (!sign || !value || !name?.trim().length) {
@@ -33,12 +54,12 @@ export const createConditionValueService = async ({
   if (!regexSign.test(sign)) {
     throw createHttpError(400, "Sign can only be equal to: >,<,<=,>=,=");
   }
-  return await ConditionValue.create({
-    flowchartCommandConditionId: conditionId,
-    name,
-    sign,
-    value,
-  });
+
+  existingConditionValue.name = name;
+  existingConditionValue.sign = sign;
+  existingConditionValue.value = value;
+
+  return await existingConditionValue.save();
 };
 
 type DeleteConditionValueTypes = {

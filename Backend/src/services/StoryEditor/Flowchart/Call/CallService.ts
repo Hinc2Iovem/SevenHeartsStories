@@ -7,21 +7,40 @@ import { validateMongoId } from "../../../../utils/validateMongoId";
 
 type CreateCallTypes = {
   flowchartCommandId: string;
-  targetBlockId: string;
 };
 
 export const createCallService = async ({
-  targetBlockId,
   flowchartCommandId,
 }: CreateCallTypes) => {
   validateMongoId({ value: flowchartCommandId, valueName: "FlowchartCommand" });
-  validateMongoId({ value: targetBlockId, valueName: "TargetBlock" });
 
   const existingFlowchartCommand = await FlowchartCommand.findById(
     flowchartCommandId
   ).lean();
   if (!existingFlowchartCommand) {
     throw createHttpError(400, "FlowchartCommand with such id wasn't found");
+  }
+
+  return await Call.create({
+    flowchartCommandId,
+  });
+};
+
+type UpdateCallTypes = {
+  callId: string;
+  targetBlockId: string;
+};
+
+export const updateCallService = async ({
+  targetBlockId,
+  callId,
+}: UpdateCallTypes) => {
+  validateMongoId({ value: callId, valueName: "Call" });
+  validateMongoId({ value: targetBlockId, valueName: "TargetBlock" });
+
+  const existingCall = await Call.findById(callId).exec();
+  if (!existingCall) {
+    throw createHttpError(400, "Call with such id wasn't found");
   }
   const existingTargetBlock = await TopologyBlock.findById(
     targetBlockId
@@ -30,21 +49,20 @@ export const createCallService = async ({
     throw createHttpError(400, "TopologyBlock with such id wasn't found");
   }
 
-  return await Call.create({
-    flowchartCommandId,
-    targetBlockId,
-  });
+  existingCall.targetBlockId = new Types.ObjectId(targetBlockId);
+
+  return await existingCall.save();
 };
 
-type UpdateCallTypes = {
+type UpdateCallTargetBlockTypes = {
   callId: string;
   newTargetBlockId: string;
 };
 
-export const updateCallService = async ({
+export const updateCallTargetBlockIdService = async ({
   newTargetBlockId,
   callId,
-}: UpdateCallTypes) => {
+}: UpdateCallTargetBlockTypes) => {
   validateMongoId({ value: newTargetBlockId, valueName: "TopologyBlock" });
   validateMongoId({ value: callId, valueName: "Call" });
 

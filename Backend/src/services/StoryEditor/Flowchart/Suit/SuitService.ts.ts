@@ -4,12 +4,10 @@ import FlowchartCommand from "../../../../models/StoryEditor/Flowchart/Flowchart
 import Suit from "../../../../models/StoryEditor/Flowchart/Suit/Suit";
 
 type CreateSuitTypes = {
-  suitName: string | undefined;
   flowchartCommandId: string;
 };
 
 export const createSuitService = async ({
-  suitName,
   flowchartCommandId,
 }: CreateSuitTypes) => {
   validateMongoId({ value: flowchartCommandId, valueName: "FlowchartCommand" });
@@ -21,14 +19,34 @@ export const createSuitService = async ({
     throw createHttpError(400, "FlowchartCommand with such id wasn't found");
   }
 
+  return await Suit.create({
+    flowchartCommandId,
+  });
+};
+
+type UpdateSuitTypes = {
+  suitName: string | undefined;
+  suitId: string;
+};
+
+export const updateSuitService = async ({
+  suitName,
+  suitId,
+}: UpdateSuitTypes) => {
+  validateMongoId({ value: suitId, valueName: "Suit" });
+
+  const existingSuit = await Suit.findById(suitId).exec();
+  if (!existingSuit) {
+    throw createHttpError(400, "Suit with such id wasn't found");
+  }
+
   if (!suitName?.trim().length) {
     throw createHttpError(400, "Suit is required");
   }
 
-  return await Suit.create({
-    suitName,
-    flowchartCommandId,
-  });
+  existingSuit.suitName = suitName;
+
+  return await existingSuit.save();
 };
 
 type DeleteSuitTypes = {

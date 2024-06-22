@@ -2,29 +2,54 @@ import { RequestHandler } from "express";
 import {
   createConditionValueService,
   deleteConditionValueService,
+  updateConditionValueService,
 } from "../../../../services/StoryEditor/Flowchart/Condition/ConditionValueService";
 
 type CreateConditionValueParams = {
   conditionId: string;
 };
 
-export type SignTypes = ">" | "<" | "<=" | ">=" | "=";
-
-type CreateConditionValueBody = {
-  name: string | undefined;
-  sign: SignTypes | undefined;
-  value: number | undefined;
-};
-
 export const createConditionValueController: RequestHandler<
   CreateConditionValueParams,
   unknown,
-  CreateConditionValueBody,
+  unknown,
   unknown
 > = async (req, res, next) => {
   try {
     const conditionValue = await createConditionValueService({
       conditionId: req.params.conditionId,
+    });
+    if (conditionValue) {
+      return res.status(201).json(conditionValue);
+    } else {
+      return res.status(400).json({ message: "Something went wrong" });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
+type UpdateConditionValueParams = {
+  conditionValueId: string;
+};
+
+export type SignTypes = ">" | "<" | "<=" | ">=" | "=";
+
+type UpdateConditionValueBody = {
+  name: string | undefined;
+  sign: SignTypes | undefined;
+  value: number | undefined;
+};
+
+export const updateConditionValueController: RequestHandler<
+  UpdateConditionValueParams,
+  unknown,
+  UpdateConditionValueBody,
+  unknown
+> = async (req, res, next) => {
+  try {
+    const conditionValue = await updateConditionValueService({
+      conditionValueId: req.params.conditionValueId,
       name: req.body.name,
       sign: req.body.sign,
       value: req.body.value,

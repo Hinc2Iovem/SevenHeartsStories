@@ -1,22 +1,15 @@
 import createHttpError from "http-errors";
-import Choice from "../../../../models/StoryEditor/Flowchart/Choice/Choice";
-import { validateMongoId } from "../../../../utils/validateMongoId";
-import FlowchartCommand from "../../../../models/StoryEditor/Flowchart/FlowchartCommand";
 import { ChoiceType } from "../../../../controllers/StoryEditor/Flowchart/Choice/ChoiceController";
-import ChoiceOption from "../../../../models/StoryEditor/Flowchart/Choice/ChoiceOption";
+import Choice from "../../../../models/StoryEditor/Flowchart/Choice/Choice";
+import FlowchartCommand from "../../../../models/StoryEditor/Flowchart/FlowchartCommand";
+import { validateMongoId } from "../../../../utils/validateMongoId";
 
 type CreateChoiceTypes = {
-  choiceQuestion: string | undefined;
   flowchartCommandId: string;
-  timeLimit: number | undefined;
-  choiceType: ChoiceType | undefined;
 };
 
 export const createChoiceService = async ({
-  choiceQuestion,
   flowchartCommandId,
-  choiceType,
-  timeLimit,
 }: CreateChoiceTypes) => {
   validateMongoId({ value: flowchartCommandId, valueName: "FlowchartCommand" });
 
@@ -27,24 +20,45 @@ export const createChoiceService = async ({
     throw createHttpError(400, "FlowchartCommand with such id wasn't found");
   }
 
+  return await Choice.create({
+    flowchartCommandId,
+  });
+};
+
+type UpdateChoiceTypes = {
+  choiceQuestion: string | undefined;
+  choiceId: string;
+  timeLimit: number | undefined;
+  choiceType: ChoiceType | undefined;
+};
+
+export const updateChoiceService = async ({
+  choiceQuestion,
+  choiceId,
+  choiceType,
+  timeLimit,
+}: UpdateChoiceTypes) => {
+  validateMongoId({ value: choiceId, valueName: "Choice" });
+
+  const existingChoice = await Choice.findById(choiceId).exec();
+  if (!existingChoice) {
+    throw createHttpError(400, "Choice with such id wasn't found");
+  }
+
   if (!choiceQuestion?.trim().length) {
     throw createHttpError(400, "Choice Question is required");
   }
 
   if (choiceType === "timelimit") {
-    return await Choice.create({
-      choiceQuestion,
-      choiceType,
-      flowchartCommandId,
-      timeLimit,
-    });
+    existingChoice.choiceQuestion = choiceQuestion;
+    existingChoice.choiceType = choiceType;
+    existingChoice.timeLimit = timeLimit;
   } else if (choiceType === "common" || choiceType === "multiple") {
-    return await Choice.create({
-      choiceQuestion,
-      choiceType,
-      flowchartCommandId,
-    });
+    existingChoice.choiceQuestion = choiceQuestion;
+    existingChoice.choiceType = choiceType;
   }
+
+  return await existingChoice.save();
 };
 
 type DeleteChoiceTypes = {

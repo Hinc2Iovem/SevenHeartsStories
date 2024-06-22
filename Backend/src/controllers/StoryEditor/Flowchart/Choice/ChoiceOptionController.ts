@@ -2,6 +2,7 @@ import { RequestHandler } from "express";
 import {
   createChoiceOptionService,
   deleteChoiceOptionService,
+  updateChoiceOptionService,
 } from "../../../../services/StoryEditor/Flowchart/Choice/ChoiceOptionService";
 
 type CreateChoiceOptionParams = {
@@ -17,14 +18,7 @@ export type ChoiceOptionType =
   | "requirement";
 
 type CreateChoiceOptionBody = {
-  option: string | undefined;
   type: ChoiceOptionType | undefined;
-  priceAmethysts: number | undefined;
-  characterName: string | undefined;
-  amountOfPoints: number | undefined;
-  requiredKey: string | undefined;
-  requiredCharacteristic: string | undefined;
-  characteristicName: string | undefined;
 };
 
 export const createChoiceOptionController: RequestHandler<
@@ -35,16 +29,50 @@ export const createChoiceOptionController: RequestHandler<
 > = async (req, res, next) => {
   try {
     const choiceOption = await createChoiceOptionService({
+      type: req.body.type,
+      flowchartCommandChoiceId: req.params.flowchartCommandChoiceId,
+      topologyBlockId: req.params.topologyBlockId,
+    });
+    if (choiceOption) {
+      return res.status(201).json(choiceOption);
+    } else {
+      return res.status(400).json({ message: "Something went wrong" });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
+type UpdateChoiceOptionParams = {
+  choiceOptionId: string;
+};
+
+type UpdateChoiceOptionBody = {
+  option: string | undefined;
+  priceAmethysts: number | undefined;
+  characterName: string | undefined;
+  amountOfPoints: number | undefined;
+  requiredKey: string | undefined;
+  requiredCharacteristic: string | undefined;
+  characteristicName: string | undefined;
+};
+
+export const updateChoiceOptionController: RequestHandler<
+  UpdateChoiceOptionParams,
+  unknown,
+  UpdateChoiceOptionBody,
+  unknown
+> = async (req, res, next) => {
+  try {
+    const choiceOption = await updateChoiceOptionService({
       amountOfPoints: req.body.amountOfPoints,
       characterName: req.body.characterName,
       priceAmethysts: req.body.priceAmethysts,
-      type: req.body.type,
       option: req.body.option,
       requiredKey: req.body.requiredKey,
       characteristicName: req.body.characteristicName,
       requiredCharacteristic: req.body.requiredCharacteristic,
-      flowchartCommandChoiceId: req.params.flowchartCommandChoiceId,
-      topologyBlockId: req.params.topologyBlockId,
+      choiceOptionId: req.params.choiceOptionId,
     });
     if (choiceOption) {
       return res.status(201).json(choiceOption);

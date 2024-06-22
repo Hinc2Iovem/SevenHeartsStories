@@ -5,18 +5,13 @@ import Sound from "../../../../models/StoryData/Sound";
 import CommandSound from "../../../../models/StoryEditor/Flowchart/Sound/CommandSound";
 
 type CreateSoundTypes = {
-  soundName: string | undefined;
   flowchartCommandId: string;
-  storyId: string;
 };
 
 export const createSoundService = async ({
-  soundName,
-  storyId,
   flowchartCommandId,
 }: CreateSoundTypes) => {
   validateMongoId({ value: flowchartCommandId, valueName: "FlowchartCommand" });
-  validateMongoId({ value: storyId, valueName: "Story" });
 
   const existingFlowchartCommand = await FlowchartCommand.findById(
     flowchartCommandId
@@ -25,16 +20,38 @@ export const createSoundService = async ({
     throw createHttpError(400, "FlowchartCommand with such id wasn't found");
   }
 
+  return await CommandSound.create({
+    flowchartCommandId,
+  });
+};
+
+type UpdateSoundTypes = {
+  soundName: string | undefined;
+  soundId: string;
+  storyId: string;
+};
+
+export const updateSoundService = async ({
+  soundName,
+  storyId,
+  soundId,
+}: UpdateSoundTypes) => {
+  validateMongoId({ value: soundId, valueName: "Sound" });
+  validateMongoId({ value: storyId, valueName: "Story" });
+
+  const existingSound = await Sound.findById(soundId).exec();
+  if (!existingSound) {
+    throw createHttpError(400, "Sound with such id wasn't found");
+  }
+
   if (!soundName?.trim().length) {
     throw createHttpError(400, "Sound is required");
   }
 
+  existingSound.soundName = soundName;
   await Sound.create({ soundName, storyId });
 
-  return await CommandSound.create({
-    soundName,
-    flowchartCommandId,
-  });
+  return await existingSound.save();
 };
 
 type DeleteSoundTypes = {

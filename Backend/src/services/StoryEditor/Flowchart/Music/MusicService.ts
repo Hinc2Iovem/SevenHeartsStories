@@ -4,12 +4,10 @@ import { validateMongoId } from "../../../../utils/validateMongoId";
 import FlowchartCommand from "../../../../models/StoryEditor/Flowchart/FlowchartCommand";
 
 type CreateMusicTypes = {
-  musicName: string | undefined;
   flowchartCommandId: string;
 };
 
 export const createMusicService = async ({
-  musicName,
   flowchartCommandId,
 }: CreateMusicTypes) => {
   validateMongoId({ value: flowchartCommandId, valueName: "FlowchartCommand" });
@@ -21,14 +19,34 @@ export const createMusicService = async ({
     throw createHttpError(400, "FlowchartCommand with such id wasn't found");
   }
 
+  return await Music.create({
+    flowchartCommandId,
+  });
+};
+
+type UpdateMusicTypes = {
+  musicName: string | undefined;
+  musicId: string;
+};
+
+export const updateMusicService = async ({
+  musicName,
+  musicId,
+}: UpdateMusicTypes) => {
+  validateMongoId({ value: musicId, valueName: "Music" });
+
+  const existingMusic = await Music.findById(musicId).exec();
+  if (!existingMusic) {
+    throw createHttpError(400, "Music with such id wasn't found");
+  }
+
   if (!musicName?.trim().length) {
     throw createHttpError(400, "Music is required");
   }
 
-  return await Music.create({
-    musicName,
-    flowchartCommandId,
-  });
+  existingMusic.musicName = musicName;
+
+  return await existingMusic.save();
 };
 
 type DeleteMusicTypes = {

@@ -2,32 +2,57 @@ import { RequestHandler } from "express";
 import {
   createChoiceService,
   deleteChoiceService,
+  updateChoiceService,
 } from "../../../../services/StoryEditor/Flowchart/Choice/ChoiceService";
 
 type CreateChoiceParams = {
   flowchartCommandId: string;
 };
 
+export const createChoiceController: RequestHandler<
+  CreateChoiceParams,
+  unknown,
+  unknown,
+  unknown
+> = async (req, res, next) => {
+  try {
+    const choice = await createChoiceService({
+      flowchartCommandId: req.params.flowchartCommandId,
+    });
+    if (choice) {
+      return res.status(201).json(choice);
+    } else {
+      return res.status(400).json({ message: "Something went wrong" });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
+type UpdateChoiceParams = {
+  choiceId: string;
+};
+
 export type ChoiceType = "common" | "multiple" | "timelimit";
 
-type CreateChoiceBody = {
+type UpdateChoiceBody = {
   choiceQuestion: string | undefined;
   timeLimit: number | undefined;
   choiceType: ChoiceType | undefined;
 };
 
-export const createChoiceController: RequestHandler<
-  CreateChoiceParams,
+export const updateChoiceController: RequestHandler<
+  UpdateChoiceParams,
   unknown,
-  CreateChoiceBody,
+  UpdateChoiceBody,
   unknown
 > = async (req, res, next) => {
   try {
-    const choice = await createChoiceService({
+    const choice = await updateChoiceService({
       choiceQuestion: req.body.choiceQuestion,
       timeLimit: req.body.timeLimit,
       choiceType: req.body.choiceType,
-      flowchartCommandId: req.params.flowchartCommandId,
+      choiceId: req.params.choiceId,
     });
     if (choice) {
       return res.status(201).json(choice);

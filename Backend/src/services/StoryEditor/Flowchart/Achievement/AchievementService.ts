@@ -5,13 +5,11 @@ import FlowchartCommand from "../../../../models/StoryEditor/Flowchart/Flowchart
 import Story from "../../../../models/StoryData/Story";
 
 type CreateAchievementTypes = {
-  achievementName: string | undefined;
   storyId: string;
   flowchartCommandId: string;
 };
 
 export const createAchievementService = async ({
-  achievementName,
   flowchartCommandId,
   storyId,
 }: CreateAchievementTypes) => {
@@ -30,15 +28,35 @@ export const createAchievementService = async ({
     throw createHttpError(400, "Story with such id wasn't found");
   }
 
+  return await Achievement.create({
+    storyId,
+    flowchartCommandId,
+  });
+};
+
+type UpdateAchievementTypes = {
+  achievementId: string;
+  achievementName: string | undefined;
+};
+
+export const updateAchievementService = async ({
+  achievementId,
+  achievementName,
+}: UpdateAchievementTypes) => {
+  validateMongoId({ value: achievementId, valueName: "Achievement" });
+
+  const existingAchievement = await Achievement.findById(achievementId).exec();
+  if (!existingAchievement) {
+    throw createHttpError(400, "Achievement with such id wasn't found");
+  }
+
   if (!achievementName?.trim().length) {
     throw createHttpError(400, "Achievement is required");
   }
 
-  return await Achievement.create({
-    achievementName,
-    storyId,
-    flowchartCommandId,
-  });
+  existingAchievement.achievementName = achievementName;
+
+  return await existingAchievement.save();
 };
 
 type DeleteAchievementTypes = {

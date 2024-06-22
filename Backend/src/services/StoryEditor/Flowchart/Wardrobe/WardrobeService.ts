@@ -6,12 +6,10 @@ import CommandWardrobeAppearancePart from "../../../../models/StoryEditor/Flowch
 import AppearancePart from "../../../../models/StoryData/AppearancePart";
 
 type CreateCommandWardrobeTypes = {
-  title: string | undefined;
   flowchartCommandId: string;
 };
 
 export const createCommandWardrobeService = async ({
-  title,
   flowchartCommandId,
 }: CreateCommandWardrobeTypes) => {
   validateMongoId({ value: flowchartCommandId, valueName: "FlowchartCommand" });
@@ -23,14 +21,36 @@ export const createCommandWardrobeService = async ({
     throw createHttpError(400, "FlowchartCommand with such id wasn't found");
   }
 
+  return await CommandWardrobe.create({
+    flowchartCommandId,
+  });
+};
+
+type UpdateCommandWardrobeTypes = {
+  title: string | undefined;
+  commandWardrobeId: string;
+};
+
+export const updateCommandWardrobeService = async ({
+  title,
+  commandWardrobeId,
+}: UpdateCommandWardrobeTypes) => {
+  validateMongoId({ value: commandWardrobeId, valueName: "CommandWardrobe" });
+
+  const existingCommandWardrobe = await CommandWardrobe.findById(
+    commandWardrobeId
+  ).exec();
+  if (!existingCommandWardrobe) {
+    throw createHttpError(400, "CommandWardrobe with such id wasn't found");
+  }
+
   if (!title?.trim().length) {
     throw createHttpError(400, "Title is required");
   }
 
-  return await CommandWardrobe.create({
-    title,
-    flowchartCommandId,
-  });
+  existingCommandWardrobe.title = title;
+
+  return await existingCommandWardrobe.save();
 };
 
 type CreateCommandWardrobeAppearanceTypeTypes = {

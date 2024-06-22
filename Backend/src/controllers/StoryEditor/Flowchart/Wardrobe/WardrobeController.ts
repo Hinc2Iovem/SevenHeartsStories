@@ -3,26 +3,51 @@ import {
   createCommandWardrobeAppearancePartService,
   createCommandWardrobeService,
   deleteCommandWardrobeService,
+  updateCommandWardrobeService,
 } from "../../../../services/StoryEditor/Flowchart/Wardrobe/WardrobeService";
 
 type CreateCommandWardrobeParams = {
   flowchartCommandId: string;
 };
 
-type CreateCommandWardrobeBody = {
-  title: string | undefined;
-};
-
 export const createCommandWardrobeController: RequestHandler<
   CreateCommandWardrobeParams,
   unknown,
-  CreateCommandWardrobeBody,
+  unknown,
   unknown
 > = async (req, res, next) => {
   try {
     const commandWardrobe = await createCommandWardrobeService({
-      title: req.body.title,
       flowchartCommandId: req.params.flowchartCommandId,
+    });
+    if (commandWardrobe) {
+      return res.status(201).json(commandWardrobe);
+    } else {
+      return res.status(400).json({ message: "Something went wrong" });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
+type UpdateCommandWardrobeParams = {
+  commandWardrobeId: string;
+};
+
+type UpdateCommandWardrobeBody = {
+  title: string | undefined;
+};
+
+export const updateCommandWardrobeController: RequestHandler<
+  UpdateCommandWardrobeParams,
+  unknown,
+  UpdateCommandWardrobeBody,
+  unknown
+> = async (req, res, next) => {
+  try {
+    const commandWardrobe = await updateCommandWardrobeService({
+      title: req.body.title,
+      commandWardrobeId: req.params.commandWardrobeId,
     });
     if (commandWardrobe) {
       return res.status(201).json(commandWardrobe);

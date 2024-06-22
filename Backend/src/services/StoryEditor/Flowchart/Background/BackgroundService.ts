@@ -4,17 +4,11 @@ import { validateMongoId } from "../../../../utils/validateMongoId";
 import FlowchartCommand from "../../../../models/StoryEditor/Flowchart/FlowchartCommand";
 
 type CreateBackgroundTypes = {
-  backgroundName: string | undefined;
   flowchartCommandId: string;
-  pointOfMovement: number | undefined;
-  musicName: string | undefined;
 };
 
 export const createBackgroundService = async ({
-  backgroundName,
   flowchartCommandId,
-  musicName,
-  pointOfMovement,
 }: CreateBackgroundTypes) => {
   validateMongoId({ value: flowchartCommandId, valueName: "FlowchartCommand" });
 
@@ -25,16 +19,44 @@ export const createBackgroundService = async ({
     throw createHttpError(400, "FlowchartCommand with such id wasn't found");
   }
 
+  return await Background.create({
+    flowchartCommandId,
+  });
+};
+
+type UpdateBackgroundTypes = {
+  backgroundName: string | undefined;
+  backgroundId: string;
+  pointOfMovement: number | undefined;
+  musicName: string | undefined;
+};
+
+export const updateBackgroundService = async ({
+  backgroundName,
+  backgroundId,
+  musicName,
+  pointOfMovement,
+}: UpdateBackgroundTypes) => {
+  validateMongoId({ value: backgroundId, valueName: "Background" });
+
+  const existingBackground = await Background.findById(backgroundId).exec();
+  if (!existingBackground) {
+    throw createHttpError(400, "Background with such id wasn't found");
+  }
+
   if (!backgroundName?.trim().length) {
     throw createHttpError(400, "Background is required");
   }
 
-  return await Background.create({
-    backgroundName,
-    flowchartCommandId,
-    musicName: musicName ?? "",
-    pointOfMovement: pointOfMovement ?? 0,
-  });
+  existingBackground.backgroundName = backgroundName;
+  if (musicName?.trim().length) {
+    existingBackground.musicName = musicName;
+  }
+  if (pointOfMovement) {
+    existingBackground.pointOfMovement = pointOfMovement;
+  }
+
+  return await existingBackground.save();
 };
 
 type DeleteBackgroundTypes = {
