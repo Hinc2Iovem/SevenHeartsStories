@@ -3,9 +3,9 @@ import Achievement from "../../../../models/StoryEditor/Flowchart/Achievement/Ac
 import { validateMongoId } from "../../../../utils/validateMongoId";
 import FlowchartCommand from "../../../../models/StoryEditor/Flowchart/FlowchartCommand";
 import Story from "../../../../models/StoryData/Story";
-import TopologyBlock from "../../../../models/StoryEditor/Topology/TopologyBlock";
 import Flowchart from "../../../../models/StoryEditor/Flowchart/Flowchart";
 import TopologyBlockInfo from "../../../../models/StoryEditor/Topology/TopologyBlockInfo";
+import Translation from "../../../../models/StoryData/Translation";
 
 type CreateAchievementTypes = {
   storyId: string;
@@ -69,6 +69,24 @@ export const updateAchievementService = async ({
 
   if (!achievementName?.trim().length) {
     throw createHttpError(400, "Achievement is required");
+  }
+
+  const existingTranslation = await Translation.findOne({
+    commandId: existingAchievement.flowchartCommandId,
+    language: existingAchievement.currentLanguage,
+    textFieldName: "achievementName",
+  });
+
+  if (existingTranslation) {
+    existingTranslation.text = achievementName;
+    await existingTranslation.save();
+  } else {
+    await Translation.create({
+      commandId: existingAchievement.flowchartCommandId,
+      textFieldName: "achievementName",
+      text: achievementName,
+      language: existingAchievement.currentLanguage,
+    });
   }
 
   existingAchievement.achievementName = achievementName;
