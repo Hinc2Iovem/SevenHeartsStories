@@ -43,7 +43,7 @@ type UpdateConditionValueBody = {
   value: number | undefined;
 };
 
-// @route PATCH http://localhost:3500/flowchartCommands/conditions/conditionValues/:conditionId
+// @route PATCH http://localhost:3500/flowchartCommands/conditions/conditionValues/:conditionValueId
 // @access Private
 export const updateConditionValueController: RequestHandler<
   UpdateConditionValueParams,

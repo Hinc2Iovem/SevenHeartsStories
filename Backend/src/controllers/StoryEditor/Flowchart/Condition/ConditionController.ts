@@ -10,7 +10,7 @@ type CreateConditionParams = {
   targetBlockId: string;
 };
 
-// @route POST http://localhost:3500/targetBlocks/:targetBlockId/flowchartCommands/:flowchartCommandId/conditions
+// @route POST http://localhost:3500/flowchartCommands/:flowchartCommandId/conditions/targetBlocks/:targetBlockId
 // @access Private
 export const createConditionController: RequestHandler<
   CreateConditionParams,
@@ -33,7 +33,7 @@ export const createConditionController: RequestHandler<
   }
 };
 
-// @route POST http://localhost:3500/targetBlock/:targetBlockId/addBlock/flowchartCommands/:flowchartCommandId/conditions
+// @route POST http://localhost:3500/flowchartCommands/:flowchartCommandId/conditions/targetBlock/:targetBlockId/addBlock
 // @access Private
 export const addAnotherBlockConditionController: RequestHandler<
   CreateConditionParams,

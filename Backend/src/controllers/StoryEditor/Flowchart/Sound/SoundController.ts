@@ -40,7 +40,7 @@ type UpdateSoundBody = {
   soundName: string | undefined;
 };
 
-// @route PATCH http://localhost:3500/stories/:storyId/flowchartCommands/sounds/:soundId
+// @route PATCH http://localhost:3500/flowchartCommands/sounds/:soundId/stories/:storyId
 // @access Private
 export const updateSoundController: RequestHandler<
   UpdateSoundParams,

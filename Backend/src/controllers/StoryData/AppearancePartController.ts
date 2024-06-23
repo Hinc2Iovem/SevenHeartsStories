@@ -72,7 +72,7 @@ type AppearancePartDeleteParams = {
 
 // @route DELETE http://localhost:3500/appearanceParts/:appearancePartId
 // @access Private
-export const appearancePartControllerDeleteNameType: RequestHandler<
+export const appearancePartControllerDelete: RequestHandler<
   AppearancePartDeleteParams,
   unknown,
   unknown,
