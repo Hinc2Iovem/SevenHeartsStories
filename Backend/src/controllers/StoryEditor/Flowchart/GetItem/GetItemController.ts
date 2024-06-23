@@ -9,7 +9,7 @@ type CreateGetItemParams = {
   flowchartCommandId: string;
 };
 
-// @route POST http://localhost:3500/flowchartCommands/:flowchartCommandId/items
+// @route POST http://localhost:3500/flowchartCommands/:flowchartCommandId/getItems
 // @access Private
 export const createGetItemController: RequestHandler<
   CreateGetItemParams,

@@ -73,7 +73,7 @@ type EpisodeUpdateSeasonIdParams = {
   newSeasonId: string;
 };
 
-// @route PATCH http://localhost:3500/episodes/:episodeId
+// @route PATCH http://localhost:3500/episodes/:episodeId/seasons/:newSeasonId
 // @access Private
 export const episodeUpdateSeasonIdController: RequestHandler<
   EpisodeUpdateSeasonIdParams,

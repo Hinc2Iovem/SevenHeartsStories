@@ -9,7 +9,7 @@ type EpisodeInfoUpdateParams = {
   staffId: string;
 };
 
-// @route PATCH http://localhost:3500/episodeInfos/:episodeInfoId/staff/:staffId
+// @route PATCH http://localhost:3500/episodeInfo/:episodeInfoId/staff/:staffId
 // @access Private
 export const episodeInfoUpdateController: RequestHandler<
   EpisodeInfoUpdateParams,
@@ -39,7 +39,7 @@ type EpisodeInfoUpdateStatusBody = {
   episodeStatus: string | undefined;
 };
 
-// @route PATCH http://localhost:3500/episodeInfos/:episodeInfoId/status
+// @route PATCH http://localhost:3500/episodeInfo/:episodeInfoId/status
 // @access Private
 export const episodeInfoUpdateStatusController: RequestHandler<
   EpisodeInfoUpdateStatusParams,

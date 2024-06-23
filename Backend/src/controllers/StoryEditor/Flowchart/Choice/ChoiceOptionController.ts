@@ -21,7 +21,7 @@ type CreateChoiceOptionBody = {
   type: ChoiceOptionType | undefined;
 };
 
-// @route POST http://localhost:3500/topologyBlocks/:topologyBlockId/options/flowchartCommands/:flowchartCommandId/choices
+// @route POST http://localhost:3500/flowchartCommands/:flowchartCommandId/choices/options/topologyBlocks/:topologyBlockId
 // @access Private
 export const createChoiceOptionController: RequestHandler<
   CreateChoiceOptionParams,
