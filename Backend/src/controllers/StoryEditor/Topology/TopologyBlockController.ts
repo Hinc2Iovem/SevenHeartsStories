@@ -1,9 +1,43 @@
 import { RequestHandler } from "express";
 import {
+  topologyBlockCreateService,
   topologyBlockDeleteService,
   topologyBlockUpdateCoordinatesService,
   topologyBlockUpdateNameService,
 } from "../../../services/StoryEditor/Topology/TopologyBlockService";
+
+type TopologyBlockCreateParams = {
+  episodeId: string;
+};
+
+type TopologyBlockCreateBody = {
+  coordinatesX: number | undefined;
+  coordinatesY: number | undefined;
+};
+
+// @route POST http://localhost:3500/topologyBlocks/episodes/:episode
+// @access Private
+export const topologyBlockControllerCreateCoordinates: RequestHandler<
+  TopologyBlockCreateParams,
+  unknown,
+  TopologyBlockCreateBody,
+  unknown
+> = async (req, res, next) => {
+  try {
+    const topologyBlock = await topologyBlockCreateService({
+      coordinatesX: req.body.coordinatesX,
+      coordinatesY: req.body.coordinatesY,
+      episodeId: req.params.episodeId,
+    });
+    if (topologyBlock) {
+      return res.status(201).json(topologyBlock);
+    } else {
+      return res.status(400).json({ message: "Something went wrong" });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
 
 type TopologyBlockUpdateParams = {
   topologyBlockId: string;

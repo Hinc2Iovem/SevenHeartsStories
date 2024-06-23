@@ -1,6 +1,47 @@
 import createHttpError from "http-errors";
-import { validateMongoId } from "../../../utils/validateMongoId";
 import TopologyBlock from "../../../models/StoryEditor/Topology/TopologyBlock";
+import { validateMongoId } from "../../../utils/validateMongoId";
+import Episode from "../../../models/StoryData/Episode";
+import TopologyBlockInfo from "../../../models/StoryEditor/Topology/TopologyBlockInfo";
+
+type TopologyBlockCreate = {
+  episodeId: string;
+  coordinatesX: number | undefined;
+  coordinatesY: number | undefined;
+};
+
+export const topologyBlockCreateService = async ({
+  episodeId,
+  coordinatesX,
+  coordinatesY,
+}: TopologyBlockCreate) => {
+  validateMongoId({ value: episodeId, valueName: "episode" });
+
+  const existingEpisode = await Episode.findById(episodeId).exec();
+  if (!existingEpisode) {
+    throw createHttpError(400, "Such episode doesn't exist");
+  }
+
+  if (!coordinatesX || !coordinatesY) {
+    throw createHttpError(400, "Coordinates are required");
+  }
+
+  const newTopologyBlock = await TopologyBlock.create({
+    episodeId,
+    coordinatesX,
+    coordinatesY,
+  });
+
+  await TopologyBlockInfo.create({
+    topologyBlockId: newTopologyBlock._id,
+    amountOfAchievements: 0,
+    amountOfAmethysts: 0,
+    amountOfAuthorWords: 0,
+    amountOfCharacterWords: 0,
+    amountOfWords: 0,
+  });
+  return newTopologyBlock;
+};
 
 type TopologyBlockUpdateCoordinates = {
   coordinatesX: number | undefined;
@@ -75,6 +116,7 @@ export const topologyBlockDeleteService = async ({
   if (!existingTopologyBlock) {
     throw createHttpError(400, "Such topologyBlock doesn't exist");
   }
+
   await existingTopologyBlock.deleteOne();
 
   return `Topology block with id: ${topologyBlockId} was removed`;

@@ -11,21 +11,16 @@ type FlowchartCommandCreateParams = {
   flowchartId: string;
 };
 
-type FlowchartCommandCreateBody = {
-  command: string | undefined;
-};
-
 // @route POST http://localhost:3500/flowchartCommands/flowchart/:flowchartId
 // @access Private
 export const flowchartCommandControllerCreate: RequestHandler<
   FlowchartCommandCreateParams,
   unknown,
-  FlowchartCommandCreateBody,
+  unknown,
   unknown
 > = async (req, res, next) => {
   try {
     const flowchartCommand = await flowchartCommandCreateService({
-      command: req.body.command,
       flowchartId: req.params.flowchartId,
     });
     if (flowchartCommand) {

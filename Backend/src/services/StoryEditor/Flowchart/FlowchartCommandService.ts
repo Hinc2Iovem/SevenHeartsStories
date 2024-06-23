@@ -5,11 +5,9 @@ import Flowchart from "../../../models/StoryEditor/Flowchart/Flowchart";
 
 type FlowchartCommandCreateTypes = {
   flowchartId: string;
-  command: string | undefined;
 };
 
 export const flowchartCommandCreateService = async ({
-  command,
   flowchartId,
 }: FlowchartCommandCreateTypes) => {
   validateMongoId({ value: flowchartId, valueName: "Flowchart" });

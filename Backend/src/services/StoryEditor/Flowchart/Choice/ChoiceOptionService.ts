@@ -8,6 +8,7 @@ import OptionCharacteristic from "../../../../models/StoryEditor/Flowchart/Choic
 import OptionPremium from "../../../../models/StoryEditor/Flowchart/Choice/OptionPremium";
 import OptionRelationship from "../../../../models/StoryEditor/Flowchart/Choice/OptionRelationship";
 import OptionRequirement from "../../../../models/StoryEditor/Flowchart/Choice/OptionRequirement";
+import TopologyBlockInfo from "../../../../models/StoryEditor/Topology/TopologyBlockInfo";
 
 type CreateChoiceOptionTypes = {
   flowchartCommandChoiceId: string;
@@ -40,6 +41,26 @@ export const createChoiceOptionService = async ({
   if (!existingTopologyBlock) {
     throw createHttpError(400, "TopologyBlock with such id wasn't found");
   }
+
+  const topologyBlocks = await TopologyBlock.find({ topologyBlockId }).lean();
+  const topologyBlockNumber = topologyBlocks.length ?? 1;
+
+  const newTopologyBlock = await TopologyBlock.create({
+    coordinatesX: (existingTopologyBlock.coordinatesX ?? 0) + 50,
+    coordinatesY: (existingTopologyBlock.coordinatesY ?? 0) + 50,
+    episodeId: existingTopologyBlock.episodeId,
+    topologyBlockId: topologyBlockId,
+    name: (existingTopologyBlock.name ?? "New") + " " + topologyBlockNumber,
+  });
+
+  await TopologyBlockInfo.create({
+    topologyBlockId: newTopologyBlock._id,
+    amountOfAchievements: 0,
+    amountOfAmethysts: 0,
+    amountOfAuthorWords: 0,
+    amountOfCharacterWords: 0,
+    amountOfWords: 0,
+  });
 
   return await ChoiceOption.create({
     flowchartCommandChoiceId,
