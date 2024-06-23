@@ -4,6 +4,7 @@ import FlowchartCommand from "../../../../models/StoryEditor/Flowchart/Flowchart
 import CommandWardrobe from "../../../../models/StoryEditor/Flowchart/Wardrobe/CommandWardrobe";
 import CommandWardrobeAppearancePart from "../../../../models/StoryEditor/Flowchart/Wardrobe/CommandWardrobeAppearancePart";
 import AppearancePart from "../../../../models/StoryData/AppearancePart";
+import Translation from "../../../../models/StoryData/Translation";
 
 type CreateCommandWardrobeTypes = {
   flowchartCommandId: string;
@@ -49,6 +50,24 @@ export const updateCommandWardrobeService = async ({
   }
 
   existingCommandWardrobe.title = title;
+
+  const existingTranslation = await Translation.findOne({
+    commandId: existingCommandWardrobe.flowchartCommandId,
+    language: existingCommandWardrobe.currentLanguage,
+    textFieldName: "commandWardrobe",
+  });
+
+  if (existingTranslation) {
+    existingTranslation.text = title;
+    await existingTranslation.save();
+  } else {
+    await Translation.create({
+      commandId: existingCommandWardrobe.flowchartCommandId,
+      language: existingCommandWardrobe.currentLanguage,
+      textFieldName: "commandWardrobe",
+      text: title,
+    });
+  }
 
   return await existingCommandWardrobe.save();
 };

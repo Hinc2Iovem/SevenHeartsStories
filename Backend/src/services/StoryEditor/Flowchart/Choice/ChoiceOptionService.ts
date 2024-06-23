@@ -9,6 +9,7 @@ import OptionPremium from "../../../../models/StoryEditor/Flowchart/Choice/Optio
 import OptionRelationship from "../../../../models/StoryEditor/Flowchart/Choice/OptionRelationship";
 import OptionRequirement from "../../../../models/StoryEditor/Flowchart/Choice/OptionRequirement";
 import TopologyBlockInfo from "../../../../models/StoryEditor/Topology/TopologyBlockInfo";
+import Translation from "../../../../models/StoryData/Translation";
 
 type CreateChoiceOptionTypes = {
   flowchartCommandChoiceId: string;
@@ -106,6 +107,24 @@ export const updateChoiceOptionService = async ({
     throw createHttpError(400, "option is required");
   }
 
+  const existingTranslation = await Translation.findOne({
+    choiceOptionId,
+    language: existingChoiceOption.currentLanguage,
+    textFieldName: "choiceOption",
+  });
+
+  if (existingTranslation) {
+    existingTranslation.text = option;
+    await existingTranslation.save();
+  } else {
+    await Translation.create({
+      choiceOptionId,
+      language: existingChoiceOption.currentLanguage,
+      textFieldName: "choiceOption",
+      text: option,
+    });
+  }
+
   if (existingChoiceOption.type === "common") {
     existingChoiceOption.option = option;
     return await existingChoiceOption.save();
@@ -122,6 +141,23 @@ export const updateChoiceOptionService = async ({
       flowchartCommandChoiceOptionId: existingChoiceOption._id,
       characteristicName,
     });
+    const existingTranslation = await Translation.findOne({
+      choiceOptionId,
+      language: existingChoiceOption.currentLanguage,
+      textFieldName: "choiceOptionCharacteristic",
+    });
+
+    if (existingTranslation) {
+      existingTranslation.text = characteristicName;
+      await existingTranslation.save();
+    } else {
+      await Translation.create({
+        choiceOptionId,
+        language: existingChoiceOption.currentLanguage,
+        textFieldName: "choiceOptionCharacteristic",
+        text: characteristicName,
+      });
+    }
     return await existingChoiceOption.save();
   } else if (existingChoiceOption.type === "premium") {
     if (!priceAmethysts) {

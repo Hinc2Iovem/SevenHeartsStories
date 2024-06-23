@@ -22,10 +22,18 @@ export const appearancePartCreateService = async ({
     );
   }
 
-  return await AppearancePart.create({
+  const newAppearancePart = await AppearancePart.create({
     name: appearancePartName,
     type: appearancePartType,
   });
+  await Translation.create({
+    appearancePartId: newAppearancePart._id,
+    language: newAppearancePart.currentLanguage,
+    textFieldName: appearancePartType,
+    text: appearancePartName,
+  });
+
+  return newAppearancePart;
 };
 
 type AppearancePartUpdateTypes = {
@@ -66,6 +74,7 @@ export const appearancePartUpdateNameTypeService = async ({
     if (appearancePartType?.trim().length) {
       existingTranslation.textFieldName = appearancePartType;
     }
+    await existingTranslation.save();
   } else {
     await Translation.create({
       appearancePartId,

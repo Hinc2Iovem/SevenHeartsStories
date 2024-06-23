@@ -2,6 +2,7 @@ import createHttpError from "http-errors";
 import { validateMongoId } from "../../../../utils/validateMongoId";
 import FlowchartCommand from "../../../../models/StoryEditor/Flowchart/FlowchartCommand";
 import GetItem from "../../../../models/StoryEditor/Flowchart/GetItem/GetItem";
+import Translation from "../../../../models/StoryData/Translation";
 
 type CreateGetItemTypes = {
   flowchartCommandId: string;
@@ -44,14 +45,69 @@ export const updateGetItemService = async ({
   if (!existingGetItem) {
     throw createHttpError(400, "GetItem with such id wasn't found");
   }
+
   if (buttonText?.trim().length) {
     existingGetItem.buttonText = buttonText;
+
+    const existingTranslation = await Translation.findOne({
+      commandId: getItemId,
+      language: existingGetItem.currentLanguage,
+      textFieldName: "buttonText",
+    });
+
+    if (existingTranslation) {
+      existingTranslation.text = buttonText;
+      await existingTranslation.save();
+    } else {
+      await Translation.create({
+        commandId: getItemId,
+        language: existingGetItem.currentLanguage,
+        textFieldName: "buttonText",
+        text: buttonText,
+      });
+    }
   }
   if (itemDescription?.trim().length) {
     existingGetItem.itemDescription = itemDescription;
+
+    const existingTranslation = await Translation.findOne({
+      commandId: getItemId,
+      language: existingGetItem.currentLanguage,
+      textFieldName: "itemDescription",
+    });
+
+    if (existingTranslation) {
+      existingTranslation.text = itemDescription;
+      await existingTranslation.save();
+    } else {
+      await Translation.create({
+        commandId: getItemId,
+        language: existingGetItem.currentLanguage,
+        textFieldName: "itemDescription",
+        text: itemDescription,
+      });
+    }
   }
   if (itemName?.trim().length) {
     existingGetItem.itemName = itemName;
+
+    const existingTranslation = await Translation.findOne({
+      commandId: getItemId,
+      language: existingGetItem.currentLanguage,
+      textFieldName: "itemName",
+    });
+
+    if (existingTranslation) {
+      existingTranslation.text = itemName;
+      await existingTranslation.save();
+    } else {
+      await Translation.create({
+        commandId: getItemId,
+        language: existingGetItem.currentLanguage,
+        textFieldName: "itemName",
+        text: itemName,
+      });
+    }
   }
 
   return await existingGetItem.save();

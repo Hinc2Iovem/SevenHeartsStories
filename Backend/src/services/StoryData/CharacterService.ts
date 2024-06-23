@@ -89,6 +89,7 @@ export const characterUpdateService = async ({
     }).exec();
     if (existingTranslation) {
       existingTranslation.text = name;
+      await existingTranslation.save();
     } else {
       await Translation.create({
         characterId,
@@ -107,6 +108,7 @@ export const characterUpdateService = async ({
     }).exec();
     if (existingTranslation) {
       existingTranslation.text = description;
+      await existingTranslation.save();
     } else {
       await Translation.create({
         characterId,
@@ -134,6 +136,7 @@ export const characterUpdateService = async ({
     }).exec();
     if (existingTranslation) {
       existingTranslation.text = unknownName;
+      await existingTranslation.save();
     } else {
       await Translation.create({
         characterId,

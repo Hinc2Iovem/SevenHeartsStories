@@ -3,6 +3,7 @@ import { ChoiceType } from "../../../../controllers/StoryEditor/Flowchart/Choice
 import Choice from "../../../../models/StoryEditor/Flowchart/Choice/Choice";
 import FlowchartCommand from "../../../../models/StoryEditor/Flowchart/FlowchartCommand";
 import { validateMongoId } from "../../../../utils/validateMongoId";
+import Translation from "../../../../models/StoryData/Translation";
 
 type CreateChoiceTypes = {
   flowchartCommandId: string;
@@ -47,6 +48,24 @@ export const updateChoiceService = async ({
 
   if (!choiceQuestion?.trim().length) {
     throw createHttpError(400, "Choice Question is required");
+  }
+
+  const existingTranslation = await Translation.findOne({
+    commandId: existingChoice.flowchartCommandId,
+    language: existingChoice.currentLanguage,
+    textFieldName: "choiceQuestion",
+  });
+
+  if (existingTranslation) {
+    existingTranslation.text = choiceQuestion;
+    await existingTranslation.save();
+  } else {
+    await Translation.create({
+      commandId: existingChoice.flowchartCommandId,
+      language: existingChoice.currentLanguage,
+      textFieldName: "choiceQuestion",
+      text: choiceQuestion,
+    });
   }
 
   if (choiceType === "timelimit") {

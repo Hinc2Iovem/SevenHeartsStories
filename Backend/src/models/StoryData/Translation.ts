@@ -41,6 +41,10 @@ export const translationSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "StoryGenre",
   },
+  choiceOptionId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "FlowchartCommandChoiceOption",
+  },
   textFieldName: {
     type: String,
     required: true,
