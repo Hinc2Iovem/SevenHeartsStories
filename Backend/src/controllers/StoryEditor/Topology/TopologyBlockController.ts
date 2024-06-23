@@ -15,9 +15,9 @@ type TopologyBlockCreateBody = {
   coordinatesY: number | undefined;
 };
 
-// @route POST http://localhost:3500/topologyBlocks/episodes/:episode
+// @route POST http://localhost:3500/episodes/:episodeId/topologyBlocks
 // @access Private
-export const topologyBlockControllerCreateCoordinates: RequestHandler<
+export const topologyBlockControllerCreate: RequestHandler<
   TopologyBlockCreateParams,
   unknown,
   TopologyBlockCreateBody,

@@ -9,6 +9,8 @@ type CreateEffectParams = {
   flowchartCommandId: string;
 };
 
+// @route POST http://localhost:3500/flowchartCommands/:flowchartCommandId/effects
+// @access Private
 export const createEffectController: RequestHandler<
   CreateEffectParams,
   unknown,
@@ -37,6 +39,8 @@ type UpdateEffectBody = {
   effectName: string | undefined;
 };
 
+// @route PATCH http://localhost:3500/flowchartCommands/effects/:effectId
+// @access Private
 export const updateEffectController: RequestHandler<
   UpdateEffectParams,
   unknown,
@@ -62,6 +66,8 @@ type DeleteEffectParams = {
   effectId: string;
 };
 
+// @route DELETE http://localhost:3500/flowchartCommands/effects/:effectId
+// @access Private
 export const deleteEffectController: RequestHandler<
   DeleteEffectParams,
   unknown,

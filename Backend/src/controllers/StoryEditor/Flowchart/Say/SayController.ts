@@ -18,6 +18,8 @@ type CreateSayBody = {
   type: SayType | undefined;
 };
 
+// @route POST http://localhost:3500/flowchartCommands/:flowchartCommandId/say
+// @access Private
 export const createSayController: RequestHandler<
   CreateSayParams,
   unknown,
@@ -49,6 +51,8 @@ type UpdateSayBody = {
   text: string | undefined;
 };
 
+// @route PATCH http://localhost:3500/flowchartCommands/say/:sayId
+// @access Private
 export const updateSayTextController: RequestHandler<
   UpdateSayParams,
   unknown,
@@ -74,6 +78,8 @@ type DeleteSayParams = {
   sayId: string;
 };
 
+// @route DELETE http://localhost:3500/flowchartCommands/say/:sayId
+// @access Private
 export const deleteSayController: RequestHandler<
   DeleteSayParams,
   unknown,

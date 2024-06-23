@@ -9,6 +9,8 @@ type CreateSuitParams = {
   flowchartCommandId: string;
 };
 
+// @route POST http://localhost:3500/flowchartCommands/:flowchartCommandId/suits
+// @access Private
 export const createSuitController: RequestHandler<
   CreateSuitParams,
   unknown,
@@ -37,6 +39,8 @@ type UpdateSuitBody = {
   suitName: string | undefined;
 };
 
+// @route PATCH http://localhost:3500/flowchartCommands/suits/:suitId
+// @access Private
 export const updateSuitController: RequestHandler<
   UpdateSuitParams,
   unknown,
@@ -62,6 +66,8 @@ type DeleteSuitParams = {
   suitId: string;
 };
 
+// @route DELETE http://localhost:3500/flowchartCommands/suits/:suitId
+// @access Private
 export const deleteSuitController: RequestHandler<
   DeleteSuitParams,
   unknown,

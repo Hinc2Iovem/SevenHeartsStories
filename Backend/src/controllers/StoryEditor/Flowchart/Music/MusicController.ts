@@ -9,6 +9,8 @@ type CreateMusicParams = {
   flowchartCommandId: string;
 };
 
+// @route POST http://localhost:3500/flowchartCommands/:flowchartCommandId/music
+// @access Private
 export const createMusicController: RequestHandler<
   CreateMusicParams,
   unknown,
@@ -37,6 +39,8 @@ type UpdateMusicBody = {
   musicName: string | undefined;
 };
 
+// @route PATCH http://localhost:3500/flowchartCommands/music/:musicId
+// @access Private
 export const updateMusicController: RequestHandler<
   UpdateMusicParams,
   unknown,
@@ -62,6 +66,8 @@ type DeleteMusicParams = {
   musicId: string;
 };
 
+// @route DELETE http://localhost:3500/flowchartCommands/music/:musicId
+// @access Private
 export const deleteMusicController: RequestHandler<
   DeleteMusicParams,
   unknown,

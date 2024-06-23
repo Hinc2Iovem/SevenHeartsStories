@@ -9,6 +9,8 @@ type CreateCutSceneParams = {
   flowchartCommandId: string;
 };
 
+// @route POST http://localhost:3500/flowchartCommands/:flowchartCommandId/cutScenes
+// @access Private
 export const createCutSceneController: RequestHandler<
   CreateCutSceneParams,
   unknown,
@@ -37,6 +39,8 @@ type UpdateCutSceneBody = {
   cutSceneName: string | undefined;
 };
 
+// @route PATCH http://localhost:3500/flowchartCommands/cutScenes/:cutSceneId
+// @access Private
 export const updateCutSceneController: RequestHandler<
   UpdateCutSceneParams,
   unknown,
@@ -62,6 +66,8 @@ type DeleteCutSceneParams = {
   cutSceneId: string;
 };
 
+// @route DELETE http://localhost:3500/flowchartCommands/cutScenes/:cutSceneId
+// @access Private
 export const deleteCutSceneController: RequestHandler<
   DeleteCutSceneParams,
   unknown,

@@ -9,6 +9,8 @@ type CreateSoundParams = {
   flowchartCommandId: string;
 };
 
+// @route POST http://localhost:3500/flowchartCommands/:flowchartCommandId/sounds
+// @access Private
 export const createSoundController: RequestHandler<
   CreateSoundParams,
   unknown,
@@ -38,6 +40,8 @@ type UpdateSoundBody = {
   soundName: string | undefined;
 };
 
+// @route PATCH http://localhost:3500/stories/:storyId/flowchartCommands/sounds/:soundId
+// @access Private
 export const updateSoundController: RequestHandler<
   UpdateSoundParams,
   unknown,
@@ -64,6 +68,8 @@ type DeleteSoundParams = {
   soundId: string;
 };
 
+// @route DELETE http://localhost:3500/flowchartCommands/sounds/:soundId
+// @access Private
 export const deleteSoundController: RequestHandler<
   DeleteSoundParams,
   unknown,

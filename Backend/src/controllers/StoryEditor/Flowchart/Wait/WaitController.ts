@@ -9,6 +9,8 @@ type CreateWaitParams = {
   flowchartCommandId: string;
 };
 
+// @route POST http://localhost:3500/flowchartCommands/:flowchartCommandId/wait
+// @access Private
 export const createWaitController: RequestHandler<
   CreateWaitParams,
   unknown,
@@ -37,6 +39,8 @@ type UpdateWaitBody = {
   waitValue: number | undefined;
 };
 
+// @route PATCH http://localhost:3500/flowchartCommands/wait/:waitId
+// @access Private
 export const updateWaitController: RequestHandler<
   UpdateWaitParams,
   unknown,
@@ -62,6 +66,8 @@ type DeleteWaitParams = {
   waitId: string;
 };
 
+// @route POST http://localhost:3500/flowchartCommands/wait/:waitId
+// @access Private
 export const deleteWaitController: RequestHandler<
   DeleteWaitParams,
   unknown,

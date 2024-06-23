@@ -9,6 +9,8 @@ type CreateChoiceParams = {
   flowchartCommandId: string;
 };
 
+// @route POST http://localhost:3500/flowchartCommands/:flowchartCommandId/choices
+// @access Private
 export const createChoiceController: RequestHandler<
   CreateChoiceParams,
   unknown,
@@ -41,6 +43,8 @@ type UpdateChoiceBody = {
   choiceType: ChoiceType | undefined;
 };
 
+// @route PATCH http://localhost:3500/flowchartCommands/choices/:choiceId
+// @access Private
 export const updateChoiceController: RequestHandler<
   UpdateChoiceParams,
   unknown,
@@ -68,6 +72,8 @@ type DeleteChoiceParams = {
   choiceId: string;
 };
 
+// @route DELETE http://localhost:3500/flowchartCommands/choices/:choiceId
+// @access Private
 export const deleteChoiceController: RequestHandler<
   DeleteChoiceParams,
   unknown,

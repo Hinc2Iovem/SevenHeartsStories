@@ -10,6 +10,8 @@ type CreateCommandWardrobeParams = {
   flowchartCommandId: string;
 };
 
+// @route PATCH http://localhost:3500/flowchartCommands/:flowchartCommandId/wardrobes
+// @access Private
 export const createCommandWardrobeController: RequestHandler<
   CreateCommandWardrobeParams,
   unknown,
@@ -38,6 +40,8 @@ type UpdateCommandWardrobeBody = {
   title: string | undefined;
 };
 
+// @route PATCH http://localhost:3500/flowchartCommands/wardrobes/:commandWardrobeId
+// @access Private
 export const updateCommandWardrobeController: RequestHandler<
   UpdateCommandWardrobeParams,
   unknown,
@@ -64,6 +68,8 @@ type CreateCommandWardrobeAppearancePartParams = {
   appearancePartId: string;
 };
 
+// @route POST http://localhost:3500/flowchartCommands/wardrobes/:commandWardrobeId/appearanceParts/:appearancePartId
+// @access Private
 export const createCommandWardrobeAppearancePartController: RequestHandler<
   CreateCommandWardrobeAppearancePartParams,
   unknown,
@@ -89,6 +95,8 @@ type DeleteCommandWardrobeParams = {
   commandWardrobeId: string;
 };
 
+// @route DELETE http://localhost:3500/flowchartCommands/wardrobes/:commandWardrobeId
+// @access Private
 export const deleteCommandWardrobeController: RequestHandler<
   DeleteCommandWardrobeParams,
   unknown,

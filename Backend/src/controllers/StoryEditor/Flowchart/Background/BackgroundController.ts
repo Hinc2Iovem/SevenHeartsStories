@@ -9,6 +9,8 @@ type CreateBackgroundParams = {
   flowchartCommandId: string;
 };
 
+// @route POST http://localhost:3500/flowchartCommands/:flowchartCommandId/backgrounds
+// @access Private
 export const createBackgroundController: RequestHandler<
   CreateBackgroundParams,
   unknown,
@@ -39,6 +41,8 @@ type UpdateBackgroundBody = {
   musicName: string | undefined;
 };
 
+// @route PATCH http://localhost:3500/flowchartCommands/backgrounds/:backgroundId
+// @access Private
 export const updateBackgroundController: RequestHandler<
   UpdateBackgroundParams,
   unknown,
@@ -66,6 +70,8 @@ type DeleteBackgroundParams = {
   backgroundId: string;
 };
 
+// @route DELETE http://localhost:3500/flowchartCommands/backgrounds/:backgroundId
+// @access Private
 export const deleteBackgroundController: RequestHandler<
   DeleteBackgroundParams,
   unknown,

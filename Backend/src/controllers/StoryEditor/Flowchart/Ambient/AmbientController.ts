@@ -9,6 +9,8 @@ type CreateAmbientParams = {
   flowchartCommandId: string;
 };
 
+// @route POST http://localhost:3500/flowchartCommands/:flowchartCommandId/ambients
+// @access Private
 export const createAmbientController: RequestHandler<
   CreateAmbientParams,
   unknown,
@@ -37,6 +39,8 @@ type UpdateAmbientBody = {
   ambientName: string | undefined;
 };
 
+// @route PATCH http://localhost:3500/flowchartCommands/ambients/:ambientId
+// @access Private
 export const updateAmbientController: RequestHandler<
   UpdateAmbientParams,
   unknown,
@@ -62,6 +66,8 @@ type DeleteAmbientParams = {
   ambientId: string;
 };
 
+// @route DELETE http://localhost:3500/flowchartCommands/ambients/:ambientId
+// @access Private
 export const deleteAmbientController: RequestHandler<
   DeleteAmbientParams,
   unknown,

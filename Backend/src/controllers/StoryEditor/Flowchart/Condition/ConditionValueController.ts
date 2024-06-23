@@ -9,6 +9,8 @@ type CreateConditionValueParams = {
   conditionId: string;
 };
 
+// @route POST http://localhost:3500/flowchartCommands/conditions/:conditionId/conditionValues
+// @access Private
 export const createConditionValueController: RequestHandler<
   CreateConditionValueParams,
   unknown,
@@ -41,6 +43,8 @@ type UpdateConditionValueBody = {
   value: number | undefined;
 };
 
+// @route PATCH http://localhost:3500/flowchartCommands/conditions/conditionValues/:conditionId
+// @access Private
 export const updateConditionValueController: RequestHandler<
   UpdateConditionValueParams,
   unknown,
@@ -68,6 +72,8 @@ type DeleteConditionValueParams = {
   conditionValueId: string;
 };
 
+// @route DELETE http://localhost:3500/flowchartCommands/conditions/conditionValues/:conditionId
+// @access Private
 export const deleteConditionValueController: RequestHandler<
   DeleteConditionValueParams,
   unknown,

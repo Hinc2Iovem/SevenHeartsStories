@@ -21,6 +21,8 @@ type CreateChoiceOptionBody = {
   type: ChoiceOptionType | undefined;
 };
 
+// @route POST http://localhost:3500/topologyBlocks/:topologyBlockId/options/flowchartCommands/:flowchartCommandId/choices
+// @access Private
 export const createChoiceOptionController: RequestHandler<
   CreateChoiceOptionParams,
   unknown,
@@ -57,6 +59,8 @@ type UpdateChoiceOptionBody = {
   characteristicName: string | undefined;
 };
 
+// @route PATCH http://localhost:3500/flowchartCommands/choices/options/:choiceOptionId
+// @access Private
 export const updateChoiceOptionController: RequestHandler<
   UpdateChoiceOptionParams,
   unknown,
@@ -88,6 +92,8 @@ type DeleteChoiceOptionParams = {
   choiceOptionId: string;
 };
 
+// @route DELETE http://localhost:3500/flowchartCommands/choices/options/:choiceOptionId
+// @access Private
 export const deleteChoiceOptionController: RequestHandler<
   DeleteChoiceOptionParams,
   unknown,
