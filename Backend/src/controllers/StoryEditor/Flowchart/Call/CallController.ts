@@ -10,6 +10,8 @@ type CreateCallParams = {
   flowchartCommandId: string;
 };
 
+// @route POST http://localhost:3500/flowchartCommands/:flowchartCommandId/calls
+// @access Private
 export const createCallController: RequestHandler<
   CreateCallParams,
   unknown,
@@ -35,6 +37,8 @@ type UpdateCallParams = {
   targetBlockId: string;
 };
 
+// @route PATCH http://localhost:3500/flowchartCommands/calls/:callId/targetBlocks/:targetBlockId
+// @access Private
 export const updateCallController: RequestHandler<
   UpdateCallParams,
   unknown,
@@ -61,6 +65,8 @@ type UpdateCallTargetBlockParams = {
   newTargetBlockId: string;
 };
 
+// @route PATCH http://localhost:3500/flowchartCommands/calls/:callId/targetBlocks/:newTargetBlockId/assingNewBlock
+// @access Private
 export const updateCallTargetBlockIdController: RequestHandler<
   UpdateCallTargetBlockParams,
   unknown,
@@ -86,6 +92,8 @@ type DeleteCallParams = {
   callId: string;
 };
 
+// @route DELETE http://localhost:3500/flowchartCommands/calls/:callId/targetBlocks
+// @access Private
 export const deleteCallController: RequestHandler<
   DeleteCallParams,
   unknown,

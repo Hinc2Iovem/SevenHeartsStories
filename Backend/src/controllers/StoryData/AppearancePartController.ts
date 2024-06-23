@@ -65,6 +65,7 @@ export const appearancePartControllerUpdateNameType: RequestHandler<
     next(error);
   }
 };
+
 type AppearancePartDeleteParams = {
   appearancePartId: string;
 };

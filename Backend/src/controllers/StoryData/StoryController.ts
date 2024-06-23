@@ -73,7 +73,7 @@ type StoryUpdateGenreBody = {
   genre: string | undefined;
 };
 
-// @route PATCH http://localhost:3500/stories/:storyId
+// @route PATCH http://localhost:3500/stories/:storyId/genre
 // @access Private
 export const storyUpdateGenreController: RequestHandler<
   StoryUpdateGenreParams,

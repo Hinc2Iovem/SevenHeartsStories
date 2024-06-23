@@ -9,6 +9,8 @@ type CreateMoveParams = {
   flowchartCommandId: string;
 };
 
+// @route POST http://localhost:3500/flowchartCommands/:flowchartCommandId/moves
+// @access Private
 export const createMoveController: RequestHandler<
   CreateMoveParams,
   unknown,
@@ -37,6 +39,8 @@ type UpdateMoveBody = {
   moveValue: number | undefined;
 };
 
+// @route PATCH http://localhost:3500/flowchartCommands/moves/:moveId
+// @access Private
 export const updateMoveController: RequestHandler<
   UpdateMoveParams,
   unknown,
@@ -62,6 +66,8 @@ type DeleteMoveParams = {
   moveId: string;
 };
 
+// @route DELETE http://localhost:3500/flowchartCommands/moves/:moveId
+// @access Private
 export const deleteMoveController: RequestHandler<
   DeleteMoveParams,
   unknown,

@@ -10,6 +10,8 @@ type CreateAchievementParams = {
   flowchartCommandId: string;
 };
 
+// @route POST http://localhost:3500/flowchartCommands/:flowchartCommandId/achievements
+// @access Private
 export const createAchievementController: RequestHandler<
   CreateAchievementParams,
   unknown,
@@ -39,6 +41,8 @@ type UpdateAchievementBody = {
   achievementName: string | undefined;
 };
 
+// @route PATCH http://localhost:3500/flowchartCommands/achievements/:achievementId
+// @access Private
 export const updateAchievementController: RequestHandler<
   UpdateAchievementParams,
   unknown,
@@ -64,6 +68,8 @@ type DeleteAchievementParams = {
   achievementId: string;
 };
 
+// @route DELETE http://localhost:3500/flowchartCommands/achievements/:achievementId
+// @access Private
 export const deleteAchievementController: RequestHandler<
   DeleteAchievementParams,
   unknown,

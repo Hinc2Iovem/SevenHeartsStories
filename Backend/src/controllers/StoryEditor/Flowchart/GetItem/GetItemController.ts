@@ -9,6 +9,8 @@ type CreateGetItemParams = {
   flowchartCommandId: string;
 };
 
+// @route POST http://localhost:3500/flowchartCommands/:flowchartCommandId/items
+// @access Private
 export const createGetItemController: RequestHandler<
   CreateGetItemParams,
   unknown,
@@ -38,6 +40,8 @@ type UpdateGetItemBody = {
   itemName: string | undefined;
 };
 
+// @route PATCH http://localhost:3500/flowchartCommands/getItems/:getItemId
+// @access Private
 export const updateGetItemController: RequestHandler<
   UpdateGetItemParams,
   unknown,
@@ -65,6 +69,8 @@ type DeleteGetItemParams = {
   getItemId: string;
 };
 
+// @route DELETE http://localhost:3500/flowchartCommands/getItems/:getItemId
+// @access Private
 export const deleteGetItemController: RequestHandler<
   DeleteGetItemParams,
   unknown,

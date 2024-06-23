@@ -10,6 +10,8 @@ type CreateConditionParams = {
   targetBlockId: string;
 };
 
+// @route POST http://localhost:3500/targetBlocks/:targetBlockId/flowchartCommands/:flowchartCommandId/conditions
+// @access Private
 export const createConditionController: RequestHandler<
   CreateConditionParams,
   unknown,
@@ -31,6 +33,8 @@ export const createConditionController: RequestHandler<
   }
 };
 
+// @route POST http://localhost:3500/targetBlock/:targetBlockId/addBlock/flowchartCommands/:flowchartCommandId/conditions
+// @access Private
 export const addAnotherBlockConditionController: RequestHandler<
   CreateConditionParams,
   unknown,
@@ -56,6 +60,8 @@ type DeleteConditionParams = {
   conditionId: string;
 };
 
+// @route DELETE http://localhost:3500/flowchartCommands/conditions/:conditionId
+// @access Private
 export const deleteConditionController: RequestHandler<
   DeleteConditionParams,
   unknown,
