@@ -3,6 +3,9 @@ import Achievement from "../../../../models/StoryEditor/Flowchart/Achievement/Ac
 import { validateMongoId } from "../../../../utils/validateMongoId";
 import FlowchartCommand from "../../../../models/StoryEditor/Flowchart/FlowchartCommand";
 import Story from "../../../../models/StoryData/Story";
+import TopologyBlock from "../../../../models/StoryEditor/Topology/TopologyBlock";
+import Flowchart from "../../../../models/StoryEditor/Flowchart/Flowchart";
+import TopologyBlockInfo from "../../../../models/StoryEditor/Topology/TopologyBlockInfo";
 
 type CreateAchievementTypes = {
   storyId: string;
@@ -26,6 +29,20 @@ export const createAchievementService = async ({
   const existingStory = await Story.findById(storyId).lean();
   if (!existingStory) {
     throw createHttpError(400, "Story with such id wasn't found");
+  }
+
+  const currentFlowChart = await Flowchart.findById(
+    existingFlowchartCommand.flowchartId
+  ).lean();
+  if (currentFlowChart) {
+    const topologyBlockId = currentFlowChart.topologyBlockId;
+    const topologyBlockInfo = await TopologyBlockInfo.findOne({
+      topologyBlockId,
+    }).exec();
+    if (topologyBlockInfo) {
+      topologyBlockInfo.amountOfAchievements += 1;
+      await topologyBlockInfo.save();
+    }
   }
 
   return await Achievement.create({

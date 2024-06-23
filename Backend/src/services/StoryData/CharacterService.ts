@@ -3,6 +3,7 @@ import { validateMongoId } from "../../utils/validateMongoId";
 import { CharacterTypeAlias } from "../../controllers/StoryData/CharacterController";
 import Character from "../../models/StoryData/Character";
 import CharacterEmotion from "../../models/StoryData/CharacterEmotion";
+import Translation from "../../models/StoryData/Translation";
 
 type CharacterCreateTypes = {
   storyId: string;
@@ -78,11 +79,42 @@ export const characterUpdateService = async ({
   if (!existingCharacter) {
     throw createHttpError(400, "Character with such id doesn't exist");
   }
+
   if (name?.trim().length) {
     existingCharacter.name = name;
+    const existingTranslation = await Translation.findOne({
+      textFieldName: "characterName",
+      characterId,
+      language: existingCharacter.currentLanguage,
+    }).exec();
+    if (existingTranslation) {
+      existingTranslation.text = name;
+    } else {
+      await Translation.create({
+        characterId,
+        text: name,
+        language: existingCharacter.currentLanguage,
+        textFieldName: "characterName",
+      });
+    }
   }
   if (description?.trim().length) {
     existingCharacter.description = description;
+    const existingTranslation = await Translation.findOne({
+      textFieldName: "characterDescription",
+      characterId,
+      language: existingCharacter.currentLanguage,
+    }).exec();
+    if (existingTranslation) {
+      existingTranslation.text = description;
+    } else {
+      await Translation.create({
+        characterId,
+        text: description,
+        language: existingCharacter.currentLanguage,
+        textFieldName: "characterDescription",
+      });
+    }
   }
   if (img?.trim().length) {
     existingCharacter.img = img;
@@ -95,6 +127,21 @@ export const characterUpdateService = async ({
   }
   if (unknownName?.trim().length) {
     existingCharacter.unknownName = unknownName;
+    const existingTranslation = await Translation.findOne({
+      textFieldName: "characterUnknownName",
+      characterId,
+      language: existingCharacter.currentLanguage,
+    }).exec();
+    if (existingTranslation) {
+      existingTranslation.text = unknownName;
+    } else {
+      await Translation.create({
+        characterId,
+        text: unknownName,
+        language: existingCharacter.currentLanguage,
+        textFieldName: "characterUnknownName",
+      });
+    }
   }
 
   return await existingCharacter.save();

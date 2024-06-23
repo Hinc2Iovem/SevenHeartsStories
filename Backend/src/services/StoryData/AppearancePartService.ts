@@ -1,6 +1,7 @@
 import createHttpError from "http-errors";
 import AppearancePart from "../../models/StoryData/AppearancePart";
 import { validateMongoId } from "../../utils/validateMongoId";
+import Translation from "../../models/StoryData/Translation";
 
 type AppearancePartCreateTypes = {
   appearancePartName: string | undefined;
@@ -52,6 +53,26 @@ export const appearancePartUpdateNameTypeService = async ({
   }
   if (appearancePartType?.trim().length) {
     existingAppearancePart.type = appearancePartType;
+  }
+
+  const existingTranslation = await Translation.findOne({
+    appearancePartId,
+    language: existingAppearancePart.currentLanguage,
+  }).exec();
+  if (existingTranslation) {
+    if (appearancePartName?.trim().length) {
+      existingTranslation.text = appearancePartName;
+    }
+    if (appearancePartType?.trim().length) {
+      existingTranslation.textFieldName = appearancePartType;
+    }
+  } else {
+    await Translation.create({
+      appearancePartId,
+      language: existingAppearancePart.currentLanguage,
+      text: appearancePartName ?? "",
+      textFieldName: appearancePartType ?? "",
+    });
   }
 
   return await existingAppearancePart.save();
