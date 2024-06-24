@@ -10,6 +10,7 @@ import Translation from "../../models/StoryData/Translation";
 import Season from "../../models/StoryData/Season";
 import { Types } from "mongoose";
 import Story from "../../models/StoryData/Story";
+import { TranslationTextFieldName } from "../../consts/TRANSLATION_TEXT_FIELD_NAMES";
 
 type EpisodeCreateTypes = {
   title: string | undefined;
@@ -47,7 +48,7 @@ export const episodeCreateService = async ({
   await Translation.create({
     episodeId: newEpisode._id,
     text: title,
-    textFieldName: "episodeName",
+    textFieldName: TranslationTextFieldName.EpisodeName,
     language: newEpisode.currentLanguage,
   });
 
@@ -99,7 +100,7 @@ export const episodeUpdateService = async ({
   const existingTranslation = await Translation.findOne({
     episodeId: episodeId,
     language: existingEpisode.currentLanguage,
-    textFieldName: "episodeName",
+    textFieldName: TranslationTextFieldName.EpisodeName,
   }).exec();
 
   if (title?.trim().length) {

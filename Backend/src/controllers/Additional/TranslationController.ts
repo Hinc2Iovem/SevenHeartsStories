@@ -1,21 +1,27 @@
 import { RequestHandler } from "express";
-import { translationServiceChangeLanguage } from "../../services/Additional/TranslationService";
+import { addCommandTranslationService } from "../../services/Additional/TranslationService";
 
+type TranslationParams = {
+  commandId: string;
+};
 type TranslationBody = {
-  currentLanguage: string;
+  currentLanguage: string | undefined;
+  commandName: string | undefined;
 };
 
-// @route PATCH http://localhost:3500/translations
+// @route PUT http://localhost:3500/translations/commands/:commandId
 // @access Private
-export const TranslationControllerChangeLanguage: RequestHandler<
-  unknown,
+export const addCommandTranslationController: RequestHandler<
+  TranslationParams,
   unknown,
   TranslationBody,
   unknown
 > = async (req, res, next) => {
   try {
-    const translation = await translationServiceChangeLanguage({
+    const translation = await addCommandTranslationService({
+      commandId: req.params.commandId,
       currentLanguage: req.body.currentLanguage,
+      commandName: req.body.commandName,
     });
     if (translation) {
       return res.status(201).json(translation);

@@ -4,6 +4,7 @@ import FlowchartCommand from "../../../../models/StoryEditor/Flowchart/Flowchart
 import Say from "../../../../models/StoryEditor/Flowchart/Say/Say";
 import { SayType } from "../../../../controllers/StoryEditor/Flowchart/Say/SayController";
 import Translation from "../../../../models/StoryData/Translation";
+import { TranslationTextFieldName } from "../../../../consts/TRANSLATION_TEXT_FIELD_NAMES";
 
 type CreateSayTypes = {
   characterName: string | undefined;
@@ -61,7 +62,7 @@ export const updateSayTextService = async ({
     const existingTranslation = await Translation.findOne({
       commandId: existingSay.flowchartCommandId,
       language: existingSay.currentLanguage,
-      textFieldName: "sayText",
+      textFieldName: TranslationTextFieldName.SayText,
     });
 
     if (existingTranslation) {
@@ -71,7 +72,7 @@ export const updateSayTextService = async ({
       await Translation.create({
         commandId: existingSay.flowchartCommandId,
         language: existingSay.currentLanguage,
-        textFieldName: "sayText",
+        textFieldName: TranslationTextFieldName.SayText,
         text,
       });
     }

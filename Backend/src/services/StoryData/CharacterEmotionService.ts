@@ -3,6 +3,7 @@ import { validateMongoId } from "../../utils/validateMongoId";
 import CharacterEmotion from "../../models/StoryData/CharacterEmotion";
 import Character from "../../models/StoryData/Character";
 import Translation from "../../models/StoryData/Translation";
+import { TranslationTextFieldName } from "../../consts/TRANSLATION_TEXT_FIELD_NAMES";
 
 type CreateCharacterEmotionTypes = {
   emotionName: string | undefined;
@@ -31,7 +32,7 @@ export const characterEmotionCreateService = async ({
 
   const existingTranslation = await Translation.findOne({
     language: newEmotion.currentLanguage,
-    textFieldName: "characterEmotion",
+    textFieldName: TranslationTextFieldName.CharacterEmotion,
     characterEmotionId: newEmotion._id,
   });
 
@@ -41,7 +42,7 @@ export const characterEmotionCreateService = async ({
   } else {
     await Translation.create({
       language: newEmotion.currentLanguage,
-      textFieldName: "characterEmotion",
+      textFieldName: TranslationTextFieldName.CharacterEmotion,
       text: emotionName,
       characterEmotionId: newEmotion._id,
     });

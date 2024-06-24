@@ -29,7 +29,7 @@ export const appearancePartCreateService = async ({
   await Translation.create({
     appearancePartId: newAppearancePart._id,
     language: newAppearancePart.currentLanguage,
-    textFieldName: appearancePartType,
+    textFieldName: appearancePartType.toLowerCase(),
     text: appearancePartName,
   });
 
@@ -72,7 +72,7 @@ export const appearancePartUpdateNameTypeService = async ({
       existingTranslation.text = appearancePartName;
     }
     if (appearancePartType?.trim().length) {
-      existingTranslation.textFieldName = appearancePartType;
+      existingTranslation.textFieldName = appearancePartType.toLowerCase();
     }
     await existingTranslation.save();
   } else {

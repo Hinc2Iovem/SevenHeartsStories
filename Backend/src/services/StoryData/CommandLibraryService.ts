@@ -1,7 +1,6 @@
 import createHttpError from "http-errors";
 import CommandLibrary from "../../models/StoryData/CommandLibrary";
 import { validateMongoId } from "../../utils/validateMongoId";
-import Translation from "../../models/StoryData/Translation";
 
 type CommandLibraryCreateTypes = {
   commandLibraryName: string | undefined;
@@ -27,13 +26,6 @@ export const commandLibraryCreateService = async ({
     commandLibraryName,
   });
 
-  await Translation.create({
-    commandLibraryId: newCommandLibrary._id,
-    language: newCommandLibrary.currentLanguage,
-    text: commandLibraryDescription,
-    textFieldName: commandLibraryName,
-  });
-
   return newCommandLibrary;
 };
 
@@ -57,28 +49,14 @@ export const commandLibraryUpdateService = async ({
     throw createHttpError(400, "CommandLibrary with such Id doesn't exist");
   }
 
-  const existingTranslation = await Translation.findOne({
-    language: existingCommandLibrary.currentLanguage,
-    commandLibraryId,
-  }).exec();
-
   if (commandLibraryDescription?.trim().length) {
-    if (existingTranslation) {
-      existingTranslation.text = commandLibraryDescription;
-    }
     existingCommandLibrary.commandLibraryDescription =
       commandLibraryDescription;
   }
   if (commandLibraryName?.trim().length) {
-    if (existingTranslation) {
-      existingTranslation.textFieldName = commandLibraryName;
-    }
     existingCommandLibrary.commandLibraryName = commandLibraryName;
   }
 
-  if (existingTranslation) {
-    await existingTranslation.save();
-  }
   return await existingCommandLibrary.save();
 };
 

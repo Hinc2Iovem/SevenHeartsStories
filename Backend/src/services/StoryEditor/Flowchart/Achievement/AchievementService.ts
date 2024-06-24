@@ -6,6 +6,7 @@ import Story from "../../../../models/StoryData/Story";
 import Flowchart from "../../../../models/StoryEditor/Flowchart/Flowchart";
 import TopologyBlockInfo from "../../../../models/StoryEditor/Topology/TopologyBlockInfo";
 import Translation from "../../../../models/StoryData/Translation";
+import { TranslationTextFieldName } from "../../../../consts/TRANSLATION_TEXT_FIELD_NAMES";
 
 type CreateAchievementTypes = {
   storyId: string;
@@ -74,7 +75,7 @@ export const updateAchievementService = async ({
   const existingTranslation = await Translation.findOne({
     commandId: existingAchievement.flowchartCommandId,
     language: existingAchievement.currentLanguage,
-    textFieldName: "achievementName",
+    textFieldName: TranslationTextFieldName.AchievementName,
   });
 
   if (existingTranslation) {
@@ -83,7 +84,7 @@ export const updateAchievementService = async ({
   } else {
     await Translation.create({
       commandId: existingAchievement.flowchartCommandId,
-      textFieldName: "achievementName",
+      textFieldName: TranslationTextFieldName.AchievementName,
       text: achievementName,
       language: existingAchievement.currentLanguage,
     });
