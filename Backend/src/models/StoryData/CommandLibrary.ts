@@ -9,15 +9,6 @@ export const commandLibrarySchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  translationId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Translation",
-    required: true,
-  },
-  currentLanguage: {
-    type: String,
-    default: "russian",
-  },
 });
 
 type CommandLibrary = InferSchemaType<typeof commandLibrarySchema>;

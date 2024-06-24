@@ -4,6 +4,7 @@ import Story from "../../models/StoryData/Story";
 import Translation from "../../models/StoryData/Translation";
 import StoryGenre from "../../models/StoryData/StoryGenre";
 import Season from "../../models/StoryData/Season";
+import { TranslationTextFieldName } from "../../consts/TRANSLATION_TEXT_FIELD_NAMES";
 
 type StoryCreateTypes = {
   title: string | undefined;
@@ -29,7 +30,7 @@ export const storyCreateService = async ({
     storyId: newStory._id,
     language: newStory.currentLanguage,
     text: title,
-    textFieldName: "storyName",
+    textFieldName: TranslationTextFieldName.StoryName,
   });
 
   await Season.create({
@@ -47,7 +48,7 @@ export const storyCreateService = async ({
         storyGenreId: newStoryGenre._id,
         language: newStoryGenre.currentLanguage,
         text: genre,
-        textFieldName: "storyGenre",
+        textFieldName: TranslationTextFieldName.StoryGenre,
       });
     }
   }
@@ -75,7 +76,7 @@ export const storyUpdateTitleService = async ({
   const existingTranslation = await Translation.findOne({
     storyId: storyId,
     language: existingStory.currentLanguage,
-    textFieldName: "storyName",
+    textFieldName: TranslationTextFieldName.StoryName,
   }).exec();
 
   if (title?.trim().length) {
@@ -109,7 +110,7 @@ export const storyUpdateGenreService = async ({
   const existingTranslation = await Translation.findOne({
     storyGenreId: existingStoryGenre._id,
     language: existingStoryGenre.currentLanguage,
-    textFieldName: "storyGenre",
+    textFieldName: TranslationTextFieldName.StoryGenre,
   }).exec();
 
   if (genre?.trim().length) {

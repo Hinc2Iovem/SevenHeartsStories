@@ -4,6 +4,7 @@ import { CharacterTypeAlias } from "../../controllers/StoryData/CharacterControl
 import Character from "../../models/StoryData/Character";
 import CharacterEmotion from "../../models/StoryData/CharacterEmotion";
 import Translation from "../../models/StoryData/Translation";
+import { TranslationTextFieldName } from "../../consts/TRANSLATION_TEXT_FIELD_NAMES";
 
 type CharacterCreateTypes = {
   storyId: string;
@@ -83,7 +84,7 @@ export const characterUpdateService = async ({
   if (name?.trim().length) {
     existingCharacter.name = name;
     const existingTranslation = await Translation.findOne({
-      textFieldName: "characterName",
+      textFieldName: TranslationTextFieldName.CharacterName,
       characterId,
       language: existingCharacter.currentLanguage,
     }).exec();
@@ -95,14 +96,14 @@ export const characterUpdateService = async ({
         characterId,
         text: name,
         language: existingCharacter.currentLanguage,
-        textFieldName: "characterName",
+        textFieldName: TranslationTextFieldName.CharacterName,
       });
     }
   }
   if (description?.trim().length) {
     existingCharacter.description = description;
     const existingTranslation = await Translation.findOne({
-      textFieldName: "characterDescription",
+      textFieldName: TranslationTextFieldName.CharacterDescription,
       characterId,
       language: existingCharacter.currentLanguage,
     }).exec();
@@ -114,7 +115,7 @@ export const characterUpdateService = async ({
         characterId,
         text: description,
         language: existingCharacter.currentLanguage,
-        textFieldName: "characterDescription",
+        textFieldName: TranslationTextFieldName.CharacterDescription,
       });
     }
   }
@@ -130,7 +131,7 @@ export const characterUpdateService = async ({
   if (unknownName?.trim().length) {
     existingCharacter.unknownName = unknownName;
     const existingTranslation = await Translation.findOne({
-      textFieldName: "characterUnknownName",
+      textFieldName: TranslationTextFieldName.CharacterUnknownName,
       characterId,
       language: existingCharacter.currentLanguage,
     }).exec();
@@ -142,7 +143,7 @@ export const characterUpdateService = async ({
         characterId,
         text: unknownName,
         language: existingCharacter.currentLanguage,
-        textFieldName: "characterUnknownName",
+        textFieldName: TranslationTextFieldName.CharacterUnknownName,
       });
     }
   }

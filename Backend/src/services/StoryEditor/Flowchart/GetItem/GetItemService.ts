@@ -3,6 +3,7 @@ import { validateMongoId } from "../../../../utils/validateMongoId";
 import FlowchartCommand from "../../../../models/StoryEditor/Flowchart/FlowchartCommand";
 import GetItem from "../../../../models/StoryEditor/Flowchart/GetItem/GetItem";
 import Translation from "../../../../models/StoryData/Translation";
+import { TranslationTextFieldName } from "../../../../consts/TRANSLATION_TEXT_FIELD_NAMES";
 
 type CreateGetItemTypes = {
   flowchartCommandId: string;
@@ -52,7 +53,7 @@ export const updateGetItemService = async ({
     const existingTranslation = await Translation.findOne({
       commandId: getItemId,
       language: existingGetItem.currentLanguage,
-      textFieldName: "buttonText",
+      textFieldName: TranslationTextFieldName.ButtonText,
     });
 
     if (existingTranslation) {
@@ -62,7 +63,7 @@ export const updateGetItemService = async ({
       await Translation.create({
         commandId: getItemId,
         language: existingGetItem.currentLanguage,
-        textFieldName: "buttonText",
+        textFieldName: TranslationTextFieldName.ButtonText,
         text: buttonText,
       });
     }
@@ -73,7 +74,7 @@ export const updateGetItemService = async ({
     const existingTranslation = await Translation.findOne({
       commandId: getItemId,
       language: existingGetItem.currentLanguage,
-      textFieldName: "itemDescription",
+      textFieldName: TranslationTextFieldName.ItemDescription,
     });
 
     if (existingTranslation) {
@@ -83,7 +84,7 @@ export const updateGetItemService = async ({
       await Translation.create({
         commandId: getItemId,
         language: existingGetItem.currentLanguage,
-        textFieldName: "itemDescription",
+        textFieldName: TranslationTextFieldName.ItemDescription,
         text: itemDescription,
       });
     }
@@ -94,7 +95,7 @@ export const updateGetItemService = async ({
     const existingTranslation = await Translation.findOne({
       commandId: getItemId,
       language: existingGetItem.currentLanguage,
-      textFieldName: "itemName",
+      textFieldName: TranslationTextFieldName.ItemName,
     });
 
     if (existingTranslation) {
@@ -104,7 +105,7 @@ export const updateGetItemService = async ({
       await Translation.create({
         commandId: getItemId,
         language: existingGetItem.currentLanguage,
-        textFieldName: "itemName",
+        textFieldName: TranslationTextFieldName.ItemName,
         text: itemName,
       });
     }

@@ -10,6 +10,7 @@ import OptionRelationship from "../../../../models/StoryEditor/Flowchart/Choice/
 import OptionRequirement from "../../../../models/StoryEditor/Flowchart/Choice/OptionRequirement";
 import TopologyBlockInfo from "../../../../models/StoryEditor/Topology/TopologyBlockInfo";
 import Translation from "../../../../models/StoryData/Translation";
+import { TranslationTextFieldName } from "../../../../consts/TRANSLATION_TEXT_FIELD_NAMES";
 
 type CreateChoiceOptionTypes = {
   flowchartCommandChoiceId: string;
@@ -120,7 +121,7 @@ export const updateChoiceOptionService = async ({
     await Translation.create({
       choiceOptionId,
       language: existingChoiceOption.currentLanguage,
-      textFieldName: "choiceOption",
+      textFieldName: TranslationTextFieldName.ChoiceOption,
       text: option,
     });
   }
@@ -144,7 +145,7 @@ export const updateChoiceOptionService = async ({
     const existingTranslation = await Translation.findOne({
       choiceOptionId,
       language: existingChoiceOption.currentLanguage,
-      textFieldName: "choiceOptionCharacteristic",
+      textFieldName: TranslationTextFieldName.ChoiceOptionCharacteristic,
     });
 
     if (existingTranslation) {
@@ -154,7 +155,7 @@ export const updateChoiceOptionService = async ({
       await Translation.create({
         choiceOptionId,
         language: existingChoiceOption.currentLanguage,
-        textFieldName: "choiceOptionCharacteristic",
+        textFieldName: TranslationTextFieldName.ChoiceOptionCharacteristic,
         text: characteristicName,
       });
     }

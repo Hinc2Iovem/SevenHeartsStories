@@ -3,6 +3,7 @@ import { validateMongoId } from "../../utils/validateMongoId";
 import Season from "../../models/StoryData/Season";
 import Story from "../../models/StoryData/Story";
 import Translation from "../../models/StoryData/Translation";
+import { TranslationTextFieldName } from "../../consts/TRANSLATION_TEXT_FIELD_NAMES";
 
 type SeasonCreateTypes = {
   title: string | undefined;
@@ -30,7 +31,7 @@ export const seasonCreateService = async ({
     seasonId: newSeason._id,
     language: newSeason.currentLanguage,
     text: title,
-    textFieldName: "seasonName",
+    textFieldName: TranslationTextFieldName.SeasonName,
   });
 
   return newSeason;
@@ -56,7 +57,7 @@ export const seasonUpdateTitleService = async ({
   const existingTranslation = await Translation.findOne({
     seasonId: seasonId,
     language: existingSeason.currentLanguage,
-    textFieldName: "seasonName",
+    textFieldName: TranslationTextFieldName.SeasonName,
   }).exec();
 
   if (title?.trim().length) {

@@ -4,6 +4,7 @@ import Choice from "../../../../models/StoryEditor/Flowchart/Choice/Choice";
 import FlowchartCommand from "../../../../models/StoryEditor/Flowchart/FlowchartCommand";
 import { validateMongoId } from "../../../../utils/validateMongoId";
 import Translation from "../../../../models/StoryData/Translation";
+import { TranslationTextFieldName } from "../../../../consts/TRANSLATION_TEXT_FIELD_NAMES";
 
 type CreateChoiceTypes = {
   flowchartCommandId: string;
@@ -53,7 +54,7 @@ export const updateChoiceService = async ({
   const existingTranslation = await Translation.findOne({
     commandId: existingChoice.flowchartCommandId,
     language: existingChoice.currentLanguage,
-    textFieldName: "choiceQuestion",
+    textFieldName: TranslationTextFieldName.ChoiceQuestion,
   });
 
   if (existingTranslation) {
@@ -63,7 +64,7 @@ export const updateChoiceService = async ({
     await Translation.create({
       commandId: existingChoice.flowchartCommandId,
       language: existingChoice.currentLanguage,
-      textFieldName: "choiceQuestion",
+      textFieldName: TranslationTextFieldName.ChoiceQuestion,
       text: choiceQuestion,
     });
   }
