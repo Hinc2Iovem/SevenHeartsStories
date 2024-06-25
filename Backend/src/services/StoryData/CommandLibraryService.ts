@@ -2,6 +2,15 @@ import createHttpError from "http-errors";
 import CommandLibrary from "../../models/StoryData/CommandLibrary";
 import { validateMongoId } from "../../utils/validateMongoId";
 
+export const getAllCommandLibrariesService = async () => {
+  const commandLibraries = await CommandLibrary.find().lean();
+
+  if (!commandLibraries.length) {
+    return [];
+  }
+
+  return commandLibraries;
+};
 type CommandLibraryCreateTypes = {
   commandLibraryName: string | undefined;
   commandLibraryDescription: string | undefined;
@@ -21,7 +30,7 @@ export const commandLibraryCreateService = async ({
     );
   }
 
-  const newCommandLibrary = await await CommandLibrary.create({
+  const newCommandLibrary = await CommandLibrary.create({
     commandLibraryDescription,
     commandLibraryName,
   });

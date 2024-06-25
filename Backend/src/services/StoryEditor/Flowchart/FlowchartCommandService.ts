@@ -1,7 +1,23 @@
 import createHttpError from "http-errors";
 import { validateMongoId } from "../../../utils/validateMongoId";
 import FlowchartCommand from "../../../models/StoryEditor/Flowchart/FlowchartCommand";
-import Flowchart from "../../../models/StoryEditor/Flowchart/Flowchart";
+
+type GetAllFlowchartCommandsTypes = {
+  flowchartId: string;
+};
+
+export const getAllFlowchartCommandsService = async ({
+  flowchartId,
+}: GetAllFlowchartCommandsTypes) => {
+  validateMongoId({ value: flowchartId, valueName: "Flowchart" });
+
+  const existingCommands = await FlowchartCommand.find({ flowchartId }).lean();
+  if (!existingCommands.length) {
+    return [];
+  }
+
+  return existingCommands;
+};
 
 type FlowchartCommandCreateTypes = {
   flowchartId: string;
@@ -12,9 +28,13 @@ export const flowchartCommandCreateService = async ({
 }: FlowchartCommandCreateTypes) => {
   validateMongoId({ value: flowchartId, valueName: "Flowchart" });
 
-  const existingFlowchart = await Flowchart.find().lean();
+  const existingFlowchartCommands = await FlowchartCommand.find({
+    flowchartId,
+  }).lean();
 
-  const commandOrder = existingFlowchart.length ? existingFlowchart.length : 1;
+  const commandOrder = existingFlowchartCommands.length
+    ? existingFlowchartCommands.length
+    : 1;
 
   return await FlowchartCommand.create({ flowchartId, commandOrder });
 };

@@ -3,7 +3,27 @@ import {
   commandLibraryCreateService,
   commandLibraryDeleteService,
   commandLibraryUpdateService,
+  getAllCommandLibrariesService,
 } from "../../services/StoryData/CommandLibraryService";
+
+// @route GET http://localhost:3500/commandLibraries
+// @access Private
+export const getAllCommandLibrariesController: RequestHandler = async (
+  req,
+  res,
+  next
+) => {
+  try {
+    const commandLibrary = await getAllCommandLibrariesService();
+    if (commandLibrary) {
+      return res.status(201).json(commandLibrary);
+    } else {
+      return res.status(400).json({ message: "Something went wrong" });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
 
 type CommandLibraryCreateBody = {
   commandLibraryName: string | undefined;

@@ -1,27 +1,45 @@
 import createHttpError from "http-errors";
 import { validateMongoId } from "../../../utils/validateMongoId";
 import Flowchart from "../../../models/StoryEditor/Flowchart/Flowchart";
+import TopologyBlock from "../../../models/StoryEditor/Topology/TopologyBlock";
+
+type GetFlowchartByTopologyBlockIdTypes = {
+  topologyBlockId: string;
+};
+
+export const getFlowchartByTopologyBlockIdService = async ({
+  topologyBlockId,
+}: GetFlowchartByTopologyBlockIdTypes) => {
+  validateMongoId({ value: topologyBlockId, valueName: "TopologyBlock" });
+
+  const existingTopologyBlock = await TopologyBlock.findById(
+    topologyBlockId
+  ).lean();
+  if (!existingTopologyBlock) {
+    throw createHttpError(400, "Such topologyBlock doesn't exist");
+  }
+
+  const existingFlowchart = await Flowchart.findOne({ topologyBlockId }).lean();
+  if (!existingFlowchart) {
+    throw createHttpError(400, "Such flowchart doesn't exist");
+  }
+
+  return existingFlowchart;
+};
 
 type UpdateLanguageTypes = {
-  currentLanguage: string | undefined;
   flowchartId: string;
 };
 
 export const flowchartUpdateCurrentLanguageService = async ({
-  currentLanguage,
   flowchartId,
 }: UpdateLanguageTypes) => {
   validateMongoId({ value: flowchartId, valueName: "Flowchart" });
-  if (!currentLanguage?.length || !currentLanguage.trim().length) {
-    throw createHttpError(400, "You haven't selected language");
-  }
 
   const existingFlowchart = await Flowchart.findById(flowchartId).exec();
   if (!existingFlowchart) {
     throw createHttpError(400, "Such flowchart doesn't exist");
   }
-
-  existingFlowchart.currentLanguage = currentLanguage;
 
   return await existingFlowchart.save();
 };

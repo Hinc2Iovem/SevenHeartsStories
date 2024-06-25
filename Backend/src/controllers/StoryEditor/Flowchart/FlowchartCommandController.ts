@@ -5,7 +5,34 @@ import {
   flowchartCommandUpdateCommandNameService,
   flowchartCommandUpdateCommandOrderService,
   flowchartCommandUpdateCommandSideService,
+  getAllFlowchartCommandsService,
 } from "../../../services/StoryEditor/Flowchart/FlowchartCommandService";
+
+type GetAllFlowchartCommands = {
+  flowchartId: string;
+};
+
+// @route GET http://localhost:3500/flowchartCommands/flowchart/:flowchartId
+// @access Private
+export const getAllFlowchartCommandsController: RequestHandler<
+  GetAllFlowchartCommands,
+  unknown,
+  unknown,
+  unknown
+> = async (req, res, next) => {
+  try {
+    const flowchartCommands = await getAllFlowchartCommandsService({
+      flowchartId: req.params.flowchartId,
+    });
+    if (flowchartCommands) {
+      return res.status(201).json(flowchartCommands);
+    } else {
+      return res.status(400).json({ message: "Something went wrong" });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
 
 type FlowchartCommandCreateParams = {
   flowchartId: string;
