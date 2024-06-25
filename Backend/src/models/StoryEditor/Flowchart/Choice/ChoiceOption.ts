@@ -23,10 +23,6 @@ export const flowchartCommandChoiceOptionSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  currentLanguage: {
-    type: String,
-    default: "russian",
-  },
 });
 
 type FlowchartCommandChoiceOption = InferSchemaType<

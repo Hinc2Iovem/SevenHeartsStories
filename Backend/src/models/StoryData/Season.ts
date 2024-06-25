@@ -14,10 +14,6 @@ export const seasonSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "Translation",
   },
-  currentLanguage: {
-    type: String,
-    default: "russian",
-  },
 });
 
 type Season = InferSchemaType<typeof seasonSchema>;

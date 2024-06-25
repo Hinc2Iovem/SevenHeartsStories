@@ -6,7 +6,6 @@ export const TranslationTextFieldName = {
   Dress: "dress",
   Accessory: "accessory",
   Emotion: "emotion",
-  CharacterEmotion: "characterEmotion",
   CharacterName: "characterName",
   CharacterDescription: "characterDescription",
   CharacterUnknownName: "characterUnknownName",

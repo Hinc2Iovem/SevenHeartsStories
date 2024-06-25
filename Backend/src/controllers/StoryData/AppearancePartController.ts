@@ -8,6 +8,7 @@ import {
 type AppearancePartCreateBody = {
   appearancePartName: string | undefined;
   appearancePartType: string | undefined;
+  currentLanguage: string | undefined;
 };
 
 // @route POST http://localhost:3500/appearanceParts
@@ -22,6 +23,7 @@ export const appearancePartControllerCreate: RequestHandler<
     const appearancePart = await appearancePartCreateService({
       appearancePartName: req.body.appearancePartName,
       appearancePartType: req.body.appearancePartType,
+      currentLanguage: req.body.currentLanguage,
     });
     if (appearancePart) {
       return res.status(201).json(appearancePart);
@@ -40,6 +42,7 @@ type AppearancePartUpdateParams = {
 type AppearancePartUpdateBody = {
   appearancePartName: string | undefined;
   appearancePartType: string | undefined;
+  currentLanguage: string | undefined;
 };
 
 // @route PATCH http://localhost:3500/appearanceParts/:appearancePartId/nameType
@@ -54,6 +57,7 @@ export const appearancePartControllerUpdateNameType: RequestHandler<
     const appearancePart = await appearancePartUpdateNameTypeService({
       appearancePartName: req.body.appearancePartName,
       appearancePartType: req.body.appearancePartType,
+      currentLanguage: req.body.currentLanguage,
       appearancePartId: req.params.appearancePartId,
     });
     if (appearancePart) {

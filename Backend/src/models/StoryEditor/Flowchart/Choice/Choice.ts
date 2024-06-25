@@ -22,10 +22,6 @@ export const flowchartCommandChoiceSchema = new mongoose.Schema({
   timeLimit: {
     type: Number,
   },
-  currentLanguage: {
-    type: String,
-    default: "russian",
-  },
 });
 
 type FlowchartCommandChoice = InferSchemaType<

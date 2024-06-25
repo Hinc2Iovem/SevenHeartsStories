@@ -8,6 +8,7 @@ import {
 type CreateChoiceOptionParams = {
   flowchartCommandChoiceId: string;
   topologyBlockId: string;
+  episodeId: string;
 };
 
 export type ChoiceOptionType =
@@ -21,7 +22,7 @@ type CreateChoiceOptionBody = {
   type: ChoiceOptionType | undefined;
 };
 
-// @route POST http://localhost:3500/flowchartCommands/:flowchartCommandId/choices/options/topologyBlocks/:topologyBlockId
+// @route POST http://localhost:3500/flowchartCommands/:flowchartCommandId/episodes/:episodeId/choices/options/topologyBlocks/:topologyBlockId
 // @access Private
 export const createChoiceOptionController: RequestHandler<
   CreateChoiceOptionParams,
@@ -34,6 +35,7 @@ export const createChoiceOptionController: RequestHandler<
       type: req.body.type,
       flowchartCommandChoiceId: req.params.flowchartCommandChoiceId,
       topologyBlockId: req.params.topologyBlockId,
+      episodeId: req.params.episodeId,
     });
     if (choiceOption) {
       return res.status(201).json(choiceOption);
@@ -57,6 +59,7 @@ type UpdateChoiceOptionBody = {
   requiredKey: string | undefined;
   requiredCharacteristic: string | undefined;
   characteristicName: string | undefined;
+  currentLanguage: string | undefined;
 };
 
 // @route PATCH http://localhost:3500/flowchartCommands/choices/options/:choiceOptionId
@@ -77,6 +80,7 @@ export const updateChoiceOptionController: RequestHandler<
       characteristicName: req.body.characteristicName,
       requiredCharacteristic: req.body.requiredCharacteristic,
       choiceOptionId: req.params.choiceOptionId,
+      currentLanguage: req.body.currentLanguage,
     });
     if (choiceOption) {
       return res.status(201).json(choiceOption);

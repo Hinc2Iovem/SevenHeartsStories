@@ -16,10 +16,6 @@ export const flowchartCommandOptionCharacteristicSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  currentLanguage: {
-    type: String,
-    default: "russian",
-  },
 });
 
 type FlowchartCommandOptionCharacteristic = InferSchemaType<

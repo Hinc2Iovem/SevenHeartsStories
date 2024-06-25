@@ -2,6 +2,7 @@ import { RequestHandler } from "express";
 import {
   characterCreateService,
   characterDeleteService,
+  characterUpdateImgService,
   characterUpdateNameTagService,
   characterUpdateService,
 } from "../../services/StoryData/CharacterService";
@@ -107,6 +108,33 @@ export const characterUpdateNameTagController: RequestHandler<
   try {
     const character = await characterUpdateNameTagService({
       nameTag: req.body.nameTag,
+      characterId: req.params.characterId,
+    });
+    if (character) {
+      return res.status(201).json(character);
+    } else {
+      return res.status(400).json({ message: "Something went wrong" });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
+type CharacterUpdateImgBody = {
+  img: string | undefined;
+};
+
+// @route PATCH http://localhost:3500/characters/:characterId/img
+// @access Private
+export const characterUpdateImgController: RequestHandler<
+  CharacterUpdateParams,
+  unknown,
+  CharacterUpdateImgBody,
+  unknown
+> = async (req, res, next) => {
+  try {
+    const character = await characterUpdateImgService({
+      img: req.body.img,
       characterId: req.params.characterId,
     });
     if (character) {

@@ -29,6 +29,7 @@ export const createChoiceService = async ({
 
 type UpdateChoiceTypes = {
   choiceQuestion: string | undefined;
+  currentLanguage: string | undefined;
   choiceId: string;
   timeLimit: number | undefined;
   choiceType: ChoiceType | undefined;
@@ -38,6 +39,7 @@ export const updateChoiceService = async ({
   choiceQuestion,
   choiceId,
   choiceType,
+  currentLanguage,
   timeLimit,
 }: UpdateChoiceTypes) => {
   validateMongoId({ value: choiceId, valueName: "Choice" });
@@ -51,22 +53,20 @@ export const updateChoiceService = async ({
     throw createHttpError(400, "Choice Question is required");
   }
 
-  const existingTranslation = await Translation.findOne({
-    commandId: existingChoice.flowchartCommandId,
-    language: existingChoice.currentLanguage,
-    textFieldName: TranslationTextFieldName.ChoiceQuestion,
-  });
+  const existingTranslation = await Translation.findById(
+    existingChoice._id
+  ).exec();
 
   if (existingTranslation) {
     existingTranslation.text = choiceQuestion;
     await existingTranslation.save();
   } else {
-    await Translation.create({
-      commandId: existingChoice.flowchartCommandId,
-      language: existingChoice.currentLanguage,
+    const newTranslation = await Translation.create({
+      language: currentLanguage,
       textFieldName: TranslationTextFieldName.ChoiceQuestion,
       text: choiceQuestion,
     });
+    existingChoice.translationId = newTranslation._id;
   }
 
   if (choiceType === "timelimit") {

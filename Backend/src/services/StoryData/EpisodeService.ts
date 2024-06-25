@@ -9,11 +9,12 @@ import Flowchart from "../../models/StoryEditor/Flowchart/Flowchart";
 import Translation from "../../models/StoryData/Translation";
 import Season from "../../models/StoryData/Season";
 import { Types } from "mongoose";
-import Story from "../../models/StoryData/Story";
 import { TranslationTextFieldName } from "../../consts/TRANSLATION_TEXT_FIELD_NAMES";
+import Story from "../../models/StoryData/Story";
 
 type EpisodeCreateTypes = {
   title: string | undefined;
+  currentLanguage: string | undefined;
   seasonId: string;
   storyId: string;
 };
@@ -22,11 +23,12 @@ export const episodeCreateService = async ({
   seasonId,
   storyId,
   title,
+  currentLanguage,
 }: EpisodeCreateTypes) => {
   validateMongoId({ value: seasonId, valueName: "Season" });
 
-  if (!title?.trim().length) {
-    throw createHttpError(400, "Title is required");
+  if (!title?.trim().length || !currentLanguage?.trim().length) {
+    throw createHttpError(400, "Title and language are required");
   }
 
   const allEpisodesBySeasonId = await Episode.find({ seasonId }).lean();
@@ -34,7 +36,18 @@ export const episodeCreateService = async ({
     ? allEpisodesBySeasonId.length + 1
     : 1;
 
-  const newEpisode = await Episode.create({ episodeNumber, seasonId, title });
+  const newTranslation = await Translation.create({
+    text: title,
+    textFieldName: TranslationTextFieldName.EpisodeName,
+    language: currentLanguage,
+  });
+
+  const newEpisode = await Episode.create({
+    episodeNumber,
+    seasonId,
+    title,
+    translationId: newTranslation._id,
+  });
   const currentStory = await Story.findById({ storyId }).exec();
   if (currentStory) {
     currentStory.amountOfEpisodes += 1;
@@ -45,18 +58,12 @@ export const episodeCreateService = async ({
     episodeId: newEpisode._id,
   });
 
-  await Translation.create({
-    episodeId: newEpisode._id,
-    text: title,
-    textFieldName: TranslationTextFieldName.EpisodeName,
-    language: newEpisode.currentLanguage,
-  });
-
   const firstTopologyBlock = await TopologyBlock.create({
     coordinatesX: 50,
     coordinatesY: 50,
     episodeId: newEpisode._id,
     name: "First",
+    isStartingTopologyBlock: true,
   });
 
   await TopologyBlockInfo.create({
@@ -97,11 +104,9 @@ export const episodeUpdateService = async ({
     throw createHttpError(400, "Episode with such id doesn't exist");
   }
 
-  const existingTranslation = await Translation.findOne({
-    episodeId: episodeId,
-    language: existingEpisode.currentLanguage,
-    textFieldName: TranslationTextFieldName.EpisodeName,
-  }).exec();
+  const existingTranslation = await Translation.findById(
+    existingEpisode.translationId
+  ).exec();
 
   if (title?.trim().length) {
     existingEpisode.title = title;

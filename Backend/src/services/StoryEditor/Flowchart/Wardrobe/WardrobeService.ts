@@ -5,6 +5,7 @@ import CommandWardrobe from "../../../../models/StoryEditor/Flowchart/Wardrobe/C
 import CommandWardrobeAppearancePart from "../../../../models/StoryEditor/Flowchart/Wardrobe/CommandWardrobeAppearancePart";
 import AppearancePart from "../../../../models/StoryData/AppearancePart";
 import Translation from "../../../../models/StoryData/Translation";
+import { TranslationTextFieldName } from "../../../../consts/TRANSLATION_TEXT_FIELD_NAMES";
 
 type CreateCommandWardrobeTypes = {
   flowchartCommandId: string;
@@ -29,11 +30,13 @@ export const createCommandWardrobeService = async ({
 
 type UpdateCommandWardrobeTypes = {
   title: string | undefined;
+  currentLanguage: string | undefined;
   commandWardrobeId: string;
 };
 
 export const updateCommandWardrobeService = async ({
   title,
+  currentLanguage,
   commandWardrobeId,
 }: UpdateCommandWardrobeTypes) => {
   validateMongoId({ value: commandWardrobeId, valueName: "CommandWardrobe" });
@@ -51,22 +54,20 @@ export const updateCommandWardrobeService = async ({
 
   existingCommandWardrobe.title = title;
 
-  const existingTranslation = await Translation.findOne({
-    commandId: existingCommandWardrobe.flowchartCommandId,
-    language: existingCommandWardrobe.currentLanguage,
-    textFieldName: "commandWardrobe",
-  });
+  const existingTranslation = await Translation.findById(
+    existingCommandWardrobe.translationId
+  ).exec();
 
   if (existingTranslation) {
     existingTranslation.text = title;
     await existingTranslation.save();
   } else {
-    await Translation.create({
-      commandId: existingCommandWardrobe.flowchartCommandId,
-      language: existingCommandWardrobe.currentLanguage,
-      textFieldName: "commandWardrobe",
+    const newTranslation = await Translation.create({
+      language: currentLanguage,
+      textFieldName: TranslationTextFieldName.CommandWardrobeTitle,
       text: title,
     });
+    existingCommandWardrobe.translationId = newTranslation._id;
   }
 
   return await existingCommandWardrobe.save();

@@ -42,12 +42,14 @@ export const createSayService = async ({
 
 type UpdateSayTextTypes = {
   text: string | undefined;
+  currentLanguage: string | undefined;
   sayId: string;
 };
 
 export const updateSayTextService = async ({
   sayId,
   text,
+  currentLanguage,
 }: UpdateSayTextTypes) => {
   validateMongoId({ value: sayId, valueName: "Say" });
 
@@ -56,26 +58,25 @@ export const updateSayTextService = async ({
     throw createHttpError(400, "Say with such id wasn't found");
   }
 
-  if (text?.trim().length) {
-    existingSay.text = text;
+  if (!text?.trim().length || !currentLanguage?.trim().length) {
+    throw createHttpError(400, "Text and currentLanguage are required");
+  }
 
-    const existingTranslation = await Translation.findOne({
-      commandId: existingSay.flowchartCommandId,
-      language: existingSay.currentLanguage,
+  existingSay.text = text;
+  const existingTranslation = await Translation.findById(
+    existingSay.translationId
+  ).exec();
+
+  if (existingTranslation) {
+    existingTranslation.text = text;
+    await existingTranslation.save();
+  } else {
+    const newTranslation = await Translation.create({
+      language: currentLanguage,
       textFieldName: TranslationTextFieldName.SayText,
+      text,
     });
-
-    if (existingTranslation) {
-      existingTranslation.text = text;
-      await existingTranslation.save();
-    } else {
-      await Translation.create({
-        commandId: existingSay.flowchartCommandId,
-        language: existingSay.currentLanguage,
-        textFieldName: TranslationTextFieldName.SayText,
-        text,
-      });
-    }
+    existingSay.translationId = newTranslation._id;
   }
 
   return await existingSay.save();

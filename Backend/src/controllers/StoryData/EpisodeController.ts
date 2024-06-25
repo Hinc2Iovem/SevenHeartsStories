@@ -12,6 +12,7 @@ type EpisodeCreateParams = {
 };
 type EpisodeCreateBody = {
   title: string | undefined;
+  currentLanguage: string | undefined;
 };
 
 // @route POST http://localhost:3500/episodes
@@ -27,6 +28,7 @@ export const episodeCreateController: RequestHandler<
       seasonId: req.params.seasonId,
       storyId: req.params.storyId,
       title: req.body.title,
+      currentLanguage: req.body.currentLanguage,
     });
     if (episode) {
       return res.status(201).json(episode);

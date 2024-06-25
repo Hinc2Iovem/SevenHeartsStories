@@ -49,6 +49,7 @@ type UpdateSayParams = {
 
 type UpdateSayBody = {
   text: string | undefined;
+  currentLanguage: string | undefined;
 };
 
 // @route PATCH http://localhost:3500/flowchartCommands/say/:sayId
@@ -62,6 +63,7 @@ export const updateSayTextController: RequestHandler<
   try {
     const say = await updateSayTextService({
       text: req.body.text,
+      currentLanguage: req.body.currentLanguage,
       sayId: req.params.sayId,
     });
     if (say) {

@@ -3,18 +3,20 @@ import TopologyBlock from "../../../models/StoryEditor/Topology/TopologyBlock";
 import { validateMongoId } from "../../../utils/validateMongoId";
 import Episode from "../../../models/StoryData/Episode";
 import TopologyBlockInfo from "../../../models/StoryEditor/Topology/TopologyBlockInfo";
+import { Types } from "mongoose";
+import TopologyBlockConnection from "../../../models/StoryEditor/Topology/TopologyBlockConnection";
 
-type TopologyBlockCreate = {
+type TopologyBlockCreateTypes = {
   episodeId: string;
   coordinatesX: number | undefined;
   coordinatesY: number | undefined;
 };
 
-export const topologyBlockCreateService = async ({
+export const unrelatedTopologyBlockCreateService = async ({
   episodeId,
   coordinatesX,
   coordinatesY,
-}: TopologyBlockCreate) => {
+}: TopologyBlockCreateTypes) => {
   validateMongoId({ value: episodeId, valueName: "episode" });
 
   const existingEpisode = await Episode.findById(episodeId).exec();
@@ -41,6 +43,57 @@ export const topologyBlockCreateService = async ({
     amountOfWords: 0,
   });
   return newTopologyBlock;
+};
+
+type TopologyBlockUpdateByCoordinatesYTypes = {
+  sourceBlockId: string;
+  targetBlockId: string;
+};
+
+export const unrelatedTopologyBlockUpdateByCoordinatesYService = async ({
+  sourceBlockId,
+  targetBlockId,
+}: TopologyBlockUpdateByCoordinatesYTypes) => {
+  validateMongoId({ value: targetBlockId, valueName: "targetBlock" });
+  validateMongoId({ value: sourceBlockId, valueName: "sourceBlock" });
+
+  const existingTargetBlock = await TopologyBlock.findById(
+    targetBlockId
+  ).exec();
+  if (!existingTargetBlock) {
+    throw createHttpError(400, "Such targetBlock doesn't exist");
+  }
+
+  const existingSourceBlock = await TopologyBlock.findById(
+    sourceBlockId
+  ).exec();
+  if (!existingSourceBlock) {
+    throw createHttpError(400, "Such sourceBlock doesn't exist");
+  }
+
+  if (existingSourceBlock.coordinatesY < existingTargetBlock.coordinatesY) {
+    if (
+      !existingTargetBlock.children.includes(new Types.ObjectId(sourceBlockId))
+    ) {
+      existingTargetBlock.children.push(new Types.ObjectId(sourceBlockId));
+      await TopologyBlockConnection.create({
+        sourceBlockId: targetBlockId,
+        targetBlockId: sourceBlockId,
+      });
+    }
+  } else if (
+    existingSourceBlock.coordinatesY > existingTargetBlock.coordinatesY
+  ) {
+    if (
+      !existingSourceBlock.children.includes(new Types.ObjectId(targetBlockId))
+    )
+      existingSourceBlock.children.push(new Types.ObjectId(targetBlockId));
+    await TopologyBlockConnection.create({ sourceBlockId, targetBlockId });
+  }
+
+  await existingSourceBlock.save();
+  await existingTargetBlock.save();
+  return existingSourceBlock;
 };
 
 type TopologyBlockUpdateCoordinates = {
