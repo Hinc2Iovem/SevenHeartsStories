@@ -36,11 +36,7 @@ export const characterSchema = new mongoose.Schema({
   },
   img: {
     type: String,
-  },
-  currentLanguage: {
-    type: String,
-    default: "russian",
-  },
+  }
 });
 
 type Character = InferSchemaType<typeof characterSchema>;
