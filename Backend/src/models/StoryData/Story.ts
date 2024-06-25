@@ -16,10 +16,6 @@ export const storySchema = new mongoose.Schema({
   imgUrl: {
     type: String,
   },
-  currentLanguage: {
-    type: String,
-    default: "russian",
-  },
 });
 
 type Story = InferSchemaType<typeof storySchema>;

@@ -38,6 +38,7 @@ type UpdateGetItemBody = {
   buttonText: string | undefined;
   itemDescription: string | undefined;
   itemName: string | undefined;
+  currentLanguage: string | undefined;
 };
 
 // @route PATCH http://localhost:3500/flowchartCommands/getItems/:getItemId
@@ -54,6 +55,7 @@ export const updateGetItemController: RequestHandler<
       getItemId: req.params.getItemId,
       itemDescription: req.body.itemDescription,
       itemName: req.body.itemName,
+      currentLanguage: req.body.currentLanguage,
     });
     if (getItem) {
       return res.status(201).json(getItem);

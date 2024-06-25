@@ -39,6 +39,7 @@ type UpdateAchievementParams = {
 
 type UpdateAchievementBody = {
   achievementName: string | undefined;
+  currentLanguage: string | undefined;
 };
 
 // @route PATCH http://localhost:3500/flowchartCommands/achievements/:achievementId
@@ -52,6 +53,7 @@ export const updateAchievementController: RequestHandler<
   try {
     const achievement = await updateAchievementService({
       achievementId: req.params.achievementId,
+      currentLanguage: req.body.currentLanguage,
       achievementName: req.body.achievementName,
     });
     if (achievement) {

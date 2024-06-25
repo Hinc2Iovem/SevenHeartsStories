@@ -30,23 +30,5 @@ export const characterEmotionCreateService = async ({
     emotionName,
   });
 
-  const existingTranslation = await Translation.findOne({
-    language: newEmotion.currentLanguage,
-    textFieldName: TranslationTextFieldName.CharacterEmotion,
-    characterEmotionId: newEmotion._id,
-  });
-
-  if (existingTranslation) {
-    existingTranslation.text = emotionName;
-    await existingTranslation.save();
-  } else {
-    await Translation.create({
-      language: newEmotion.currentLanguage,
-      textFieldName: TranslationTextFieldName.CharacterEmotion,
-      text: emotionName,
-      characterEmotionId: newEmotion._id,
-    });
-  }
-
   return newEmotion;
 };

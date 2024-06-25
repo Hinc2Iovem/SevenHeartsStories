@@ -13,10 +13,6 @@ export const storyGenreSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "Story",
   },
-  currentLanguage: {
-    type: String,
-    default: "russian",
-  },
 });
 
 type StoryGenre = InferSchemaType<typeof storyGenreSchema>;

@@ -5,10 +5,6 @@ export const getItemSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "FlowchartCommand",
   },
-  translationId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Translation",
-  },
   itemName: {
     type: String,
     required: true,
@@ -21,10 +17,12 @@ export const getItemSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  currentLanguage: {
-    type: String,
-    default: "russian",
-  },
+  children: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Translation",
+    },
+  ],
 });
 
 type GetItem = InferSchemaType<typeof getItemSchema>;

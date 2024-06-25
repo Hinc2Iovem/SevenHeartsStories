@@ -8,17 +8,9 @@ export const characterEmotionSchema = new mongoose.Schema({
     ref: "Character",
     required: true,
   },
-  translationId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Translation",
-  },
   emotionName: {
     type: String,
     required: true,
-  },
-  currentLanguage: {
-    type: String,
-    default: "russian",
   },
 });
 

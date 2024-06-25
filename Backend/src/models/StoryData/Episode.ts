@@ -17,10 +17,6 @@ export const episodeSchema = new mongoose.Schema({
   episodeNumber: {
     type: Number,
   },
-  currentLanguage: {
-    type: String,
-    default: "russian",
-  },
 });
 
 type Episode = InferSchemaType<typeof episodeSchema>;

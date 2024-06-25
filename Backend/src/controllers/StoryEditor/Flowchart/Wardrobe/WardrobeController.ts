@@ -38,6 +38,7 @@ type UpdateCommandWardrobeParams = {
 
 type UpdateCommandWardrobeBody = {
   title: string | undefined;
+  currentLanguage: string | undefined;
 };
 
 // @route PATCH http://localhost:3500/flowchartCommands/wardrobes/:commandWardrobeId
@@ -50,6 +51,7 @@ export const updateCommandWardrobeController: RequestHandler<
 > = async (req, res, next) => {
   try {
     const commandWardrobe = await updateCommandWardrobeService({
+      currentLanguage: req.body.currentLanguage,
       title: req.body.title,
       commandWardrobeId: req.params.commandWardrobeId,
     });

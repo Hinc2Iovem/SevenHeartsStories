@@ -11,6 +11,7 @@ type SeasonCreateParams = {
 
 type SeasonCreateBody = {
   title: string | undefined;
+  currentLanguage: string | undefined;
 };
 
 // @route POST http://localhost:3500/seasons
@@ -23,6 +24,7 @@ export const seasonCreateController: RequestHandler<
 > = async (req, res, next) => {
   try {
     const season = await seasonCreateService({
+      currentLanguage: req.body.currentLanguage,
       title: req.body.title,
       storyId: req.params.storyId,
     });

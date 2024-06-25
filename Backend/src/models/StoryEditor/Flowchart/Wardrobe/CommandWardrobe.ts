@@ -12,10 +12,6 @@ export const commandWardrobeSchema = new mongoose.Schema({
   title: {
     type: String,
   },
-  currentLanguage: {
-    type: String,
-    default: "russian",
-  },
 });
 
 type CommandWardrobe = InferSchemaType<typeof commandWardrobeSchema>;

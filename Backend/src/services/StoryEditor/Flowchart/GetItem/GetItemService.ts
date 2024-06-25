@@ -31,6 +31,7 @@ type UpdateGetItemTypes = {
   buttonText: string | undefined;
   itemDescription: string | undefined;
   itemName: string | undefined;
+  currentLanguage: string | undefined;
 };
 
 export const updateGetItemService = async ({
@@ -38,6 +39,7 @@ export const updateGetItemService = async ({
   buttonText,
   itemDescription,
   itemName,
+  currentLanguage,
 }: UpdateGetItemTypes) => {
   validateMongoId({ value: getItemId, valueName: "GetItem" });
 
@@ -50,64 +52,76 @@ export const updateGetItemService = async ({
   if (buttonText?.trim().length) {
     existingGetItem.buttonText = buttonText;
 
-    const existingTranslation = await Translation.findOne({
-      commandId: getItemId,
-      language: existingGetItem.currentLanguage,
-      textFieldName: TranslationTextFieldName.ButtonText,
-    });
-
-    if (existingTranslation) {
-      existingTranslation.text = buttonText;
-      await existingTranslation.save();
+    if (
+      existingGetItem &&
+      existingGetItem.children &&
+      existingGetItem.children.length > 0
+    ) {
+      const buttonTranslationId = existingGetItem.children[0];
+      const existingTranslation = await Translation.findById(
+        buttonTranslationId
+      ).exec();
+      if (existingTranslation) {
+        existingTranslation.text = buttonText;
+        await existingTranslation.save();
+      }
     } else {
-      await Translation.create({
-        commandId: getItemId,
-        language: existingGetItem.currentLanguage,
+      const newTranslation = await Translation.create({
+        language: currentLanguage,
         textFieldName: TranslationTextFieldName.ButtonText,
         text: buttonText,
       });
+      existingGetItem.children[0] = newTranslation._id;
     }
   }
   if (itemDescription?.trim().length) {
     existingGetItem.itemDescription = itemDescription;
 
-    const existingTranslation = await Translation.findOne({
-      commandId: getItemId,
-      language: existingGetItem.currentLanguage,
-      textFieldName: TranslationTextFieldName.ItemDescription,
-    });
-
-    if (existingTranslation) {
-      existingTranslation.text = itemDescription;
-      await existingTranslation.save();
+    if (
+      existingGetItem &&
+      existingGetItem.children &&
+      existingGetItem.children.length > 0
+    ) {
+      const descriptionTranslationId = existingGetItem.children[1];
+      const existingTranslation = await Translation.findById(
+        descriptionTranslationId
+      ).exec();
+      if (existingTranslation) {
+        existingTranslation.text = itemDescription;
+        await existingTranslation.save();
+      }
     } else {
-      await Translation.create({
-        commandId: getItemId,
-        language: existingGetItem.currentLanguage,
+      const newTranslation = await Translation.create({
+        language: currentLanguage,
         textFieldName: TranslationTextFieldName.ItemDescription,
         text: itemDescription,
       });
+      existingGetItem.children[1] = newTranslation._id;
     }
   }
   if (itemName?.trim().length) {
     existingGetItem.itemName = itemName;
 
-    const existingTranslation = await Translation.findOne({
-      commandId: getItemId,
-      language: existingGetItem.currentLanguage,
-      textFieldName: TranslationTextFieldName.ItemName,
-    });
-
-    if (existingTranslation) {
-      existingTranslation.text = itemName;
-      await existingTranslation.save();
+    if (
+      existingGetItem &&
+      existingGetItem.children &&
+      existingGetItem.children.length > 0
+    ) {
+      const nameTranslationId = existingGetItem.children[2];
+      const existingTranslation = await Translation.findById(
+        nameTranslationId
+      ).exec();
+      if (existingTranslation) {
+        existingTranslation.text = itemName;
+        await existingTranslation.save();
+      }
     } else {
-      await Translation.create({
-        commandId: getItemId,
-        language: existingGetItem.currentLanguage,
+      const newTranslation = await Translation.create({
+        language: currentLanguage,
         textFieldName: TranslationTextFieldName.ItemName,
         text: itemName,
       });
+      existingGetItem.children[2] = newTranslation._id;
     }
   }
 

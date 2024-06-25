@@ -4,6 +4,7 @@ import Call from "../../../../models/StoryEditor/Flowchart/Call/Call";
 import FlowchartCommand from "../../../../models/StoryEditor/Flowchart/FlowchartCommand";
 import TopologyBlock from "../../../../models/StoryEditor/Topology/TopologyBlock";
 import { validateMongoId } from "../../../../utils/validateMongoId";
+import TopologyBlockConnection from "../../../../models/StoryEditor/Topology/TopologyBlockConnection";
 
 type CreateCallTypes = {
   flowchartCommandId: string;
@@ -29,14 +30,27 @@ export const createCallService = async ({
 type UpdateCallTypes = {
   callId: string;
   targetBlockId: string;
+  sourceBlockId: string | undefined;
 };
 
 export const updateCallService = async ({
   targetBlockId,
   callId,
+  sourceBlockId,
 }: UpdateCallTypes) => {
   validateMongoId({ value: callId, valueName: "Call" });
   validateMongoId({ value: targetBlockId, valueName: "TargetBlock" });
+
+  if (!sourceBlockId?.trim().length) {
+    throw createHttpError(400, "sourceBlockId is required");
+  }
+
+  const existingSourceBlockId = await TopologyBlock.findById(
+    sourceBlockId
+  ).lean();
+  if (!existingSourceBlockId) {
+    throw createHttpError(400, "TopologyBlock with such id wasn't found");
+  }
 
   const existingCall = await Call.findById(callId).exec();
   if (!existingCall) {
@@ -47,6 +61,20 @@ export const updateCallService = async ({
   ).lean();
   if (!existingTargetBlock) {
     throw createHttpError(400, "TopologyBlock with such id wasn't found");
+  }
+
+  const existingTopologyConnection = await TopologyBlockConnection.findOne({
+    sourceBlockId,
+    targetBlockId,
+  }).exec();
+
+  if (existingTopologyConnection) {
+    existingTopologyConnection.targetBlockId = new Types.ObjectId(
+      targetBlockId
+    );
+    await existingTopologyConnection.save();
+  } else {
+    await TopologyBlockConnection.create({ sourceBlockId, targetBlockId });
   }
 
   existingCall.targetBlockId = new Types.ObjectId(targetBlockId);

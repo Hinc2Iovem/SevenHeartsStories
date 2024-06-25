@@ -1,9 +1,10 @@
 import { RequestHandler } from "express";
 import {
-  topologyBlockCreateService,
   topologyBlockDeleteService,
   topologyBlockUpdateCoordinatesService,
   topologyBlockUpdateNameService,
+  unrelatedTopologyBlockCreateService,
+  unrelatedTopologyBlockUpdateByCoordinatesYService,
 } from "../../../services/StoryEditor/Topology/TopologyBlockService";
 
 type TopologyBlockCreateParams = {
@@ -17,18 +18,47 @@ type TopologyBlockCreateBody = {
 
 // @route POST http://localhost:3500/topologyBlocks/episodes/:episodeId
 // @access Private
-export const topologyBlockControllerCreate: RequestHandler<
+export const unrelatedTopologyBlockControllerCreate: RequestHandler<
   TopologyBlockCreateParams,
   unknown,
   TopologyBlockCreateBody,
   unknown
 > = async (req, res, next) => {
   try {
-    const topologyBlock = await topologyBlockCreateService({
+    const topologyBlock = await unrelatedTopologyBlockCreateService({
       coordinatesX: req.body.coordinatesX,
       coordinatesY: req.body.coordinatesY,
       episodeId: req.params.episodeId,
     });
+    if (topologyBlock) {
+      return res.status(201).json(topologyBlock);
+    } else {
+      return res.status(400).json({ message: "Something went wrong" });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
+type UnrelatedTopologyBlockUpdateParams = {
+  sourceBlockId: string;
+  targetBlockId: string;
+};
+
+// @route PATCH http://localhost:3500/topologyBlocks/sourceBlocks/:sourceBlockId/targetBlocks/:targetBlockId
+// @access Private
+export const unrelatedTopologyBlockUpdateByCoordinatesYCreate: RequestHandler<
+  UnrelatedTopologyBlockUpdateParams,
+  unknown,
+  unknown,
+  unknown
+> = async (req, res, next) => {
+  try {
+    const topologyBlock =
+      await unrelatedTopologyBlockUpdateByCoordinatesYService({
+        sourceBlockId: req.params.sourceBlockId,
+        targetBlockId: req.params.targetBlockId,
+      });
     if (topologyBlock) {
       return res.status(201).json(topologyBlock);
     } else {

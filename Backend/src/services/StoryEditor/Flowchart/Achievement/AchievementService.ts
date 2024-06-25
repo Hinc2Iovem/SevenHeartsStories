@@ -55,11 +55,13 @@ export const createAchievementService = async ({
 type UpdateAchievementTypes = {
   achievementId: string;
   achievementName: string | undefined;
+  currentLanguage: string | undefined;
 };
 
 export const updateAchievementService = async ({
   achievementId,
   achievementName,
+  currentLanguage,
 }: UpdateAchievementTypes) => {
   validateMongoId({ value: achievementId, valueName: "Achievement" });
 
@@ -68,26 +70,24 @@ export const updateAchievementService = async ({
     throw createHttpError(400, "Achievement with such id wasn't found");
   }
 
-  if (!achievementName?.trim().length) {
-    throw createHttpError(400, "Achievement is required");
+  if (!achievementName?.trim().length || !currentLanguage?.trim().length) {
+    throw createHttpError(400, "Achievement and currentLanguage are required");
   }
 
-  const existingTranslation = await Translation.findOne({
-    commandId: existingAchievement.flowchartCommandId,
-    language: existingAchievement.currentLanguage,
-    textFieldName: TranslationTextFieldName.AchievementName,
-  });
+  const existingTranslation = await Translation.findById(
+    existingAchievement.translationId
+  );
 
   if (existingTranslation) {
     existingTranslation.text = achievementName;
     await existingTranslation.save();
   } else {
-    await Translation.create({
-      commandId: existingAchievement.flowchartCommandId,
+    const newTranslation = await Translation.create({
+      language: currentLanguage,
       textFieldName: TranslationTextFieldName.AchievementName,
       text: achievementName,
-      language: existingAchievement.currentLanguage,
     });
+    existingAchievement.translationId = newTranslation._id;
   }
 
   existingAchievement.achievementName = achievementName;

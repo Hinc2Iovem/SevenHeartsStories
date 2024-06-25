@@ -37,17 +37,22 @@ type UpdateCallParams = {
   targetBlockId: string;
 };
 
+type UpdateCallBody = {
+  sourceBlockId: string | undefined;
+};
+
 // @route PATCH http://localhost:3500/flowchartCommands/calls/:callId/targetBlocks/:targetBlockId
 // @access Private
 export const updateCallController: RequestHandler<
   UpdateCallParams,
   unknown,
-  unknown,
+  UpdateCallBody,
   unknown
 > = async (req, res, next) => {
   try {
     const call = await updateCallService({
       callId: req.params.callId,
+      sourceBlockId: req.body.sourceBlockId,
       targetBlockId: req.params.targetBlockId,
     });
     if (call) {

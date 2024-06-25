@@ -1,20 +1,25 @@
 import createHttpError from "http-errors";
-import { validateMongoId } from "../../../../utils/validateMongoId";
+import { TranslationTextFieldName } from "../../../../consts/TRANSLATION_TEXT_FIELD_NAMES";
 import { ChoiceOptionType } from "../../../../controllers/StoryEditor/Flowchart/Choice/ChoiceOptionController";
-import ChoiceOption from "../../../../models/StoryEditor/Flowchart/Choice/ChoiceOption";
+import Translation from "../../../../models/StoryData/Translation";
 import Choice from "../../../../models/StoryEditor/Flowchart/Choice/Choice";
-import TopologyBlock from "../../../../models/StoryEditor/Topology/TopologyBlock";
+import ChoiceOption from "../../../../models/StoryEditor/Flowchart/Choice/ChoiceOption";
 import OptionCharacteristic from "../../../../models/StoryEditor/Flowchart/Choice/OptionCharacteristic";
 import OptionPremium from "../../../../models/StoryEditor/Flowchart/Choice/OptionPremium";
 import OptionRelationship from "../../../../models/StoryEditor/Flowchart/Choice/OptionRelationship";
 import OptionRequirement from "../../../../models/StoryEditor/Flowchart/Choice/OptionRequirement";
+import TopologyBlock from "../../../../models/StoryEditor/Topology/TopologyBlock";
+import TopologyBlockConnection from "../../../../models/StoryEditor/Topology/TopologyBlockConnection";
 import TopologyBlockInfo from "../../../../models/StoryEditor/Topology/TopologyBlockInfo";
-import Translation from "../../../../models/StoryData/Translation";
-import { TranslationTextFieldName } from "../../../../consts/TRANSLATION_TEXT_FIELD_NAMES";
+import { validateMongoId } from "../../../../utils/validateMongoId";
+import { createTopologyBlockConnection } from "../../../../utils/createTopologyBlockConnection";
+import { Types } from "mongoose";
+import { createTopologyBlock } from "../../../../utils/createTopologyBlock";
 
 type CreateChoiceOptionTypes = {
   flowchartCommandChoiceId: string;
   topologyBlockId: string;
+  episodeId: string;
   type: ChoiceOptionType | undefined;
 };
 
@@ -22,6 +27,7 @@ export const createChoiceOptionService = async ({
   flowchartCommandChoiceId,
   topologyBlockId,
   type,
+  episodeId,
 }: CreateChoiceOptionTypes) => {
   validateMongoId({
     value: flowchartCommandChoiceId,
@@ -44,31 +50,40 @@ export const createChoiceOptionService = async ({
     throw createHttpError(400, "TopologyBlock with such id wasn't found");
   }
 
-  const topologyBlocks = await TopologyBlock.find({ topologyBlockId }).lean();
-  const topologyBlockNumber = topologyBlocks.length ?? 1;
-
-  const newTopologyBlock = await TopologyBlock.create({
-    coordinatesX: (existingTopologyBlock.coordinatesX ?? 0) + 50,
-    coordinatesY: (existingTopologyBlock.coordinatesY ?? 0) + 50,
-    episodeId: existingTopologyBlock.episodeId,
-    topologyBlockId: topologyBlockId,
-    name: (existingTopologyBlock.name ?? "New") + " " + topologyBlockNumber,
-  });
-
-  await TopologyBlockInfo.create({
-    topologyBlockId: newTopologyBlock._id,
-    amountOfAchievements: 0,
-    amountOfAmethysts: 0,
-    amountOfAuthorWords: 0,
-    amountOfCharacterWords: 0,
-    amountOfWords: 0,
-  });
-
-  return await ChoiceOption.create({
+  const newChoiceOption = await ChoiceOption.create({
     flowchartCommandChoiceId,
     topologyBlockId,
     type: type ?? "common",
   });
+
+  const topologyBlocks = await TopologyBlockConnection.find({
+    sourceBlockId: topologyBlockId,
+  }).lean();
+  const topologyBlockNumber = topologyBlocks.length ?? 1;
+
+  const newTopologyBlock = await createTopologyBlock({
+    coordinatesX: (existingTopologyBlock.coordinatesX ?? 0) + 50,
+    coordinatesY: (existingTopologyBlock.coordinatesY ?? 0) + 50,
+    name: (existingTopologyBlock.name ?? "New") + " " + topologyBlockNumber,
+    choiceOptionId: newChoiceOption._id,
+    episodeId: new Types.ObjectId(episodeId),
+    sourceBlockId: new Types.ObjectId(topologyBlockId),
+    isStartingTopologyBlock: false,
+  });
+
+  const existingTopologyConnection = await TopologyBlockConnection.findOne({
+    sourceBlockId: topologyBlockId,
+    targetBlockId: newTopologyBlock._id,
+  }).exec();
+
+  if (!existingTopologyConnection) {
+    await createTopologyBlockConnection({
+      sourceBlockId: new Types.ObjectId(topologyBlockId),
+      targetBlockId: newTopologyBlock._id,
+    });
+  }
+
+  return newChoiceOption;
 };
 
 type UpdateChoiceOptionTypes = {
@@ -80,6 +95,7 @@ type UpdateChoiceOptionTypes = {
   requiredKey: string | undefined;
   requiredCharacteristic: string | undefined;
   characteristicName: string | undefined;
+  currentLanguage: string | undefined;
 };
 
 export const updateChoiceOptionService = async ({
@@ -91,6 +107,7 @@ export const updateChoiceOptionService = async ({
   priceAmethysts,
   requiredCharacteristic,
   requiredKey,
+  currentLanguage,
 }: UpdateChoiceOptionTypes) => {
   validateMongoId({
     value: choiceOptionId,
@@ -108,22 +125,20 @@ export const updateChoiceOptionService = async ({
     throw createHttpError(400, "option is required");
   }
 
-  const existingTranslation = await Translation.findOne({
-    choiceOptionId,
-    language: existingChoiceOption.currentLanguage,
-    textFieldName: "choiceOption",
-  });
+  const existingTranslation = await Translation.findById(
+    existingChoiceOption.translationId
+  ).exec();
 
   if (existingTranslation) {
     existingTranslation.text = option;
     await existingTranslation.save();
   } else {
-    await Translation.create({
-      choiceOptionId,
-      language: existingChoiceOption.currentLanguage,
+    const newTranslation = await Translation.create({
+      language: currentLanguage,
       textFieldName: TranslationTextFieldName.ChoiceOption,
       text: option,
     });
+    existingChoiceOption.translationId = newTranslation._id;
   }
 
   if (existingChoiceOption.type === "common") {
@@ -137,16 +152,14 @@ export const updateChoiceOptionService = async ({
       );
     }
     existingChoiceOption.option = option;
-    await OptionCharacteristic.create({
+    const newOptionCharacteristic = await OptionCharacteristic.create({
       amountOfPoints,
       flowchartCommandChoiceOptionId: existingChoiceOption._id,
       characteristicName,
     });
-    const existingTranslation = await Translation.findOne({
-      choiceOptionId,
-      language: existingChoiceOption.currentLanguage,
-      textFieldName: TranslationTextFieldName.ChoiceOptionCharacteristic,
-    });
+    const existingTranslation = await Translation.findById(
+      newOptionCharacteristic.translationId
+    ).exec();
 
     if (existingTranslation) {
       existingTranslation.text = characteristicName;
@@ -217,6 +230,14 @@ export const deleteChoiceOptionService = async ({
   validateMongoId({ value: choiceOptionId, valueName: "ChoiceOption" });
 
   await ChoiceOption.findByIdAndDelete(choiceOptionId);
+
+  const topologyBlock = await TopologyBlock.findOne({ choiceOptionId }).exec();
+  if (topologyBlock) {
+    await TopologyBlockInfo.findOneAndDelete({
+      topologyBlockId: topologyBlock._id,
+    });
+    await topologyBlock.deleteOne();
+  }
 
   return `ChoiceOption with id ${choiceOptionId} was removed`;
 };

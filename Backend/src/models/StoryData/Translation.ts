@@ -5,43 +5,6 @@ export const translationSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  commandId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "FlowchartCommand",
-  },
-  appearancePartId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "AppearancePart",
-  },
-  characterId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Character",
-  },
-  characterEmotionId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "CharacterEmotion",
-  },
-
-  episodeId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Episode",
-  },
-  seasonId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Season",
-  },
-  storyId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Story",
-  },
-  storyGenreId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "StoryGenre",
-  },
-  choiceOptionId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "FlowchartCommandChoiceOption",
-  },
   textFieldName: {
     type: String,
     required: true,
