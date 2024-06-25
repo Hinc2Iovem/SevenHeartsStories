@@ -6,6 +6,96 @@ import TopologyBlockInfo from "../../../models/StoryEditor/Topology/TopologyBloc
 import { Types } from "mongoose";
 import TopologyBlockConnection from "../../../models/StoryEditor/Topology/TopologyBlockConnection";
 
+type GetFirstTopologyBlockTypes = {
+  episodeId: string;
+};
+
+export const getFirstTopologyBlockService = async ({
+  episodeId,
+}: GetFirstTopologyBlockTypes) => {
+  validateMongoId({ value: episodeId, valueName: "episode" });
+
+  const existingEpisode = await Episode.findById(episodeId).exec();
+  if (!existingEpisode) {
+    throw createHttpError(400, "Such episode doesn't exist");
+  }
+
+  const existingTopologyBlock = await TopologyBlock.findOne({
+    episodeId,
+    isStartingTopologyBlock: true,
+  })
+    .lean()
+    .exec();
+
+  if (!existingTopologyBlock) {
+    return null;
+  }
+  return existingTopologyBlock;
+};
+
+type GetTopologyBlockByEpisodeIdTypes = {
+  episodeId: string;
+};
+
+export const getTopologyBlockByEpisodeIdService = async ({
+  episodeId,
+}: GetTopologyBlockByEpisodeIdTypes) => {
+  validateMongoId({ value: episodeId, valueName: "episode" });
+
+  const existingEpisode = await Episode.findById(episodeId).exec();
+  if (!existingEpisode) {
+    throw createHttpError(400, "Such episode doesn't exist");
+  }
+
+  const existingTopologyBlocks = await TopologyBlock.find({
+    episodeId,
+  })
+    .lean()
+    .exec();
+
+  if (!existingTopologyBlocks.length) {
+    return [];
+  }
+  return existingTopologyBlocks;
+};
+
+type GetTopologyBlockByIdTypes = {
+  topologyBlockId: string;
+};
+
+export const getTopologyBlockByIdService = async ({
+  topologyBlockId,
+}: GetTopologyBlockByIdTypes) => {
+  validateMongoId({ value: topologyBlockId, valueName: "topologyBlock" });
+  const existingTopologyBlock = await TopologyBlock.findById(
+    topologyBlockId
+  ).lean();
+  if (!existingTopologyBlock) {
+    return null;
+  }
+  return existingTopologyBlock;
+};
+
+type GetTopologyBlockByConnectionTypes = {
+  sourceBlockId: string;
+};
+
+export const getTopologyBlockByConnectionService = async ({
+  sourceBlockId,
+}: GetTopologyBlockByConnectionTypes) => {
+  validateMongoId({ value: sourceBlockId, valueName: "sourceBlock" });
+
+  const existingTopologyBlock = await TopologyBlock.findById(
+    sourceBlockId
+  ).lean();
+
+  if (!existingTopologyBlock) {
+    return null;
+  }
+
+  return await TopologyBlockConnection.find({ sourceBlockId }).lean();
+};
+
 type TopologyBlockCreateTypes = {
   episodeId: string;
   coordinatesX: number | undefined;
