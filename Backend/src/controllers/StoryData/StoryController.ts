@@ -11,7 +11,7 @@ type StoryCreateBody = {
   title: string | undefined;
   currentLanguage: string | undefined;
   imgUrl: string | undefined;
-  genres: string[] | undefined;
+  genres: string | undefined;
 };
 
 // @route POST http://localhost:3500/stories
@@ -44,6 +44,7 @@ type StoryUpdateTitleParams = {
 };
 type StoryUpdateTitleBody = {
   title: string | undefined;
+  currentLanguage: string | undefined;
 };
 
 // @route PATCH http://localhost:3500/stories/:storyId
@@ -58,6 +59,7 @@ export const storyUpdateTitleController: RequestHandler<
     const story = await storyUpdateTitleService({
       storyId: req.params.storyId,
       title: req.body.title,
+      currentLanguage: req.body.currentLanguage,
     });
     if (story) {
       return res.status(201).json(story);
@@ -100,13 +102,14 @@ export const storyUpdateImgUrlController: RequestHandler<
 };
 
 type StoryUpdateGenreParams = {
-  storyGenreId: string;
+  storyId: string;
 };
 type StoryUpdateGenreBody = {
   genre: string | undefined;
+  currentLanguage: string | undefined;
 };
 
-// @route PATCH http://localhost:3500/stories/:storyId/genre
+// @route PATCH http://localhost:3500/stories/:storyId
 // @access Private
 export const storyUpdateGenreController: RequestHandler<
   StoryUpdateGenreParams,
@@ -116,8 +119,9 @@ export const storyUpdateGenreController: RequestHandler<
 > = async (req, res, next) => {
   try {
     const story = await storyUpdateGenreService({
-      storyGenreId: req.params.storyGenreId,
+      storyId: req.params.storyId,
       genre: req.body.genre,
+      currentLanguage: req.body.currentLanguage,
     });
     if (story) {
       return res.status(201).json(story);

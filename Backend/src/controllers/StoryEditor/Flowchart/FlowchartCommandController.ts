@@ -9,10 +9,10 @@ import {
 } from "../../../services/StoryEditor/Flowchart/FlowchartCommandService";
 
 type GetAllFlowchartCommands = {
-  flowchartId: string;
+  topologyBlockId: string;
 };
 
-// @route GET http://localhost:3500/flowchartCommands/flowchart/:flowchartId
+// @route GET http://localhost:3500/topologyBlocks/:topologyBlockId
 // @access Private
 export const getAllFlowchartCommandsController: RequestHandler<
   GetAllFlowchartCommands,
@@ -22,7 +22,7 @@ export const getAllFlowchartCommandsController: RequestHandler<
 > = async (req, res, next) => {
   try {
     const flowchartCommands = await getAllFlowchartCommandsService({
-      flowchartId: req.params.flowchartId,
+      topologyBlockId: req.params.topologyBlockId,
     });
     if (flowchartCommands) {
       return res.status(201).json(flowchartCommands);
@@ -35,10 +35,10 @@ export const getAllFlowchartCommandsController: RequestHandler<
 };
 
 type FlowchartCommandCreateParams = {
-  flowchartId: string;
+  topologyBlockId: string;
 };
 
-// @route POST http://localhost:3500/flowchartCommands/flowchart/:flowchartId
+// @route POST http://localhost:3500/topologyBlocks/:topologyBlockId
 // @access Private
 export const flowchartCommandControllerCreate: RequestHandler<
   FlowchartCommandCreateParams,
@@ -48,7 +48,7 @@ export const flowchartCommandControllerCreate: RequestHandler<
 > = async (req, res, next) => {
   try {
     const flowchartCommand = await flowchartCommandCreateService({
-      flowchartId: req.params.flowchartId,
+      topologyBlockId: req.params.topologyBlockId,
     });
     if (flowchartCommand) {
       return res.status(201).json(flowchartCommand);

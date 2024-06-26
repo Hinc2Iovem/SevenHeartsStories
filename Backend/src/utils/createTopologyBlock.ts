@@ -21,10 +21,6 @@ export const createTopologyBlock = async ({
   choiceOptionId,
   isStartingTopologyBlock,
 }: CreateTopologyBlockTypes) => {
-  const parentTopologyBlock = await TopologyBlock.findById(
-    sourceBlockId
-  ).exec();
-
   const newBlock = await TopologyBlock.create({
     coordinatesX,
     coordinatesY,
@@ -34,9 +30,6 @@ export const createTopologyBlock = async ({
     choiceOptionId,
     isStartingTopologyBlock,
   });
-  if (!parentTopologyBlock?.children.includes(newBlock._id)) {
-    parentTopologyBlock?.children.push(newBlock._id);
-  }
 
   await TopologyBlockInfo.create({
     topologyBlockId: newBlock._id,

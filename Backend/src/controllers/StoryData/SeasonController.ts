@@ -43,6 +43,7 @@ type SeasonUpdateTitleParams = {
 };
 type SeasonUpdateTitleBody = {
   title: string | undefined;
+  currentLanguage: string | undefined;
 };
 
 // @route PATCH http://localhost:3500/seasons/:seasonId
@@ -57,6 +58,7 @@ export const seasonUpdateTitleController: RequestHandler<
     const season = await seasonUpdateTitleService({
       seasonId: req.params.seasonId,
       title: req.body.title,
+      currentLanguage: req.body.currentLanguage,
     });
     if (season) {
       return res.status(201).json(season);

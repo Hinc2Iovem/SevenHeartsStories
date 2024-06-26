@@ -2,7 +2,6 @@ import createHttpError from "http-errors";
 import { validateMongoId } from "../../utils/validateMongoId";
 import Story from "../../models/StoryData/Story";
 import Translation from "../../models/StoryData/Translation";
-import StoryGenre from "../../models/StoryData/StoryGenre";
 import Season from "../../models/StoryData/Season";
 import { TranslationTextFieldName } from "../../consts/TRANSLATION_TEXT_FIELD_NAMES";
 
@@ -10,7 +9,7 @@ type StoryCreateTypes = {
   title: string | undefined;
   imgUrl: string | undefined;
   currentLanguage: string | undefined;
-  genres: string[] | undefined;
+  genres: string | undefined;
 };
 
 export const storyCreateService = async ({
@@ -23,47 +22,38 @@ export const storyCreateService = async ({
     throw createHttpError(400, "Title is required");
   }
 
-  const newTranslation = await Translation.create({
+  const newStory = await Story.create({
+    amountOfEpisodes: 0,
+  });
+
+  await Translation.create({
+    storyId: newStory._id,
     language: currentLanguage,
     text: title,
     textFieldName: TranslationTextFieldName.StoryName,
   });
 
-  const newStory = await Story.create({
-    title,
-    amountOfEpisodes: 0,
-    translationId: newTranslation._id,
+  await Translation.create({
+    storyId: newStory._id,
+    language: currentLanguage,
+    text: genres,
+    textFieldName: TranslationTextFieldName.StoryGenre,
   });
+
   if (imgUrl) {
     newStory.imgUrl = imgUrl;
   }
 
-  const newTranslationSeason = await Translation.create({
+  const newSeason = await Season.create({
+    storyId: newStory._id,
+  });
+
+  await Translation.create({
+    seasonId: newSeason._id,
     language: "english",
     text: "Season 1",
     textFieldName: TranslationTextFieldName.SeasonName,
   });
-
-  await Season.create({
-    storyId: newStory._id,
-    title: "Season 1",
-    translationId: newTranslationSeason._id,
-  });
-
-  if (genres && genres.length) {
-    for (const genre of genres) {
-      const newTranslationGenre = await Translation.create({
-        language: currentLanguage,
-        text: genre,
-        textFieldName: TranslationTextFieldName.StoryGenre,
-      });
-      await StoryGenre.create({
-        storyId: newStory._id,
-        genre,
-        translationId: newTranslationGenre._id,
-      });
-    }
-  }
 
   return newStory;
 };
@@ -71,11 +61,13 @@ export const storyCreateService = async ({
 type StoryUpdateTypes = {
   storyId: string;
   title: string | undefined;
+  currentLanguage: string | undefined;
 };
 
 export const storyUpdateTitleService = async ({
   storyId,
   title,
+  currentLanguage,
 }: StoryUpdateTypes) => {
   validateMongoId({ value: storyId, valueName: "Story" });
 
@@ -85,19 +77,26 @@ export const storyUpdateTitleService = async ({
     throw createHttpError(400, "Story with such id doesn't exist");
   }
 
-  const existingTranslation = await Translation.findById(
-    existingStory.translationId
-  ).exec();
-
-  if (title?.trim().length) {
-    existingStory.title = title;
-    if (existingTranslation) {
-      existingTranslation.text = title;
-      await existingTranslation.save();
-    }
+  if (!currentLanguage?.trim().length) {
+    throw createHttpError(400, "Language is required");
   }
 
-  return await existingStory.save();
+  const existingTranslation = await Translation.findOne({
+    storyId: existingStory.id,
+    language: currentLanguage,
+    textFieldName: TranslationTextFieldName.StoryName,
+  }).exec();
+
+  if (!existingTranslation) {
+    throw createHttpError(400, "Translation wasn't found");
+  }
+
+  if (title?.trim().length) {
+    existingTranslation.text = title;
+    await existingTranslation.save();
+  }
+
+  return existingStory;
 };
 
 type StoryUpdateImgTypes = {
@@ -125,35 +124,40 @@ export const storyUpdateImgService = async ({
 };
 
 type StoryUpdateGenreTypes = {
-  storyGenreId: string;
+  storyId: string;
   genre: string | undefined;
+  currentLanguage: string | undefined;
 };
 
 export const storyUpdateGenreService = async ({
-  storyGenreId,
+  storyId,
   genre,
+  currentLanguage,
 }: StoryUpdateGenreTypes) => {
-  validateMongoId({ value: storyGenreId, valueName: "StoryGenre" });
+  validateMongoId({ value: storyId, valueName: "Story" });
 
-  const existingStoryGenre = await StoryGenre.findById(storyGenreId).exec();
+  const existingStory = await Story.findById({ storyId }).lean();
 
-  if (!existingStoryGenre) {
+  if (!existingStory) {
     throw createHttpError(400, "Story with such id doesn't exist");
   }
 
-  const existingTranslation = await Translation.findById(
-    existingStoryGenre.translationId
-  ).exec();
+  const existingTranslation = await Translation.findOne({
+    storyId,
+    textFieldName: TranslationTextFieldName.StoryGenre,
+    language: currentLanguage,
+  }).exec();
 
-  if (genre?.trim().length) {
-    existingStoryGenre.genre = genre;
-    if (existingTranslation) {
-      existingTranslation.text = genre;
-      await existingTranslation.save();
-    }
+  if (!existingTranslation) {
+    throw createHttpError(400, "Translation wasn't found");
   }
 
-  return await existingStoryGenre.save();
+  if (genre?.trim().length) {
+    existingTranslation.text = genre;
+    await existingTranslation.save();
+  }
+
+  return existingTranslation;
 };
 
 type StoryDeleteTypes = {

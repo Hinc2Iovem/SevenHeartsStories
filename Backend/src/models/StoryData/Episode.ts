@@ -6,16 +6,9 @@ export const episodeSchema = new mongoose.Schema({
     ref: "Season",
     required: true,
   },
-  translationId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Translation",
-  },
-  title: {
-    type: String,
-    required: true,
-  },
-  episodeNumber: {
+  episodeOrder: {
     type: Number,
+    default: 1,
   },
 });
 

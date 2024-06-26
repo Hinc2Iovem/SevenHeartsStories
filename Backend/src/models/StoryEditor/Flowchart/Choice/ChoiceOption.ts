@@ -11,17 +11,9 @@ export const flowchartCommandChoiceOptionSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "TopologyBlock",
   },
-  translationId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Translation",
-  },
   type: {
     type: String,
     default: "common",
-  },
-  option: {
-    type: String,
-    required: true,
   },
 });
 

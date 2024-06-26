@@ -18,24 +18,20 @@ import { createTopologyBlock } from "../../../../utils/createTopologyBlock";
 
 type CreateChoiceOptionTypes = {
   flowchartCommandChoiceId: string;
-  topologyBlockId: string;
   episodeId: string;
+  topologyBlockId: string;
   type: ChoiceOptionType | undefined;
 };
 
 export const createChoiceOptionService = async ({
   flowchartCommandChoiceId,
-  topologyBlockId,
   type,
   episodeId,
+  topologyBlockId,
 }: CreateChoiceOptionTypes) => {
   validateMongoId({
     value: flowchartCommandChoiceId,
     valueName: "FlowchartCommandChoice",
-  });
-  validateMongoId({
-    value: topologyBlockId,
-    valueName: "TopologyBlock",
   });
 
   const existingChoice = await Choice.findById(flowchartCommandChoiceId).lean();
@@ -43,18 +39,16 @@ export const createChoiceOptionService = async ({
     throw createHttpError(400, "Choice with such id wasn't found");
   }
 
-  const existingTopologyBlock = await TopologyBlock.findById(
+  const existingCurrentTopologyBlock = await TopologyBlock.findById(
     topologyBlockId
-  ).lean();
-  if (!existingTopologyBlock) {
-    throw createHttpError(400, "TopologyBlock with such id wasn't found");
-  }
+  ).exec();
 
-  const newChoiceOption = await ChoiceOption.create({
-    flowchartCommandChoiceId,
-    topologyBlockId,
-    type: type ?? "common",
-  });
+  if (!existingCurrentTopologyBlock) {
+    throw createHttpError(
+      400,
+      "Something went wrong, current topology block doesn't exist"
+    );
+  }
 
   const topologyBlocks = await TopologyBlockConnection.find({
     sourceBlockId: topologyBlockId,
@@ -62,10 +56,9 @@ export const createChoiceOptionService = async ({
   const topologyBlockNumber = topologyBlocks.length ?? 1;
 
   const newTopologyBlock = await createTopologyBlock({
-    coordinatesX: (existingTopologyBlock.coordinatesX ?? 0) + 50,
-    coordinatesY: (existingTopologyBlock.coordinatesY ?? 0) + 50,
-    name: (existingTopologyBlock.name ?? "New") + " " + topologyBlockNumber,
-    choiceOptionId: newChoiceOption._id,
+    coordinatesX: (existingCurrentTopologyBlock.coordinatesX ?? 0) + 50,
+    coordinatesY: (existingCurrentTopologyBlock.coordinatesY ?? 0) + 50,
+    name: existingCurrentTopologyBlock.name + " " + topologyBlockNumber,
     episodeId: new Types.ObjectId(episodeId),
     sourceBlockId: new Types.ObjectId(topologyBlockId),
     isStartingTopologyBlock: false,
@@ -82,6 +75,12 @@ export const createChoiceOptionService = async ({
       targetBlockId: newTopologyBlock._id,
     });
   }
+
+  const newChoiceOption = await ChoiceOption.create({
+    flowchartCommandChoiceId,
+    topologyBlockId: newTopologyBlock._id,
+    type: type ?? "common",
+  });
 
   return newChoiceOption;
 };
@@ -125,25 +124,26 @@ export const updateChoiceOptionService = async ({
     throw createHttpError(400, "option is required");
   }
 
-  const existingTranslation = await Translation.findById(
-    existingChoiceOption.translationId
-  ).exec();
+  const existingTranslation = await Translation.findOne({
+    choiceOptionId,
+    language: currentLanguage,
+    textFieldName: TranslationTextFieldName.ChoiceOption,
+  }).exec();
 
   if (existingTranslation) {
     existingTranslation.text = option;
     await existingTranslation.save();
   } else {
-    const newTranslation = await Translation.create({
+    await Translation.create({
+      choiceOptionId,
       language: currentLanguage,
       textFieldName: TranslationTextFieldName.ChoiceOption,
       text: option,
     });
-    existingChoiceOption.translationId = newTranslation._id;
   }
 
   if (existingChoiceOption.type === "common") {
-    existingChoiceOption.option = option;
-    return await existingChoiceOption.save();
+    return existingChoiceOption;
   } else if (existingChoiceOption.type === "characteristic") {
     if (!amountOfPoints || !characteristicName?.trim().length) {
       throw createHttpError(
@@ -151,28 +151,29 @@ export const updateChoiceOptionService = async ({
         "Amount of Points and Characterstic Name are required"
       );
     }
-    existingChoiceOption.option = option;
     const newOptionCharacteristic = await OptionCharacteristic.create({
       amountOfPoints,
       flowchartCommandChoiceOptionId: existingChoiceOption._id,
       characteristicName,
     });
-    const existingTranslation = await Translation.findById(
-      newOptionCharacteristic.translationId
-    ).exec();
+    const existingTranslationCharacteristic = await Translation.findOne({
+      choiceOptionCharacteristicId: newOptionCharacteristic._id,
+      textFieldName: TranslationTextFieldName.ChoiceOptionCharacteristic,
+      language: currentLanguage,
+    }).exec();
 
-    if (existingTranslation) {
-      existingTranslation.text = characteristicName;
-      await existingTranslation.save();
+    if (existingTranslationCharacteristic) {
+      existingTranslationCharacteristic.text = characteristicName;
+      await existingTranslationCharacteristic.save();
     } else {
       await Translation.create({
-        choiceOptionId,
-        language: existingChoiceOption.currentLanguage,
+        choiceOptionCharacteristicId: newOptionCharacteristic._id,
+        language: currentLanguage,
         textFieldName: TranslationTextFieldName.ChoiceOptionCharacteristic,
         text: characteristicName,
       });
     }
-    return await existingChoiceOption.save();
+    return existingChoiceOption;
   } else if (existingChoiceOption.type === "premium") {
     if (!priceAmethysts) {
       throw createHttpError(400, "You need to Enter Amount Of Amethysts");
@@ -182,8 +183,7 @@ export const updateChoiceOptionService = async ({
       flowchartCommandChoiceOptionId: existingChoiceOption._id,
       priceAmethysts,
     });
-    existingChoiceOption.option = option;
-    return await existingChoiceOption.save();
+    return existingChoiceOption;
   } else if (existingChoiceOption.type === "relationship") {
     if (!amountOfPoints || !characterName?.trim().length) {
       throw createHttpError(
@@ -196,8 +196,7 @@ export const updateChoiceOptionService = async ({
       amountOfPoints,
       characterName,
     });
-    existingChoiceOption.option = option;
-    return await existingChoiceOption.save();
+    return existingChoiceOption;
   } else if (existingChoiceOption.type === "requirement") {
     if (
       !amountOfPoints ||
@@ -215,8 +214,7 @@ export const updateChoiceOptionService = async ({
       requiredCharacteristic,
       requiredKey,
     });
-    existingChoiceOption.option = option;
-    return await existingChoiceOption.save();
+    return existingChoiceOption;
   }
 };
 
@@ -229,9 +227,13 @@ export const deleteChoiceOptionService = async ({
 }: DeleteChoiceOptionTypes) => {
   validateMongoId({ value: choiceOptionId, valueName: "ChoiceOption" });
 
-  await ChoiceOption.findByIdAndDelete(choiceOptionId);
+  const currentChoiceOption = await ChoiceOption.findById(
+    choiceOptionId
+  ).exec();
 
-  const topologyBlock = await TopologyBlock.findOne({ choiceOptionId }).exec();
+  const topologyBlock = await TopologyBlock.findById(
+    currentChoiceOption?.topologyBlockId
+  ).exec();
   if (topologyBlock) {
     await TopologyBlockInfo.findOneAndDelete({
       topologyBlockId: topologyBlock._id,
@@ -239,5 +241,5 @@ export const deleteChoiceOptionService = async ({
     await topologyBlock.deleteOne();
   }
 
-  return `ChoiceOption with id ${choiceOptionId} was removed`;
+  return await currentChoiceOption?.deleteOne();
 };

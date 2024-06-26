@@ -7,14 +7,6 @@ export const flowchartCommandChoiceSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "FlowchartCommand",
   },
-  choiceQuestion: {
-    type: String,
-    required: true,
-  },
-  translationId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Translation",
-  },
   choiceType: {
     type: String,
     default: "common",

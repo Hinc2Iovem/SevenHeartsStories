@@ -3,9 +3,9 @@ import mongoose, { InferSchemaType, model } from "mongoose";
 // commandSide = "right" | "left"
 
 export const flowchartCommandSchema = new mongoose.Schema({
-  flowchartId: {
+  topologyBlockId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "Flowchart",
+    ref: "TopologyBlock",
   },
   command: {
     type: String,

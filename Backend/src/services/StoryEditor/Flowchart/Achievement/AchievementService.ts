@@ -3,10 +3,10 @@ import Achievement from "../../../../models/StoryEditor/Flowchart/Achievement/Ac
 import { validateMongoId } from "../../../../utils/validateMongoId";
 import FlowchartCommand from "../../../../models/StoryEditor/Flowchart/FlowchartCommand";
 import Story from "../../../../models/StoryData/Story";
-import Flowchart from "../../../../models/StoryEditor/Flowchart/Flowchart";
 import TopologyBlockInfo from "../../../../models/StoryEditor/Topology/TopologyBlockInfo";
 import Translation from "../../../../models/StoryData/Translation";
 import { TranslationTextFieldName } from "../../../../consts/TRANSLATION_TEXT_FIELD_NAMES";
+import TopologyBlock from "../../../../models/StoryEditor/Topology/TopologyBlock";
 
 type CreateAchievementTypes = {
   storyId: string;
@@ -32,11 +32,11 @@ export const createAchievementService = async ({
     throw createHttpError(400, "Story with such id wasn't found");
   }
 
-  const currentFlowChart = await Flowchart.findById(
-    existingFlowchartCommand.flowchartId
+  const currentTopologyBlock = await TopologyBlock.findById(
+    existingFlowchartCommand.topologyBlockId
   ).lean();
-  if (currentFlowChart) {
-    const topologyBlockId = currentFlowChart.topologyBlockId;
+  if (currentTopologyBlock) {
+    const topologyBlockId = currentTopologyBlock._id;
     const topologyBlockInfo = await TopologyBlockInfo.findOne({
       topologyBlockId,
     }).exec();
@@ -74,25 +74,25 @@ export const updateAchievementService = async ({
     throw createHttpError(400, "Achievement and currentLanguage are required");
   }
 
-  const existingTranslation = await Translation.findById(
-    existingAchievement.translationId
-  );
+  const existingTranslation = await Translation.findOne({
+    commandId: achievementId,
+    language: currentLanguage,
+    textFieldName: TranslationTextFieldName.AchievementName,
+  }).exec();
 
   if (existingTranslation) {
     existingTranslation.text = achievementName;
     await existingTranslation.save();
   } else {
-    const newTranslation = await Translation.create({
+    return await Translation.create({
+      commandId: existingAchievement._id,
       language: currentLanguage,
       textFieldName: TranslationTextFieldName.AchievementName,
       text: achievementName,
     });
-    existingAchievement.translationId = newTranslation._id;
   }
 
-  existingAchievement.achievementName = achievementName;
-
-  return await existingAchievement.save();
+  return existingTranslation;
 };
 
 type DeleteAchievementTypes = {

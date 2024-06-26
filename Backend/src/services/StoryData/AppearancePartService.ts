@@ -25,16 +25,15 @@ export const appearancePartCreateService = async ({
     );
   }
 
-  const newTranslation = await Translation.create({
+  const newAppearancePart = await AppearancePart.create({
+    type: appearancePartType,
+  });
+
+  await Translation.create({
+    appearancePartId: newAppearancePart._id,
     language: currentLanguage,
     textFieldName: appearancePartType.toLowerCase(),
     text: appearancePartName,
-  });
-
-  const newAppearancePart = await AppearancePart.create({
-    name: appearancePartName,
-    type: appearancePartType,
-    translationId: newTranslation._id,
   });
 
   return newAppearancePart;
@@ -62,36 +61,34 @@ export const appearancePartUpdateNameTypeService = async ({
     throw createHttpError(400, "Such appearancePart doesn't exist");
   }
 
-  if (appearancePartName?.trim().length) {
-    existingAppearancePart.name = appearancePartName;
-  }
-  if (appearancePartType?.trim().length) {
-    existingAppearancePart.type = appearancePartType;
+  if (!currentLanguage?.trim().length) {
+    throw createHttpError(400, "Language is required");
   }
 
-  const existingTranslation = await Translation.findById(
-    existingAppearancePart.translationId
-  ).exec();
+  const existingTranslation = await Translation.findOne({
+    appearancePartId: existingAppearancePart._id,
+    language: currentLanguage,
+  }).exec();
 
-  if (existingTranslation) {
+  if (!existingTranslation) {
+    return await Translation.create({
+      appearancePartId: existingAppearancePart.id,
+      language: currentLanguage,
+      text: appearancePartName ?? "",
+      textFieldName: appearancePartType ?? "",
+    });
+  } else {
     if (appearancePartName?.trim().length) {
       existingTranslation.text = appearancePartName;
     }
     if (appearancePartType?.trim().length) {
       existingTranslation.textFieldName = appearancePartType.toLowerCase();
-    } else if (currentLanguage?.trim().length) {
-      existingTranslation.language = currentLanguage;
     }
+
     await existingTranslation.save();
-  } else {
-    await Translation.create({
-      language: currentLanguage,
-      text: appearancePartName ?? "",
-      textFieldName: appearancePartType ?? "",
-    });
   }
 
-  return await existingAppearancePart.save();
+  return existingTranslation;
 };
 
 type AppearancePartDeleteTypes = {

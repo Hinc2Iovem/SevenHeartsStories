@@ -5,7 +5,6 @@ import EpisodeInfo from "../../models/StoryData/EpisodeInfo";
 import TopologyBlock from "../../models/StoryEditor/Topology/TopologyBlock";
 import TopologyBlockInfo from "../../models/StoryEditor/Topology/TopologyBlockInfo";
 import FlowchartCommand from "../../models/StoryEditor/Flowchart/FlowchartCommand";
-import Flowchart from "../../models/StoryEditor/Flowchart/Flowchart";
 import Translation from "../../models/StoryData/Translation";
 import Season from "../../models/StoryData/Season";
 import { Types } from "mongoose";
@@ -32,21 +31,20 @@ export const episodeCreateService = async ({
   }
 
   const allEpisodesBySeasonId = await Episode.find({ seasonId }).lean();
-  const episodeNumber = allEpisodesBySeasonId.length
+  const episodeOrder = allEpisodesBySeasonId.length
     ? allEpisodesBySeasonId.length + 1
     : 1;
 
-  const newTranslation = await Translation.create({
+  const newEpisode = await Episode.create({
+    episodeOrder,
+    seasonId,
+  });
+
+  await Translation.create({
     text: title,
     textFieldName: TranslationTextFieldName.EpisodeName,
     language: currentLanguage,
-  });
-
-  const newEpisode = await Episode.create({
-    episodeNumber,
-    seasonId,
-    title,
-    translationId: newTranslation._id,
+    episodeId: newEpisode._id,
   });
   const currentStory = await Story.findById({ storyId }).exec();
   if (currentStory) {
@@ -75,13 +73,9 @@ export const episodeCreateService = async ({
     topologyBlockId: firstTopologyBlock._id,
   });
 
-  const firstFlowChart = await Flowchart.create({
-    topologyBlockId: firstTopologyBlock._id,
-  });
-
   await FlowchartCommand.create({
     commandOrder: 1,
-    flowchartId: firstFlowChart._id,
+    topologyBlockId: firstTopologyBlock._id,
   });
 
   return newEpisode;
@@ -90,10 +84,12 @@ export const episodeCreateService = async ({
 type EpisodeUpdateTypes = {
   episodeId: string;
   title: string | undefined;
+  currentLanguage: string | undefined;
 };
 
 export const episodeUpdateService = async ({
   episodeId,
+  currentLanguage,
   title,
 }: EpisodeUpdateTypes) => {
   validateMongoId({ value: episodeId, valueName: "Episode" });
@@ -104,19 +100,25 @@ export const episodeUpdateService = async ({
     throw createHttpError(400, "Episode with such id doesn't exist");
   }
 
-  const existingTranslation = await Translation.findById(
-    existingEpisode.translationId
-  ).exec();
-
-  if (title?.trim().length) {
-    existingEpisode.title = title;
-    if (existingTranslation) {
-      existingTranslation.text = title;
-      await existingTranslation.save();
-    }
+  if (!currentLanguage?.trim().length) {
+    throw createHttpError(400, "Language is required");
   }
 
-  return await existingEpisode.save();
+  const existingTranslation = await Translation.findOne({
+    episodeId: episodeId,
+    language: currentLanguage,
+  }).exec();
+
+  if (!existingTranslation) {
+    throw createHttpError(400, "Such Translation doesn't exist");
+  }
+
+  if (title?.trim().length) {
+    existingTranslation.text = title;
+    await existingTranslation.save();
+  }
+
+  return existingTranslation;
 };
 
 type EpisodeUpdateSeasonIdTypes = {

@@ -3,15 +3,17 @@ import { validateMongoId } from "../../../utils/validateMongoId";
 import FlowchartCommand from "../../../models/StoryEditor/Flowchart/FlowchartCommand";
 
 type GetAllFlowchartCommandsTypes = {
-  flowchartId: string;
+  topologyBlockId: string;
 };
 
 export const getAllFlowchartCommandsService = async ({
-  flowchartId,
+  topologyBlockId,
 }: GetAllFlowchartCommandsTypes) => {
-  validateMongoId({ value: flowchartId, valueName: "Flowchart" });
+  validateMongoId({ value: topologyBlockId, valueName: "TopologyBlock" });
 
-  const existingCommands = await FlowchartCommand.find({ flowchartId }).lean();
+  const existingCommands = await FlowchartCommand.find({
+    topologyBlockId,
+  }).lean();
   if (!existingCommands.length) {
     return [];
   }
@@ -20,23 +22,23 @@ export const getAllFlowchartCommandsService = async ({
 };
 
 type FlowchartCommandCreateTypes = {
-  flowchartId: string;
+  topologyBlockId: string;
 };
 
 export const flowchartCommandCreateService = async ({
-  flowchartId,
+  topologyBlockId,
 }: FlowchartCommandCreateTypes) => {
-  validateMongoId({ value: flowchartId, valueName: "Flowchart" });
+  validateMongoId({ value: topologyBlockId, valueName: "TopologyBlock" });
 
   const existingFlowchartCommands = await FlowchartCommand.find({
-    flowchartId,
+    topologyBlockId,
   }).lean();
 
   const commandOrder = existingFlowchartCommands.length
     ? existingFlowchartCommands.length
     : 1;
 
-  return await FlowchartCommand.create({ flowchartId, commandOrder });
+  return await FlowchartCommand.create({ topologyBlockId, commandOrder });
 };
 
 type FlowchartCommandUpdateTypes = {
@@ -114,7 +116,7 @@ export const flowchartCommandUpdateCommandOrderService = async ({
     throw createHttpError(400, "Command with such id wasn't found");
   }
 
-  const flowchartId = existingFlowchartCommand.flowchartId;
+  const topologyBlockId = existingFlowchartCommand.topologyBlockId;
 
   const commandOldOrder = existingFlowchartCommand.commandOrder;
   if (!commandOldOrder) {
@@ -123,7 +125,7 @@ export const flowchartCommandUpdateCommandOrderService = async ({
 
   for (let i = newOrder; i < commandOldOrder; i++) {
     const flowchartCommandIncreasedOrder = await FlowchartCommand.findOne({
-      flowchartId,
+      topologyBlockId,
       commandOrder: i,
     }).exec();
     if (flowchartCommandIncreasedOrder) {
