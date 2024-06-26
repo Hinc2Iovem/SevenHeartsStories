@@ -3,7 +3,7 @@ import {
   createMusicService,
   deleteMusicService,
   updateMusicService,
-} from "../../../../services/StoryEditor/Flowchart/Music/MusicService";
+} from "../../../../services/StoryEditor/Flowchart/Music/CommandMusicService";
 
 type CreateMusicParams = {
   flowchartCommandId: string;
@@ -33,13 +33,14 @@ export const createMusicController: RequestHandler<
 
 type UpdateMusicParams = {
   musicId: string;
+  storyId: string;
 };
 
 type UpdateMusicBody = {
   musicName: string | undefined;
 };
 
-// @route PATCH http://localhost:3500/flowchartCommands/music/:musicId
+// @route PATCH http://localhost:3500/flowchartCommands/stories/:storyId/music/:musicId
 // @access Private
 export const updateMusicController: RequestHandler<
   UpdateMusicParams,
@@ -51,6 +52,7 @@ export const updateMusicController: RequestHandler<
     const music = await updateMusicService({
       musicName: req.body.musicName,
       musicId: req.params.musicId,
+      storyId: req.params.storyId,
     });
     if (music) {
       return res.status(201).json(music);

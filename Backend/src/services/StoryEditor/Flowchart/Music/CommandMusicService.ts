@@ -1,7 +1,8 @@
 import createHttpError from "http-errors";
-import Music from "../../../../models/StoryEditor/Flowchart/Music/Music";
 import { validateMongoId } from "../../../../utils/validateMongoId";
 import FlowchartCommand from "../../../../models/StoryEditor/Flowchart/FlowchartCommand";
+import CommandMusic from "../../../../models/StoryEditor/Flowchart/Music/CommandMusic";
+import Music from "../../../../models/StoryData/Music";
 
 type CreateMusicTypes = {
   flowchartCommandId: string;
@@ -19,7 +20,7 @@ export const createMusicService = async ({
     throw createHttpError(400, "FlowchartCommand with such id wasn't found");
   }
 
-  return await Music.create({
+  return await CommandMusic.create({
     flowchartCommandId,
   });
 };
@@ -27,21 +28,30 @@ export const createMusicService = async ({
 type UpdateMusicTypes = {
   musicName: string | undefined;
   musicId: string;
+  storyId: string;
 };
 
 export const updateMusicService = async ({
   musicName,
   musicId,
+  storyId,
 }: UpdateMusicTypes) => {
   validateMongoId({ value: musicId, valueName: "Music" });
 
-  const existingMusic = await Music.findById(musicId).exec();
+  const existingMusic = await CommandMusic.findById(musicId).exec();
   if (!existingMusic) {
     throw createHttpError(400, "Music with such id wasn't found");
   }
 
   if (!musicName?.trim().length) {
     throw createHttpError(400, "Music is required");
+  }
+
+  const musicLibrary = await Music.findOne({ commandMusicId: musicId }).exec();
+  if (musicLibrary) {
+    musicLibrary.musicName = musicName;
+  } else {
+    await Music.create({ musicName, commandMusicId: musicId, storyId });
   }
 
   existingMusic.musicName = musicName;
@@ -56,7 +66,7 @@ type DeleteMusicTypes = {
 export const deleteMusicService = async ({ musicId }: DeleteMusicTypes) => {
   validateMongoId({ value: musicId, valueName: "Music" });
 
-  await Music.findByIdAndDelete(musicId);
+  await CommandMusic.findByIdAndDelete(musicId);
 
   return `Music with id ${musicId} was removed`;
 };
