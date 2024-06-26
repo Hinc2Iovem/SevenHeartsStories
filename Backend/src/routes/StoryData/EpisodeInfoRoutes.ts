@@ -1,6 +1,6 @@
 import express from "express";
 import {
-  episodeInfoUpdateController,
+  episodeAssingWorkersController,
   episodeInfoUpdateStatusController,
 } from "../../controllers/StoryData/EpisodeInfoController";
 
@@ -8,10 +8,9 @@ import {
 export const episodeInfoRoute = express.Router();
 
 episodeInfoRoute
-  .route("/:episodeInfoId/status")
-  .get()
+  .route("/:episodes/staff/:staffId/status")
   .patch(episodeInfoUpdateStatusController);
 
 episodeInfoRoute
-  .route("/:episodeInfoId/staff/:staffId")
-  .patch(episodeInfoUpdateController);
+  .route("/:episodes/staff/:staffId")
+  .patch(episodeAssingWorkersController);

@@ -1,0 +1,98 @@
+import { RequestHandler } from "express";
+import {
+  characterCharacteristicDeleteService,
+  characterCharacteristicCreateService,
+  characterCharacteristicUpdateService,
+} from "../../services/StoryData/CharacterCharacteristicService";
+
+type CharacterCharacteristicCreateParams = {
+  characterId: string;
+};
+
+type CharacterCharacteristicCreateBody = {
+  characteristicName: string | undefined;
+  currentLanguage: string | undefined;
+};
+
+// @route POST http://localhost:3500/characterCharacteristics
+// @access Private
+export const characterCharacteristicCreateController: RequestHandler<
+  CharacterCharacteristicCreateParams,
+  unknown,
+  CharacterCharacteristicCreateBody,
+  unknown
+> = async (req, res, next) => {
+  try {
+    const characterCharacteristic = await characterCharacteristicCreateService({
+      characterId: req.params.characterId,
+      characteristicName: req.body.characteristicName,
+      currentLanguage: req.body.currentLanguage,
+    });
+    if (characterCharacteristic) {
+      return res.status(201).json(characterCharacteristic);
+    } else {
+      return res.status(400).json({ message: "Something went wrong" });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
+type CharacterCharacteristicUpdateParams = {
+  characteristicId: string;
+};
+
+type CharacterCharacteristicUpdateBody = {
+  characteristicName: string | undefined;
+  currentLanguage: string | undefined;
+};
+
+// @route PATCH http://localhost:3500/characterCharacteristics/:characterCharacteristicId
+// @access Private
+export const characterCharacteristicUpdateController: RequestHandler<
+  CharacterCharacteristicUpdateParams,
+  unknown,
+  CharacterCharacteristicUpdateBody,
+  unknown
+> = async (req, res, next) => {
+  try {
+    const characterCharacteristic = await characterCharacteristicUpdateService({
+      characteristicName: req.body.characteristicName,
+      characteristicId: req.params.characteristicId,
+      currentLanguage: req.body.currentLanguage,
+    });
+    if (characterCharacteristic) {
+      return res.status(201).json(characterCharacteristic);
+    } else {
+      return res.status(400).json({ message: "Something went wrong" });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
+type CharacterCharacteristicDeleteParams = {
+  characteristicId: string | undefined;
+};
+
+// @route DELETE http://localhost:3500/characterCharacteristic/:characterCharacteristicId
+// @access Private
+export const characterCharacteristicDeleteController: RequestHandler<
+  CharacterCharacteristicDeleteParams,
+  unknown,
+  unknown,
+  unknown
+> = async (req, res, next) => {
+  try {
+    const characterCharacteristic = await characterCharacteristicDeleteService({
+      characteristicId: req.params.characteristicId,
+    });
+    if (characterCharacteristic) {
+      return res.status(201).json(characterCharacteristic);
+    } else {
+      return res.status(400).json({ message: "Something went wrong" });
+    }
+  } catch (error) {
+    next(error);
+  }
+};

@@ -8,13 +8,13 @@ export const episodeInfoSchema = new mongoose.Schema({
     ref: "Episode",
     required: true,
   },
-  staffId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Staff",
-  },
   episodeStatus: {
     type: String,
     default: "doing",
+  },
+  staffId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Staff",
   },
 });
 

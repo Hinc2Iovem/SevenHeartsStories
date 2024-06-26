@@ -1,5 +1,7 @@
 import mongoose, { InferSchemaType, model } from "mongoose";
 
+// episodeStatus = "done" | "doing"
+
 export const episodeSchema = new mongoose.Schema({
   seasonId: {
     type: mongoose.Schema.Types.ObjectId,
@@ -9,6 +11,10 @@ export const episodeSchema = new mongoose.Schema({
   episodeOrder: {
     type: Number,
     default: 1,
+  },
+  episodeStatus: {
+    type: String,
+    default: "doing",
   },
 });
 

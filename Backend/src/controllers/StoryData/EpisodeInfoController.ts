@@ -1,25 +1,25 @@
 import { RequestHandler } from "express";
 import {
-  episodeInfoUpdateStaffService,
-  episodeInfoUpdateStatusService,
+  episodeAssignWorkerService,
+  episodeUpdateStatusService,
 } from "../../services/StoryData/EpisodeInfoService";
 
 type EpisodeInfoUpdateParams = {
-  episodeInfoId: string;
+  episodeId: string;
   staffId: string;
 };
 
-// @route PATCH http://localhost:3500/episodeInfo/:episodeInfoId/staff/:staffId
+// @route PATCH http://localhost:3500/episodes/:episodeId/staff/:staffId
 // @access Private
-export const episodeInfoUpdateController: RequestHandler<
+export const episodeAssingWorkersController: RequestHandler<
   EpisodeInfoUpdateParams,
   unknown,
   unknown,
   unknown
 > = async (req, res, next) => {
   try {
-    const episodeInfo = await episodeInfoUpdateStaffService({
-      episodeInfoId: req.params.episodeInfoId,
+    const episodeInfo = await episodeAssignWorkerService({
+      episodeId: req.params.episodeId,
       staffId: req.params.staffId,
     });
     if (episodeInfo) {
@@ -33,13 +33,14 @@ export const episodeInfoUpdateController: RequestHandler<
 };
 
 type EpisodeInfoUpdateStatusParams = {
-  episodeInfoId: string;
+  episodeId: string;
+  staffId: string;
 };
 type EpisodeInfoUpdateStatusBody = {
   episodeStatus: string | undefined;
 };
 
-// @route PATCH http://localhost:3500/episodeInfo/:episodeInfoId/status
+// @route PATCH http://localhost:3500/episodes/:episodeId/staff/:staffId/status
 // @access Private
 export const episodeInfoUpdateStatusController: RequestHandler<
   EpisodeInfoUpdateStatusParams,
@@ -48,9 +49,10 @@ export const episodeInfoUpdateStatusController: RequestHandler<
   unknown
 > = async (req, res, next) => {
   try {
-    const episodeInfo = await episodeInfoUpdateStatusService({
-      episodeInfoId: req.params.episodeInfoId,
+    const episodeInfo = await episodeUpdateStatusService({
       episodeStatus: req.body.episodeStatus,
+      episodeId: req.params.episodeId,
+      staffId: req.params.staffId,
     });
     if (episodeInfo) {
       return res.status(201).json(episodeInfo);

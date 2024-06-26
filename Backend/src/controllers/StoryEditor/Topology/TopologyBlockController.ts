@@ -8,7 +8,8 @@ import {
   topologyBlockUpdateCoordinatesService,
   topologyBlockUpdateNameService,
   unrelatedTopologyBlockCreateService,
-  unrelatedTopologyBlockUpdateByCoordinatesYService,
+  topologyBlockCreateConnectionService,
+  topologyBlockUpdateConnectionService,
 } from "../../../services/StoryEditor/Topology/TopologyBlockService";
 
 type GetTopologyBlockByIdParams = {
@@ -114,6 +115,34 @@ export const getFirstTopologyBlockController: RequestHandler<
   }
 };
 
+type TopologyBlockCreateConnectionParams = {
+  sourceBlockId: string;
+  targetBlockId: string;
+};
+
+// @route POST http://localhost:3500/topologyBlocks/connection/sourceBlocks/:sourceBlockId/targetBlocks/:targetBlockId
+// @access Private
+export const topologyBlockCreateConnectionController: RequestHandler<
+  TopologyBlockCreateConnectionParams,
+  unknown,
+  unknown,
+  unknown
+> = async (req, res, next) => {
+  try {
+    const topologyBlock = await topologyBlockCreateConnectionService({
+      sourceBlockId: req.params.sourceBlockId,
+      targetBlockId: req.params.targetBlockId,
+    });
+    if (topologyBlock) {
+      return res.status(201).json(topologyBlock);
+    } else {
+      return res.status(400).json({ message: "Something went wrong" });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
 type TopologyBlockCreateParams = {
   episodeId: string;
 };
@@ -147,25 +176,26 @@ export const unrelatedTopologyBlockControllerCreate: RequestHandler<
   }
 };
 
-type UnrelatedTopologyBlockUpdateParams = {
+type TopologyBlockUpdateConnectionParams = {
   sourceBlockId: string;
+  newTargetBlockId: string;
   targetBlockId: string;
 };
 
-// @route PATCH http://localhost:3500/topologyBlocks/sourceBlocks/:sourceBlockId/targetBlocks/:targetBlockId
+// @route PATCH http://localhost:3500/topologyBlocks/connection/sourceBlocks/:sourceBlockId/targetBlocks/:targetBlockId/newTargetBlock/:newTargetBlockId
 // @access Private
-export const unrelatedTopologyBlockUpdateByCoordinatesYCreate: RequestHandler<
-  UnrelatedTopologyBlockUpdateParams,
+export const topologyBlockUpdateConnectionController: RequestHandler<
+  TopologyBlockUpdateConnectionParams,
   unknown,
   unknown,
   unknown
 > = async (req, res, next) => {
   try {
-    const topologyBlock =
-      await unrelatedTopologyBlockUpdateByCoordinatesYService({
-        sourceBlockId: req.params.sourceBlockId,
-        targetBlockId: req.params.targetBlockId,
-      });
+    const topologyBlock = await topologyBlockUpdateConnectionService({
+      sourceBlockId: req.params.sourceBlockId,
+      targetBlockId: req.params.targetBlockId,
+      newTargetBlockId: req.params.newTargetBlockId,
+    });
     if (topologyBlock) {
       return res.status(201).json(topologyBlock);
     } else {

@@ -1,9 +1,7 @@
 import createHttpError from "http-errors";
-import { validateMongoId } from "../../utils/validateMongoId";
-import CharacterEmotion from "../../models/StoryData/CharacterEmotion";
 import Character from "../../models/StoryData/Character";
-import Translation from "../../models/StoryData/Translation";
-import { TranslationTextFieldName } from "../../consts/TRANSLATION_TEXT_FIELD_NAMES";
+import CharacterEmotion from "../../models/StoryData/CharacterEmotion";
+import { validateMongoId } from "../../utils/validateMongoId";
 
 type CreateCharacterEmotionTypes = {
   emotionName: string | undefined;
@@ -21,7 +19,7 @@ export const characterEmotionCreateService = async ({
     throw createHttpError(400, "Character with such id wasn't found");
   }
 
-  if (!emotionName) {
+  if (!emotionName?.trim().length) {
     throw createHttpError(400, "Emotion is required");
   }
 

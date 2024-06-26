@@ -15,12 +15,10 @@ type CharacterCreateTypes = {
   type: CharacterTypeAlias | undefined;
   img: string | undefined;
   currentLanguage: string | undefined;
-  isMainCharacter: boolean | undefined;
 };
 
 export const characterCreateService = async ({
   description,
-  isMainCharacter,
   currentLanguage,
   img,
   name,
@@ -34,10 +32,27 @@ export const characterCreateService = async ({
     throw createHttpError(400, "Name and Description is required");
   }
 
-  if (type === "common") {
+  if (type === "EmptyCharacter") {
+    const character = await Character.create({
+      name,
+      img: img ?? "",
+      storyId,
+      type,
+    });
+
+    await Translation.create({
+      characterId: character._id,
+      textFieldName: TranslationTextFieldName.CharacterName,
+      language: currentLanguage,
+      text: name,
+    });
+
+    return character;
+  } else if (type === "MinorCharacter") {
     const character = await Character.create({
       description,
       name,
+      nameTag: nameTag ?? "",
       img: img ?? "",
       storyId,
       type,
@@ -62,11 +77,11 @@ export const characterCreateService = async ({
       text: description,
     });
     return character;
-  } else {
+  } else if (type === "MainCharacter") {
     const character = await Character.create({
       description,
       name,
-      isMainCharacter: isMainCharacter ?? false,
+      isMainCharacter: true,
       nameTag: nameTag ?? "",
       img: img ?? "",
       storyId,
