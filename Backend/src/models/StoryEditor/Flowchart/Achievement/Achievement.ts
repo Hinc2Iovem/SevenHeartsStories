@@ -9,14 +9,6 @@ export const flowchartCommandAchievementSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "FlowchartCommand",
   },
-  translationId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Translation",
-  },
-  achievementName: {
-    type: String,
-    required: true,
-  },
 });
 
 type FlowchartCommandAchievement = InferSchemaType<

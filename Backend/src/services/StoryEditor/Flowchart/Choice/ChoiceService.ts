@@ -53,28 +53,28 @@ export const updateChoiceService = async ({
     throw createHttpError(400, "Choice Question is required");
   }
 
-  const existingTranslation = await Translation.findById(
-    existingChoice._id
-  ).exec();
+  const existingTranslation = await Translation.findOne({
+    textFieldName: TranslationTextFieldName.ChoiceQuestion,
+    language: currentLanguage,
+    commandId: choiceId,
+  }).exec();
 
   if (existingTranslation) {
     existingTranslation.text = choiceQuestion;
     await existingTranslation.save();
   } else {
-    const newTranslation = await Translation.create({
+    await Translation.create({
+      commandId: choiceId,
       language: currentLanguage,
       textFieldName: TranslationTextFieldName.ChoiceQuestion,
       text: choiceQuestion,
     });
-    existingChoice.translationId = newTranslation._id;
   }
 
   if (choiceType === "timelimit") {
-    existingChoice.choiceQuestion = choiceQuestion;
     existingChoice.choiceType = choiceType;
     existingChoice.timeLimit = timeLimit;
   } else if (choiceType === "common" || choiceType === "multiple") {
-    existingChoice.choiceQuestion = choiceQuestion;
     existingChoice.choiceType = choiceType;
   }
 

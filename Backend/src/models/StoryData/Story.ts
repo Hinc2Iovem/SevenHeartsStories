@@ -1,14 +1,6 @@
 import mongoose, { InferSchemaType, model } from "mongoose";
 
 export const storySchema = new mongoose.Schema({
-  translationId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Translation",
-  },
-  title: {
-    type: String,
-    required: true,
-  },
   amountOfEpisodes: {
     type: Number,
     default: 0,

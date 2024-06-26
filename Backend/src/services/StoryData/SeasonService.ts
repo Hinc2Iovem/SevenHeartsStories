@@ -26,17 +26,14 @@ export const seasonCreateService = async ({
   if (!title?.trim().length || !currentLanguage?.trim().length) {
     throw createHttpError(400, "Title and language are required");
   }
-
-  const newTranslation = await Translation.create({
+  const newSeason = await Season.create({
+    storyId,
+  });
+  await Translation.create({
+    seasonId: newSeason._id,
     language: currentLanguage,
     text: title,
     textFieldName: TranslationTextFieldName.SeasonName,
-  });
-
-  const newSeason = await Season.create({
-    title,
-    storyId,
-    translationId: newTranslation._id,
   });
 
   return newSeason;
@@ -45,11 +42,13 @@ export const seasonCreateService = async ({
 type SeasonUpdateTypes = {
   seasonId: string;
   title: string | undefined;
+  currentLanguage: string | undefined;
 };
 
 export const seasonUpdateTitleService = async ({
   seasonId,
   title,
+  currentLanguage,
 }: SeasonUpdateTypes) => {
   validateMongoId({ value: seasonId, valueName: "Season" });
 
@@ -59,19 +58,25 @@ export const seasonUpdateTitleService = async ({
     throw createHttpError(400, "Season with such id doesn't exist");
   }
 
-  const existingTranslation = await Translation.findById(
-    existingSeason.translationId
-  ).exec();
-
-  if (title?.trim().length) {
-    existingSeason.title = title;
-    if (existingTranslation) {
-      existingTranslation.text = title;
-      await existingTranslation.save();
-    }
+  if (!currentLanguage?.trim().length) {
+    throw createHttpError(400, "Language is required");
   }
 
-  return await existingSeason.save();
+  const existingTranslation = await Translation.findOne({
+    seasonId,
+    language: currentLanguage,
+  }).exec();
+
+  if (!existingTranslation) {
+    throw createHttpError(400, "Such Translation doesn't exist");
+  }
+
+  if (title?.trim().length) {
+    existingTranslation.text = title;
+    await existingTranslation.save();
+  }
+
+  return existingTranslation;
 };
 
 type SeasonDeleteTypes = {

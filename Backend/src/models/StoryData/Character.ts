@@ -8,21 +8,6 @@ export const characterSchema = new mongoose.Schema({
     ref: "Story",
     required: true,
   },
-  translationId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Translation",
-  },
-  name: {
-    type: String,
-    required: true,
-  },
-  unknownName: {
-    type: String,
-  },
-  description: {
-    type: String,
-    required: true,
-  },
   nameTag: {
     type: String,
   },
@@ -36,7 +21,6 @@ export const characterSchema = new mongoose.Schema({
   },
   img: {
     type: String,
-  }
 });
 
 type Character = InferSchemaType<typeof characterSchema>;

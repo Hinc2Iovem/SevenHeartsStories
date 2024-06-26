@@ -52,25 +52,25 @@ export const updateCommandWardrobeService = async ({
     throw createHttpError(400, "Title is required");
   }
 
-  existingCommandWardrobe.title = title;
-
-  const existingTranslation = await Translation.findById(
-    existingCommandWardrobe.translationId
-  ).exec();
+  const existingTranslation = await Translation.findOne({
+    commandId: commandWardrobeId,
+    textFieldName: TranslationTextFieldName.CommandWardrobeTitle,
+    language: currentLanguage,
+  });
 
   if (existingTranslation) {
     existingTranslation.text = title;
     await existingTranslation.save();
   } else {
-    const newTranslation = await Translation.create({
+    await Translation.create({
+      commandId: commandWardrobeId,
       language: currentLanguage,
       textFieldName: TranslationTextFieldName.CommandWardrobeTitle,
       text: title,
     });
-    existingCommandWardrobe.translationId = newTranslation._id;
   }
 
-  return await existingCommandWardrobe.save();
+  return existingCommandWardrobe;
 };
 
 type CreateCommandWardrobeAppearanceTypeTypes = {

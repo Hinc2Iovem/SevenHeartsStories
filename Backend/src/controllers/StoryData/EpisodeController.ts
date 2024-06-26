@@ -45,6 +45,7 @@ type EpisodeUpdateParams = {
 };
 type EpisodeUpdateBody = {
   title: string | undefined;
+  currentLanguage: string | undefined;
 };
 
 // @route PATCH http://localhost:3500/episodes/:episodeId
@@ -58,6 +59,7 @@ export const episodeUpdateController: RequestHandler<
   try {
     const episode = await episodeUpdateService({
       episodeId: req.params.episodeId,
+      currentLanguage: req.body.currentLanguage,
       title: req.body.title,
     });
     if (episode) {

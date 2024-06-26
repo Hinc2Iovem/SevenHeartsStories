@@ -15,6 +15,7 @@ export type CharacterTypeAlias = "common" | "special";
 
 type CharacterCreateBody = {
   name: string | undefined;
+  currentLanguage: string | undefined;
   unknownName: string | undefined;
   description: string | undefined;
   nameTag: string | undefined;
@@ -35,6 +36,7 @@ export const characterCreateController: RequestHandler<
     const character = await characterCreateService({
       storyId: req.params.storyId,
       name: req.body.name,
+      currentLanguage: req.body.currentLanguage,
       unknownName: req.body.unknownName,
       description: req.body.description,
       nameTag: req.body.nameTag,
@@ -63,6 +65,7 @@ type CharacterUpdateBody = {
   nameTag: string | undefined;
   type: CharacterTypeAlias | undefined;
   img: string | undefined;
+  currentLanguage: string | undefined;
 };
 
 // @route PATCH http://localhost:3500/characters/:characterId
@@ -80,6 +83,7 @@ export const characterUpdateController: RequestHandler<
       description: req.body.description,
       nameTag: req.body.nameTag,
       type: req.body.type,
+      currentLanguage: req.body.currentLanguage,
       img: req.body.img,
       characterId: req.params.characterId,
     });

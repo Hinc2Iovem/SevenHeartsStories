@@ -50,82 +50,62 @@ export const updateGetItemService = async ({
   }
 
   if (buttonText?.trim().length) {
-    existingGetItem.buttonText = buttonText;
+    const existingTranslation = await Translation.findOne({
+      commandId: getItemId,
+      textFieldName: TranslationTextFieldName.ButtonText,
+      language: currentLanguage,
+    }).exec();
 
-    if (
-      existingGetItem &&
-      existingGetItem.children &&
-      existingGetItem.children.length > 0
-    ) {
-      const buttonTranslationId = existingGetItem.children[0];
-      const existingTranslation = await Translation.findById(
-        buttonTranslationId
-      ).exec();
-      if (existingTranslation) {
-        existingTranslation.text = buttonText;
-        await existingTranslation.save();
-      }
+    if (existingTranslation) {
+      existingTranslation.text = buttonText;
+      await existingTranslation.save();
     } else {
-      const newTranslation = await Translation.create({
+      await Translation.create({
+        commandId: getItemId,
         language: currentLanguage,
         textFieldName: TranslationTextFieldName.ButtonText,
         text: buttonText,
       });
-      existingGetItem.children[0] = newTranslation._id;
     }
   }
   if (itemDescription?.trim().length) {
-    existingGetItem.itemDescription = itemDescription;
-
-    if (
-      existingGetItem &&
-      existingGetItem.children &&
-      existingGetItem.children.length > 0
-    ) {
-      const descriptionTranslationId = existingGetItem.children[1];
-      const existingTranslation = await Translation.findById(
-        descriptionTranslationId
-      ).exec();
-      if (existingTranslation) {
-        existingTranslation.text = itemDescription;
-        await existingTranslation.save();
-      }
+    const existingTranslation = await Translation.findOne({
+      commandId: getItemId,
+      textFieldName: TranslationTextFieldName.ItemDescription,
+      language: currentLanguage,
+    }).exec();
+    if (existingTranslation) {
+      existingTranslation.text = itemDescription;
+      await existingTranslation.save();
     } else {
-      const newTranslation = await Translation.create({
+      await Translation.create({
+        commandId: getItemId,
         language: currentLanguage,
         textFieldName: TranslationTextFieldName.ItemDescription,
         text: itemDescription,
       });
-      existingGetItem.children[1] = newTranslation._id;
     }
   }
   if (itemName?.trim().length) {
-    existingGetItem.itemName = itemName;
-
-    if (
-      existingGetItem &&
-      existingGetItem.children &&
-      existingGetItem.children.length > 0
-    ) {
-      const nameTranslationId = existingGetItem.children[2];
-      const existingTranslation = await Translation.findById(
-        nameTranslationId
-      ).exec();
-      if (existingTranslation) {
-        existingTranslation.text = itemName;
-        await existingTranslation.save();
-      }
+    const existingTranslation = await Translation.findOne({
+      commandId: getItemId,
+      textFieldName: TranslationTextFieldName.ItemName,
+      language: currentLanguage,
+    }).exec();
+    if (existingTranslation) {
+      existingTranslation.text = itemName;
+      await existingTranslation.save();
     } else {
-      const newTranslation = await Translation.create({
+      await Translation.create({
+        commandId: getItemId,
         language: currentLanguage,
         textFieldName: TranslationTextFieldName.ItemName,
         text: itemName,
       });
-      existingGetItem.children[2] = newTranslation._id;
     }
   }
 
-  return await existingGetItem.save();
+  return existingGetItem;
 };
 
 type DeleteGetItemTypes = {

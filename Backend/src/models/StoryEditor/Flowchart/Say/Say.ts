@@ -11,19 +11,8 @@ export const flowchartCommandSaySchema = new mongoose.Schema({
     type: String,
     default: "author",
   },
-  characterName: {
-    type: String,
-  },
   characterEmotion: {
     type: String,
-  },
-  translationId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Translation",
-  },
-  text: {
-    type: String,
-    required: true,
   },
 });
 

@@ -5,16 +5,8 @@ export const flowchartCommandOptionCharacteristicSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "FlowchartCommandChoiceOption",
   },
-  translationId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Translation",
-  },
   amountOfPoints: {
     type: Number,
-  },
-  characteristicName: {
-    type: String,
-    required: true,
   },
 });
 

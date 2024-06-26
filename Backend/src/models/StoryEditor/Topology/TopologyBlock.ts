@@ -5,10 +5,7 @@ export const topologyBlockSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "Episode",
   },
-  choiceOptionId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "FlowchartCommandChoiceOption",
-  },
+
   isStartingTopologyBlock: {
     type: Boolean,
     default: false,
@@ -24,12 +21,6 @@ export const topologyBlockSchema = new mongoose.Schema({
     type: Number,
     default: 50,
   },
-  children: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "TopologyBlock",
-    },
-  ],
 });
 
 type TopologyBlock = InferSchemaType<typeof topologyBlockSchema>;

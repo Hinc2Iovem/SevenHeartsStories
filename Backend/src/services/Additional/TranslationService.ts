@@ -10,8 +10,8 @@ type TranslationStoryDataTypes = {
 
 export const addTranslationService = async ({
   currentLanguage,
-  textFieldName,
   text,
+  textFieldName,
 }: TranslationStoryDataTypes) => {
   if (
     !currentLanguage?.trim().length ||
