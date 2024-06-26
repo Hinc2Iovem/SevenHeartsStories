@@ -40,10 +40,7 @@ export const updateCallService = async ({
 }: UpdateCallTypes) => {
   validateMongoId({ value: callId, valueName: "Call" });
   validateMongoId({ value: targetBlockId, valueName: "TargetBlock" });
-
-  if (!sourceBlockId?.trim().length) {
-    throw createHttpError(400, "sourceBlockId is required");
-  }
+  validateMongoId({ value: sourceBlockId, valueName: "SourceBlock" });
 
   const existingSourceBlockId = await TopologyBlock.findById(
     sourceBlockId
@@ -104,6 +101,23 @@ export const updateCallTargetBlockIdService = async ({
   const existingCall = await Call.findById(callId).exec();
   if (!existingCall) {
     throw createHttpError(400, "FlowchartCommand with such id wasn't found");
+  }
+
+  const currentFlowchartCommand = await FlowchartCommand.findById(
+    existingCall.flowchartCommandId
+  ).lean();
+  const sourceBlockId = currentFlowchartCommand?.topologyBlockId;
+
+  const existingTopologyConnection = await TopologyBlockConnection.findOne({
+    sourceBlockId,
+    targetBlockId: existingCall.targetBlockId,
+  }).exec();
+
+  if (existingTopologyConnection) {
+    existingTopologyConnection.targetBlockId = new Types.ObjectId(
+      newTargetBlockId
+    );
+    await existingTopologyConnection.save();
   }
 
   existingCall.targetBlockId = new Types.ObjectId(newTargetBlockId);

@@ -135,57 +135,6 @@ export const unrelatedTopologyBlockCreateService = async ({
   return newTopologyBlock;
 };
 
-type TopologyBlockUpdateByCoordinatesYTypes = {
-  sourceBlockId: string;
-  targetBlockId: string;
-};
-
-export const unrelatedTopologyBlockUpdateByCoordinatesYService = async ({
-  sourceBlockId,
-  targetBlockId,
-}: TopologyBlockUpdateByCoordinatesYTypes) => {
-  validateMongoId({ value: targetBlockId, valueName: "targetBlock" });
-  validateMongoId({ value: sourceBlockId, valueName: "sourceBlock" });
-
-  const existingTargetBlock = await TopologyBlock.findById(
-    targetBlockId
-  ).exec();
-  if (!existingTargetBlock) {
-    throw createHttpError(400, "Such targetBlock doesn't exist");
-  }
-
-  const existingSourceBlock = await TopologyBlock.findById(
-    sourceBlockId
-  ).exec();
-  if (!existingSourceBlock) {
-    throw createHttpError(400, "Such sourceBlock doesn't exist");
-  }
-
-  if (existingSourceBlock.coordinatesY < existingTargetBlock.coordinatesY) {
-    if (
-      !existingTargetBlock.children.includes(new Types.ObjectId(sourceBlockId))
-    ) {
-      existingTargetBlock.children.push(new Types.ObjectId(sourceBlockId));
-      await TopologyBlockConnection.create({
-        sourceBlockId: targetBlockId,
-        targetBlockId: sourceBlockId,
-      });
-    }
-  } else if (
-    existingSourceBlock.coordinatesY > existingTargetBlock.coordinatesY
-  ) {
-    if (
-      !existingSourceBlock.children.includes(new Types.ObjectId(targetBlockId))
-    )
-      existingSourceBlock.children.push(new Types.ObjectId(targetBlockId));
-    await TopologyBlockConnection.create({ sourceBlockId, targetBlockId });
-  }
-
-  await existingSourceBlock.save();
-  await existingTargetBlock.save();
-  return existingSourceBlock;
-};
-
 type TopologyBlockUpdateCoordinates = {
   coordinatesX: number | undefined;
   coordinatesY: number | undefined;
@@ -241,6 +190,85 @@ export const topologyBlockUpdateNameService = async ({
   existingTopologyBlock.name = newName;
 
   return await existingTopologyBlock.save();
+};
+
+type TopologyBlockCreateConnection = {
+  targetBlockId: string;
+  sourceBlockId: string;
+};
+
+export const topologyBlockCreateConnectionService = async ({
+  sourceBlockId,
+  targetBlockId,
+}: TopologyBlockCreateConnection) => {
+  validateMongoId({ value: targetBlockId, valueName: "targetBlock" });
+  validateMongoId({ value: sourceBlockId, valueName: "sourceBlock" });
+  const existingTargetBlock = await TopologyBlock.findById(
+    targetBlockId
+  ).exec();
+  if (!existingTargetBlock) {
+    throw createHttpError(400, "Such targetBlock doesn't exist");
+  }
+
+  const existingSourceBlock = await TopologyBlock.findById(
+    sourceBlockId
+  ).exec();
+  if (!existingSourceBlock) {
+    throw createHttpError(400, "Such sourceBlock doesn't exist");
+  }
+
+  return await TopologyBlockConnection.create({
+    sourceBlockId,
+    targetBlockId,
+  });
+};
+
+type TopologyBlockUpdateConnection = {
+  targetBlockId: string;
+  newTargetBlockId: string;
+  sourceBlockId: string;
+};
+
+export const topologyBlockUpdateConnectionService = async ({
+  sourceBlockId,
+  newTargetBlockId,
+  targetBlockId,
+}: TopologyBlockUpdateConnection) => {
+  validateMongoId({ value: targetBlockId, valueName: "targetBlock" });
+  validateMongoId({ value: sourceBlockId, valueName: "sourceBlock" });
+  validateMongoId({ value: newTargetBlockId, valueName: "NewTargetBlock" });
+
+  const existingTargetBlock = await TopologyBlock.findById(
+    targetBlockId
+  ).exec();
+  if (!existingTargetBlock) {
+    throw createHttpError(400, "Such targetBlock doesn't exist");
+  }
+  const existingNewTargetBlock = await TopologyBlock.findById(
+    newTargetBlockId
+  ).exec();
+  if (!existingNewTargetBlock) {
+    throw createHttpError(400, "Such newTargetBlock doesn't exist");
+  }
+  const existingSourceBlock = await TopologyBlock.findById(
+    sourceBlockId
+  ).exec();
+  if (!existingSourceBlock) {
+    throw createHttpError(400, "Such sourceBlock doesn't exist");
+  }
+
+  const existingConnection = await TopologyBlockConnection.findOne({
+    sourceBlockId,
+    targetBlockId,
+  }).exec();
+  if (!existingConnection) {
+    return await TopologyBlockConnection.create({
+      sourceBlockId,
+      targetBlockId: newTargetBlockId,
+    });
+  }
+  existingConnection.targetBlockId = new Types.ObjectId(newTargetBlockId);
+  return await existingConnection.save();
 };
 
 type TopologyBlockDelete = {
