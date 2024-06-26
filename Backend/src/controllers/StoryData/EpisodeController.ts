@@ -12,10 +12,11 @@ type EpisodeCreateParams = {
 };
 type EpisodeCreateBody = {
   title: string | undefined;
+  description: string | undefined;
   currentLanguage: string | undefined;
 };
 
-// @route POST http://localhost:3500/episodes
+// @route PATCH http://localhost:3500/episodes
 // @access Private
 export const episodeCreateController: RequestHandler<
   EpisodeCreateParams,
@@ -25,6 +26,7 @@ export const episodeCreateController: RequestHandler<
 > = async (req, res, next) => {
   try {
     const episode = await episodeCreateService({
+      description: req.body.description,
       seasonId: req.params.seasonId,
       storyId: req.params.storyId,
       title: req.body.title,
@@ -46,6 +48,7 @@ type EpisodeUpdateParams = {
 type EpisodeUpdateBody = {
   title: string | undefined;
   currentLanguage: string | undefined;
+  description: string | undefined;
 };
 
 // @route PATCH http://localhost:3500/episodes/:episodeId
@@ -61,6 +64,7 @@ export const episodeUpdateController: RequestHandler<
       episodeId: req.params.episodeId,
       currentLanguage: req.body.currentLanguage,
       title: req.body.title,
+      description: req.body.description,
     });
     if (episode) {
       return res.status(201).json(episode);

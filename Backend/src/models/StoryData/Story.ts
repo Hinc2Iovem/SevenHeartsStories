@@ -8,6 +8,12 @@ export const storySchema = new mongoose.Schema({
   imgUrl: {
     type: String,
   },
+  children: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Staff",
+    },
+  ],
 });
 
 type Story = InferSchemaType<typeof storySchema>;

@@ -1,59 +1,70 @@
 import createHttpError from "http-errors";
-import { validateMongoId } from "../../utils/validateMongoId";
+import Episode from "../../models/StoryData/Episode";
 import EpisodeInfo from "../../models/StoryData/EpisodeInfo";
 import Staff from "../../models/User/Staff";
-import { Types } from "mongoose";
+import { validateMongoId } from "../../utils/validateMongoId";
 
-type EpisodeInfoUpdateTypes = {
-  episodeInfoId: string;
+type EpisodeAssignWorkerTypes = {
+  episodeId: string;
   staffId: string;
 };
 
-export const episodeInfoUpdateStaffService = async ({
-  episodeInfoId,
+export const episodeAssignWorkerService = async ({
+  episodeId,
   staffId,
-}: EpisodeInfoUpdateTypes) => {
-  validateMongoId({ value: episodeInfoId, valueName: "EpisodeInfo" });
+}: EpisodeAssignWorkerTypes) => {
   validateMongoId({ value: staffId, valueName: "Staff" });
+  validateMongoId({ value: episodeId, valueName: "Episode" });
 
-  const existingEpisodeInfo = await EpisodeInfo.findById(episodeInfoId).exec();
-  const existingStaff = await Staff.findById(staffId).exec();
-
-  if (!existingEpisodeInfo) {
-    throw createHttpError(400, "Episode Info with such id doesn't exist");
+  const existingEpisode = await Episode.findById(episodeId).lean();
+  if (!existingEpisode) {
+    throw createHttpError(400, `No episode with id: ${episodeId} was found`);
   }
+  const existingStaff = await Staff.findById(staffId).lean();
   if (!existingStaff) {
-    throw createHttpError(400, "Staff with such id doesn't exist");
+    throw createHttpError(400, `No staff with id: ${staffId} was found`);
   }
 
-  existingEpisodeInfo.staffId = new Types.ObjectId(staffId);
-
-  return await existingEpisodeInfo.save();
+  return await EpisodeInfo.create({ episodeId, staffId });
 };
 
-type EpisodeInfoUpdateStatusTypes = {
-  episodeInfoId: string;
+type EpisodeUpdateStatusTypes = {
+  episodeId: string;
+  staffId: string;
   episodeStatus: string | undefined;
 };
 
-export const episodeInfoUpdateStatusService = async ({
-  episodeInfoId,
+export const episodeUpdateStatusService = async ({
+  episodeId,
+  staffId,
   episodeStatus,
-}: EpisodeInfoUpdateStatusTypes) => {
-  validateMongoId({ value: episodeInfoId, valueName: "EpisodeInfo" });
+}: EpisodeUpdateStatusTypes) => {
+  validateMongoId({ value: staffId, valueName: "Staff" });
+  validateMongoId({ value: episodeId, valueName: "Episode" });
 
-  const existingEpisodeInfo = await EpisodeInfo.findById(episodeInfoId).exec();
+  if (!episodeStatus?.trim().length) {
+    throw createHttpError(400, "Episodestatus is required");
+  }
 
+  const existingEpisode = await Episode.findById(episodeId).exec();
+  if (!existingEpisode) {
+    throw createHttpError(400, `No episode with id: ${episodeId} was found`);
+  }
+  const existingStaff = await Staff.findById(staffId).lean();
+  if (!existingStaff) {
+    throw createHttpError(400, `No staff with id: ${staffId} was found`);
+  }
+  const existingEpisodeInfo = await EpisodeInfo.findOne({
+    episodeId,
+    staffId,
+  }).exec();
   if (!existingEpisodeInfo) {
-    throw createHttpError(400, "Episode Info with such id doesn't exist");
+    throw createHttpError(400, `No EpisodeInfo was found`);
   }
 
-  if (
-    episodeStatus &&
-    (episodeStatus === "done" || episodeStatus === "doing")
-  ) {
-    existingEpisodeInfo.episodeStatus = episodeStatus;
-  }
+  existingEpisode.episodeStatus = episodeStatus;
+  existingEpisodeInfo.episodeStatus = episodeStatus;
 
+  await existingEpisode.save();
   return await existingEpisodeInfo.save();
 };

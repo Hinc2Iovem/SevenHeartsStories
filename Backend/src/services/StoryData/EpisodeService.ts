@@ -13,6 +13,7 @@ import Story from "../../models/StoryData/Story";
 
 type EpisodeCreateTypes = {
   title: string | undefined;
+  description: string | undefined;
   currentLanguage: string | undefined;
   seasonId: string;
   storyId: string;
@@ -22,6 +23,7 @@ export const episodeCreateService = async ({
   seasonId,
   storyId,
   title,
+  description,
   currentLanguage,
 }: EpisodeCreateTypes) => {
   validateMongoId({ value: seasonId, valueName: "Season" });
@@ -46,15 +48,19 @@ export const episodeCreateService = async ({
     language: currentLanguage,
     episodeId: newEpisode._id,
   });
+  if (description?.trim().length) {
+    await Translation.create({
+      text: description,
+      textFieldName: TranslationTextFieldName.EpisodeDescription,
+      language: currentLanguage,
+      episodeId: newEpisode._id,
+    });
+  }
   const currentStory = await Story.findById({ storyId }).exec();
   if (currentStory) {
     currentStory.amountOfEpisodes += 1;
     await currentStory.save();
   }
-
-  await EpisodeInfo.create({
-    episodeId: newEpisode._id,
-  });
 
   const firstTopologyBlock = await TopologyBlock.create({
     coordinatesX: 50,
@@ -84,12 +90,14 @@ export const episodeCreateService = async ({
 type EpisodeUpdateTypes = {
   episodeId: string;
   title: string | undefined;
+  description: string | undefined;
   currentLanguage: string | undefined;
 };
 
 export const episodeUpdateService = async ({
   episodeId,
   currentLanguage,
+  description,
   title,
 }: EpisodeUpdateTypes) => {
   validateMongoId({ value: episodeId, valueName: "Episode" });
@@ -104,21 +112,30 @@ export const episodeUpdateService = async ({
     throw createHttpError(400, "Language is required");
   }
 
-  const existingTranslation = await Translation.findOne({
-    episodeId: episodeId,
-    language: currentLanguage,
-  }).exec();
-
-  if (!existingTranslation) {
-    throw createHttpError(400, "Such Translation doesn't exist");
-  }
-
   if (title?.trim().length) {
-    existingTranslation.text = title;
-    await existingTranslation.save();
+    const existingTranslation = await Translation.findOne({
+      episodeId: episodeId,
+      language: currentLanguage,
+      textFieldName: TranslationTextFieldName.EpisodeName,
+    }).exec();
+    if (existingTranslation) {
+      existingTranslation.text = title;
+      await existingTranslation.save();
+    }
+  }
+  if (description?.trim().length) {
+    const existingTranslation = await Translation.findOne({
+      episodeId: episodeId,
+      language: currentLanguage,
+      textFieldName: TranslationTextFieldName.EpisodeDescription,
+    }).exec();
+    if (existingTranslation) {
+      existingTranslation.text = description;
+      await existingTranslation.save();
+    }
   }
 
-  return existingTranslation;
+  return existingEpisode;
 };
 
 type EpisodeUpdateSeasonIdTypes = {

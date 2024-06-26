@@ -10,6 +10,7 @@ export const TranslationTextFieldName = {
   CharacterDescription: "characterDescription",
   CharacterUnknownName: "characterUnknownName",
   EpisodeName: "episodeName",
+  EpisodeDescription: "episodeDescription",
   SeasonName: "seasonName",
   StoryName: "storyName",
   StoryGenre: "storyGenre",
