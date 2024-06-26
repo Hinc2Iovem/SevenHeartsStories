@@ -6,10 +6,12 @@ import CommandSound from "../../../../models/StoryEditor/PlotField/Sound/Command
 
 type CreateSoundTypes = {
   plotFieldCommandId: string;
+  storyId: string;
 };
 
 export const createSoundService = async ({
   plotFieldCommandId,
+  storyId,
 }: CreateSoundTypes) => {
   validateMongoId({ value: plotFieldCommandId, valueName: "PlotFieldCommand" });
 
@@ -20,8 +22,11 @@ export const createSoundService = async ({
     throw createHttpError(400, "PlotFieldCommand with such id wasn't found");
   }
 
+  const newSoundLibrary = await Sound.create({ storyId });
+
   return await CommandSound.create({
     plotFieldCommandId,
+    soundId: newSoundLibrary._id,
   });
 };
 
@@ -48,10 +53,12 @@ export const updateSoundService = async ({
     throw createHttpError(400, "Sound is required");
   }
 
-  existingSound.soundName = soundName;
-  await Sound.create({ soundName, storyId });
-
-  return await existingSound.save();
+  if (existingSound) {
+    existingSound.soundName = soundName;
+    return await existingSound.save();
+  } else {
+    await Sound.create({ soundName, storyId });
+  }
 };
 
 type UpdateSoundIsGlobalTypes = {

@@ -5,10 +5,6 @@ export const musicSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "Story",
   },
-  commandMusicId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "CommandMusic",
-  },
   musicName: {
     type: String,
   },

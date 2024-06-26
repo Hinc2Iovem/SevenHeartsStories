@@ -5,8 +5,9 @@ export const commandSoundSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "PlotFieldCommand",
   },
-  soundName: {
-    type: String,
+  soundId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Sound",
   },
 });
 

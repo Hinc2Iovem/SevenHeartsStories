@@ -5,9 +5,9 @@ export const commandMusicSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "PlotFieldCommand",
   },
-  musicName: {
-    type: String,
-    required: true,
+  musicId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Music",
   },
 });
 

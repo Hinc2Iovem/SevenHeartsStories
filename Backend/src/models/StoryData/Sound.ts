@@ -1,5 +1,4 @@
 import mongoose, { InferSchemaType, model } from "mongoose";
-import { boolean } from "zod";
 
 export const soundSchema = new mongoose.Schema({
   storyId: {
@@ -10,7 +9,7 @@ export const soundSchema = new mongoose.Schema({
     type: String,
   },
   isGlobal: {
-    type: boolean,
+    type: Boolean,
     default: false,
   },
 });

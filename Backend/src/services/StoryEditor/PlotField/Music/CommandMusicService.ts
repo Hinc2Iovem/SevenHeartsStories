@@ -1,15 +1,17 @@
 import createHttpError from "http-errors";
-import { validateMongoId } from "../../../../utils/validateMongoId";
-import PlotFieldCommand from "../../../../models/StoryEditor/PlotField/PlotFieldCommand";
-import CommandMusic from "../../../../models/StoryEditor/PlotField/Music/CommandMusic";
 import Music from "../../../../models/StoryData/Music";
+import CommandMusic from "../../../../models/StoryEditor/PlotField/Music/CommandMusic";
+import PlotFieldCommand from "../../../../models/StoryEditor/PlotField/PlotFieldCommand";
+import { validateMongoId } from "../../../../utils/validateMongoId";
 
 type CreateMusicTypes = {
   plotFieldCommandId: string;
+  storyId: string;
 };
 
 export const createMusicService = async ({
   plotFieldCommandId,
+  storyId,
 }: CreateMusicTypes) => {
   validateMongoId({ value: plotFieldCommandId, valueName: "PlotFieldCommand" });
 
@@ -20,8 +22,11 @@ export const createMusicService = async ({
     throw createHttpError(400, "PlotFieldCommand with such id wasn't found");
   }
 
+  const newMusicLibrary = await Music.create({ storyId });
+
   return await CommandMusic.create({
     plotFieldCommandId,
+    musicId: newMusicLibrary._id,
   });
 };
 
@@ -38,25 +43,17 @@ export const updateMusicService = async ({
 }: UpdateMusicTypes) => {
   validateMongoId({ value: musicId, valueName: "Music" });
 
-  const existingMusic = await CommandMusic.findById(musicId).exec();
-  if (!existingMusic) {
-    throw createHttpError(400, "Music with such id wasn't found");
-  }
-
   if (!musicName?.trim().length) {
     throw createHttpError(400, "Music is required");
   }
 
-  const musicLibrary = await Music.findOne({ commandMusicId: musicId }).exec();
+  const musicLibrary = await Music.findById(musicId).exec();
   if (musicLibrary) {
     musicLibrary.musicName = musicName;
+    return await musicLibrary.save();
   } else {
-    await Music.create({ musicName, commandMusicId: musicId, storyId });
+    return await Music.create({ musicName, commandMusicId: musicId, storyId });
   }
-
-  existingMusic.musicName = musicName;
-
-  return await existingMusic.save();
 };
 
 type DeleteMusicTypes = {

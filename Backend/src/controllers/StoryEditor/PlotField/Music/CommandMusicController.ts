@@ -7,9 +7,10 @@ import {
 
 type CreateMusicParams = {
   plotFieldCommandId: string;
+  storyId: string;
 };
 
-// @route POST http://localhost:3500/plotFieldCommands/:plotFieldCommandId/music
+// @route POST http://localhost:3500/plotFieldCommands/:plotFieldCommandId/stories/:storyId/music
 // @access Private
 export const createMusicController: RequestHandler<
   CreateMusicParams,
@@ -20,6 +21,7 @@ export const createMusicController: RequestHandler<
   try {
     const music = await createMusicService({
       plotFieldCommandId: req.params.plotFieldCommandId,
+      storyId: req.params.storyId,
     });
     if (music) {
       return res.status(201).json(music);
