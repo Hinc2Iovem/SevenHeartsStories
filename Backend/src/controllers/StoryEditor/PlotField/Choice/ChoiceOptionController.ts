@@ -15,8 +15,7 @@ export type ChoiceOptionType =
   | "common"
   | "premium"
   | "characteristic"
-  | "relationship"
-  | "requirement";
+  | "relationship";
 
 type CreateChoiceOptionBody = {
   type: ChoiceOptionType | undefined;
@@ -61,6 +60,7 @@ type UpdateChoiceOptionBody = {
   characteristicName: string | undefined;
   currentLanguage: string | undefined;
   characterCharacteristicId: string | undefined;
+  characterId: string | undefined;
 };
 
 // @route PATCH http://localhost:3500/plotFieldCommands/choices/options/:choiceOptionId
@@ -77,10 +77,9 @@ export const updateChoiceOptionController: RequestHandler<
       characterName: req.body.characterName,
       priceAmethysts: req.body.priceAmethysts,
       option: req.body.option,
-      requiredKey: req.body.requiredKey,
       characteristicName: req.body.characteristicName,
-      requiredCharacteristic: req.body.requiredCharacteristic,
       choiceOptionId: req.params.choiceOptionId,
+      characterId: req.body.characterId,
       currentLanguage: req.body.currentLanguage,
       characterCharacteristicId: req.body.characterCharacteristicId,
     });

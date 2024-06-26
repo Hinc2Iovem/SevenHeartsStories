@@ -1,6 +1,6 @@
 import mongoose, { InferSchemaType, model } from "mongoose";
 
-// type = Premium | Relationship | Requirement | Characteristic | Common
+// type = Premium | Relationship | Characteristic | Common
 
 export const plotFieldCommandChoiceOptionSchema = new mongoose.Schema({
   plotFieldCommandChoiceId: {

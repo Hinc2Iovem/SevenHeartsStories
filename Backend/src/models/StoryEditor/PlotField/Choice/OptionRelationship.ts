@@ -5,9 +5,9 @@ export const plotFieldCommandOptionRelationshipSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "PlotFieldCommandChoiceOption",
   },
-  characterName: {
-    type: String,
-    required: true,
+  characterId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Character",
   },
   amountOfPoints: {
     type: Number,

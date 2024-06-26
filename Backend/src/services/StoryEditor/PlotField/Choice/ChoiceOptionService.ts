@@ -7,7 +7,6 @@ import ChoiceOption from "../../../../models/StoryEditor/PlotField/Choice/Choice
 import OptionCharacteristic from "../../../../models/StoryEditor/PlotField/Choice/OptionCharacteristic";
 import OptionPremium from "../../../../models/StoryEditor/PlotField/Choice/OptionPremium";
 import OptionRelationship from "../../../../models/StoryEditor/PlotField/Choice/OptionRelationship";
-import OptionRequirement from "../../../../models/StoryEditor/PlotField/Choice/OptionRequirement";
 import TopologyBlock from "../../../../models/StoryEditor/Topology/TopologyBlock";
 import TopologyBlockConnection from "../../../../models/StoryEditor/Topology/TopologyBlockConnection";
 import TopologyBlockInfo from "../../../../models/StoryEditor/Topology/TopologyBlockInfo";
@@ -91,10 +90,9 @@ type UpdateChoiceOptionTypes = {
   priceAmethysts: number | undefined;
   characterName: string | undefined;
   amountOfPoints: number | undefined;
-  requiredKey: string | undefined;
-  requiredCharacteristic: string | undefined;
   characteristicName: string | undefined;
   currentLanguage: string | undefined;
+  characterId: string | undefined;
   characterCharacteristicId: string | undefined;
 };
 
@@ -105,10 +103,9 @@ export const updateChoiceOptionService = async ({
   choiceOptionId,
   option,
   priceAmethysts,
-  requiredCharacteristic,
-  requiredKey,
   currentLanguage,
   characterCharacteristicId,
+  characterId,
 }: UpdateChoiceOptionTypes) => {
   validateMongoId({
     value: choiceOptionId,
@@ -187,28 +184,14 @@ export const updateChoiceOptionService = async ({
         "You need to Enter Amount Of Points and Character Name"
       );
     }
+    validateMongoId({
+      value: characterId,
+      valueName: "Character",
+    });
     await OptionRelationship.create({
       plotFieldCommandChoiceOptionId: existingChoiceOption._id,
       amountOfPoints,
-      characterName,
-    });
-    return existingChoiceOption;
-  } else if (existingChoiceOption.type === "requirement") {
-    if (
-      !amountOfPoints ||
-      !requiredCharacteristic?.trim().length ||
-      !requiredKey
-    ) {
-      throw createHttpError(
-        400,
-        "You need to Enter Amount Of Points and Characteristic or requiredKey"
-      );
-    }
-    await OptionRequirement.create({
-      plotFieldCommandChoiceOptionId: existingChoiceOption._id,
-      amountOfPoints,
-      requiredCharacteristic,
-      requiredKey,
+      characterId,
     });
     return existingChoiceOption;
   }
