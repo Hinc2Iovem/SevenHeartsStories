@@ -5,6 +5,7 @@ import PlotFieldCommand from "../../../../models/StoryEditor/PlotField/PlotField
 import { validateMongoId } from "../../../../utils/validateMongoId";
 import Translation from "../../../../models/StoryData/Translation";
 import { TranslationTextFieldName } from "../../../../consts/TRANSLATION_TEXT_FIELD_NAMES";
+import { Types } from "mongoose";
 
 type CreateChoiceTypes = {
   plotFieldCommandId: string;
@@ -33,6 +34,7 @@ type UpdateChoiceTypes = {
   choiceId: string;
   timeLimit: number | undefined;
   choiceType: ChoiceType | undefined;
+  exitBlockId: string;
 };
 
 export const updateChoiceService = async ({
@@ -41,6 +43,7 @@ export const updateChoiceService = async ({
   choiceType,
   currentLanguage,
   timeLimit,
+  exitBlockId,
 }: UpdateChoiceTypes) => {
   validateMongoId({ value: choiceId, valueName: "Choice" });
 
@@ -71,11 +74,14 @@ export const updateChoiceService = async ({
     });
   }
 
-  if (choiceType === "timelimit") {
+  if (choiceType) {
     existingChoice.choiceType = choiceType;
-    existingChoice.timeLimit = timeLimit;
-  } else if (choiceType === "common" || choiceType === "multiple") {
-    existingChoice.choiceType = choiceType;
+    if (choiceType === "timelimit") {
+      existingChoice.timeLimit = timeLimit;
+    } else if (choiceType === "multiple") {
+      validateMongoId({ value: exitBlockId, valueName: "ExitBlock" });
+      existingChoice.exitBlockId = new Types.ObjectId(exitBlockId);
+    }
   }
 
   return await existingChoice.save();

@@ -33,6 +33,7 @@ export const createChoiceController: RequestHandler<
 
 type UpdateChoiceParams = {
   choiceId: string;
+  exitBlockId: string;
 };
 
 export type ChoiceType = "common" | "multiple" | "timelimit";
@@ -44,7 +45,7 @@ type UpdateChoiceBody = {
   choiceType: ChoiceType | undefined;
 };
 
-// @route PATCH http://localhost:3500/plotFieldCommands/choices/:choiceId
+// @route PATCH http://localhost:3500/plotFieldCommands/choices/:choiceId/exitBlocks/:exitBlockId
 // @access Private
 export const updateChoiceController: RequestHandler<
   UpdateChoiceParams,
@@ -59,6 +60,7 @@ export const updateChoiceController: RequestHandler<
       timeLimit: req.body.timeLimit,
       choiceType: req.body.choiceType,
       choiceId: req.params.choiceId,
+      exitBlockId: req.params.exitBlockId,
     });
     if (choice) {
       return res.status(201).json(choice);

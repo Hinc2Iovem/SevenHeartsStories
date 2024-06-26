@@ -11,6 +11,10 @@ export const plotFieldCommandChoiceSchema = new mongoose.Schema({
     type: String,
     default: "common",
   },
+  exitBlockId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "TopologyBlock",
+  },
   timeLimit: {
     type: Number,
   },
