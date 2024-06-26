@@ -8,6 +8,10 @@ export const flowchartCommandOptionCharacteristicSchema = new mongoose.Schema({
   amountOfPoints: {
     type: Number,
   },
+  characterCharacteristicId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "CharacterCharacteristic",
+  },
 });
 
 type FlowchartCommandOptionCharacteristic = InferSchemaType<

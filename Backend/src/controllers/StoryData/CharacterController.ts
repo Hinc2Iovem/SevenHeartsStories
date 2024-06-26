@@ -11,7 +11,10 @@ type CharacterCreateParams = {
   storyId: string;
 };
 
-export type CharacterTypeAlias = "common" | "special";
+export type CharacterTypeAlias =
+  | "EmptyCharacter"
+  | "MinorCharacter"
+  | "MainCharacter";
 
 type CharacterCreateBody = {
   name: string | undefined;
@@ -21,7 +24,6 @@ type CharacterCreateBody = {
   nameTag: string | undefined;
   type: CharacterTypeAlias | undefined;
   img: string | undefined;
-  isMainCharacter: boolean | undefined;
 };
 
 // @route POST http://localhost:3500/characters
@@ -42,7 +44,6 @@ export const characterCreateController: RequestHandler<
       nameTag: req.body.nameTag,
       type: req.body.type,
       img: req.body.img,
-      isMainCharacter: req.body.isMainCharacter,
     });
     if (character) {
       return res.status(201).json(character);

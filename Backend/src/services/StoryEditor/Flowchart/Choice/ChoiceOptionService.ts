@@ -95,6 +95,7 @@ type UpdateChoiceOptionTypes = {
   requiredCharacteristic: string | undefined;
   characteristicName: string | undefined;
   currentLanguage: string | undefined;
+  characterCharacteristicId: string | undefined;
 };
 
 export const updateChoiceOptionService = async ({
@@ -107,6 +108,7 @@ export const updateChoiceOptionService = async ({
   requiredCharacteristic,
   requiredKey,
   currentLanguage,
+  characterCharacteristicId,
 }: UpdateChoiceOptionTypes) => {
   validateMongoId({
     value: choiceOptionId,
@@ -151,28 +153,22 @@ export const updateChoiceOptionService = async ({
         "Amount of Points and Characterstic Name are required"
       );
     }
-    const newOptionCharacteristic = await OptionCharacteristic.create({
+    if (!characterCharacteristicId?.trim().length) {
+      throw createHttpError(
+        400,
+        "With the type of characteristic, characterCharacteristicId is required"
+      );
+    }
+    validateMongoId({
+      value: characterCharacteristicId,
+      valueName: "CharacterCharacteristic",
+    });
+    await OptionCharacteristic.create({
       amountOfPoints,
       flowchartCommandChoiceOptionId: existingChoiceOption._id,
-      characteristicName,
+      characterCharacteristicId,
     });
-    const existingTranslationCharacteristic = await Translation.findOne({
-      choiceOptionCharacteristicId: newOptionCharacteristic._id,
-      textFieldName: TranslationTextFieldName.ChoiceOptionCharacteristic,
-      language: currentLanguage,
-    }).exec();
 
-    if (existingTranslationCharacteristic) {
-      existingTranslationCharacteristic.text = characteristicName;
-      await existingTranslationCharacteristic.save();
-    } else {
-      await Translation.create({
-        choiceOptionCharacteristicId: newOptionCharacteristic._id,
-        language: currentLanguage,
-        textFieldName: TranslationTextFieldName.ChoiceOptionCharacteristic,
-        text: characteristicName,
-      });
-    }
     return existingChoiceOption;
   } else if (existingChoiceOption.type === "premium") {
     if (!priceAmethysts) {

@@ -60,6 +60,7 @@ type UpdateChoiceOptionBody = {
   requiredCharacteristic: string | undefined;
   characteristicName: string | undefined;
   currentLanguage: string | undefined;
+  characterCharacteristicId: string | undefined;
 };
 
 // @route PATCH http://localhost:3500/flowchartCommands/choices/options/:choiceOptionId
@@ -81,6 +82,7 @@ export const updateChoiceOptionController: RequestHandler<
       requiredCharacteristic: req.body.requiredCharacteristic,
       choiceOptionId: req.params.choiceOptionId,
       currentLanguage: req.body.currentLanguage,
+      characterCharacteristicId: req.body.characterCharacteristicId,
     });
     if (choiceOption) {
       return res.status(201).json(choiceOption);

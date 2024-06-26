@@ -37,9 +37,9 @@ export const translationSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "FlowchartCommandChoiceOption",
   },
-  choiceOptionCharacteristicId: {
+  characterCharacteristicId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "FlowchartCommandOptionCharacteristic",
+    ref: "CharacterCharacteristic",
   },
   language: {
     type: String,
