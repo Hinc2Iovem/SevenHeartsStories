@@ -3,7 +3,7 @@ import mongoose, { InferSchemaType, model } from "mongoose";
 export const translationSchema = new mongoose.Schema({
   commandId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "FlowchartCommand",
+    ref: "PlotFieldCommand",
   },
   appearancePartId: {
     type: mongoose.Schema.Types.ObjectId,
@@ -35,7 +35,7 @@ export const translationSchema = new mongoose.Schema({
   },
   choiceOptionId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "FlowchartCommandChoiceOption",
+    ref: "PlotFieldCommandChoiceOption",
   },
   characterCharacteristicId: {
     type: mongoose.Schema.Types.ObjectId,

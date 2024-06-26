@@ -23,8 +23,7 @@ import {
   effectsRoute,
   episodeInfoRoute,
   episodeRoute,
-  flowchartCommandRoute,
-  flowchartRoute,
+  plotFieldCommandRoute,
   getItemsRoute,
   movesRoute,
   musicRoute,
@@ -64,26 +63,25 @@ app.use("/episodeInfo", episodeInfoRoute);
 app.use("/seasons", seasonRoute);
 app.use("/stories", storyRoute);
 app.use("/topologyBlocks", topologyBlockRoute);
-app.use("/flowcharts", flowchartRoute);
-app.use("/flowchartCommands", flowchartCommandRoute);
-app.use("/flowchartCommands", achievementRoute);
-app.use("/flowchartCommands", ambientRoute);
-app.use("/flowchartCommands", backgroundRoute);
-app.use("/flowchartCommands", callRoute);
-app.use("/flowchartCommands", choiceOptionRoute);
-app.use("/flowchartCommands", choiceRoute);
-app.use("/flowchartCommands", conditionRoute);
-app.use("/flowchartCommands", conditionValuesRoute);
-app.use("/flowchartCommands", cutScenesRoute);
-app.use("/flowchartCommands", effectsRoute);
-app.use("/flowchartCommands", getItemsRoute);
-app.use("/flowchartCommands", movesRoute);
-app.use("/flowchartCommands", musicRoute);
-app.use("/flowchartCommands", sayRoute);
-app.use("/flowchartCommands", soundRoute);
-app.use("/flowchartCommands", suitRoute);
-app.use("/flowchartCommands", waitRoute);
-app.use("/flowchartCommands", wardrobeRoute);
+app.use("/plotFieldCommands", plotFieldCommandRoute);
+app.use("/plotFieldCommands", achievementRoute);
+app.use("/plotFieldCommands", ambientRoute);
+app.use("/plotFieldCommands", backgroundRoute);
+app.use("/plotFieldCommands", callRoute);
+app.use("/plotFieldCommands", choiceOptionRoute);
+app.use("/plotFieldCommands", choiceRoute);
+app.use("/plotFieldCommands", conditionRoute);
+app.use("/plotFieldCommands", conditionValuesRoute);
+app.use("/plotFieldCommands", cutScenesRoute);
+app.use("/plotFieldCommands", effectsRoute);
+app.use("/plotFieldCommands", getItemsRoute);
+app.use("/plotFieldCommands", movesRoute);
+app.use("/plotFieldCommands", musicRoute);
+app.use("/plotFieldCommands", sayRoute);
+app.use("/plotFieldCommands", soundRoute);
+app.use("/plotFieldCommands", suitRoute);
+app.use("/plotFieldCommands", waitRoute);
+app.use("/plotFieldCommands", wardrobeRoute);
 
 mongoose.connection.once("open", () => {
   console.log("Connected");

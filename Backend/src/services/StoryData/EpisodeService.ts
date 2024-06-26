@@ -1,15 +1,15 @@
 import createHttpError from "http-errors";
-import { validateMongoId } from "../../utils/validateMongoId";
-import Episode from "../../models/StoryData/Episode";
-import EpisodeInfo from "../../models/StoryData/EpisodeInfo";
-import TopologyBlock from "../../models/StoryEditor/Topology/TopologyBlock";
-import TopologyBlockInfo from "../../models/StoryEditor/Topology/TopologyBlockInfo";
-import FlowchartCommand from "../../models/StoryEditor/Flowchart/FlowchartCommand";
-import Translation from "../../models/StoryData/Translation";
-import Season from "../../models/StoryData/Season";
 import { Types } from "mongoose";
 import { TranslationTextFieldName } from "../../consts/TRANSLATION_TEXT_FIELD_NAMES";
+import Episode from "../../models/StoryData/Episode";
+import EpisodeInfo from "../../models/StoryData/EpisodeInfo";
+import Season from "../../models/StoryData/Season";
 import Story from "../../models/StoryData/Story";
+import Translation from "../../models/StoryData/Translation";
+import PlotFieldCommand from "../../models/StoryEditor/PlotField/PlotFieldCommand";
+import TopologyBlock from "../../models/StoryEditor/Topology/TopologyBlock";
+import TopologyBlockInfo from "../../models/StoryEditor/Topology/TopologyBlockInfo";
+import { validateMongoId } from "../../utils/validateMongoId";
 
 type EpisodeCreateTypes = {
   title: string | undefined;
@@ -79,7 +79,7 @@ export const episodeCreateService = async ({
     topologyBlockId: firstTopologyBlock._id,
   });
 
-  await FlowchartCommand.create({
+  await PlotFieldCommand.create({
     commandOrder: 1,
     topologyBlockId: firstTopologyBlock._id,
   });
