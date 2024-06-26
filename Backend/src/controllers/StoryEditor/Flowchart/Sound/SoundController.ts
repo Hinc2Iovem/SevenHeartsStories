@@ -2,6 +2,7 @@ import { RequestHandler } from "express";
 import {
   createSoundService,
   deleteSoundService,
+  updateSoundIsGlobalService,
   updateSoundService,
 } from "../../../../services/StoryEditor/Flowchart/Sound/SoundService";
 
@@ -53,6 +54,37 @@ export const updateSoundController: RequestHandler<
       soundName: req.body.soundName,
       soundId: req.params.soundId,
       storyId: req.params.storyId,
+    });
+    if (sound) {
+      return res.status(201).json(sound);
+    } else {
+      return res.status(400).json({ message: "Something went wrong" });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
+type UpdateSoundIsGlobalParams = {
+  soundId: string;
+};
+
+type UpdateSoundIsGlobalBody = {
+  isGlobal: boolean | undefined;
+};
+
+// @route PATCH http://localhost:3500/flowchartCommands/sounds/:soundId/isGlobal
+// @access Private
+export const updateSoundIsGlobalController: RequestHandler<
+  UpdateSoundIsGlobalParams,
+  unknown,
+  UpdateSoundIsGlobalBody,
+  unknown
+> = async (req, res, next) => {
+  try {
+    const sound = await updateSoundIsGlobalService({
+      isGlobal: req.body.isGlobal,
+      soundId: req.params.soundId,
     });
     if (sound) {
       return res.status(201).json(sound);

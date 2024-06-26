@@ -54,6 +54,28 @@ export const updateSoundService = async ({
   return await existingSound.save();
 };
 
+type UpdateSoundIsGlobalTypes = {
+  isGlobal: boolean | undefined;
+  soundId: string;
+};
+
+export const updateSoundIsGlobalService = async ({
+  isGlobal,
+  soundId,
+}: UpdateSoundIsGlobalTypes) => {
+  validateMongoId({ value: soundId, valueName: "Sound" });
+
+  const existingSound = await Sound.findById(soundId).exec();
+  if (!existingSound) {
+    throw createHttpError(400, "Sound with such id wasn't found");
+  }
+  if (isGlobal) {
+    existingSound.isGlobal = isGlobal;
+  }
+
+  return await existingSound.save();
+};
+
 type DeleteSoundTypes = {
   soundId: string;
 };
