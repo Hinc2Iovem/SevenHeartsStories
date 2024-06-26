@@ -5,8 +5,9 @@ export const nameSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "PlotFieldCommand",
   },
-  characterName: {
-    type: String,
+  characterId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Character",
   },
   name: {
     type: String,

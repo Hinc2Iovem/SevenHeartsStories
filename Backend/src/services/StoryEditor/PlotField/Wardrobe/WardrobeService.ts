@@ -6,6 +6,7 @@ import CommandWardrobeAppearancePart from "../../../../models/StoryEditor/PlotFi
 import AppearancePart from "../../../../models/StoryData/AppearancePart";
 import Translation from "../../../../models/StoryData/Translation";
 import { TranslationTextFieldName } from "../../../../consts/TRANSLATION_TEXT_FIELD_NAMES";
+import Character from "../../../../models/StoryData/Character";
 
 type CreateCommandWardrobeTypes = {
   plotFieldCommandId: string;
@@ -32,14 +33,27 @@ type UpdateCommandWardrobeTypes = {
   title: string | undefined;
   currentLanguage: string | undefined;
   commandWardrobeId: string;
+  isCurrentDressed: boolean | undefined;
+  characterId: string;
 };
 
 export const updateCommandWardrobeService = async ({
   title,
   currentLanguage,
+  characterId,
+  isCurrentDressed,
   commandWardrobeId,
 }: UpdateCommandWardrobeTypes) => {
   validateMongoId({ value: commandWardrobeId, valueName: "CommandWardrobe" });
+  validateMongoId({ value: characterId, valueName: "Character" });
+
+  if (!title?.trim().length) {
+    throw createHttpError(400, "Title is required");
+  }
+
+  if (isCurrentDressed === undefined || isCurrentDressed === null) {
+    throw createHttpError(400, "isCurrentDressed is required");
+  }
 
   const existingCommandWardrobe = await CommandWardrobe.findById(
     commandWardrobeId
@@ -47,10 +61,12 @@ export const updateCommandWardrobeService = async ({
   if (!existingCommandWardrobe) {
     throw createHttpError(400, "CommandWardrobe with such id wasn't found");
   }
-
-  if (!title?.trim().length) {
-    throw createHttpError(400, "Title is required");
+  const existingCharacter = await Character.findById(characterId).exec();
+  if (!existingCharacter) {
+    throw createHttpError(400, "Character with such id wasn't found");
   }
+
+  existingCommandWardrobe.isCurrentDressed = isCurrentDressed;
 
   const existingTranslation = await Translation.findOne({
     commandId: commandWardrobeId,

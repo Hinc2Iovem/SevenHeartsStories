@@ -5,6 +5,10 @@ export const suitSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "PlotFieldCommand",
   },
+  characterId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Character",
+  },
   suitName: {
     type: String,
     required: true,

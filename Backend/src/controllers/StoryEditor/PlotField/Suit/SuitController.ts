@@ -33,13 +33,14 @@ export const createSuitController: RequestHandler<
 
 type UpdateSuitParams = {
   suitId: string;
+  characterId: string;
 };
 
 type UpdateSuitBody = {
   suitName: string | undefined;
 };
 
-// @route PATCH http://localhost:3500/plotFieldCommands/suits/:suitId
+// @route PATCH http://localhost:3500/plotFieldCommands/characters/:characterId/suits/:suitId
 // @access Private
 export const updateSuitController: RequestHandler<
   UpdateSuitParams,
@@ -50,6 +51,7 @@ export const updateSuitController: RequestHandler<
   try {
     const suit = await updateSuitService({
       suitName: req.body.suitName,
+      characterId: req.params.characterId,
       suitId: req.params.suitId,
     });
     if (suit) {

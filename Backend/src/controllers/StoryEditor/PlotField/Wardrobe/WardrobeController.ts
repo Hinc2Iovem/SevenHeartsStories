@@ -34,10 +34,12 @@ export const createCommandWardrobeController: RequestHandler<
 
 type UpdateCommandWardrobeParams = {
   commandWardrobeId: string;
+  characterId: string;
 };
 
 type UpdateCommandWardrobeBody = {
   title: string | undefined;
+  isCurrentDressed: boolean | undefined;
   currentLanguage: string | undefined;
 };
 
@@ -52,8 +54,10 @@ export const updateCommandWardrobeController: RequestHandler<
   try {
     const commandWardrobe = await updateCommandWardrobeService({
       currentLanguage: req.body.currentLanguage,
+      isCurrentDressed: req.body.isCurrentDressed,
       title: req.body.title,
       commandWardrobeId: req.params.commandWardrobeId,
+      characterId: req.params.characterId,
     });
     if (commandWardrobe) {
       return res.status(201).json(commandWardrobe);

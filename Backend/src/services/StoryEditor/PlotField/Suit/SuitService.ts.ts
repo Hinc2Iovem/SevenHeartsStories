@@ -2,6 +2,8 @@ import createHttpError from "http-errors";
 import { validateMongoId } from "../../../../utils/validateMongoId";
 import PlotFieldCommand from "../../../../models/StoryEditor/PlotField/PlotFieldCommand";
 import Suit from "../../../../models/StoryEditor/PlotField/Suit/Suit";
+import Character from "../../../../models/StoryData/Character";
+import { Types } from "mongoose";
 
 type CreateSuitTypes = {
   plotFieldCommandId: string;
@@ -26,18 +28,26 @@ export const createSuitService = async ({
 
 type UpdateSuitTypes = {
   suitName: string | undefined;
+  characterId: string;
   suitId: string;
 };
 
 export const updateSuitService = async ({
   suitName,
   suitId,
+  characterId,
 }: UpdateSuitTypes) => {
   validateMongoId({ value: suitId, valueName: "Suit" });
+  validateMongoId({ value: characterId, valueName: "Character" });
 
   const existingSuit = await Suit.findById(suitId).exec();
   if (!existingSuit) {
     throw createHttpError(400, "Suit with such id wasn't found");
+  }
+
+  const existingCharacter = await Character.findById(characterId).exec();
+  if (!existingCharacter) {
+    throw createHttpError(400, "Character with such id wasn't found");
   }
 
   if (!suitName?.trim().length) {
@@ -45,6 +55,7 @@ export const updateSuitService = async ({
   }
 
   existingSuit.suitName = suitName;
+  existingSuit.characterId = new Types.ObjectId(characterId);
 
   return await existingSuit.save();
 };
