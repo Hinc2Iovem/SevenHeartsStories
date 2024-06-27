@@ -35,6 +35,11 @@ import {
   topologyBlockRoute,
   waitRoute,
   wardrobeRoute,
+  characterCharacteristicRoute,
+  commandMusicRoute,
+  commandNameRoute,
+  keyRoute,
+  staffRoute,
 } from "./routes/index";
 
 dotenv.config();
@@ -55,16 +60,18 @@ app.use(express.json());
 app.use(cookieParser());
 
 app.use("/appearanceParts", appearancePartRoute);
+app.use("/characterCharacteristics", characterCharacteristicRoute);
 app.use("/characters", characterRoute);
 app.use("/characterEmotions", characterEmotionRoute);
 app.use("/commandLibraries", commandLibraryRoute);
 app.use("/episodes", episodeRoute);
 app.use("/episodeInfo", episodeInfoRoute);
-app.use("/seasons", seasonRoute);
+app.use("/stories", seasonRoute);
 app.use("/stories", storyRoute);
+app.use("/stories", musicRoute);
 app.use("/topologyBlocks", topologyBlockRoute);
-app.use("/plotFieldCommands", plotFieldCommandRoute);
-app.use("/plotFieldCommands", achievementRoute);
+app.use("/topologyBlocks", plotFieldCommandRoute);
+app.use("/stories", achievementRoute);
 app.use("/plotFieldCommands", ambientRoute);
 app.use("/plotFieldCommands", backgroundRoute);
 app.use("/plotFieldCommands", callRoute);
@@ -75,13 +82,16 @@ app.use("/plotFieldCommands", conditionValuesRoute);
 app.use("/plotFieldCommands", cutScenesRoute);
 app.use("/plotFieldCommands", effectsRoute);
 app.use("/plotFieldCommands", getItemsRoute);
+app.use("/plotFieldCommands", keyRoute);
 app.use("/plotFieldCommands", movesRoute);
-app.use("/plotFieldCommands", musicRoute);
+app.use("/plotFieldCommands", commandMusicRoute);
+app.use("/plotFieldCommands", commandNameRoute);
 app.use("/plotFieldCommands", sayRoute);
 app.use("/plotFieldCommands", soundRoute);
 app.use("/plotFieldCommands", suitRoute);
 app.use("/plotFieldCommands", waitRoute);
 app.use("/plotFieldCommands", wardrobeRoute);
+app.use("/staff", staffRoute);
 
 mongoose.connection.once("open", () => {
   console.log("Connected");

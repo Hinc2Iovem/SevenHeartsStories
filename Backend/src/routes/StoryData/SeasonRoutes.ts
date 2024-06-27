@@ -5,12 +5,12 @@ import {
   seasonUpdateTitleController,
 } from "../../controllers/StoryData/SeasonController";
 
-// Default route === /seasons
+// Default route === /stories
 export const seasonRoute = express.Router();
 
-seasonRoute.route("/").get().post(seasonCreateController);
+seasonRoute.route("/:storyId/seasons").post(seasonCreateController);
 
 seasonRoute
-  .route("/:seasonId")
+  .route("/seasons/:seasonId")
   .patch(seasonUpdateTitleController)
   .delete(seasonDeleteController);

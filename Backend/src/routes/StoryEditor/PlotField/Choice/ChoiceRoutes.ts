@@ -11,6 +11,6 @@ export const choiceRoute = express.Router();
 choiceRoute.route("/:plotFieldCommandId/choices").post(createChoiceController);
 
 choiceRoute
-  .route("/choices/:choiceId")
-  .patch(updateChoiceController)
-  .delete(deleteChoiceController);
+  .route("/choices/:choiceId/exitBlocks/:exitBlockId")
+  .patch(updateChoiceController);
+choiceRoute.route("/choices/:choiceId").delete(deleteChoiceController);

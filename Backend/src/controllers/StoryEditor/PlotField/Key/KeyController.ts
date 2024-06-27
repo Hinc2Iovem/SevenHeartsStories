@@ -97,7 +97,7 @@ type DeleteKeyParams = {
   commandKeyId: string;
 };
 
-// @route DELETE http://localhost:3500/plotFieldCommands/commandKeys/:commandKeyId/targetBlocks
+// @route DELETE http://localhost:3500/plotFieldCommands/commandKeys/:commandKeyId
 // @access Private
 export const deleteKeyController: RequestHandler<
   DeleteKeyParams,

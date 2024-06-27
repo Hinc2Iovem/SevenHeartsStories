@@ -4,4 +4,4 @@ import { characterEmotionCreateController } from "../../controllers/StoryData/Ch
 // Default route === /characterEmotions
 export const characterEmotionRoute = express.Router();
 
-characterEmotionRoute.route("/").get().post(characterEmotionCreateController);
+characterEmotionRoute.route("/").post(characterEmotionCreateController);

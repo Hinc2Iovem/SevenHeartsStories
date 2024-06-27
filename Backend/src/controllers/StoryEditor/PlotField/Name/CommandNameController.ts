@@ -9,7 +9,7 @@ type CreateNameParams = {
   plotFieldCommandId: string;
 };
 
-// @route POST http://localhost:3500/plotFieldCommands/:plotFieldCommandId
+// @route POST http://localhost:3500/plotFieldCommands/:plotFieldCommandId/commandNames
 // @access Private
 export const createNameController: RequestHandler<
   CreateNameParams,
@@ -40,7 +40,7 @@ type UpdateNameBody = {
   newName: string | undefined;
 };
 
-// @route PATCH http://localhost:3500/plotFieldCommands/stories/:storyId/characters/:characterId/name/:nameId
+// @route PATCH http://localhost:3500/plotFieldCommands/characters/:characterId/names/:nameId
 // @access Private
 export const updateNameController: RequestHandler<
   UpdateNameParams,

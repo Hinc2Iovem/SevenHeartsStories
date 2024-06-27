@@ -25,6 +25,7 @@ export const characterSchema = new mongoose.Schema({
   },
   img: {
     type: String,
+  },
 });
 
 type Character = InferSchemaType<typeof characterSchema>;

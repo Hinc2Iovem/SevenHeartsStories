@@ -9,7 +9,9 @@ import {
 // Default route === /episodes
 export const episodeRoute = express.Router();
 
-episodeRoute.route("/").get().post(episodeCreateController);
+episodeRoute
+  .route("/stories/:storyId/seasons/:seasonId")
+  .post(episodeCreateController);
 
 episodeRoute
   .route("/:episodeId")
