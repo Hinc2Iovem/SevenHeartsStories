@@ -43,7 +43,7 @@ type UpdateSoundBody = {
   soundName: string | undefined;
 };
 
-// @route PATCH http://localhost:3500/plotFieldCommands/sounds/:soundId/stories/:storyId
+// @route PATCH http://localhost:3500/plotFieldCommands/stories/:storyId/sounds/:soundId
 // @access Private
 export const updateSoundController: RequestHandler<
   UpdateSoundParams,

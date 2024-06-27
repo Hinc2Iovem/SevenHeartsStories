@@ -16,7 +16,7 @@ type EpisodeCreateBody = {
   currentLanguage: string | undefined;
 };
 
-// @route PATCH http://localhost:3500/episodes
+// @route PATCH http://localhost:3500/episodes/stories/:storyId/seasons/:seasonId
 // @access Private
 export const episodeCreateController: RequestHandler<
   EpisodeCreateParams,

@@ -9,7 +9,9 @@ import {
 export const choiceOptionRoute = express.Router();
 
 choiceOptionRoute
-  .route("/:plotFieldCommandId/choices/options/topologyBlocks/:topologyBlockId")
+  .route(
+    "/:plotFieldCommandId/episodes/:episodeId/choices/options/topologyBlocks/:topologyBlockId"
+  )
   .post(createChoiceOptionController);
 
 choiceOptionRoute

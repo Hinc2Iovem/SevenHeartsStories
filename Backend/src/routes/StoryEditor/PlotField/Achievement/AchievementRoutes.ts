@@ -5,14 +5,14 @@ import {
   updateAchievementController,
 } from "../../../../controllers/StoryEditor/PlotField/Achievement/AchievementController";
 
-// Default route === /plotFieldCommands
+// Default route === /stories
 export const achievementRoute = express.Router();
 
 achievementRoute
-  .route("/:plotFieldCommandId/achievements")
+  .route("/:storyId/plotFieldCommands/:plotFieldCommandId/achievements")
   .post(createAchievementController);
 
 achievementRoute
-  .route("/achievements/:achievementId")
+  .route("/plotFieldCommands/achievements/:achievementId")
   .patch(updateAchievementController)
   .delete(deleteAchievementController);

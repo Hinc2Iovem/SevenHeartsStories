@@ -10,7 +10,7 @@ type CreateAchievementParams = {
   plotFieldCommandId: string;
 };
 
-// @route POST http://localhost:3500/plotFieldCommands/:plotFieldCommandId/achievements
+// @route POST http://localhost:3500/stories/:storyId/plotFieldCommands/:plotFieldCommandId/achievements
 // @access Private
 export const createAchievementController: RequestHandler<
   CreateAchievementParams,

@@ -93,7 +93,7 @@ type GetFirstTopologyBlockParams = {
   episodeId: string;
 };
 
-// @route GET http://localhost:3500/topologyBlocks/episodes/:episodeId
+// @route GET http://localhost:3500/topologyBlocks/episodes/:episodeId/firstBlock
 // @access Private
 export const getFirstTopologyBlockController: RequestHandler<
   GetFirstTopologyBlockParams,

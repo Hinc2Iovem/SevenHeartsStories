@@ -8,7 +8,7 @@ import {
 // Default route === /appearanceParts
 export const appearancePartRoute = express.Router();
 
-appearancePartRoute.route("/").get().post(appearancePartControllerCreate);
+appearancePartRoute.route("/").post(appearancePartControllerCreate);
 
 appearancePartRoute
   .route("/:appearancePartId/nameType")

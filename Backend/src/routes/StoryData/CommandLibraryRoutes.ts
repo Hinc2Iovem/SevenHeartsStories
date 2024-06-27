@@ -3,12 +3,16 @@ import {
   commandLibraryControllerCreate,
   commandLibraryControllerDelete,
   commandLibraryControllerUpdate,
+  getAllCommandLibrariesController,
 } from "../../controllers/StoryData/CommandLibraryController";
 
 // Default route === /commandLibraries
 export const commandLibraryRoute = express.Router();
 
-commandLibraryRoute.route("/").get().post(commandLibraryControllerCreate);
+commandLibraryRoute
+  .route("/")
+  .get(getAllCommandLibrariesController)
+  .post(commandLibraryControllerCreate);
 
 commandLibraryRoute
   .route("/:commandLibraryId")

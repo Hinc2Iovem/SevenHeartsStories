@@ -26,7 +26,7 @@ type CharacterCreateBody = {
   img: string | undefined;
 };
 
-// @route POST http://localhost:3500/characters
+// @route POST http://localhost:3500/characters/stories/:storyId
 // @access Private
 export const characterCreateController: RequestHandler<
   CharacterCreateParams,

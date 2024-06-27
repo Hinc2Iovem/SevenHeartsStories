@@ -43,7 +43,7 @@ type UpdateCommandWardrobeBody = {
   currentLanguage: string | undefined;
 };
 
-// @route PATCH http://localhost:3500/plotFieldCommands/wardrobes/:commandWardrobeId
+// @route PATCH http://localhost:3500/plotFieldCommands/wardrobes/:commandWardrobeId/characters/:characterId
 // @access Private
 export const updateCommandWardrobeController: RequestHandler<
   UpdateCommandWardrobeParams,
