@@ -3,6 +3,26 @@ import CutScene from "../../../../models/StoryEditor/PlotField/CutScene/CutScene
 import { validateMongoId } from "../../../../utils/validateMongoId";
 import PlotFieldCommand from "../../../../models/StoryEditor/PlotField/PlotFieldCommand";
 
+type GetCutSceneByPlotFieldCommandIdTypes = {
+  plotFieldCommandId: string;
+};
+
+export const getCutSceneByPlotFieldCommandIdService = async ({
+  plotFieldCommandId,
+}: GetCutSceneByPlotFieldCommandIdTypes) => {
+  validateMongoId({ value: plotFieldCommandId, valueName: "PlotFieldCommand" });
+
+  const existingCutScene = await CutScene.findOne({
+    plotFieldCommandId,
+  }).lean();
+
+  if (!existingCutScene) {
+    return null;
+  }
+
+  return existingCutScene;
+};
+
 type CreateCutSceneTypes = {
   plotFieldCommandId: string;
 };

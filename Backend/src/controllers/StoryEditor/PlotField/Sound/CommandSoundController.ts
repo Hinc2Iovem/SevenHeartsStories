@@ -4,7 +4,34 @@ import {
   deleteSoundService,
   updateSoundIsGlobalService,
   updateSoundService,
-} from "../../../../services/StoryEditor/PlotField/Sound/SoundService";
+  getSoundByPlotFieldCommandIdService,
+} from "../../../../services/StoryEditor/PlotField/Sound/CommandSoundService";
+
+type GetSoundByPlotFieldCommandIdParams = {
+  plotFieldCommandId: string;
+};
+
+// @route GET http://localhost:3500/plotFieldCommands/:plotFieldCommandId/sounds
+// @access Private
+export const getSoundByPlotFieldCommandIdController: RequestHandler<
+  GetSoundByPlotFieldCommandIdParams,
+  unknown,
+  unknown,
+  unknown
+> = async (req, res, next) => {
+  try {
+    const sound = await getSoundByPlotFieldCommandIdService({
+      plotFieldCommandId: req.params.plotFieldCommandId,
+    });
+    if (sound) {
+      return res.status(201).json(sound);
+    } else {
+      return res.status(400).json({ message: "Something went wrong" });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
 
 type CreateSoundParams = {
   plotFieldCommandId: string;

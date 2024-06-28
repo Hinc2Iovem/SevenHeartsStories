@@ -4,6 +4,27 @@ import PlotFieldCommand from "../../../../models/StoryEditor/PlotField/PlotField
 import GetItem from "../../../../models/StoryEditor/PlotField/GetItem/GetItem";
 import Translation from "../../../../models/StoryData/Translation";
 import { TranslationTextFieldName } from "../../../../consts/TRANSLATION_TEXT_FIELD_NAMES";
+import { checkCurrentLanguage } from "../../../../utils/checkCurrentLanguage";
+
+type GetItemByPlotFieldCommandIdTypes = {
+  plotFieldCommandId: string;
+};
+
+export const getItemByPlotFieldCommandIdService = async ({
+  plotFieldCommandId,
+}: GetItemByPlotFieldCommandIdTypes) => {
+  validateMongoId({ value: plotFieldCommandId, valueName: "PlotFieldCommand" });
+
+  const existingItem = await GetItem.findOne({
+    plotFieldCommandId,
+  }).lean();
+
+  if (!existingItem) {
+    return null;
+  }
+
+  return existingItem;
+};
 
 type CreateGetItemTypes = {
   plotFieldCommandId: string;
@@ -24,88 +45,6 @@ export const createGetItemService = async ({
   return await GetItem.create({
     plotFieldCommandId,
   });
-};
-
-type UpdateGetItemTypes = {
-  getItemId: string;
-  buttonText: string | undefined;
-  itemDescription: string | undefined;
-  itemName: string | undefined;
-  currentLanguage: string | undefined;
-};
-
-export const updateGetItemService = async ({
-  getItemId,
-  buttonText,
-  itemDescription,
-  itemName,
-  currentLanguage,
-}: UpdateGetItemTypes) => {
-  validateMongoId({ value: getItemId, valueName: "GetItem" });
-
-  const existingGetItem = await GetItem.findById(getItemId).exec();
-
-  if (!existingGetItem) {
-    throw createHttpError(400, "GetItem with such id wasn't found");
-  }
-
-  if (buttonText?.trim().length) {
-    const existingTranslation = await Translation.findOne({
-      commandId: getItemId,
-      textFieldName: TranslationTextFieldName.ButtonText,
-      language: currentLanguage,
-    }).exec();
-
-    if (existingTranslation) {
-      existingTranslation.text = buttonText;
-      await existingTranslation.save();
-    } else {
-      await Translation.create({
-        commandId: getItemId,
-        language: currentLanguage,
-        textFieldName: TranslationTextFieldName.ButtonText,
-        text: buttonText,
-      });
-    }
-  }
-  if (itemDescription?.trim().length) {
-    const existingTranslation = await Translation.findOne({
-      commandId: getItemId,
-      textFieldName: TranslationTextFieldName.ItemDescription,
-      language: currentLanguage,
-    }).exec();
-    if (existingTranslation) {
-      existingTranslation.text = itemDescription;
-      await existingTranslation.save();
-    } else {
-      await Translation.create({
-        commandId: getItemId,
-        language: currentLanguage,
-        textFieldName: TranslationTextFieldName.ItemDescription,
-        text: itemDescription,
-      });
-    }
-  }
-  if (itemName?.trim().length) {
-    const existingTranslation = await Translation.findOne({
-      commandId: getItemId,
-      textFieldName: TranslationTextFieldName.ItemName,
-      language: currentLanguage,
-    }).exec();
-    if (existingTranslation) {
-      existingTranslation.text = itemName;
-      await existingTranslation.save();
-    } else {
-      await Translation.create({
-        commandId: getItemId,
-        language: currentLanguage,
-        textFieldName: TranslationTextFieldName.ItemName,
-        text: itemName,
-      });
-    }
-  }
-
-  return existingGetItem;
 };
 
 type DeleteGetItemTypes = {

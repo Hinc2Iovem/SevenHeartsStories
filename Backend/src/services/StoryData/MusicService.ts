@@ -15,3 +15,18 @@ export const getMusicService = async ({ storyId }: GetMusicTypes) => {
 
   return allMusic;
 };
+
+type GetMusicByIdTypes = {
+  musicId: string;
+};
+
+export const getMusicByIdService = async ({ musicId }: GetMusicByIdTypes) => {
+  validateMongoId({ value: musicId, valueName: "Music" });
+
+  const musicById = await Music.findById(musicId).lean();
+  if (!musicById) {
+    return null;
+  }
+
+  return musicById;
+};

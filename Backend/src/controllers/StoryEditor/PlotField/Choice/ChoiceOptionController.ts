@@ -3,7 +3,36 @@ import {
   createChoiceOptionService,
   deleteChoiceOptionService,
   updateChoiceOptionService,
+  getChoiceOptionByPlotFieldCommandChoiceIdService,
 } from "../../../../services/StoryEditor/PlotField/Choice/ChoiceOptionService";
+
+type GetChoiceOptionByPlotFieldCommandChoiceIdParams = {
+  plotFieldCommandChoiceId: string;
+};
+
+// @route GET http://localhost:3500/plotFieldCommands/choice/options/:plotFieldCommandChoiceId
+// @access Private
+export const getChoiceOptionByPlotFieldCommandChoiceIdController: RequestHandler<
+  GetChoiceOptionByPlotFieldCommandChoiceIdParams,
+  unknown,
+  unknown,
+  unknown
+> = async (req, res, next) => {
+  try {
+    const choiceOption = await getChoiceOptionByPlotFieldCommandChoiceIdService(
+      {
+        plotFieldCommandChoiceId: req.params.plotFieldCommandChoiceId,
+      }
+    );
+    if (choiceOption) {
+      return res.status(201).json(choiceOption);
+    } else {
+      return res.status(400).json({ message: "Something went wrong" });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
 
 type CreateChoiceOptionParams = {
   plotFieldCommandChoiceId: string;
@@ -21,6 +50,7 @@ type CreateChoiceOptionBody = {
   type: ChoiceOptionType | undefined;
 };
 
+// TODO KAKAYTA ZALUPA
 // @route POST http://localhost:3500/plotFieldCommands/:plotFieldCommandId/episodes/:episodeId/choices/options/topologyBlocks/:topologyBlockId
 // @access Private
 export const createChoiceOptionController: RequestHandler<
@@ -58,7 +88,6 @@ type UpdateChoiceOptionBody = {
   requiredKey: string | undefined;
   requiredCharacteristic: string | undefined;
   characteristicName: string | undefined;
-  currentLanguage: string | undefined;
   characterCharacteristicId: string | undefined;
   characterId: string | undefined;
 };
@@ -80,7 +109,6 @@ export const updateChoiceOptionController: RequestHandler<
       characteristicName: req.body.characteristicName,
       choiceOptionId: req.params.choiceOptionId,
       characterId: req.body.characterId,
-      currentLanguage: req.body.currentLanguage,
       characterCharacteristicId: req.body.characterCharacteristicId,
     });
     if (choiceOption) {

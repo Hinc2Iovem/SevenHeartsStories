@@ -4,6 +4,17 @@ import Story from "../../models/StoryData/Story";
 import Translation from "../../models/StoryData/Translation";
 import Season from "../../models/StoryData/Season";
 import { TranslationTextFieldName } from "../../consts/TRANSLATION_TEXT_FIELD_NAMES";
+import { checkCurrentLanguage } from "../../utils/checkCurrentLanguage";
+
+export const storyGetAllService = async () => {
+  const existingStories = await Story.find().lean();
+
+  if (!existingStories.length) {
+    return [];
+  }
+
+  return existingStories;
+};
 
 type StoryCreateTypes = {
   title: string | undefined;
@@ -21,6 +32,8 @@ export const storyCreateService = async ({
   if (!title?.trim().length || !currentLanguage?.trim().length) {
     throw createHttpError(400, "Title is required");
   }
+
+  checkCurrentLanguage({ currentLanguage });
 
   const newStory = await Story.create({
     amountOfEpisodes: 0,
@@ -56,47 +69,6 @@ export const storyCreateService = async ({
   });
 
   return newStory;
-};
-
-type StoryUpdateTypes = {
-  storyId: string;
-  title: string | undefined;
-  currentLanguage: string | undefined;
-};
-
-export const storyUpdateTitleService = async ({
-  storyId,
-  title,
-  currentLanguage,
-}: StoryUpdateTypes) => {
-  validateMongoId({ value: storyId, valueName: "Story" });
-
-  const existingStory = await Story.findById(storyId).exec();
-
-  if (!existingStory) {
-    throw createHttpError(400, "Story with such id doesn't exist");
-  }
-
-  if (!currentLanguage?.trim().length) {
-    throw createHttpError(400, "Language is required");
-  }
-
-  const existingTranslation = await Translation.findOne({
-    storyId: existingStory.id,
-    language: currentLanguage,
-    textFieldName: TranslationTextFieldName.StoryName,
-  }).exec();
-
-  if (!existingTranslation) {
-    throw createHttpError(400, "Translation wasn't found");
-  }
-
-  if (title?.trim().length) {
-    existingTranslation.text = title;
-    await existingTranslation.save();
-  }
-
-  return existingStory;
 };
 
 type StoryUpdateImgTypes = {
@@ -135,6 +107,12 @@ export const storyUpdateGenreService = async ({
   currentLanguage,
 }: StoryUpdateGenreTypes) => {
   validateMongoId({ value: storyId, valueName: "Story" });
+
+  if (!currentLanguage?.trim().length) {
+    throw createHttpError(400, "Language is required");
+  }
+
+  checkCurrentLanguage({ currentLanguage });
 
   const existingStory = await Story.findById({ storyId }).lean();
 

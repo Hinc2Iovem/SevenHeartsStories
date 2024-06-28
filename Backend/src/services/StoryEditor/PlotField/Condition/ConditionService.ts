@@ -5,6 +5,26 @@ import PlotFieldCommand from "../../../../models/StoryEditor/PlotField/PlotField
 import TopologyBlock from "../../../../models/StoryEditor/Topology/TopologyBlock";
 import ConditionValue from "../../../../models/StoryEditor/PlotField/Condition/ConditionValue";
 
+type GetConditionByPlotFieldCommandIdTypes = {
+  plotFieldCommandId: string;
+};
+
+export const getConditionByPlotFieldCommandIdService = async ({
+  plotFieldCommandId,
+}: GetConditionByPlotFieldCommandIdTypes) => {
+  validateMongoId({ value: plotFieldCommandId, valueName: "PlotFieldCommand" });
+
+  const existingCondition = await Condition.findOne({
+    plotFieldCommandId,
+  }).lean();
+
+  if (!existingCondition) {
+    return null;
+  }
+
+  return existingCondition;
+};
+
 type CreateConditionTypes = {
   targetBlockId: string;
   plotFieldCommandId: string;

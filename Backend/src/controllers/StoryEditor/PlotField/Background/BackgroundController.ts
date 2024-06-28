@@ -3,7 +3,34 @@ import {
   createBackgroundService,
   deleteBackgroundService,
   updateBackgroundService,
+  getBackgroundByPlotFieldCommandIdService,
 } from "../../../../services/StoryEditor/PlotField/Background/BackgroundService";
+
+type GetBackgroundByPlotFieldCommandIdParams = {
+  plotFieldCommandId: string;
+};
+
+// @route GET http://localhost:3500/plotFieldCommands/:plotFieldCommandId/backgrounds
+// @access Private
+export const getBackgroundByPlotFieldCommandIdController: RequestHandler<
+  GetBackgroundByPlotFieldCommandIdParams,
+  unknown,
+  unknown,
+  unknown
+> = async (req, res, next) => {
+  try {
+    const background = await getBackgroundByPlotFieldCommandIdService({
+      plotFieldCommandId: req.params.plotFieldCommandId,
+    });
+    if (background) {
+      return res.status(201).json(background);
+    } else {
+      return res.status(400).json({ message: "Something went wrong" });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
 
 type CreateBackgroundParams = {
   plotFieldCommandId: string;

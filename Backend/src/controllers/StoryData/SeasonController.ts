@@ -2,30 +2,23 @@ import { RequestHandler } from "express";
 import {
   seasonCreateService,
   seasonDeleteService,
-  seasonUpdateTitleService,
+  seasonsGetByStoryIdService,
 } from "../../services/StoryData/SeasonService";
 
-type SeasonCreateParams = {
+type SeasonsGetByStoryIdParams = {
   storyId: string;
 };
 
-type SeasonCreateBody = {
-  title: string | undefined;
-  currentLanguage: string | undefined;
-};
-
-// @route POST http://localhost:3500/seasons
+// @route GET http://localhost:3500/stories/:storyId/seasons
 // @access Private
-export const seasonCreateController: RequestHandler<
-  SeasonCreateParams,
+export const seasonsGetByStoryIdController: RequestHandler<
+  SeasonsGetByStoryIdParams,
   unknown,
-  SeasonCreateBody,
+  unknown,
   unknown
 > = async (req, res, next) => {
   try {
-    const season = await seasonCreateService({
-      currentLanguage: req.body.currentLanguage,
-      title: req.body.title,
+    const season = await seasonsGetByStoryIdService({
       storyId: req.params.storyId,
     });
     if (season) {
@@ -38,27 +31,28 @@ export const seasonCreateController: RequestHandler<
   }
 };
 
-type SeasonUpdateTitleParams = {
-  seasonId: string;
+type SeasonCreateParams = {
+  storyId: string;
 };
-type SeasonUpdateTitleBody = {
+
+type SeasonCreateBody = {
   title: string | undefined;
   currentLanguage: string | undefined;
 };
 
-// @route PATCH http://localhost:3500/seasons/:seasonId
+// @route POST http://localhost:3500/stories/:storyId/seasons
 // @access Private
-export const seasonUpdateTitleController: RequestHandler<
-  SeasonUpdateTitleParams,
+export const seasonCreateController: RequestHandler<
+  SeasonCreateParams,
   unknown,
-  SeasonUpdateTitleBody,
+  SeasonCreateBody,
   unknown
 > = async (req, res, next) => {
   try {
-    const season = await seasonUpdateTitleService({
-      seasonId: req.params.seasonId,
-      title: req.body.title,
+    const season = await seasonCreateService({
       currentLanguage: req.body.currentLanguage,
+      title: req.body.title,
+      storyId: req.params.storyId,
     });
     if (season) {
       return res.status(201).json(season);

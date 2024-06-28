@@ -2,9 +2,36 @@ import { RequestHandler } from "express";
 import {
   createCallService,
   deleteCallService,
+  getCallByPlotFieldCommandIdService,
   updateCallService,
   updateCallTargetBlockIdService,
 } from "../../../../services/StoryEditor/PlotField/Call/CallService";
+
+type GetCallByPlotFieldCommandIdParams = {
+  plotFieldCommandId: string;
+};
+
+// @route GET http://localhost:3500/plotFieldCommands/:plotFieldCommandId/calls
+// @access Private
+export const getCallByPlotFieldCommandIdController: RequestHandler<
+  GetCallByPlotFieldCommandIdParams,
+  unknown,
+  unknown,
+  unknown
+> = async (req, res, next) => {
+  try {
+    const call = await getCallByPlotFieldCommandIdService({
+      plotFieldCommandId: req.params.plotFieldCommandId,
+    });
+    if (call) {
+      return res.status(201).json(call);
+    } else {
+      return res.status(400).json({ message: "Something went wrong" });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
 
 type CreateCallParams = {
   plotFieldCommandId: string;

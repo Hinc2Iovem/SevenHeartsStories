@@ -2,8 +2,35 @@ import { RequestHandler } from "express";
 import {
   createWaitService,
   deleteWaitService,
+  getWaitByPlotFieldCommandIdService,
   updateWaitService,
 } from "../../../../services/StoryEditor/PlotField/Wait/WaitService";
+
+type GetWaitByPlotFieldCommandIdParams = {
+  plotFieldCommandId: string;
+};
+
+// @route GET http://localhost:3500/plotFieldCommands/:plotFieldCommandId/waits
+// @access Private
+export const getWaitByPlotFieldCommandIdController: RequestHandler<
+  GetWaitByPlotFieldCommandIdParams,
+  unknown,
+  unknown,
+  unknown
+> = async (req, res, next) => {
+  try {
+    const wait = await getWaitByPlotFieldCommandIdService({
+      plotFieldCommandId: req.params.plotFieldCommandId,
+    });
+    if (wait) {
+      return res.status(201).json(wait);
+    } else {
+      return res.status(400).json({ message: "Something went wrong" });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
 
 type CreateWaitParams = {
   plotFieldCommandId: string;

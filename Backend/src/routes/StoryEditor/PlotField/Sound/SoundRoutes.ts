@@ -4,7 +4,7 @@ import {
   deleteSoundController,
   updateSoundController,
   updateSoundIsGlobalController,
-} from "../../../../controllers/StoryEditor/PlotField/Sound/SoundController";
+} from "../../../../controllers/StoryEditor/PlotField/Sound/CommandSoundController";
 
 // Default route === /plotFieldCommands
 export const soundRoute = express.Router();

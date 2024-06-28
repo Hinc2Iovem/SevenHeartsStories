@@ -3,7 +3,34 @@ import {
   createNameService,
   deleteNameService,
   updateNameService,
+  getNameByPlotFieldCommandIdService,
 } from "../../../../services/StoryEditor/PlotField/Name/CommandNameService";
+
+type GetNameByPlotFieldCommandIdParams = {
+  plotFieldCommandId: string;
+};
+
+// @route GET http://localhost:3500/plotFieldCommands/:plotFieldCommandId/names
+// @access Private
+export const getNameByPlotFieldCommandIdController: RequestHandler<
+  GetNameByPlotFieldCommandIdParams,
+  unknown,
+  unknown,
+  unknown
+> = async (req, res, next) => {
+  try {
+    const name = await getNameByPlotFieldCommandIdService({
+      plotFieldCommandId: req.params.plotFieldCommandId,
+    });
+    if (name) {
+      return res.status(201).json(name);
+    } else {
+      return res.status(400).json({ message: "Something went wrong" });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
 
 type CreateNameParams = {
   plotFieldCommandId: string;

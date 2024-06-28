@@ -3,6 +3,26 @@ import Move from "../../../../models/StoryEditor/PlotField/Move/Move";
 import { validateMongoId } from "../../../../utils/validateMongoId";
 import PlotFieldCommand from "../../../../models/StoryEditor/PlotField/PlotFieldCommand";
 
+type GetMoveByPlotFieldCommandIdTypes = {
+  plotFieldCommandId: string;
+};
+
+export const getMoveByPlotFieldCommandIdService = async ({
+  plotFieldCommandId,
+}: GetMoveByPlotFieldCommandIdTypes) => {
+  validateMongoId({ value: plotFieldCommandId, valueName: "PlotFieldCommand" });
+
+  const existingMove = await Move.findOne({
+    plotFieldCommandId,
+  }).lean();
+
+  if (!existingMove) {
+    return null;
+  }
+
+  return existingMove;
+};
+
 type CreateMoveTypes = {
   plotFieldCommandId: string;
 };

@@ -3,6 +3,30 @@ import Wait from "../../../../models/StoryEditor/PlotField/Wait/Wait";
 import { validateMongoId } from "../../../../utils/validateMongoId";
 import PlotFieldCommand from "../../../../models/StoryEditor/PlotField/PlotFieldCommand";
 
+type GetWaitByPlotFieldCommandIdTypes = {
+  plotFieldCommandId: string;
+};
+
+export const getWaitByPlotFieldCommandIdService = async ({
+  plotFieldCommandId,
+}: GetWaitByPlotFieldCommandIdTypes) => {
+  validateMongoId({ value: plotFieldCommandId, valueName: "PlotFieldCommand" });
+
+  const existingWait = await Wait.findOne({
+    plotFieldCommandId,
+  }).lean();
+
+  if (!existingWait) {
+    return null;
+  }
+
+  return existingWait;
+};
+
+type CreateAmbientTypes = {
+  plotFieldCommandId: string;
+};
+
 type CreateWaitTypes = {
   plotFieldCommandId: string;
 };

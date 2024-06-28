@@ -1,6 +1,6 @@
 import express from "express";
 import {
-  episodeAssingWorkersController,
+  episodeAssignWorkersController,
   episodeInfoUpdateStatusController,
 } from "../../controllers/StoryData/EpisodeInfoController";
 
@@ -13,4 +13,4 @@ episodeInfoRoute
 
 episodeInfoRoute
   .route("/:episodes/staff/:staffId")
-  .patch(episodeAssingWorkersController);
+  .patch(episodeAssignWorkersController);

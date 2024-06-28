@@ -4,8 +4,23 @@ import {
   storyDeleteService,
   storyUpdateGenreService,
   storyUpdateImgService,
-  storyUpdateTitleService,
+  storyGetAllService,
 } from "../../services/StoryData/StoryService";
+
+// @route GET http://localhost:3500/stories
+// @access Private
+export const storyGetAllController: RequestHandler = async (req, res, next) => {
+  try {
+    const story = await storyGetAllService();
+    if (story) {
+      return res.status(201).json(story);
+    } else {
+      return res.status(400).json({ message: "Something went wrong" });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
 
 type StoryCreateBody = {
   title: string | undefined;
@@ -28,38 +43,6 @@ export const storyCreateController: RequestHandler<
       title: req.body.title,
       genres: req.body.genres,
       imgUrl: req.body.imgUrl,
-    });
-    if (story) {
-      return res.status(201).json(story);
-    } else {
-      return res.status(400).json({ message: "Something went wrong" });
-    }
-  } catch (error) {
-    next(error);
-  }
-};
-
-type StoryUpdateTitleParams = {
-  storyId: string;
-};
-type StoryUpdateTitleBody = {
-  title: string | undefined;
-  currentLanguage: string | undefined;
-};
-
-// @route PATCH http://localhost:3500/stories/:storyId
-// @access Private
-export const storyUpdateTitleController: RequestHandler<
-  StoryUpdateTitleParams,
-  unknown,
-  StoryUpdateTitleBody,
-  unknown
-> = async (req, res, next) => {
-  try {
-    const story = await storyUpdateTitleService({
-      storyId: req.params.storyId,
-      title: req.body.title,
-      currentLanguage: req.body.currentLanguage,
     });
     if (story) {
       return res.status(201).json(story);

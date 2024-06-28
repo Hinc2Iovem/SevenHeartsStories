@@ -5,6 +5,72 @@ import Character from "../../models/StoryData/Character";
 import CharacterEmotion from "../../models/StoryData/CharacterEmotion";
 import Translation from "../../models/StoryData/Translation";
 import { TranslationTextFieldName } from "../../consts/TRANSLATION_TEXT_FIELD_NAMES";
+import { checkCurrentLanguage } from "../../utils/checkCurrentLanguage";
+
+type GetAllCharacterNameTagsTypes = {
+  storyId: string;
+};
+
+export const getAllCharacterNameTagsService = async ({
+  storyId,
+}: GetAllCharacterNameTagsTypes) => {
+  validateMongoId({ value: storyId, valueName: "Story" });
+  const existingCharacters = await Character.find({ storyId }).exec();
+  if (existingCharacters.length) {
+    const allNameTags: string[] = [];
+    existingCharacters.map((c) => {
+      if (c.nameTag) {
+        allNameTags.push(c.nameTag);
+      }
+    });
+    return allNameTags;
+  }
+  return [];
+};
+
+type GetCharactersByStoryId = {
+  storyId: string;
+};
+
+export const characterGetAllByStoryIdService = async ({
+  storyId,
+}: GetCharactersByStoryId) => {
+  validateMongoId({ value: storyId, valueName: "Story" });
+
+  const existingCharacters = await Character.find({ storyId }).exec();
+  if (!existingCharacters.length) {
+    return [];
+  }
+  return existingCharacters;
+};
+
+type GetCharactersByStoryIdAndNameTypes = {
+  storyId: string;
+  name: string | undefined;
+};
+
+export const characterGetByStoryIdAndNameService = async ({
+  storyId,
+  name,
+}: GetCharactersByStoryIdAndNameTypes) => {
+  validateMongoId({ value: storyId, valueName: "Story" });
+  if (!name?.trim().length) {
+    throw createHttpError(400, "Name is required");
+  }
+
+  const existingCharacter = await Translation.findOne({
+    textFieldName: TranslationTextFieldName.CharacterName,
+    text: name,
+  })
+    .collation({ locale: "en", strength: 2 })
+    .lean()
+    .exec();
+  if (!existingCharacter) {
+    return null;
+  }
+
+  return existingCharacter;
+};
 
 type CharacterCreateTypes = {
   storyId: string;
@@ -31,6 +97,11 @@ export const characterCreateService = async ({
   if (!name?.trim().length || !description?.trim().length) {
     throw createHttpError(400, "Name and Description is required");
   }
+  if (!currentLanguage?.trim().length) {
+    throw createHttpError(400, "Language is required");
+  }
+
+  checkCurrentLanguage({ currentLanguage });
 
   if (type === "EmptyCharacter") {
     const character = await Character.create({
@@ -112,24 +183,16 @@ export const characterCreateService = async ({
 
 type UpdateCharacterTypes = {
   characterId: string;
-  name: string | undefined;
-  unknownName: string | undefined;
-  description: string | undefined;
   nameTag: string | undefined;
   type: CharacterTypeAlias | undefined;
   img: string | undefined;
-  currentLanguage: string | undefined;
 };
 
 export const characterUpdateService = async ({
-  description,
   img,
-  name,
   nameTag,
   type,
-  unknownName,
   characterId,
-  currentLanguage,
 }: UpdateCharacterTypes) => {
   validateMongoId({ value: characterId, valueName: "Character" });
 
@@ -138,44 +201,6 @@ export const characterUpdateService = async ({
     throw createHttpError(400, "Character with such id doesn't exist");
   }
 
-  if (name?.trim().length) {
-    const existingTranslation = await Translation.findOne({
-      characterId,
-      language: currentLanguage,
-      textFieldName: TranslationTextFieldName.CharacterName,
-    }).exec();
-
-    if (existingTranslation) {
-      existingTranslation.text = name;
-      await existingTranslation.save();
-    } else {
-      await Translation.create({
-        characterId,
-        text: name,
-        language: currentLanguage,
-        textFieldName: TranslationTextFieldName.CharacterName,
-      });
-    }
-  }
-  if (description?.trim().length) {
-    const existingTranslation = await Translation.findOne({
-      characterId,
-      language: currentLanguage,
-      textFieldName: TranslationTextFieldName.CharacterDescription,
-    }).exec();
-
-    if (existingTranslation) {
-      existingTranslation.text = description;
-      await existingTranslation.save();
-    } else {
-      await Translation.create({
-        characterId,
-        text: description,
-        language: currentLanguage,
-        textFieldDescription: TranslationTextFieldName.CharacterDescription,
-      });
-    }
-  }
   if (img?.trim().length) {
     existingCharacter.img = img;
   }
@@ -184,25 +209,6 @@ export const characterUpdateService = async ({
   }
   if (type?.trim().length) {
     existingCharacter.type = type;
-  }
-  if (unknownName?.trim().length) {
-    const existingTranslation = await Translation.findOne({
-      characterId,
-      language: currentLanguage,
-      textFieldName: TranslationTextFieldName.CharacterUnknownName,
-    }).exec();
-
-    if (existingTranslation) {
-      existingTranslation.text = unknownName;
-      await existingTranslation.save();
-    } else {
-      await Translation.create({
-        characterId,
-        text: unknownName,
-        language: currentLanguage,
-        textFieldUnknownName: TranslationTextFieldName.CharacterUnknownName,
-      });
-    }
   }
 
   return await existingCharacter.save();

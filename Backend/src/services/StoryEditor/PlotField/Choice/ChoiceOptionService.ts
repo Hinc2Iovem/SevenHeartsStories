@@ -14,6 +14,32 @@ import { validateMongoId } from "../../../../utils/validateMongoId";
 import { createTopologyBlockConnection } from "../../../../utils/createTopologyBlockConnection";
 import { Types } from "mongoose";
 import { createTopologyBlock } from "../../../../utils/createTopologyBlock";
+import { checkCurrentLanguage } from "../../../../utils/checkCurrentLanguage";
+import { ChoiceOptionTypes } from "../../../../consts/CHOICE_OPTION_TYPES";
+import { checkChoiceOptionType } from "../../../../utils/checkChoiceOptionType";
+
+type GetChoiceOptionByPlotFieldCommandIdTypes = {
+  plotFieldCommandChoiceId: string;
+};
+
+export const getChoiceOptionByPlotFieldCommandChoiceIdService = async ({
+  plotFieldCommandChoiceId,
+}: GetChoiceOptionByPlotFieldCommandIdTypes) => {
+  validateMongoId({
+    value: plotFieldCommandChoiceId,
+    valueName: "PlotFieldCommandChoice",
+  });
+
+  const existingChoiceOption = await ChoiceOption.findOne({
+    plotFieldCommandChoiceId,
+  }).lean();
+
+  if (!existingChoiceOption) {
+    return null;
+  }
+
+  return existingChoiceOption;
+};
 
 type CreateChoiceOptionTypes = {
   plotFieldCommandChoiceId: string;
@@ -32,6 +58,8 @@ export const createChoiceOptionService = async ({
     value: plotFieldCommandChoiceId,
     valueName: "PlotFieldCommandChoice",
   });
+
+  checkChoiceOptionType({ type });
 
   const existingChoice = await Choice.findById(plotFieldCommandChoiceId).lean();
   if (!existingChoice) {
@@ -91,7 +119,6 @@ type UpdateChoiceOptionTypes = {
   characterName: string | undefined;
   amountOfPoints: number | undefined;
   characteristicName: string | undefined;
-  currentLanguage: string | undefined;
   characterId: string | undefined;
   characterCharacteristicId: string | undefined;
 };
@@ -103,7 +130,6 @@ export const updateChoiceOptionService = async ({
   choiceOptionId,
   option,
   priceAmethysts,
-  currentLanguage,
   characterCharacteristicId,
   characterId,
 }: UpdateChoiceOptionTypes) => {
@@ -121,24 +147,6 @@ export const updateChoiceOptionService = async ({
 
   if (!option?.trim().length) {
     throw createHttpError(400, "option is required");
-  }
-
-  const existingTranslation = await Translation.findOne({
-    choiceOptionId,
-    language: currentLanguage,
-    textFieldName: TranslationTextFieldName.ChoiceOption,
-  }).exec();
-
-  if (existingTranslation) {
-    existingTranslation.text = option;
-    await existingTranslation.save();
-  } else {
-    await Translation.create({
-      choiceOptionId,
-      language: currentLanguage,
-      textFieldName: TranslationTextFieldName.ChoiceOption,
-      text: option,
-    });
   }
 
   if (existingChoiceOption.type === "common") {

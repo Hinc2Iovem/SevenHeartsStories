@@ -4,6 +4,24 @@ import Season from "../../models/StoryData/Season";
 import Story from "../../models/StoryData/Story";
 import Translation from "../../models/StoryData/Translation";
 import { TranslationTextFieldName } from "../../consts/TRANSLATION_TEXT_FIELD_NAMES";
+import { checkCurrentLanguage } from "../../utils/checkCurrentLanguage";
+
+type SeasonsGetByStoryIdTypes = {
+  storyId: string;
+};
+
+export const seasonsGetByStoryIdService = async ({
+  storyId,
+}: SeasonsGetByStoryIdTypes) => {
+  validateMongoId({ value: storyId, valueName: "Story" });
+
+  const existingSeasons = await Season.find({ storyId }).lean();
+  if (!existingSeasons.length) {
+    return [];
+  }
+
+  return existingSeasons;
+};
 
 type SeasonCreateTypes = {
   title: string | undefined;
@@ -26,6 +44,9 @@ export const seasonCreateService = async ({
   if (!title?.trim().length || !currentLanguage?.trim().length) {
     throw createHttpError(400, "Title and language are required");
   }
+
+  checkCurrentLanguage({ currentLanguage });
+
   const newSeason = await Season.create({
     storyId,
   });
@@ -37,46 +58,6 @@ export const seasonCreateService = async ({
   });
 
   return newSeason;
-};
-
-type SeasonUpdateTypes = {
-  seasonId: string;
-  title: string | undefined;
-  currentLanguage: string | undefined;
-};
-
-export const seasonUpdateTitleService = async ({
-  seasonId,
-  title,
-  currentLanguage,
-}: SeasonUpdateTypes) => {
-  validateMongoId({ value: seasonId, valueName: "Season" });
-
-  const existingSeason = await Season.findById(seasonId).exec();
-
-  if (!existingSeason) {
-    throw createHttpError(400, "Season with such id doesn't exist");
-  }
-
-  if (!currentLanguage?.trim().length) {
-    throw createHttpError(400, "Language is required");
-  }
-
-  const existingTranslation = await Translation.findOne({
-    seasonId,
-    language: currentLanguage,
-  }).exec();
-
-  if (!existingTranslation) {
-    throw createHttpError(400, "Such Translation doesn't exist");
-  }
-
-  if (title?.trim().length) {
-    existingTranslation.text = title;
-    await existingTranslation.save();
-  }
-
-  return existingTranslation;
 };
 
 type SeasonDeleteTypes = {

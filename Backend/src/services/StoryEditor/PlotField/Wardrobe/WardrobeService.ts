@@ -7,6 +7,53 @@ import AppearancePart from "../../../../models/StoryData/AppearancePart";
 import Translation from "../../../../models/StoryData/Translation";
 import { TranslationTextFieldName } from "../../../../consts/TRANSLATION_TEXT_FIELD_NAMES";
 import Character from "../../../../models/StoryData/Character";
+import { checkCurrentLanguage } from "../../../../utils/checkCurrentLanguage";
+
+type GetCommandWardrobeByPlotFieldCommandIdTypes = {
+  plotFieldCommandId: string;
+};
+
+export const getCommandWardrobeByPlotFieldCommandIdService = async ({
+  plotFieldCommandId,
+}: GetCommandWardrobeByPlotFieldCommandIdTypes) => {
+  validateMongoId({ value: plotFieldCommandId, valueName: "PlotFieldCommand" });
+
+  const existingCommandWardrobe = await CommandWardrobe.findOne({
+    plotFieldCommandId,
+  }).lean();
+
+  if (!existingCommandWardrobe) {
+    return null;
+  }
+
+  return existingCommandWardrobe;
+};
+
+type GetCommandWardrobeByAppearancePartIdAndCommandWardrobeIdTypes = {
+  commandWardrobeId: string;
+  appearancePartId: string;
+};
+
+export const getCommandWardrobeByAppearancePartIdAndCommandWardrobeIdService =
+  async ({
+    commandWardrobeId,
+    appearancePartId,
+  }: GetCommandWardrobeByAppearancePartIdAndCommandWardrobeIdTypes) => {
+    validateMongoId({ value: commandWardrobeId, valueName: "CommandWardrobe" });
+    validateMongoId({ value: appearancePartId, valueName: "AppearancePart" });
+
+    const existingCommandWardrobeAppearancePart =
+      await CommandWardrobeAppearancePart.find({
+        appearancePartId,
+        commandWardrobeId,
+      }).lean();
+
+    if (!existingCommandWardrobeAppearancePart.length) {
+      return [];
+    }
+
+    return existingCommandWardrobeAppearancePart;
+  };
 
 type CreateCommandWardrobeTypes = {
   plotFieldCommandId: string;
@@ -31,21 +78,16 @@ export const createCommandWardrobeService = async ({
 
 type UpdateCommandWardrobeTypes = {
   title: string | undefined;
-  currentLanguage: string | undefined;
   commandWardrobeId: string;
   isCurrentDressed: boolean | undefined;
-  characterId: string;
 };
 
 export const updateCommandWardrobeService = async ({
   title,
-  currentLanguage,
-  characterId,
   isCurrentDressed,
   commandWardrobeId,
 }: UpdateCommandWardrobeTypes) => {
   validateMongoId({ value: commandWardrobeId, valueName: "CommandWardrobe" });
-  validateMongoId({ value: characterId, valueName: "Character" });
 
   if (!title?.trim().length) {
     throw createHttpError(400, "Title is required");
@@ -61,30 +103,8 @@ export const updateCommandWardrobeService = async ({
   if (!existingCommandWardrobe) {
     throw createHttpError(400, "CommandWardrobe with such id wasn't found");
   }
-  const existingCharacter = await Character.findById(characterId).exec();
-  if (!existingCharacter) {
-    throw createHttpError(400, "Character with such id wasn't found");
-  }
 
   existingCommandWardrobe.isCurrentDressed = isCurrentDressed;
-
-  const existingTranslation = await Translation.findOne({
-    commandId: commandWardrobeId,
-    textFieldName: TranslationTextFieldName.CommandWardrobeTitle,
-    language: currentLanguage,
-  });
-
-  if (existingTranslation) {
-    existingTranslation.text = title;
-    await existingTranslation.save();
-  } else {
-    await Translation.create({
-      commandId: commandWardrobeId,
-      language: currentLanguage,
-      textFieldName: TranslationTextFieldName.CommandWardrobeTitle,
-      text: title,
-    });
-  }
 
   return existingCommandWardrobe;
 };

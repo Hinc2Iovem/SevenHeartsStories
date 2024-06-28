@@ -3,7 +3,35 @@ import {
   createConditionValueService,
   deleteConditionValueService,
   updateConditionValueService,
+  getConditionValueByPlotFieldCommandConditionIdService,
 } from "../../../../services/StoryEditor/PlotField/Condition/ConditionValueService";
+
+type GetConditionValueByPlotFieldCommandConditionIdParams = {
+  plotFieldCommandConditionId: string;
+};
+
+// @route GET http://localhost:3500/plotFieldCommands/conditions/:plotFieldCommandConditionId/conditionValues
+// @access Private
+export const getConditionValueByPlotFieldCommandConditionIdController: RequestHandler<
+  GetConditionValueByPlotFieldCommandConditionIdParams,
+  unknown,
+  unknown,
+  unknown
+> = async (req, res, next) => {
+  try {
+    const conditionValue =
+      await getConditionValueByPlotFieldCommandConditionIdService({
+        plotFieldCommandConditionId: req.params.plotFieldCommandConditionId,
+      });
+    if (conditionValue) {
+      return res.status(201).json(conditionValue);
+    } else {
+      return res.status(400).json({ message: "Something went wrong" });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
 
 type CreateConditionValueParams = {
   conditionId: string;

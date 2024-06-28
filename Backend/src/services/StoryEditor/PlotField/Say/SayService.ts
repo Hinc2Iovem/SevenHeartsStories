@@ -5,6 +5,27 @@ import Say from "../../../../models/StoryEditor/PlotField/Say/Say";
 import { SayType } from "../../../../controllers/StoryEditor/PlotField/Say/SayController";
 import Translation from "../../../../models/StoryData/Translation";
 import { TranslationTextFieldName } from "../../../../consts/TRANSLATION_TEXT_FIELD_NAMES";
+import { checkCurrentLanguage } from "../../../../utils/checkCurrentLanguage";
+
+type GetSayByPlotFieldCommandIdTypes = {
+  plotFieldCommandId: string;
+};
+
+export const getSayByPlotFieldCommandIdService = async ({
+  plotFieldCommandId,
+}: GetSayByPlotFieldCommandIdTypes) => {
+  validateMongoId({ value: plotFieldCommandId, valueName: "PlotFieldCommand" });
+
+  const existingSay = await Say.findOne({
+    plotFieldCommandId,
+  }).lean();
+
+  if (!existingSay) {
+    return null;
+  }
+
+  return existingSay;
+};
 
 type CreateSayTypes = {
   characterName: string | undefined;
@@ -38,49 +59,6 @@ export const createSayService = async ({
       type: "character",
     });
   }
-};
-
-type UpdateSayTextTypes = {
-  text: string | undefined;
-  currentLanguage: string | undefined;
-  sayId: string;
-};
-
-export const updateSayTextService = async ({
-  sayId,
-  text,
-  currentLanguage,
-}: UpdateSayTextTypes) => {
-  validateMongoId({ value: sayId, valueName: "Say" });
-
-  const existingSay = await Say.findById(sayId).exec();
-  if (!existingSay) {
-    throw createHttpError(400, "Say with such id wasn't found");
-  }
-
-  if (!text?.trim().length || !currentLanguage?.trim().length) {
-    throw createHttpError(400, "Text and currentLanguage are required");
-  }
-
-  const existingTranslation = await Translation.findOne({
-    commandId: existingSay._id,
-    language: currentLanguage,
-    textFieldName: TranslationTextFieldName.SayText,
-  }).exec();
-
-  if (existingTranslation) {
-    existingTranslation.text = text;
-    await existingTranslation.save();
-  } else {
-    await Translation.create({
-      commandId: existingSay._id,
-      language: currentLanguage,
-      textFieldName: TranslationTextFieldName.SayText,
-      text,
-    });
-  }
-
-  return existingSay;
 };
 
 type UpdateSayCommandSideTypes = {

@@ -7,6 +7,46 @@ import TopologyBlockInfo from "../../../../models/StoryEditor/Topology/TopologyB
 import Translation from "../../../../models/StoryData/Translation";
 import { TranslationTextFieldName } from "../../../../consts/TRANSLATION_TEXT_FIELD_NAMES";
 import TopologyBlock from "../../../../models/StoryEditor/Topology/TopologyBlock";
+import { checkCurrentLanguage } from "../../../../utils/checkCurrentLanguage";
+
+type GetAchievementByPlotFieldCommandIdTypes = {
+  plotFieldCommandId: string;
+};
+
+export const getAchievementByPlotFieldCommandIdService = async ({
+  plotFieldCommandId,
+}: GetAchievementByPlotFieldCommandIdTypes) => {
+  validateMongoId({ value: plotFieldCommandId, valueName: "PlotFieldCommand" });
+
+  const existingAchievement = await Achievement.findOne({
+    plotFieldCommandId,
+  }).lean();
+
+  if (!existingAchievement) {
+    return null;
+  }
+
+  return existingAchievement;
+};
+
+type GetAchievementByStoryIdTypes = {
+  storyId: string;
+};
+export const getAchievementsByStoryIdService = async ({
+  storyId,
+}: GetAchievementByStoryIdTypes) => {
+  validateMongoId({ value: storyId, valueName: "Story" });
+
+  const existingAchievements = await Achievement.find({
+    storyId,
+  }).lean();
+
+  if (!existingAchievements.length) {
+    return [];
+  }
+
+  return existingAchievements;
+};
 
 type CreateAchievementTypes = {
   storyId: string;
@@ -50,49 +90,6 @@ export const createAchievementService = async ({
     storyId,
     plotFieldCommandId,
   });
-};
-
-type UpdateAchievementTypes = {
-  achievementId: string;
-  achievementName: string | undefined;
-  currentLanguage: string | undefined;
-};
-
-export const updateAchievementService = async ({
-  achievementId,
-  achievementName,
-  currentLanguage,
-}: UpdateAchievementTypes) => {
-  validateMongoId({ value: achievementId, valueName: "Achievement" });
-
-  const existingAchievement = await Achievement.findById(achievementId).exec();
-  if (!existingAchievement) {
-    throw createHttpError(400, "Achievement with such id wasn't found");
-  }
-
-  if (!achievementName?.trim().length || !currentLanguage?.trim().length) {
-    throw createHttpError(400, "Achievement and currentLanguage are required");
-  }
-
-  const existingTranslation = await Translation.findOne({
-    commandId: achievementId,
-    language: currentLanguage,
-    textFieldName: TranslationTextFieldName.AchievementName,
-  }).exec();
-
-  if (existingTranslation) {
-    existingTranslation.text = achievementName;
-    await existingTranslation.save();
-  } else {
-    return await Translation.create({
-      commandId: existingAchievement._id,
-      language: currentLanguage,
-      textFieldName: TranslationTextFieldName.AchievementName,
-      text: achievementName,
-    });
-  }
-
-  return existingTranslation;
 };
 
 type DeleteAchievementTypes = {

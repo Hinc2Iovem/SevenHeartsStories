@@ -6,6 +6,27 @@ import { validateMongoId } from "../../../../utils/validateMongoId";
 import Translation from "../../../../models/StoryData/Translation";
 import { TranslationTextFieldName } from "../../../../consts/TRANSLATION_TEXT_FIELD_NAMES";
 import { Types } from "mongoose";
+import { checkCurrentLanguage } from "../../../../utils/checkCurrentLanguage";
+
+type GetChoiceByPlotFieldCommandIdTypes = {
+  plotFieldCommandId: string;
+};
+
+export const getChoiceByPlotFieldCommandIdService = async ({
+  plotFieldCommandId,
+}: GetChoiceByPlotFieldCommandIdTypes) => {
+  validateMongoId({ value: plotFieldCommandId, valueName: "PlotFieldCommand" });
+
+  const existingChoice = await Choice.findOne({
+    plotFieldCommandId,
+  }).lean();
+
+  if (!existingChoice) {
+    return null;
+  }
+
+  return existingChoice;
+};
 
 type CreateChoiceTypes = {
   plotFieldCommandId: string;
@@ -29,8 +50,6 @@ export const createChoiceService = async ({
 };
 
 type UpdateChoiceTypes = {
-  choiceQuestion: string | undefined;
-  currentLanguage: string | undefined;
   choiceId: string;
   timeLimit: number | undefined;
   choiceType: ChoiceType | undefined;
@@ -38,10 +57,8 @@ type UpdateChoiceTypes = {
 };
 
 export const updateChoiceService = async ({
-  choiceQuestion,
   choiceId,
   choiceType,
-  currentLanguage,
   timeLimit,
   exitBlockId,
 }: UpdateChoiceTypes) => {
@@ -50,28 +67,6 @@ export const updateChoiceService = async ({
   const existingChoice = await Choice.findById(choiceId).exec();
   if (!existingChoice) {
     throw createHttpError(400, "Choice with such id wasn't found");
-  }
-
-  if (!choiceQuestion?.trim().length) {
-    throw createHttpError(400, "Choice Question is required");
-  }
-
-  const existingTranslation = await Translation.findOne({
-    textFieldName: TranslationTextFieldName.ChoiceQuestion,
-    language: currentLanguage,
-    commandId: choiceId,
-  }).exec();
-
-  if (existingTranslation) {
-    existingTranslation.text = choiceQuestion;
-    await existingTranslation.save();
-  } else {
-    await Translation.create({
-      commandId: choiceId,
-      language: currentLanguage,
-      textFieldName: TranslationTextFieldName.ChoiceQuestion,
-      text: choiceQuestion,
-    });
   }
 
   if (choiceType) {

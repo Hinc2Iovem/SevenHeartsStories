@@ -6,6 +6,26 @@ import TopologyBlock from "../../../../models/StoryEditor/Topology/TopologyBlock
 import { validateMongoId } from "../../../../utils/validateMongoId";
 import TopologyBlockConnection from "../../../../models/StoryEditor/Topology/TopologyBlockConnection";
 
+type GetCallByPlotFieldCommandIdTypes = {
+  plotFieldCommandId: string;
+};
+
+export const getCallByPlotFieldCommandIdService = async ({
+  plotFieldCommandId,
+}: GetCallByPlotFieldCommandIdTypes) => {
+  validateMongoId({ value: plotFieldCommandId, valueName: "PlotFieldCommand" });
+
+  const existingCall = await Call.findOne({
+    plotFieldCommandId,
+  }).lean();
+
+  if (!existingCall) {
+    return null;
+  }
+
+  return existingCall;
+};
+
 type CreateCallTypes = {
   plotFieldCommandId: string;
 };

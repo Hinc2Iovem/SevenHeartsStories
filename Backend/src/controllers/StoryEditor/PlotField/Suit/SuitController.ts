@@ -3,7 +3,34 @@ import {
   createSuitService,
   deleteSuitService,
   updateSuitService,
-} from "../../../../services/StoryEditor/PlotField/Suit/SuitService.ts.js";
+  getSuitByPlotFieldCommandIdService,
+} from "../../../../services/StoryEditor/PlotField/Suit/SuitService.ts";
+
+type GetSuitByPlotFieldCommandIdParams = {
+  plotFieldCommandId: string;
+};
+
+// @route GET http://localhost:3500/plotFieldCommands/:plotFieldCommandId/suits
+// @access Private
+export const getSuitByPlotFieldCommandIdController: RequestHandler<
+  GetSuitByPlotFieldCommandIdParams,
+  unknown,
+  unknown,
+  unknown
+> = async (req, res, next) => {
+  try {
+    const suit = await getSuitByPlotFieldCommandIdService({
+      plotFieldCommandId: req.params.plotFieldCommandId,
+    });
+    if (suit) {
+      return res.status(201).json(suit);
+    } else {
+      return res.status(400).json({ message: "Something went wrong" });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
 
 type CreateSuitParams = {
   plotFieldCommandId: string;

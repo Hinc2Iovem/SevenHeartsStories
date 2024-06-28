@@ -2,28 +2,44 @@ import { RequestHandler } from "express";
 import {
   appearancePartCreateService,
   appearancePartDeleteService,
-  appearancePartUpdateNameTypeService,
+  appearancePartGetAllService,
+  appearancePartGetByCharacterIdService,
+  appearancePartUpdateImgService,
 } from "../../services/StoryData/AppearancePartService";
 
-type AppearancePartCreateBody = {
-  appearancePartName: string | undefined;
-  appearancePartType: string | undefined;
-  currentLanguage: string | undefined;
+// @route GET http://localhost:3500/appearanceParts/characters/:characterId
+// @access Private
+export const appearancePartGetAllController: RequestHandler = async (
+  req,
+  res,
+  next
+) => {
+  try {
+    const appearancePart = await appearancePartGetAllService();
+    if (appearancePart) {
+      return res.status(201).json(appearancePart);
+    } else {
+      return res.status(400).json({ message: "Something went wrong" });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+type AppearancePartGetByCharacterIdParams = {
+  characterId: string;
 };
 
-// @route POST http://localhost:3500/appearanceParts
+// @route GET http://localhost:3500/appearanceParts/characters/:characterId
 // @access Private
-export const appearancePartControllerCreate: RequestHandler<
+export const appearancePartGetByCharacterIdController: RequestHandler<
+  AppearancePartGetByCharacterIdParams,
   unknown,
   unknown,
-  AppearancePartCreateBody,
   unknown
 > = async (req, res, next) => {
   try {
-    const appearancePart = await appearancePartCreateService({
-      appearancePartName: req.body.appearancePartName,
-      appearancePartType: req.body.appearancePartType,
-      currentLanguage: req.body.currentLanguage,
+    const appearancePart = await appearancePartGetByCharacterIdService({
+      characterId: req.params.characterId,
     });
     if (appearancePart) {
       return res.status(201).json(appearancePart);
@@ -35,30 +51,62 @@ export const appearancePartControllerCreate: RequestHandler<
   }
 };
 
-type AppearancePartUpdateParams = {
-  appearancePartId: string;
+type AppearancePartCreateParams = {
+  characterId: string;
 };
 
-type AppearancePartUpdateBody = {
+type AppearancePartCreateBody = {
   appearancePartName: string | undefined;
   appearancePartType: string | undefined;
   currentLanguage: string | undefined;
+  img: string | undefined;
 };
 
-// @route PATCH http://localhost:3500/appearanceParts/:appearancePartId/nameType
+// @route POST http://localhost:3500/appearanceParts/characters/:characterId
 // @access Private
-export const appearancePartControllerUpdateNameType: RequestHandler<
-  AppearancePartUpdateParams,
+export const appearancePartControllerCreate: RequestHandler<
+  AppearancePartCreateParams,
   unknown,
-  AppearancePartUpdateBody,
+  AppearancePartCreateBody,
   unknown
 > = async (req, res, next) => {
   try {
-    const appearancePart = await appearancePartUpdateNameTypeService({
+    const appearancePart = await appearancePartCreateService({
       appearancePartName: req.body.appearancePartName,
       appearancePartType: req.body.appearancePartType,
       currentLanguage: req.body.currentLanguage,
+      img: req.body.img,
+      characterId: req.params.characterId,
+    });
+    if (appearancePart) {
+      return res.status(201).json(appearancePart);
+    } else {
+      return res.status(400).json({ message: "Something went wrong" });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
+type AppearancePartUpdateImgParams = {
+  appearancePartId: string;
+};
+type AppearancePartUpdateImgBody = {
+  img: string | undefined;
+};
+
+// @route PATCH http://localhost:3500/appearanceParts/:appearancePartId/img
+// @access Private
+export const appearancePartControllerUpdateImg: RequestHandler<
+  AppearancePartUpdateImgParams,
+  unknown,
+  AppearancePartUpdateImgBody,
+  unknown
+> = async (req, res, next) => {
+  try {
+    const appearancePart = await appearancePartUpdateImgService({
       appearancePartId: req.params.appearancePartId,
+      img: req.body.img,
     });
     if (appearancePart) {
       return res.status(201).json(appearancePart);

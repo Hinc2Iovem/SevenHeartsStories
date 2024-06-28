@@ -4,6 +4,29 @@ import ConditionValue from "../../../../models/StoryEditor/PlotField/Condition/C
 import { validateMongoId } from "../../../../utils/validateMongoId";
 import { SignTypes } from "../../../../controllers/StoryEditor/PlotField/Condition/ConditionValueController";
 
+type GetAmbientByPlotFieldCommandConditionIdTypes = {
+  plotFieldCommandConditionId: string;
+};
+
+export const getConditionValueByPlotFieldCommandConditionIdService = async ({
+  plotFieldCommandConditionId,
+}: GetAmbientByPlotFieldCommandConditionIdTypes) => {
+  validateMongoId({
+    value: plotFieldCommandConditionId,
+    valueName: "PlotFieldCommand",
+  });
+
+  const existingConditionValue = await ConditionValue.findOne({
+    plotFieldCommandConditionId,
+  }).lean();
+
+  if (!existingConditionValue) {
+    return null;
+  }
+
+  return existingConditionValue;
+};
+
 type CreateConditionValueTypes = {
   conditionId: string;
 };
