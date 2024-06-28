@@ -9,6 +9,9 @@ export const appearancePartSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  img: {
+    type: String,
+  },
 });
 
 type AppearancePart = InferSchemaType<typeof appearancePartSchema>;

@@ -4,6 +4,7 @@ import {
   appearancePartDeleteService,
   appearancePartGetAllService,
   appearancePartGetByCharacterIdService,
+  appearancePartUpdateImgService,
 } from "../../services/StoryData/AppearancePartService";
 
 // @route GET http://localhost:3500/appearanceParts/characters/:characterId
@@ -58,6 +59,7 @@ type AppearancePartCreateBody = {
   appearancePartName: string | undefined;
   appearancePartType: string | undefined;
   currentLanguage: string | undefined;
+  img: string | undefined;
 };
 
 // @route POST http://localhost:3500/appearanceParts/characters/:characterId
@@ -73,7 +75,38 @@ export const appearancePartControllerCreate: RequestHandler<
       appearancePartName: req.body.appearancePartName,
       appearancePartType: req.body.appearancePartType,
       currentLanguage: req.body.currentLanguage,
+      img: req.body.img,
       characterId: req.params.characterId,
+    });
+    if (appearancePart) {
+      return res.status(201).json(appearancePart);
+    } else {
+      return res.status(400).json({ message: "Something went wrong" });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
+type AppearancePartUpdateImgParams = {
+  appearancePartId: string;
+};
+type AppearancePartUpdateImgBody = {
+  img: string | undefined;
+};
+
+// @route PATCH http://localhost:3500/appearanceParts/:appearancePartId/img
+// @access Private
+export const appearancePartControllerUpdateImg: RequestHandler<
+  AppearancePartUpdateImgParams,
+  unknown,
+  AppearancePartUpdateImgBody,
+  unknown
+> = async (req, res, next) => {
+  try {
+    const appearancePart = await appearancePartUpdateImgService({
+      appearancePartId: req.params.appearancePartId,
+      img: req.body.img,
     });
     if (appearancePart) {
       return res.status(201).json(appearancePart);

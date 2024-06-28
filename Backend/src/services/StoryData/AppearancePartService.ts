@@ -34,12 +34,14 @@ type AppearancePartCreateTypes = {
   appearancePartName: string | undefined;
   appearancePartType: string | undefined;
   currentLanguage: string | undefined;
+  img: string | undefined;
   characterId: string;
 };
 
 export const appearancePartCreateService = async ({
   appearancePartName,
   appearancePartType,
+  img,
   currentLanguage,
   characterId,
 }: AppearancePartCreateTypes) => {
@@ -67,6 +69,7 @@ export const appearancePartCreateService = async ({
   const newAppearancePart = await AppearancePart.create({
     type: appearancePartType.toLowerCase(),
     characterId,
+    img: img ?? "",
   });
 
   await Translation.create({
@@ -80,6 +83,33 @@ export const appearancePartCreateService = async ({
     type: appearancePartType.toLowerCase(),
     name: appearancePartName,
   };
+};
+
+type AppearancePartUpdateImgTypes = {
+  appearancePartId: string;
+  img: string | undefined;
+};
+
+export const appearancePartUpdateImgService = async ({
+  img,
+  appearancePartId,
+}: AppearancePartUpdateImgTypes) => {
+  validateMongoId({ value: appearancePartId, valueName: "appearancePart" });
+
+  const existingAppearancePart = await AppearancePart.findById(
+    appearancePartId
+  ).exec();
+  if (!existingAppearancePart) {
+    throw createHttpError(400, "Such appearancePart doesn't exist");
+  }
+
+  if (!img?.trim().length) {
+    throw createHttpError(400, "Img is required");
+  }
+
+  existingAppearancePart.img = img;
+
+  return await existingAppearancePart.save();
 };
 
 type AppearancePartDeleteTypes = {
