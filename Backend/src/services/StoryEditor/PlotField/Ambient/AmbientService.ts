@@ -3,6 +3,26 @@ import Ambient from "../../../../models/StoryEditor/PlotField/Ambient/Ambient";
 import { validateMongoId } from "../../../../utils/validateMongoId";
 import PlotFieldCommand from "../../../../models/StoryEditor/PlotField/PlotFieldCommand";
 
+type GetAmbientByPlotFieldCommandIdTypes = {
+  plotFieldCommandId: string;
+};
+
+export const getAmbientByPlotFieldCommandIdService = async ({
+  plotFieldCommandId,
+}: GetAmbientByPlotFieldCommandIdTypes) => {
+  validateMongoId({ value: plotFieldCommandId, valueName: "PlotFieldCommand" });
+
+  const existingAmbient = await Ambient.findOne({
+    plotFieldCommandId,
+  }).lean();
+
+  if (!existingAmbient) {
+    return null;
+  }
+
+  return existingAmbient;
+};
+
 type CreateAmbientTypes = {
   plotFieldCommandId: string;
 };

@@ -4,6 +4,26 @@ import PlotFieldCommand from "../../../../models/StoryEditor/PlotField/PlotField
 import Sound from "../../../../models/StoryData/Sound";
 import CommandSound from "../../../../models/StoryEditor/PlotField/Sound/CommandSound";
 
+type GetSoundByPlotFieldCommandIdTypes = {
+  plotFieldCommandId: string;
+};
+
+export const getSoundByPlotFieldCommandIdService = async ({
+  plotFieldCommandId,
+}: GetSoundByPlotFieldCommandIdTypes) => {
+  validateMongoId({ value: plotFieldCommandId, valueName: "PlotFieldCommand" });
+
+  const existingSound = await CommandSound.findOne({
+    plotFieldCommandId,
+  }).lean();
+
+  if (!existingSound) {
+    return null;
+  }
+
+  return existingSound;
+};
+
 type CreateSoundTypes = {
   plotFieldCommandId: string;
   storyId: string;

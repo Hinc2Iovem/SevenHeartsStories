@@ -4,6 +4,26 @@ import { validateMongoId } from "../../../../utils/validateMongoId";
 import Name from "../../../../models/StoryEditor/PlotField/Name/Name";
 import { Types } from "mongoose";
 
+type GetNameByPlotFieldCommandIdTypes = {
+  plotFieldCommandId: string;
+};
+
+export const getNameByPlotFieldCommandIdService = async ({
+  plotFieldCommandId,
+}: GetNameByPlotFieldCommandIdTypes) => {
+  validateMongoId({ value: plotFieldCommandId, valueName: "PlotFieldCommand" });
+
+  const existingName = await Name.findOne({
+    plotFieldCommandId,
+  }).lean();
+
+  if (!existingName) {
+    return null;
+  }
+
+  return existingName;
+};
+
 type CreateNameTypes = {
   plotFieldCommandId: string;
 };

@@ -3,6 +3,25 @@ import Background from "../../../../models/StoryEditor/PlotField/Background/Back
 import { validateMongoId } from "../../../../utils/validateMongoId";
 import PlotFieldCommand from "../../../../models/StoryEditor/PlotField/PlotFieldCommand";
 
+type GetBackgroundByPlotFieldCommandIdTypes = {
+  plotFieldCommandId: string;
+};
+
+export const getBackgroundByPlotFieldCommandIdService = async ({
+  plotFieldCommandId,
+}: GetBackgroundByPlotFieldCommandIdTypes) => {
+  validateMongoId({ value: plotFieldCommandId, valueName: "PlotFieldCommand" });
+
+  const existingBackground = await Background.findOne({
+    plotFieldCommandId,
+  }).lean();
+
+  if (!existingBackground) {
+    return null;
+  }
+
+  return existingBackground;
+};
 type CreateBackgroundTypes = {
   plotFieldCommandId: string;
 };

@@ -7,6 +7,53 @@ import AppearancePart from "../../../../models/StoryData/AppearancePart";
 import Translation from "../../../../models/StoryData/Translation";
 import { TranslationTextFieldName } from "../../../../consts/TRANSLATION_TEXT_FIELD_NAMES";
 import Character from "../../../../models/StoryData/Character";
+import { checkCurrentLanguage } from "../../../../utils/checkCurrentLanguage";
+
+type GetCommandWardrobeByPlotFieldCommandIdTypes = {
+  plotFieldCommandId: string;
+};
+
+export const getCommandWardrobeByPlotFieldCommandIdService = async ({
+  plotFieldCommandId,
+}: GetCommandWardrobeByPlotFieldCommandIdTypes) => {
+  validateMongoId({ value: plotFieldCommandId, valueName: "PlotFieldCommand" });
+
+  const existingCommandWardrobe = await CommandWardrobe.findOne({
+    plotFieldCommandId,
+  }).lean();
+
+  if (!existingCommandWardrobe) {
+    return null;
+  }
+
+  return existingCommandWardrobe;
+};
+
+type GetCommandWardrobeByAppearancePartIdAndCommandWardrobeIdTypes = {
+  commandWardrobeId: string;
+  appearancePartId: string;
+};
+
+export const getCommandWardrobeByAppearancePartIdAndCommandWardrobeIdService =
+  async ({
+    commandWardrobeId,
+    appearancePartId,
+  }: GetCommandWardrobeByAppearancePartIdAndCommandWardrobeIdTypes) => {
+    validateMongoId({ value: commandWardrobeId, valueName: "CommandWardrobe" });
+    validateMongoId({ value: appearancePartId, valueName: "AppearancePart" });
+
+    const existingCommandWardrobeAppearancePart =
+      await CommandWardrobeAppearancePart.find({
+        appearancePartId,
+        commandWardrobeId,
+      }).lean();
+
+    if (!existingCommandWardrobeAppearancePart.length) {
+      return [];
+    }
+
+    return existingCommandWardrobeAppearancePart;
+  };
 
 type CreateCommandWardrobeTypes = {
   plotFieldCommandId: string;
@@ -54,6 +101,11 @@ export const updateCommandWardrobeService = async ({
   if (isCurrentDressed === undefined || isCurrentDressed === null) {
     throw createHttpError(400, "isCurrentDressed is required");
   }
+
+  if (!currentLanguage?.trim().length) {
+    throw createHttpError(400, "Language is required");
+  }
+  checkCurrentLanguage({ currentLanguage });
 
   const existingCommandWardrobe = await CommandWardrobe.findById(
     commandWardrobeId

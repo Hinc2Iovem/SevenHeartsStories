@@ -3,7 +3,34 @@ import {
   seasonCreateService,
   seasonDeleteService,
   seasonUpdateTitleService,
+  seasonsGetByStoryIdService,
 } from "../../services/StoryData/SeasonService";
+
+type SeasonsGetByStoryIdParams = {
+  storyId: string;
+};
+
+// @route GET http://localhost:3500/stories/:storyId/seasons
+// @access Private
+export const seasonsGetByStoryIdController: RequestHandler<
+  SeasonsGetByStoryIdParams,
+  unknown,
+  unknown,
+  unknown
+> = async (req, res, next) => {
+  try {
+    const season = await seasonsGetByStoryIdService({
+      storyId: req.params.storyId,
+    });
+    if (season) {
+      return res.status(201).json(season);
+    } else {
+      return res.status(400).json({ message: "Something went wrong" });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
 
 type SeasonCreateParams = {
   storyId: string;
@@ -14,7 +41,7 @@ type SeasonCreateBody = {
   currentLanguage: string | undefined;
 };
 
-// @route POST http://localhost:3500/seasons
+// @route POST http://localhost:3500/stories/:storyId/seasons
 // @access Private
 export const seasonCreateController: RequestHandler<
   SeasonCreateParams,

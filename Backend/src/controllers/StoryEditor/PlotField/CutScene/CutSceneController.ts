@@ -2,8 +2,35 @@ import { RequestHandler } from "express";
 import {
   createCutSceneService,
   deleteCutSceneService,
+  getCutSceneByPlotFieldCommandIdService,
   updateCutSceneService,
 } from "../../../../services/StoryEditor/PlotField/CutScene/CutSceneService";
+
+type GetCutSceneByPlotFieldCommandIdParams = {
+  plotFieldCommandId: string;
+};
+
+// @route GET http://localhost:3500/plotFieldCommands/:plotFieldCommandId/cutScenes
+// @access Private
+export const getCutSceneByPlotFieldCommandIdController: RequestHandler<
+  GetCutSceneByPlotFieldCommandIdParams,
+  unknown,
+  unknown,
+  unknown
+> = async (req, res, next) => {
+  try {
+    const cutScene = await getCutSceneByPlotFieldCommandIdService({
+      plotFieldCommandId: req.params.plotFieldCommandId,
+    });
+    if (cutScene) {
+      return res.status(201).json(cutScene);
+    } else {
+      return res.status(400).json({ message: "Something went wrong" });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
 
 type CreateCutSceneParams = {
   plotFieldCommandId: string;

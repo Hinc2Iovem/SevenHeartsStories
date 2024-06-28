@@ -4,6 +4,24 @@ import Season from "../../models/StoryData/Season";
 import Story from "../../models/StoryData/Story";
 import Translation from "../../models/StoryData/Translation";
 import { TranslationTextFieldName } from "../../consts/TRANSLATION_TEXT_FIELD_NAMES";
+import { checkCurrentLanguage } from "../../utils/checkCurrentLanguage";
+
+type SeasonsGetByStoryIdTypes = {
+  storyId: string;
+};
+
+export const seasonsGetByStoryIdService = async ({
+  storyId,
+}: SeasonsGetByStoryIdTypes) => {
+  validateMongoId({ value: storyId, valueName: "Story" });
+
+  const existingSeasons = await Season.find({ storyId }).lean();
+  if (!existingSeasons.length) {
+    return [];
+  }
+
+  return existingSeasons;
+};
 
 type SeasonCreateTypes = {
   title: string | undefined;
@@ -26,6 +44,9 @@ export const seasonCreateService = async ({
   if (!title?.trim().length || !currentLanguage?.trim().length) {
     throw createHttpError(400, "Title and language are required");
   }
+
+  checkCurrentLanguage({ currentLanguage });
+
   const newSeason = await Season.create({
     storyId,
   });
@@ -61,6 +82,7 @@ export const seasonUpdateTitleService = async ({
   if (!currentLanguage?.trim().length) {
     throw createHttpError(400, "Language is required");
   }
+  checkCurrentLanguage({ currentLanguage });
 
   const existingTranslation = await Translation.findOne({
     seasonId,

@@ -10,6 +10,42 @@ import PlotFieldCommand from "../../models/StoryEditor/PlotField/PlotFieldComman
 import TopologyBlock from "../../models/StoryEditor/Topology/TopologyBlock";
 import TopologyBlockInfo from "../../models/StoryEditor/Topology/TopologyBlockInfo";
 import { validateMongoId } from "../../utils/validateMongoId";
+import { checkCurrentLanguage } from "../../utils/checkCurrentLanguage";
+import { EpisodeStatuses } from "../../consts/EPISODE_STATUSES";
+
+type GetEpisodesBySeasonId = {
+  seasonId: string;
+};
+
+export const episodesGetBySeasonIdService = async ({
+  seasonId,
+}: GetEpisodesBySeasonId) => {
+  validateMongoId({ value: seasonId, valueName: "Season" });
+
+  const existingEpisodes = await Episode.find({ seasonId }).lean();
+  if (!existingEpisodes.length) {
+    return [];
+  }
+
+  return existingEpisodes;
+};
+
+type GetEpisodeByEpisodeId = {
+  episodeId: string;
+};
+
+export const episodeGetByEpisodeIdService = async ({
+  episodeId,
+}: GetEpisodeByEpisodeId) => {
+  validateMongoId({ value: episodeId, valueName: "Episode" });
+
+  const existingEpisode = await Episode.findById(episodeId).lean();
+  if (!existingEpisode) {
+    return null;
+  }
+
+  return existingEpisode;
+};
 
 type EpisodeCreateTypes = {
   title: string | undefined;
@@ -31,6 +67,8 @@ export const episodeCreateService = async ({
   if (!title?.trim().length || !currentLanguage?.trim().length) {
     throw createHttpError(400, "Title and language are required");
   }
+
+  checkCurrentLanguage({ currentLanguage });
 
   const allEpisodesBySeasonId = await Episode.find({ seasonId }).lean();
   const episodeOrder = allEpisodesBySeasonId.length
@@ -111,6 +149,7 @@ export const episodeUpdateService = async ({
   if (!currentLanguage?.trim().length) {
     throw createHttpError(400, "Language is required");
   }
+  checkCurrentLanguage({ currentLanguage });
 
   if (title?.trim().length) {
     const existingTranslation = await Translation.findOne({
@@ -136,6 +175,26 @@ export const episodeUpdateService = async ({
   }
 
   return existingEpisode;
+};
+
+type EpisodeResetStatusTypes = {
+  episodeId: string;
+};
+
+export const episodeResetStatusService = async ({
+  episodeId,
+}: EpisodeResetStatusTypes) => {
+  validateMongoId({ value: episodeId, valueName: "Episode" });
+
+  const existingEpisode = await Episode.findById(episodeId).exec();
+
+  if (!existingEpisode) {
+    throw createHttpError(400, "Episode with such id doesn't exist");
+  }
+
+  existingEpisode.episodeStatus = EpisodeStatuses.Doing;
+
+  return await existingEpisode.save();
 };
 
 type EpisodeUpdateSeasonIdTypes = {

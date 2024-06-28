@@ -5,7 +5,23 @@ import {
   storyUpdateGenreService,
   storyUpdateImgService,
   storyUpdateTitleService,
+  storyGetAllService,
 } from "../../services/StoryData/StoryService";
+
+// @route GET http://localhost:3500/stories
+// @access Private
+export const storyGetAllController: RequestHandler = async (req, res, next) => {
+  try {
+    const story = await storyGetAllService();
+    if (story) {
+      return res.status(201).json(story);
+    } else {
+      return res.status(400).json({ message: "Something went wrong" });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
 
 type StoryCreateBody = {
   title: string | undefined;

@@ -3,7 +3,61 @@ import {
   createAchievementService,
   deleteAchievementService,
   updateAchievementService,
+  getAchievementByPlotFieldCommandIdService,
+  getAchievementsByStoryIdService,
 } from "../../../../services/StoryEditor/PlotField/Achievement/AchievementService";
+
+type GetAchievementByStoryIdParams = {
+  storyId: string;
+};
+
+// @route GET http://localhost:3500/stories/:storyId/achievements
+// @access Private
+export const getAchievementsByStoryIdController: RequestHandler<
+  GetAchievementByStoryIdParams,
+  unknown,
+  unknown,
+  unknown
+> = async (req, res, next) => {
+  try {
+    const achievements = await getAchievementsByStoryIdService({
+      storyId: req.params.storyId,
+    });
+    if (achievements) {
+      return res.status(201).json(achievements);
+    } else {
+      return res.status(400).json({ message: "Something went wrong" });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
+type GetAchievementByPlotFieldCommandIdParams = {
+  plotFieldCommandId: string;
+};
+
+// @route GET http://localhost:3500/stories/plotFieldCommands/:plotFieldCommandId/achievements
+// @access Private
+export const getAchievementByPlotFieldCommandIdController: RequestHandler<
+  GetAchievementByPlotFieldCommandIdParams,
+  unknown,
+  unknown,
+  unknown
+> = async (req, res, next) => {
+  try {
+    const achievement = await getAchievementByPlotFieldCommandIdService({
+      plotFieldCommandId: req.params.plotFieldCommandId,
+    });
+    if (achievement) {
+      return res.status(201).json(achievement);
+    } else {
+      return res.status(400).json({ message: "Something went wrong" });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
 
 type CreateAchievementParams = {
   storyId: string;

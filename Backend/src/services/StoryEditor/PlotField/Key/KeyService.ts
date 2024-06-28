@@ -1,10 +1,29 @@
 import createHttpError from "http-errors";
 import { Types } from "mongoose";
+import Key from "../../../../models/StoryEditor/PlotField/Key/Key";
 import PlotFieldCommand from "../../../../models/StoryEditor/PlotField/PlotFieldCommand";
 import TopologyBlock from "../../../../models/StoryEditor/Topology/TopologyBlock";
 import { validateMongoId } from "../../../../utils/validateMongoId";
-import TopologyBlockConnection from "../../../../models/StoryEditor/Topology/TopologyBlockConnection";
-import Key from "../../../../models/StoryEditor/PlotField/Key/Key";
+
+type GetKeyByPlotFieldCommandIdTypes = {
+  plotFieldCommandId: string;
+};
+
+export const getKeyByPlotFieldCommandIdService = async ({
+  plotFieldCommandId,
+}: GetKeyByPlotFieldCommandIdTypes) => {
+  validateMongoId({ value: plotFieldCommandId, valueName: "PlotFieldCommand" });
+
+  const existingKey = await Key.findOne({
+    plotFieldCommandId,
+  }).lean();
+
+  if (!existingKey) {
+    return null;
+  }
+
+  return existingKey;
+};
 
 type CreateCommandKeyTypes = {
   plotFieldCommandId: string;

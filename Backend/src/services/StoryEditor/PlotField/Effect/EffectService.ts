@@ -3,6 +3,26 @@ import Effect from "../../../../models/StoryEditor/PlotField/Effect/Effect";
 import { validateMongoId } from "../../../../utils/validateMongoId";
 import PlotFieldCommand from "../../../../models/StoryEditor/PlotField/PlotFieldCommand";
 
+type GetEffectByPlotFieldCommandIdTypes = {
+  plotFieldCommandId: string;
+};
+
+export const getEffectByPlotFieldCommandIdService = async ({
+  plotFieldCommandId,
+}: GetEffectByPlotFieldCommandIdTypes) => {
+  validateMongoId({ value: plotFieldCommandId, valueName: "PlotFieldCommand" });
+
+  const existingEffect = await Effect.findOne({
+    plotFieldCommandId,
+  }).lean();
+
+  if (!existingEffect) {
+    return null;
+  }
+
+  return existingEffect;
+};
+
 type CreateEffectTypes = {
   plotFieldCommandId: string;
 };

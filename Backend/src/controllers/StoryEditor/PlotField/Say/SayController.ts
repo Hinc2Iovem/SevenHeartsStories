@@ -4,7 +4,34 @@ import {
   deleteSayService,
   updateSayCommandSideService,
   updateSayTextService,
+  getSayByPlotFieldCommandIdService,
 } from "../../../../services/StoryEditor/PlotField/Say/SayService";
+
+type GetSayByPlotFieldCommandIdParams = {
+  plotFieldCommandId: string;
+};
+
+// @route GET http://localhost:3500/plotFieldCommands/:plotFieldCommandId/say
+// @access Private
+export const getSayByPlotFieldCommandIdController: RequestHandler<
+  GetSayByPlotFieldCommandIdParams,
+  unknown,
+  unknown,
+  unknown
+> = async (req, res, next) => {
+  try {
+    const say = await getSayByPlotFieldCommandIdService({
+      plotFieldCommandId: req.params.plotFieldCommandId,
+    });
+    if (say) {
+      return res.status(201).json(say);
+    } else {
+      return res.status(400).json({ message: "Something went wrong" });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
 
 type CreateSayParams = {
   plotFieldCommandId: string;

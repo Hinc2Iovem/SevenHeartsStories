@@ -4,6 +4,27 @@ import PlotFieldCommand from "../../../../models/StoryEditor/PlotField/PlotField
 import GetItem from "../../../../models/StoryEditor/PlotField/GetItem/GetItem";
 import Translation from "../../../../models/StoryData/Translation";
 import { TranslationTextFieldName } from "../../../../consts/TRANSLATION_TEXT_FIELD_NAMES";
+import { checkCurrentLanguage } from "../../../../utils/checkCurrentLanguage";
+
+type GetItemByPlotFieldCommandIdTypes = {
+  plotFieldCommandId: string;
+};
+
+export const getItemByPlotFieldCommandIdService = async ({
+  plotFieldCommandId,
+}: GetItemByPlotFieldCommandIdTypes) => {
+  validateMongoId({ value: plotFieldCommandId, valueName: "PlotFieldCommand" });
+
+  const existingItem = await GetItem.findOne({
+    plotFieldCommandId,
+  }).lean();
+
+  if (!existingItem) {
+    return null;
+  }
+
+  return existingItem;
+};
 
 type CreateGetItemTypes = {
   plotFieldCommandId: string;
@@ -48,6 +69,12 @@ export const updateGetItemService = async ({
   if (!existingGetItem) {
     throw createHttpError(400, "GetItem with such id wasn't found");
   }
+
+  if (!currentLanguage?.trim().length) {
+    throw createHttpError(400, "Language is required");
+  }
+
+  checkCurrentLanguage({ currentLanguage });
 
   if (buttonText?.trim().length) {
     const existingTranslation = await Translation.findOne({

@@ -7,6 +7,46 @@ import TopologyBlockInfo from "../../../../models/StoryEditor/Topology/TopologyB
 import Translation from "../../../../models/StoryData/Translation";
 import { TranslationTextFieldName } from "../../../../consts/TRANSLATION_TEXT_FIELD_NAMES";
 import TopologyBlock from "../../../../models/StoryEditor/Topology/TopologyBlock";
+import { checkCurrentLanguage } from "../../../../utils/checkCurrentLanguage";
+
+type GetAchievementByPlotFieldCommandIdTypes = {
+  plotFieldCommandId: string;
+};
+
+export const getAchievementByPlotFieldCommandIdService = async ({
+  plotFieldCommandId,
+}: GetAchievementByPlotFieldCommandIdTypes) => {
+  validateMongoId({ value: plotFieldCommandId, valueName: "PlotFieldCommand" });
+
+  const existingAchievement = await Achievement.findOne({
+    plotFieldCommandId,
+  }).lean();
+
+  if (!existingAchievement) {
+    return null;
+  }
+
+  return existingAchievement;
+};
+
+type GetAchievementByStoryIdTypes = {
+  storyId: string;
+};
+export const getAchievementsByStoryIdService = async ({
+  storyId,
+}: GetAchievementByStoryIdTypes) => {
+  validateMongoId({ value: storyId, valueName: "Story" });
+
+  const existingAchievements = await Achievement.find({
+    storyId,
+  }).lean();
+
+  if (!existingAchievements.length) {
+    return [];
+  }
+
+  return existingAchievements;
+};
 
 type CreateAchievementTypes = {
   storyId: string;
@@ -73,6 +113,8 @@ export const updateAchievementService = async ({
   if (!achievementName?.trim().length || !currentLanguage?.trim().length) {
     throw createHttpError(400, "Achievement and currentLanguage are required");
   }
+
+  checkCurrentLanguage({ currentLanguage });
 
   const existingTranslation = await Translation.findOne({
     commandId: achievementId,

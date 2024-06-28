@@ -2,10 +2,94 @@ import { RequestHandler } from "express";
 import {
   characterCreateService,
   characterDeleteService,
+  characterGetAllByStoryIdService,
+  characterGetByStoryIdAndNameService,
   characterUpdateImgService,
   characterUpdateNameTagService,
   characterUpdateService,
+  getAllCharacterNameTagsService,
 } from "../../services/StoryData/CharacterService";
+
+type GetAllCharacterNameTagsParams = {
+  storyId: string;
+};
+
+// @route GET http://localhost:3500/characters/stories/:storyId/characterNameTag
+// @access Private
+export const getAllCharacterNameTagsController: RequestHandler<
+  GetAllCharacterNameTagsParams,
+  unknown,
+  unknown,
+  unknown
+> = async (req, res, next) => {
+  try {
+    const character = await getAllCharacterNameTagsService({
+      storyId: req.params.storyId,
+    });
+    if (character) {
+      return res.status(201).json(character);
+    } else {
+      return res.status(400).json({ message: "Something went wrong" });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
+type CharacterGetByStoryIdAndNameParams = {
+  storyId: string;
+};
+type CharacterGetByStoryIdAndNameBody = {
+  name: string | undefined;
+};
+
+// @route GET http://localhost:3500/characters/stories/:storyId/characterName
+// @access Private
+export const characterGetByStoryIdAndNameController: RequestHandler<
+  CharacterGetByStoryIdAndNameParams,
+  unknown,
+  CharacterGetByStoryIdAndNameBody,
+  unknown
+> = async (req, res, next) => {
+  try {
+    const character = await characterGetByStoryIdAndNameService({
+      storyId: req.params.storyId,
+      name: req.body.name,
+    });
+    if (character) {
+      return res.status(201).json(character);
+    } else {
+      return res.status(400).json({ message: "Something went wrong" });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
+type CharacterGetAllByStoryIdParams = {
+  storyId: string;
+};
+// @route GET http://localhost:3500/characters/stories/:storyId
+// @access Private
+export const characterGetAllByStoryIdController: RequestHandler<
+  CharacterGetAllByStoryIdParams,
+  unknown,
+  unknown,
+  unknown
+> = async (req, res, next) => {
+  try {
+    const character = await characterGetAllByStoryIdService({
+      storyId: req.params.storyId,
+    });
+    if (character) {
+      return res.status(201).json(character);
+    } else {
+      return res.status(400).json({ message: "Something went wrong" });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
 
 type CharacterCreateParams = {
   storyId: string;

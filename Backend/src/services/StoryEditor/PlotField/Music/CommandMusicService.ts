@@ -4,6 +4,26 @@ import CommandMusic from "../../../../models/StoryEditor/PlotField/Music/Command
 import PlotFieldCommand from "../../../../models/StoryEditor/PlotField/PlotFieldCommand";
 import { validateMongoId } from "../../../../utils/validateMongoId";
 
+type GetMusicByPlotFieldCommandIdTypes = {
+  plotFieldCommandId: string;
+};
+
+export const getMusicByPlotFieldCommandIdService = async ({
+  plotFieldCommandId,
+}: GetMusicByPlotFieldCommandIdTypes) => {
+  validateMongoId({ value: plotFieldCommandId, valueName: "PlotFieldCommand" });
+
+  const existingMusic = await CommandMusic.findOne({
+    plotFieldCommandId,
+  }).lean();
+
+  if (!existingMusic) {
+    return null;
+  }
+
+  return existingMusic;
+};
+
 type CreateMusicTypes = {
   plotFieldCommandId: string;
   storyId: string;

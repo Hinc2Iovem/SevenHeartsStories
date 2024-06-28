@@ -12,7 +12,7 @@ export const staffSchema = new mongoose.Schema({
   },
   roles: {
     type: [String],
-    default: "Scriptwriter",
+    default: "scriptwriter",
   },
 });
 

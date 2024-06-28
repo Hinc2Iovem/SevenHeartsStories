@@ -5,6 +5,26 @@ import Suit from "../../../../models/StoryEditor/PlotField/Suit/Suit";
 import Character from "../../../../models/StoryData/Character";
 import { Types } from "mongoose";
 
+type GetSuitByPlotFieldCommandIdTypes = {
+  plotFieldCommandId: string;
+};
+
+export const getSuitByPlotFieldCommandIdService = async ({
+  plotFieldCommandId,
+}: GetSuitByPlotFieldCommandIdTypes) => {
+  validateMongoId({ value: plotFieldCommandId, valueName: "PlotFieldCommand" });
+
+  const existingSuit = await Suit.findOne({
+    plotFieldCommandId,
+  }).lean();
+
+  if (!existingSuit) {
+    return null;
+  }
+
+  return existingSuit;
+};
+
 type CreateSuitTypes = {
   plotFieldCommandId: string;
 };

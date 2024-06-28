@@ -4,6 +4,45 @@ import EpisodeInfo from "../../models/StoryData/EpisodeInfo";
 import Staff from "../../models/User/Staff";
 import { validateMongoId } from "../../utils/validateMongoId";
 
+type EpisodeGetByEpisodeIdAndStaffIdTypes = {
+  episodeId: string;
+  staffId: string;
+};
+
+export const episodeGetByEpisodeIdAndStaffIdService = async ({
+  episodeId,
+  staffId,
+}: EpisodeGetByEpisodeIdAndStaffIdTypes) => {
+  validateMongoId({ value: episodeId, valueName: "Episode" });
+  validateMongoId({ value: staffId, valueName: "Staff" });
+
+  const existingEpisodes = await EpisodeInfo.find({
+    episodeId,
+    staffId,
+  }).exec();
+  if (!existingEpisodes.length) {
+    return [];
+  }
+
+  return existingEpisodes;
+};
+type EpisodeGetByEpisodeIdTypes = {
+  episodeId: string;
+};
+
+export const episodeGetByEpisodeIdService = async ({
+  episodeId,
+}: EpisodeGetByEpisodeIdTypes) => {
+  validateMongoId({ value: episodeId, valueName: "Episode" });
+
+  const existingEpisodes = await EpisodeInfo.find({ episodeId }).exec();
+  if (!existingEpisodes.length) {
+    return [];
+  }
+
+  return existingEpisodes;
+};
+
 type EpisodeAssignWorkerTypes = {
   episodeId: string;
   staffId: string;

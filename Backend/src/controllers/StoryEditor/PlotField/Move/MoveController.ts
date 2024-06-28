@@ -3,7 +3,34 @@ import {
   createMoveService,
   deleteMoveService,
   updateMoveService,
+  getMoveByPlotFieldCommandIdService,
 } from "../../../../services/StoryEditor/PlotField/Move/MoveService";
+
+type GetMoveByPlotFieldCommandIdParams = {
+  plotFieldCommandId: string;
+};
+
+// @route GET http://localhost:3500/plotFieldCommands/:plotFieldCommandId/moves
+// @access Private
+export const getMoveByPlotFieldCommandIdController: RequestHandler<
+  GetMoveByPlotFieldCommandIdParams,
+  unknown,
+  unknown,
+  unknown
+> = async (req, res, next) => {
+  try {
+    const move = await getMoveByPlotFieldCommandIdService({
+      plotFieldCommandId: req.params.plotFieldCommandId,
+    });
+    if (move) {
+      return res.status(201).json(move);
+    } else {
+      return res.status(400).json({ message: "Something went wrong" });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
 
 type CreateMoveParams = {
   plotFieldCommandId: string;

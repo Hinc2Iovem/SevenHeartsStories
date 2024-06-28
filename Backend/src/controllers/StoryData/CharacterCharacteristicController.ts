@@ -3,8 +3,35 @@ import {
   characterCharacteristicDeleteService,
   characterCharacteristicCreateService,
   characterCharacteristicUpdateService,
+  characterCharacteristicGetByCharacterIdService,
 } from "../../services/StoryData/CharacterCharacteristicService";
 
+type CharacterCharacteristicGetByCharacterIdParams = {
+  characterId: string;
+};
+
+// @route GET http://localhost:3500/characterCharacteristics/characters/:characterId
+// @access Private
+export const characterCharacteristicGetByCharacterIdController: RequestHandler<
+  CharacterCharacteristicGetByCharacterIdParams,
+  unknown,
+  unknown,
+  unknown
+> = async (req, res, next) => {
+  try {
+    const characterCharacteristic =
+      await characterCharacteristicGetByCharacterIdService({
+        characterId: req.params.characterId,
+      });
+    if (characterCharacteristic) {
+      return res.status(201).json(characterCharacteristic);
+    } else {
+      return res.status(400).json({ message: "Something went wrong" });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
 type CharacterCharacteristicCreateParams = {
   characterId: string;
 };

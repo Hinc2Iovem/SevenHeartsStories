@@ -4,7 +4,65 @@ import {
   createCommandWardrobeService,
   deleteCommandWardrobeService,
   updateCommandWardrobeService,
+  getCommandWardrobeByPlotFieldCommandIdService,
+  getCommandWardrobeByAppearancePartIdAndCommandWardrobeIdService,
 } from "../../../../services/StoryEditor/PlotField/Wardrobe/WardrobeService";
+
+type GetCommandWardrobeByAppearancePartIdAndCommandWardrobeIdParams = {
+  commandWardrobeId: string;
+  appearancePartId: string;
+};
+
+// @route GET http://localhost:3500/plotFieldCommands/:plotFieldCommandId/wardrobes/:commandWardrobeId/appearanceParts/:appearancePartId
+// @access Private
+export const getCommandWardrobeByAppearancePartIdAndCommandWardrobeIdController: RequestHandler<
+  GetCommandWardrobeByAppearancePartIdAndCommandWardrobeIdParams,
+  unknown,
+  unknown,
+  unknown
+> = async (req, res, next) => {
+  try {
+    const commandWardrobe =
+      await getCommandWardrobeByAppearancePartIdAndCommandWardrobeIdService({
+        commandWardrobeId: req.params.commandWardrobeId,
+        appearancePartId: req.params.appearancePartId,
+      });
+    if (commandWardrobe) {
+      return res.status(201).json(commandWardrobe);
+    } else {
+      return res.status(400).json({ message: "Something went wrong" });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+type GetCommandWardrobeByPlotFieldCommandIdParams = {
+  plotFieldCommandId: string;
+};
+
+// @route GET http://localhost:3500/plotFieldCommands/:plotFieldCommandId/wardrobes
+// @access Private
+export const getCommandWardrobeByPlotFieldCommandIdController: RequestHandler<
+  GetCommandWardrobeByPlotFieldCommandIdParams,
+  unknown,
+  unknown,
+  unknown
+> = async (req, res, next) => {
+  try {
+    const commandWardrobe = await getCommandWardrobeByPlotFieldCommandIdService(
+      {
+        plotFieldCommandId: req.params.plotFieldCommandId,
+      }
+    );
+    if (commandWardrobe) {
+      return res.status(201).json(commandWardrobe);
+    } else {
+      return res.status(400).json({ message: "Something went wrong" });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
 
 type CreateCommandWardrobeParams = {
   plotFieldCommandId: string;

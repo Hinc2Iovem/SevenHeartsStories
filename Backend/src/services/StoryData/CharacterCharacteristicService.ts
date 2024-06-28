@@ -1,11 +1,28 @@
 import createHttpError from "http-errors";
-import { validateMongoId } from "../../utils/validateMongoId";
-import { CharacterTypeAlias } from "../../controllers/StoryData/CharacterController";
-import Character from "../../models/StoryData/Character";
-import CharacterEmotion from "../../models/StoryData/CharacterEmotion";
-import Translation from "../../models/StoryData/Translation";
 import { TranslationTextFieldName } from "../../consts/TRANSLATION_TEXT_FIELD_NAMES";
 import CharacterCharacteristic from "../../models/StoryData/CharacterCharacteristic";
+import Translation from "../../models/StoryData/Translation";
+import { checkCurrentLanguage } from "../../utils/checkCurrentLanguage";
+import { validateMongoId } from "../../utils/validateMongoId";
+
+type CharacterCharacteristicGetByCharacterIdTypes = {
+  characterId: string;
+};
+
+export const characterCharacteristicGetByCharacterIdService = async ({
+  characterId,
+}: CharacterCharacteristicGetByCharacterIdTypes) => {
+  validateMongoId({ value: characterId, valueName: "Character" });
+
+  const existingCharacteristics = await CharacterCharacteristic.find({
+    characterId,
+  }).lean();
+  if (!existingCharacteristics.length) {
+    return [];
+  }
+
+  return existingCharacteristics;
+};
 
 type CharacterCharacteristicCreateTypes = {
   characterId: string;
@@ -25,6 +42,8 @@ export const characterCharacteristicCreateService = async ({
       "currentLanguage and characteristicName is required"
     );
   }
+
+  checkCurrentLanguage({ currentLanguage });
 
   const newCharacteristic = await CharacterCharacteristic.create({
     characterId,

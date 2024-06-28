@@ -4,6 +4,17 @@ import Story from "../../models/StoryData/Story";
 import Translation from "../../models/StoryData/Translation";
 import Season from "../../models/StoryData/Season";
 import { TranslationTextFieldName } from "../../consts/TRANSLATION_TEXT_FIELD_NAMES";
+import { checkCurrentLanguage } from "../../utils/checkCurrentLanguage";
+
+export const storyGetAllService = async () => {
+  const existingStories = await Story.find().lean();
+
+  if (!existingStories.length) {
+    return [];
+  }
+
+  return existingStories;
+};
 
 type StoryCreateTypes = {
   title: string | undefined;
@@ -21,6 +32,8 @@ export const storyCreateService = async ({
   if (!title?.trim().length || !currentLanguage?.trim().length) {
     throw createHttpError(400, "Title is required");
   }
+
+  checkCurrentLanguage({ currentLanguage });
 
   const newStory = await Story.create({
     amountOfEpisodes: 0,
@@ -81,6 +94,8 @@ export const storyUpdateTitleService = async ({
     throw createHttpError(400, "Language is required");
   }
 
+  checkCurrentLanguage({ currentLanguage });
+
   const existingTranslation = await Translation.findOne({
     storyId: existingStory.id,
     language: currentLanguage,
@@ -135,6 +150,12 @@ export const storyUpdateGenreService = async ({
   currentLanguage,
 }: StoryUpdateGenreTypes) => {
   validateMongoId({ value: storyId, valueName: "Story" });
+
+  if (!currentLanguage?.trim().length) {
+    throw createHttpError(400, "Language is required");
+  }
+
+  checkCurrentLanguage({ currentLanguage });
 
   const existingStory = await Story.findById({ storyId }).lean();
 

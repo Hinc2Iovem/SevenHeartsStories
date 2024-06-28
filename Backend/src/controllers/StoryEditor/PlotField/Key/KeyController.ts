@@ -4,7 +4,34 @@ import {
   deleteCommandKeyService,
   updateCommandKeyService,
   updateCommandKeyTargetBlockIdService,
+  getKeyByPlotFieldCommandIdService,
 } from "../../../../services/StoryEditor/PlotField/Key/KeyService";
+
+type GetKeyByPlotFieldCommandIdParams = {
+  plotFieldCommandId: string;
+};
+
+// @route GET http://localhost:3500/plotFieldCommands/:plotFieldCommandId/keys
+// @access Private
+export const getKeyByPlotFieldCommandIdController: RequestHandler<
+  GetKeyByPlotFieldCommandIdParams,
+  unknown,
+  unknown,
+  unknown
+> = async (req, res, next) => {
+  try {
+    const key = await getKeyByPlotFieldCommandIdService({
+      plotFieldCommandId: req.params.plotFieldCommandId,
+    });
+    if (key) {
+      return res.status(201).json(key);
+    } else {
+      return res.status(400).json({ message: "Something went wrong" });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
 
 type CreateKeyParams = {
   plotFieldCommandId: string;
