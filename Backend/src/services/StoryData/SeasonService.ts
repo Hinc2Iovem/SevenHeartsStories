@@ -60,47 +60,6 @@ export const seasonCreateService = async ({
   return newSeason;
 };
 
-type SeasonUpdateTypes = {
-  seasonId: string;
-  title: string | undefined;
-  currentLanguage: string | undefined;
-};
-
-export const seasonUpdateTitleService = async ({
-  seasonId,
-  title,
-  currentLanguage,
-}: SeasonUpdateTypes) => {
-  validateMongoId({ value: seasonId, valueName: "Season" });
-
-  const existingSeason = await Season.findById(seasonId).exec();
-
-  if (!existingSeason) {
-    throw createHttpError(400, "Season with such id doesn't exist");
-  }
-
-  if (!currentLanguage?.trim().length) {
-    throw createHttpError(400, "Language is required");
-  }
-  checkCurrentLanguage({ currentLanguage });
-
-  const existingTranslation = await Translation.findOne({
-    seasonId,
-    language: currentLanguage,
-  }).exec();
-
-  if (!existingTranslation) {
-    throw createHttpError(400, "Such Translation doesn't exist");
-  }
-
-  if (title?.trim().length) {
-    existingTranslation.text = title;
-    await existingTranslation.save();
-  }
-
-  return existingTranslation;
-};
-
 type SeasonDeleteTypes = {
   seasonId: string;
 };

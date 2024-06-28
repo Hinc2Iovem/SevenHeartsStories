@@ -2,9 +2,8 @@ import { RequestHandler } from "express";
 import {
   createSayService,
   deleteSayService,
-  updateSayCommandSideService,
-  updateSayTextService,
   getSayByPlotFieldCommandIdService,
+  updateSayCommandSideService,
 } from "../../../../services/StoryEditor/PlotField/Say/SayService";
 
 type GetSayByPlotFieldCommandIdParams = {
@@ -60,39 +59,6 @@ export const createSayController: RequestHandler<
       characterEmotion: req.body.characterEmotion,
       type: req.body.type,
       plotFieldCommandId: req.params.plotFieldCommandId,
-    });
-    if (say) {
-      return res.status(201).json(say);
-    } else {
-      return res.status(400).json({ message: "Something went wrong" });
-    }
-  } catch (error) {
-    next(error);
-  }
-};
-
-type UpdateSayParams = {
-  sayId: string;
-};
-
-type UpdateSayBody = {
-  text: string | undefined;
-  currentLanguage: string | undefined;
-};
-
-// @route PATCH http://localhost:3500/plotFieldCommands/say/:sayId
-// @access Private
-export const updateSayTextController: RequestHandler<
-  UpdateSayParams,
-  unknown,
-  UpdateSayBody,
-  unknown
-> = async (req, res, next) => {
-  try {
-    const say = await updateSayTextService({
-      text: req.body.text,
-      currentLanguage: req.body.currentLanguage,
-      sayId: req.params.sayId,
     });
     if (say) {
       return res.status(201).json(say);

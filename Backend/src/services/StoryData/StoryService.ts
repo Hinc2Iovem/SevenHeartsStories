@@ -71,49 +71,6 @@ export const storyCreateService = async ({
   return newStory;
 };
 
-type StoryUpdateTypes = {
-  storyId: string;
-  title: string | undefined;
-  currentLanguage: string | undefined;
-};
-
-export const storyUpdateTitleService = async ({
-  storyId,
-  title,
-  currentLanguage,
-}: StoryUpdateTypes) => {
-  validateMongoId({ value: storyId, valueName: "Story" });
-
-  const existingStory = await Story.findById(storyId).exec();
-
-  if (!existingStory) {
-    throw createHttpError(400, "Story with such id doesn't exist");
-  }
-
-  if (!currentLanguage?.trim().length) {
-    throw createHttpError(400, "Language is required");
-  }
-
-  checkCurrentLanguage({ currentLanguage });
-
-  const existingTranslation = await Translation.findOne({
-    storyId: existingStory.id,
-    language: currentLanguage,
-    textFieldName: TranslationTextFieldName.StoryName,
-  }).exec();
-
-  if (!existingTranslation) {
-    throw createHttpError(400, "Translation wasn't found");
-  }
-
-  if (title?.trim().length) {
-    existingTranslation.text = title;
-    await existingTranslation.save();
-  }
-
-  return existingStory;
-};
-
 type StoryUpdateImgTypes = {
   storyId: string;
   imgUrl: string | undefined;

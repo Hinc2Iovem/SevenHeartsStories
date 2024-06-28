@@ -125,58 +125,6 @@ export const episodeCreateService = async ({
   return newEpisode;
 };
 
-type EpisodeUpdateTypes = {
-  episodeId: string;
-  title: string | undefined;
-  description: string | undefined;
-  currentLanguage: string | undefined;
-};
-
-export const episodeUpdateService = async ({
-  episodeId,
-  currentLanguage,
-  description,
-  title,
-}: EpisodeUpdateTypes) => {
-  validateMongoId({ value: episodeId, valueName: "Episode" });
-
-  const existingEpisode = await Episode.findById(episodeId).exec();
-
-  if (!existingEpisode) {
-    throw createHttpError(400, "Episode with such id doesn't exist");
-  }
-
-  if (!currentLanguage?.trim().length) {
-    throw createHttpError(400, "Language is required");
-  }
-  checkCurrentLanguage({ currentLanguage });
-
-  if (title?.trim().length) {
-    const existingTranslation = await Translation.findOne({
-      episodeId: episodeId,
-      language: currentLanguage,
-      textFieldName: TranslationTextFieldName.EpisodeName,
-    }).exec();
-    if (existingTranslation) {
-      existingTranslation.text = title;
-      await existingTranslation.save();
-    }
-  }
-  if (description?.trim().length) {
-    const existingTranslation = await Translation.findOne({
-      episodeId: episodeId,
-      language: currentLanguage,
-      textFieldName: TranslationTextFieldName.EpisodeDescription,
-    }).exec();
-    if (existingTranslation) {
-      existingTranslation.text = description;
-      await existingTranslation.save();
-    }
-  }
-
-  return existingEpisode;
-};
-
 type EpisodeResetStatusTypes = {
   episodeId: string;
 };

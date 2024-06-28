@@ -92,51 +92,6 @@ export const createAchievementService = async ({
   });
 };
 
-type UpdateAchievementTypes = {
-  achievementId: string;
-  achievementName: string | undefined;
-  currentLanguage: string | undefined;
-};
-
-export const updateAchievementService = async ({
-  achievementId,
-  achievementName,
-  currentLanguage,
-}: UpdateAchievementTypes) => {
-  validateMongoId({ value: achievementId, valueName: "Achievement" });
-
-  const existingAchievement = await Achievement.findById(achievementId).exec();
-  if (!existingAchievement) {
-    throw createHttpError(400, "Achievement with such id wasn't found");
-  }
-
-  if (!achievementName?.trim().length || !currentLanguage?.trim().length) {
-    throw createHttpError(400, "Achievement and currentLanguage are required");
-  }
-
-  checkCurrentLanguage({ currentLanguage });
-
-  const existingTranslation = await Translation.findOne({
-    commandId: achievementId,
-    language: currentLanguage,
-    textFieldName: TranslationTextFieldName.AchievementName,
-  }).exec();
-
-  if (existingTranslation) {
-    existingTranslation.text = achievementName;
-    await existingTranslation.save();
-  } else {
-    return await Translation.create({
-      commandId: existingAchievement._id,
-      language: currentLanguage,
-      textFieldName: TranslationTextFieldName.AchievementName,
-      text: achievementName,
-    });
-  }
-
-  return existingTranslation;
-};
-
 type DeleteAchievementTypes = {
   achievementId: string;
 };

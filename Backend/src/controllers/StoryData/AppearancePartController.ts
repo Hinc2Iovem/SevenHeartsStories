@@ -2,7 +2,6 @@ import { RequestHandler } from "express";
 import {
   appearancePartCreateService,
   appearancePartDeleteService,
-  appearancePartUpdateNameTypeService,
   appearancePartGetAllService,
   appearancePartGetByCharacterIdService,
 } from "../../services/StoryData/AppearancePartService";
@@ -75,41 +74,6 @@ export const appearancePartControllerCreate: RequestHandler<
       appearancePartType: req.body.appearancePartType,
       currentLanguage: req.body.currentLanguage,
       characterId: req.params.characterId,
-    });
-    if (appearancePart) {
-      return res.status(201).json(appearancePart);
-    } else {
-      return res.status(400).json({ message: "Something went wrong" });
-    }
-  } catch (error) {
-    next(error);
-  }
-};
-
-type AppearancePartUpdateParams = {
-  appearancePartId: string;
-};
-
-type AppearancePartUpdateBody = {
-  appearancePartName: string | undefined;
-  appearancePartType: string | undefined;
-  currentLanguage: string | undefined;
-};
-
-// @route PATCH http://localhost:3500/appearanceParts/:appearancePartId/nameType
-// @access Private
-export const appearancePartControllerUpdateNameType: RequestHandler<
-  AppearancePartUpdateParams,
-  unknown,
-  AppearancePartUpdateBody,
-  unknown
-> = async (req, res, next) => {
-  try {
-    const appearancePart = await appearancePartUpdateNameTypeService({
-      appearancePartName: req.body.appearancePartName,
-      appearancePartType: req.body.appearancePartType,
-      currentLanguage: req.body.currentLanguage,
-      appearancePartId: req.params.appearancePartId,
     });
     if (appearancePart) {
       return res.status(201).json(appearancePart);

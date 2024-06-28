@@ -2,7 +2,6 @@ import { RequestHandler } from "express";
 import {
   createAchievementService,
   deleteAchievementService,
-  updateAchievementService,
   getAchievementByPlotFieldCommandIdService,
   getAchievementsByStoryIdService,
 } from "../../../../services/StoryEditor/PlotField/Achievement/AchievementService";
@@ -76,39 +75,6 @@ export const createAchievementController: RequestHandler<
     const achievement = await createAchievementService({
       plotFieldCommandId: req.params.plotFieldCommandId,
       storyId: req.params.storyId,
-    });
-    if (achievement) {
-      return res.status(201).json(achievement);
-    } else {
-      return res.status(400).json({ message: "Something went wrong" });
-    }
-  } catch (error) {
-    next(error);
-  }
-};
-
-type UpdateAchievementParams = {
-  achievementId: string;
-};
-
-type UpdateAchievementBody = {
-  achievementName: string | undefined;
-  currentLanguage: string | undefined;
-};
-
-// @route PATCH http://localhost:3500/plotFieldCommands/achievements/:achievementId
-// @access Private
-export const updateAchievementController: RequestHandler<
-  UpdateAchievementParams,
-  unknown,
-  UpdateAchievementBody,
-  unknown
-> = async (req, res, next) => {
-  try {
-    const achievement = await updateAchievementService({
-      achievementId: req.params.achievementId,
-      currentLanguage: req.body.currentLanguage,
-      achievementName: req.body.achievementName,
     });
     if (achievement) {
       return res.status(201).json(achievement);

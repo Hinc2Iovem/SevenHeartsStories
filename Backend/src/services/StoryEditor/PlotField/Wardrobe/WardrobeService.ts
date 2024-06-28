@@ -78,21 +78,16 @@ export const createCommandWardrobeService = async ({
 
 type UpdateCommandWardrobeTypes = {
   title: string | undefined;
-  currentLanguage: string | undefined;
   commandWardrobeId: string;
   isCurrentDressed: boolean | undefined;
-  characterId: string;
 };
 
 export const updateCommandWardrobeService = async ({
   title,
-  currentLanguage,
-  characterId,
   isCurrentDressed,
   commandWardrobeId,
 }: UpdateCommandWardrobeTypes) => {
   validateMongoId({ value: commandWardrobeId, valueName: "CommandWardrobe" });
-  validateMongoId({ value: characterId, valueName: "Character" });
 
   if (!title?.trim().length) {
     throw createHttpError(400, "Title is required");
@@ -102,41 +97,14 @@ export const updateCommandWardrobeService = async ({
     throw createHttpError(400, "isCurrentDressed is required");
   }
 
-  if (!currentLanguage?.trim().length) {
-    throw createHttpError(400, "Language is required");
-  }
-  checkCurrentLanguage({ currentLanguage });
-
   const existingCommandWardrobe = await CommandWardrobe.findById(
     commandWardrobeId
   ).exec();
   if (!existingCommandWardrobe) {
     throw createHttpError(400, "CommandWardrobe with such id wasn't found");
   }
-  const existingCharacter = await Character.findById(characterId).exec();
-  if (!existingCharacter) {
-    throw createHttpError(400, "Character with such id wasn't found");
-  }
 
   existingCommandWardrobe.isCurrentDressed = isCurrentDressed;
-
-  const existingTranslation = await Translation.findOne({
-    commandId: commandWardrobeId,
-    textFieldName: TranslationTextFieldName.CommandWardrobeTitle,
-    language: currentLanguage,
-  });
-
-  if (existingTranslation) {
-    existingTranslation.text = title;
-    await existingTranslation.save();
-  } else {
-    await Translation.create({
-      commandId: commandWardrobeId,
-      language: currentLanguage,
-      textFieldName: TranslationTextFieldName.CommandWardrobeTitle,
-      text: title,
-    });
-  }
 
   return existingCommandWardrobe;
 };

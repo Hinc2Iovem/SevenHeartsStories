@@ -3,7 +3,6 @@ import {
   episodeCreateService,
   episodeDeleteService,
   episodeUpdateSeasonIdService,
-  episodeUpdateService,
   episodeGetByEpisodeIdService,
   episodeResetStatusService,
   episodesGetBySeasonIdService,
@@ -85,40 +84,6 @@ export const episodeCreateController: RequestHandler<
       storyId: req.params.storyId,
       title: req.body.title,
       currentLanguage: req.body.currentLanguage,
-    });
-    if (episode) {
-      return res.status(201).json(episode);
-    } else {
-      return res.status(400).json({ message: "Something went wrong" });
-    }
-  } catch (error) {
-    next(error);
-  }
-};
-
-type EpisodeUpdateParams = {
-  episodeId: string;
-};
-type EpisodeUpdateBody = {
-  title: string | undefined;
-  currentLanguage: string | undefined;
-  description: string | undefined;
-};
-
-// @route PATCH http://localhost:3500/episodes/:episodeId
-// @access Private
-export const episodeUpdateController: RequestHandler<
-  EpisodeUpdateParams,
-  unknown,
-  EpisodeUpdateBody,
-  unknown
-> = async (req, res, next) => {
-  try {
-    const episode = await episodeUpdateService({
-      episodeId: req.params.episodeId,
-      currentLanguage: req.body.currentLanguage,
-      title: req.body.title,
-      description: req.body.description,
     });
     if (episode) {
       return res.status(201).json(episode);

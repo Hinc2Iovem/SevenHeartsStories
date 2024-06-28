@@ -82,60 +82,6 @@ export const appearancePartCreateService = async ({
   };
 };
 
-type AppearancePartUpdateTypes = {
-  appearancePartName: string | undefined;
-  appearancePartType: string | undefined;
-  currentLanguage: string | undefined;
-  appearancePartId: string;
-};
-
-export const appearancePartUpdateNameTypeService = async ({
-  appearancePartName,
-  appearancePartType,
-  appearancePartId,
-  currentLanguage,
-}: AppearancePartUpdateTypes) => {
-  validateMongoId({ value: appearancePartId, valueName: "appearancePart" });
-
-  const existingAppearancePart = await AppearancePart.findById(
-    appearancePartId
-  ).exec();
-  if (!existingAppearancePart) {
-    throw createHttpError(400, "Such appearancePart doesn't exist");
-  }
-
-  if (!currentLanguage?.trim().length) {
-    throw createHttpError(400, "Language is required");
-  }
-
-  checkCurrentLanguage({ currentLanguage });
-
-  const existingTranslation = await Translation.findOne({
-    appearancePartId: existingAppearancePart._id,
-    language: currentLanguage,
-  }).exec();
-
-  if (!existingTranslation) {
-    return await Translation.create({
-      appearancePartId: existingAppearancePart.id,
-      language: currentLanguage,
-      text: appearancePartName ?? "",
-      textFieldName: appearancePartType ?? "",
-    });
-  } else {
-    if (appearancePartName?.trim().length) {
-      existingTranslation.text = appearancePartName;
-    }
-    if (appearancePartType?.trim().length) {
-      existingTranslation.textFieldName = appearancePartType.toLowerCase();
-    }
-
-    await existingTranslation.save();
-  }
-
-  return existingTranslation;
-};
-
 type AppearancePartDeleteTypes = {
   appearancePartId: string;
 };

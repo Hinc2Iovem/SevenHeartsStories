@@ -50,8 +50,6 @@ export const createChoiceService = async ({
 };
 
 type UpdateChoiceTypes = {
-  choiceQuestion: string | undefined;
-  currentLanguage: string | undefined;
   choiceId: string;
   timeLimit: number | undefined;
   choiceType: ChoiceType | undefined;
@@ -59,10 +57,8 @@ type UpdateChoiceTypes = {
 };
 
 export const updateChoiceService = async ({
-  choiceQuestion,
   choiceId,
   choiceType,
-  currentLanguage,
   timeLimit,
   exitBlockId,
 }: UpdateChoiceTypes) => {
@@ -71,33 +67,6 @@ export const updateChoiceService = async ({
   const existingChoice = await Choice.findById(choiceId).exec();
   if (!existingChoice) {
     throw createHttpError(400, "Choice with such id wasn't found");
-  }
-
-  if (!choiceQuestion?.trim().length) {
-    throw createHttpError(400, "Choice Question is required");
-  }
-  if (!currentLanguage?.trim().length) {
-    throw createHttpError(400, "Language is required");
-  }
-
-  checkCurrentLanguage({ currentLanguage });
-
-  const existingTranslation = await Translation.findOne({
-    textFieldName: TranslationTextFieldName.ChoiceQuestion,
-    language: currentLanguage,
-    commandId: choiceId,
-  }).exec();
-
-  if (existingTranslation) {
-    existingTranslation.text = choiceQuestion;
-    await existingTranslation.save();
-  } else {
-    await Translation.create({
-      commandId: choiceId,
-      language: currentLanguage,
-      textFieldName: TranslationTextFieldName.ChoiceQuestion,
-      text: choiceQuestion,
-    });
   }
 
   if (choiceType) {

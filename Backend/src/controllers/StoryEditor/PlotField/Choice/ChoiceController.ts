@@ -66,8 +66,6 @@ type UpdateChoiceParams = {
 export type ChoiceType = "common" | "multiple" | "timelimit";
 
 type UpdateChoiceBody = {
-  choiceQuestion: string | undefined;
-  currentLanguage: string | undefined;
   timeLimit: number | undefined;
   choiceType: ChoiceType | undefined;
 };
@@ -82,8 +80,6 @@ export const updateChoiceController: RequestHandler<
 > = async (req, res, next) => {
   try {
     const choice = await updateChoiceService({
-      currentLanguage: req.body.currentLanguage,
-      choiceQuestion: req.body.choiceQuestion,
       timeLimit: req.body.timeLimit,
       choiceType: req.body.choiceType,
       choiceId: req.params.choiceId,

@@ -58,49 +58,6 @@ export const characterCharacteristicCreateService = async ({
   return newCharacteristic;
 };
 
-type UpdateCharacterCharacteristicTypes = {
-  characteristicName: string | undefined;
-  currentLanguage: string | undefined;
-  characteristicId: string;
-};
-
-export const characterCharacteristicUpdateService = async ({
-  currentLanguage,
-  characteristicId,
-  characteristicName,
-}: UpdateCharacterCharacteristicTypes) => {
-  validateMongoId({ value: characteristicId, valueName: "Characteristic" });
-
-  const existingCharacteristic = await CharacterCharacteristic.findById(
-    characteristicId
-  ).exec();
-  if (!existingCharacteristic) {
-    throw createHttpError(400, "Characteristic with such id doesn't exist");
-  }
-
-  if (characteristicName?.trim().length) {
-    const existingTranslation = await Translation.findOne({
-      characterCharacteristicId: characteristicId,
-      language: currentLanguage,
-      textFieldName: TranslationTextFieldName.CharacterCharacteristic,
-    }).exec();
-
-    if (existingTranslation) {
-      existingTranslation.text = characteristicName;
-      await existingTranslation.save();
-    } else {
-      await Translation.create({
-        characterCharacteristicId: characteristicId,
-        text: characteristicName,
-        language: currentLanguage,
-        textFieldName: TranslationTextFieldName.CharacterCharacteristic,
-      });
-    }
-  }
-
-  return existingCharacteristic;
-};
-
 type DeleteCharacteristicTypes = {
   characteristicId: string | undefined;
 };

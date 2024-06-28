@@ -119,7 +119,6 @@ type UpdateChoiceOptionTypes = {
   characterName: string | undefined;
   amountOfPoints: number | undefined;
   characteristicName: string | undefined;
-  currentLanguage: string | undefined;
   characterId: string | undefined;
   characterCharacteristicId: string | undefined;
 };
@@ -131,7 +130,6 @@ export const updateChoiceOptionService = async ({
   choiceOptionId,
   option,
   priceAmethysts,
-  currentLanguage,
   characterCharacteristicId,
   characterId,
 }: UpdateChoiceOptionTypes) => {
@@ -149,30 +147,6 @@ export const updateChoiceOptionService = async ({
 
   if (!option?.trim().length) {
     throw createHttpError(400, "option is required");
-  }
-
-  if (!currentLanguage?.trim().length) {
-    throw createHttpError(400, "Language is required");
-  }
-
-  checkCurrentLanguage({ currentLanguage });
-
-  const existingTranslation = await Translation.findOne({
-    choiceOptionId,
-    language: currentLanguage,
-    textFieldName: TranslationTextFieldName.ChoiceOption,
-  }).exec();
-
-  if (existingTranslation) {
-    existingTranslation.text = option;
-    await existingTranslation.save();
-  } else {
-    await Translation.create({
-      choiceOptionId,
-      language: currentLanguage,
-      textFieldName: TranslationTextFieldName.ChoiceOption,
-      text: option,
-    });
   }
 
   if (existingChoiceOption.type === "common") {

@@ -6,8 +6,8 @@ import {
   characterGetByStoryIdAndNameService,
   characterUpdateImgService,
   characterUpdateNameTagService,
-  characterUpdateService,
   getAllCharacterNameTagsService,
+  characterUpdateService,
 } from "../../services/StoryData/CharacterService";
 
 type GetAllCharacterNameTagsParams = {
@@ -144,13 +144,9 @@ type CharacterUpdateParams = {
 };
 
 type CharacterUpdateBody = {
-  name: string | undefined;
-  unknownName: string | undefined;
-  description: string | undefined;
   nameTag: string | undefined;
   type: CharacterTypeAlias | undefined;
   img: string | undefined;
-  currentLanguage: string | undefined;
 };
 
 // @route PATCH http://localhost:3500/characters/:characterId
@@ -163,12 +159,8 @@ export const characterUpdateController: RequestHandler<
 > = async (req, res, next) => {
   try {
     const character = await characterUpdateService({
-      name: req.body.name,
-      unknownName: req.body.unknownName,
-      description: req.body.description,
       nameTag: req.body.nameTag,
       type: req.body.type,
-      currentLanguage: req.body.currentLanguage,
       img: req.body.img,
       characterId: req.params.characterId,
     });

@@ -2,7 +2,6 @@ import { RequestHandler } from "express";
 import {
   seasonCreateService,
   seasonDeleteService,
-  seasonUpdateTitleService,
   seasonsGetByStoryIdService,
 } from "../../services/StoryData/SeasonService";
 
@@ -54,38 +53,6 @@ export const seasonCreateController: RequestHandler<
       currentLanguage: req.body.currentLanguage,
       title: req.body.title,
       storyId: req.params.storyId,
-    });
-    if (season) {
-      return res.status(201).json(season);
-    } else {
-      return res.status(400).json({ message: "Something went wrong" });
-    }
-  } catch (error) {
-    next(error);
-  }
-};
-
-type SeasonUpdateTitleParams = {
-  seasonId: string;
-};
-type SeasonUpdateTitleBody = {
-  title: string | undefined;
-  currentLanguage: string | undefined;
-};
-
-// @route PATCH http://localhost:3500/seasons/:seasonId
-// @access Private
-export const seasonUpdateTitleController: RequestHandler<
-  SeasonUpdateTitleParams,
-  unknown,
-  SeasonUpdateTitleBody,
-  unknown
-> = async (req, res, next) => {
-  try {
-    const season = await seasonUpdateTitleService({
-      seasonId: req.params.seasonId,
-      title: req.body.title,
-      currentLanguage: req.body.currentLanguage,
     });
     if (season) {
       return res.status(201).json(season);

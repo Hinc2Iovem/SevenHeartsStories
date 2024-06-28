@@ -61,51 +61,6 @@ export const createSayService = async ({
   }
 };
 
-type UpdateSayTextTypes = {
-  text: string | undefined;
-  currentLanguage: string | undefined;
-  sayId: string;
-};
-
-export const updateSayTextService = async ({
-  sayId,
-  text,
-  currentLanguage,
-}: UpdateSayTextTypes) => {
-  validateMongoId({ value: sayId, valueName: "Say" });
-
-  const existingSay = await Say.findById(sayId).exec();
-  if (!existingSay) {
-    throw createHttpError(400, "Say with such id wasn't found");
-  }
-
-  if (!text?.trim().length || !currentLanguage?.trim().length) {
-    throw createHttpError(400, "Text and currentLanguage are required");
-  }
-
-  checkCurrentLanguage({ currentLanguage });
-
-  const existingTranslation = await Translation.findOne({
-    commandId: existingSay._id,
-    language: currentLanguage,
-    textFieldName: TranslationTextFieldName.SayText,
-  }).exec();
-
-  if (existingTranslation) {
-    existingTranslation.text = text;
-    await existingTranslation.save();
-  } else {
-    await Translation.create({
-      commandId: existingSay._id,
-      language: currentLanguage,
-      textFieldName: TranslationTextFieldName.SayText,
-      text,
-    });
-  }
-
-  return existingSay;
-};
-
 type UpdateSayCommandSideTypes = {
   commandSide: string | undefined;
   sayId: string;

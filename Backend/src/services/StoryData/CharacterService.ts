@@ -183,24 +183,16 @@ export const characterCreateService = async ({
 
 type UpdateCharacterTypes = {
   characterId: string;
-  name: string | undefined;
-  unknownName: string | undefined;
-  description: string | undefined;
   nameTag: string | undefined;
   type: CharacterTypeAlias | undefined;
   img: string | undefined;
-  currentLanguage: string | undefined;
 };
 
 export const characterUpdateService = async ({
-  description,
   img,
-  name,
   nameTag,
   type,
-  unknownName,
   characterId,
-  currentLanguage,
 }: UpdateCharacterTypes) => {
   validateMongoId({ value: characterId, valueName: "Character" });
 
@@ -208,50 +200,7 @@ export const characterUpdateService = async ({
   if (!existingCharacter) {
     throw createHttpError(400, "Character with such id doesn't exist");
   }
-  if (!currentLanguage?.trim().length) {
-    throw createHttpError(400, "Language is required");
-  }
 
-  checkCurrentLanguage({ currentLanguage });
-
-  if (name?.trim().length) {
-    const existingTranslation = await Translation.findOne({
-      characterId,
-      language: currentLanguage,
-      textFieldName: TranslationTextFieldName.CharacterName,
-    }).exec();
-
-    if (existingTranslation) {
-      existingTranslation.text = name;
-      await existingTranslation.save();
-    } else {
-      await Translation.create({
-        characterId,
-        text: name,
-        language: currentLanguage,
-        textFieldName: TranslationTextFieldName.CharacterName,
-      });
-    }
-  }
-  if (description?.trim().length) {
-    const existingTranslation = await Translation.findOne({
-      characterId,
-      language: currentLanguage,
-      textFieldName: TranslationTextFieldName.CharacterDescription,
-    }).exec();
-
-    if (existingTranslation) {
-      existingTranslation.text = description;
-      await existingTranslation.save();
-    } else {
-      await Translation.create({
-        characterId,
-        text: description,
-        language: currentLanguage,
-        textFieldDescription: TranslationTextFieldName.CharacterDescription,
-      });
-    }
-  }
   if (img?.trim().length) {
     existingCharacter.img = img;
   }
@@ -260,25 +209,6 @@ export const characterUpdateService = async ({
   }
   if (type?.trim().length) {
     existingCharacter.type = type;
-  }
-  if (unknownName?.trim().length) {
-    const existingTranslation = await Translation.findOne({
-      characterId,
-      language: currentLanguage,
-      textFieldName: TranslationTextFieldName.CharacterUnknownName,
-    }).exec();
-
-    if (existingTranslation) {
-      existingTranslation.text = unknownName;
-      await existingTranslation.save();
-    } else {
-      await Translation.create({
-        characterId,
-        text: unknownName,
-        language: currentLanguage,
-        textFieldUnknownName: TranslationTextFieldName.CharacterUnknownName,
-      });
-    }
   }
 
   return await existingCharacter.save();

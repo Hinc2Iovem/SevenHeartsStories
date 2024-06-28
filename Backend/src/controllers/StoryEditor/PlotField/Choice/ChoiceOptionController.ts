@@ -88,7 +88,6 @@ type UpdateChoiceOptionBody = {
   requiredKey: string | undefined;
   requiredCharacteristic: string | undefined;
   characteristicName: string | undefined;
-  currentLanguage: string | undefined;
   characterCharacteristicId: string | undefined;
   characterId: string | undefined;
 };
@@ -110,7 +109,6 @@ export const updateChoiceOptionController: RequestHandler<
       characteristicName: req.body.characteristicName,
       choiceOptionId: req.params.choiceOptionId,
       characterId: req.body.characterId,
-      currentLanguage: req.body.currentLanguage,
       characterCharacteristicId: req.body.characterCharacteristicId,
     });
     if (choiceOption) {

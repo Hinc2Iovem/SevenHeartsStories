@@ -13,10 +13,6 @@ export const translationSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "Character",
   },
-  characterEmotionId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "CharacterEmotion",
-  },
   commandLibraryId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "CommandLibrary",
