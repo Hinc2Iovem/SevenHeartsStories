@@ -54,6 +54,9 @@ type UpdateChoiceTypes = {
   timeLimit: number | undefined;
   choiceType: ChoiceType | undefined;
   exitBlockId: string;
+  characterId: string;
+  characterEmotionId: string;
+  isAuthor: boolean | undefined;
 };
 
 export const updateChoiceService = async ({
@@ -61,12 +64,30 @@ export const updateChoiceService = async ({
   choiceType,
   timeLimit,
   exitBlockId,
+  isAuthor,
+  characterId,
+  characterEmotionId,
 }: UpdateChoiceTypes) => {
   validateMongoId({ value: choiceId, valueName: "Choice" });
+
+  if (isAuthor === undefined || isAuthor === null) {
+    throw createHttpError(400, "isAuthor is required");
+  }
 
   const existingChoice = await Choice.findById(choiceId).exec();
   if (!existingChoice) {
     throw createHttpError(400, "Choice with such id wasn't found");
+  }
+
+  if (isAuthor === false) {
+    validateMongoId({ value: characterId, valueName: "Character" });
+    validateMongoId({
+      value: characterEmotionId,
+      valueName: "CharacterEmotion",
+    });
+    existingChoice.isAuthor = isAuthor;
+    existingChoice.characterId = new Types.ObjectId(characterId);
+    existingChoice.characterEmotionId = new Types.ObjectId(characterEmotionId);
   }
 
   if (choiceType) {
