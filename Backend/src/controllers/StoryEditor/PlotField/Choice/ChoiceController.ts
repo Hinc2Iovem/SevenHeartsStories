@@ -61,16 +61,19 @@ export const createChoiceController: RequestHandler<
 type UpdateChoiceParams = {
   choiceId: string;
   exitBlockId: string;
+  characterEmotionId: string;
+  characterId: string;
 };
 
 export type ChoiceType = "common" | "multiple" | "timelimit";
 
 type UpdateChoiceBody = {
   timeLimit: number | undefined;
+  isAuthor: boolean | undefined;
   choiceType: ChoiceType | undefined;
 };
 
-// @route PATCH http://localhost:3500/plotFieldCommands/choices/:choiceId/exitBlocks/:exitBlockId
+// @route PATCH http://localhost:3500/plotFieldCommands/choices/:choiceId/exitBlocks/:exitBlockId/characters/:characterId/characterEmotions/:characterEmotionId
 // @access Private
 export const updateChoiceController: RequestHandler<
   UpdateChoiceParams,
@@ -82,8 +85,11 @@ export const updateChoiceController: RequestHandler<
     const choice = await updateChoiceService({
       timeLimit: req.body.timeLimit,
       choiceType: req.body.choiceType,
+      isAuthor: req.body.isAuthor,
       choiceId: req.params.choiceId,
       exitBlockId: req.params.exitBlockId,
+      characterEmotionId: req.params.characterEmotionId,
+      characterId: req.params.characterId,
     });
     if (choice) {
       return res.status(201).json(choice);

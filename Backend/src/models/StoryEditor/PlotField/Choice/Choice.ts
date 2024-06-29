@@ -15,6 +15,18 @@ export const plotFieldCommandChoiceSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "TopologyBlock",
   },
+  isAuthor: {
+    type: Boolean,
+    default: true,
+  },
+  characterId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Character",
+  },
+  characterEmotionId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "CharacterEmotion",
+  },
   timeLimit: {
     type: Number,
   },
