@@ -1,6 +1,6 @@
 import mongoose, { InferSchemaType, model } from "mongoose";
 
-// type = "character | author"
+// type = "character | author" | "notify" | "hint"
 
 export const plotFieldCommandSaySchema = new mongoose.Schema({
   plotFieldCommandId: {
