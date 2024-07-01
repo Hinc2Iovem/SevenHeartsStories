@@ -4,6 +4,7 @@ import {
   deleteSayService,
   getSayByPlotFieldCommandIdService,
   updateSayCommandSideService,
+  updateSayService,
 } from "../../../../services/StoryEditor/PlotField/Say/SayService";
 
 type GetSayByPlotFieldCommandIdParams = {
@@ -34,18 +35,18 @@ export const getSayByPlotFieldCommandIdController: RequestHandler<
 
 type CreateSayParams = {
   plotFieldCommandId: string;
+  characterId: string;
+  characterEmotionId: string;
 };
 
 export type SayType = "author" | "character";
 
 type CreateSayBody = {
-  characterName: string | undefined;
-  characterEmotion: string | undefined;
   text: string | undefined;
   type: SayType | undefined;
 };
 
-// @route POST http://localhost:3500/plotFieldCommands/:plotFieldCommandId/say
+// @route POST http://localhost:3500/plotFieldCommands/:plotFieldCommandId/say/characters/:characterId/characterEmotions/:characterEmotionId
 // @access Private
 export const createSayController: RequestHandler<
   CreateSayParams,
@@ -55,8 +56,8 @@ export const createSayController: RequestHandler<
 > = async (req, res, next) => {
   try {
     const say = await createSayService({
-      characterName: req.body.characterName,
-      characterEmotion: req.body.characterEmotion,
+      characterId: req.params.characterId,
+      characterEmotionId: req.params.characterEmotionId,
       type: req.body.type,
       plotFieldCommandId: req.params.plotFieldCommandId,
     });
@@ -90,6 +91,36 @@ export const updateSayCommandSideController: RequestHandler<
     const say = await updateSayCommandSideService({
       commandSide: req.body.commandSide,
       sayId: req.params.sayId,
+    });
+    if (say) {
+      return res.status(201).json(say);
+    } else {
+      return res.status(400).json({ message: "Something went wrong" });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
+type UpdateSayParams = {
+  sayId: string;
+  characterId: string;
+  characterEmotionId: string;
+};
+
+// @route PATCH http://localhost:3500/plotFieldCommands/say/:sayId
+// @access Private
+export const updateSayController: RequestHandler<
+  UpdateSayParams,
+  unknown,
+  unknown,
+  unknown
+> = async (req, res, next) => {
+  try {
+    const say = await updateSayService({
+      sayId: req.params.sayId,
+      characterId: req.params.characterId,
+      characterEmotionId: req.params.characterEmotionId,
     });
     if (say) {
       return res.status(201).json(say);

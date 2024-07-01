@@ -1,11 +1,9 @@
 import createHttpError from "http-errors";
-import { validateMongoId } from "../../../../utils/validateMongoId";
+import { SayType } from "../../../../controllers/StoryEditor/PlotField/Say/SayController";
 import PlotFieldCommand from "../../../../models/StoryEditor/PlotField/PlotFieldCommand";
 import Say from "../../../../models/StoryEditor/PlotField/Say/Say";
-import { SayType } from "../../../../controllers/StoryEditor/PlotField/Say/SayController";
-import Translation from "../../../../models/StoryData/Translation";
-import { TranslationTextFieldName } from "../../../../consts/TRANSLATION_TEXT_FIELD_NAMES";
-import { checkCurrentLanguage } from "../../../../utils/checkCurrentLanguage";
+import { validateMongoId } from "../../../../utils/validateMongoId";
+import { Types } from "mongoose";
 
 type GetSayByPlotFieldCommandIdTypes = {
   plotFieldCommandId: string;
@@ -28,15 +26,15 @@ export const getSayByPlotFieldCommandIdService = async ({
 };
 
 type CreateSayTypes = {
-  characterName: string | undefined;
-  characterEmotion: string | undefined;
+  characterId: string;
+  characterEmotionId: string;
   type: SayType | undefined;
   plotFieldCommandId: string;
 };
 
 export const createSayService = async ({
-  characterEmotion,
-  characterName,
+  characterEmotionId,
+  characterId,
   type,
   plotFieldCommandId,
 }: CreateSayTypes) => {
@@ -49,16 +47,57 @@ export const createSayService = async ({
     throw createHttpError(400, "PlotFieldCommand with such id wasn't found");
   }
 
-  if (type === "author") {
+  if (!type?.trim().length) {
+    throw createHttpError(400, "Type is required");
+  }
+
+  if (type?.toLowerCase() === "author") {
     return await Say.create({ plotFieldCommandId, type: "author" });
-  } else if (type === "character") {
+  } else if (type?.toLowerCase() === "character") {
+    validateMongoId({ value: characterId, valueName: "Character" });
+    validateMongoId({
+      value: characterEmotionId,
+      valueName: "CharacterEmotion",
+    });
     return await Say.create({
-      characterName,
-      characterEmotion,
+      characterId,
+      characterEmotionId,
       plotFieldCommandId,
       type: "character",
     });
+  } else if (type?.toLowerCase() === "notify") {
+    return await Say.create({ plotFieldCommandId, type: "notify" });
+  } else if (type?.toLowerCase() === "hint") {
+    return await Say.create({ plotFieldCommandId, type: "hint" });
   }
+};
+
+type UpdateSayTypes = {
+  characterId: string;
+  characterEmotionId: string;
+  sayId: string;
+};
+
+export const updateSayService = async ({
+  characterEmotionId,
+  characterId,
+  sayId,
+}: UpdateSayTypes) => {
+  validateMongoId({ value: sayId, valueName: "Say" });
+
+  const existingSay = await Say.findById(sayId).exec();
+  if (!existingSay) {
+    throw createHttpError(400, "Say with such id wasn't found");
+  }
+
+  if (characterEmotionId?.trim().length) {
+    existingSay.characterEmotionId = new Types.ObjectId(characterEmotionId);
+  }
+  if (characterId?.trim().length) {
+    existingSay.characterId = new Types.ObjectId(characterId);
+  }
+
+  return await existingSay.save();
 };
 
 type UpdateSayCommandSideTypes = {
