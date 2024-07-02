@@ -22,7 +22,7 @@ export default function StoryHeader({
           <input
             type="text"
             value={searchValue}
-            className="py-[.5rem] px-[1rem] rounded-md outline-none border-[2px] border-primary-pastel-blue border-dotted placeholder:text-gray-300 placeholder:font-medium text-gray-700 text-[1.6rem]"
+            className="py-[.5rem] px-[1rem] rounded-md outline-none sm:w-[30rem] w-[20rem] placeholder:text-gray-300 placeholder:font-medium text-gray-700 text-[1.6rem]"
             placeholder="Зомби Апокалипсис"
             onChange={(e) => setSearchValue(e.target.value)}
           />
