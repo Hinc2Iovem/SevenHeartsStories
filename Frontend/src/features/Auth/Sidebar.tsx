@@ -17,12 +17,12 @@ export default function Sidebar({ currentPage, setCurrentPage }: SidebarTypes) {
       <img
         src={imgDesktop}
         alt="Sidebar"
-        className="hidden md:block w-full h-full object-cover rounded-md max-h-[30rem]"
+        className="hidden md:block w-full h-full object-cover rounded-md max-h-[35rem]"
       />
       <img
         src={imgMobile}
         alt="Sidebar"
-        className="block md:hidden w-full h-full object-cover rounded-b-md"
+        className="block md:hidden w-full h-full object-cover"
       />
       <div
         className={`${
