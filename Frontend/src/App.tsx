@@ -7,6 +7,9 @@ import Missing from "./features/Missing/Missing";
 import Story from "./features/Story/Story";
 import Profile from "./features/Auth/Profile/Profile";
 import ProfileLayout from "./layouts/ProfileLayout";
+import StorySinglePage from "./features/StorySinglePage/StorySinglePage";
+import CharacterListPage from "./features/Character/CharacterListPage";
+import CharacterLayout from "./layouts/CharacterLayout";
 
 export default function App() {
   return (
@@ -18,9 +21,15 @@ export default function App() {
 
       <Route element={<StoryLayout />} path="stories">
         <Route index element={<Story />} />
+        <Route path=":storyId" element={<StorySinglePage />} />
       </Route>
+
       <Route element={<ProfileLayout />} path="profile">
         <Route index element={<Profile />} />
+      </Route>
+
+      <Route element={<CharacterLayout />} path="editor/characters">
+        <Route index element={<CharacterListPage />} />
       </Route>
 
       <Route path="*" element={<Missing />} />
