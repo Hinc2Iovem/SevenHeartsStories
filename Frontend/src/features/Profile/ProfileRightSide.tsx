@@ -17,7 +17,7 @@ function ProfileRightSideItem() {
 
   return (
     <article className="w-full h-[24rem] rounded-md shadow-md shadow-gray-400">
-      <div className="relative border-[3px] w-full h-[20rem] border-white">
+      <div className="relative border-[3px] w-full h-[20rem] border-white bg-white">
         <img
           src={storyBg}
           alt="StoryBg"
