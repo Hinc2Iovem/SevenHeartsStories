@@ -1,7 +1,7 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import storyBg from "../../assets/images/Story/storyBg.png";
 import add from "../../assets/images/shared/add.png";
-import { Link } from "react-router-dom";
 
 export default function StoryItem() {
   const [hasImage, setHasImage] = useState(true);

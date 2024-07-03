@@ -5,11 +5,12 @@ import Login from "./features/Auth/Login/Login";
 import StoryLayout from "./layouts/StoryLayout";
 import Missing from "./features/Missing/Missing";
 import Story from "./features/Story/Story";
-import Profile from "./features/Auth/Profile/Profile";
+import Profile from "./features/Profile/Profile";
 import ProfileLayout from "./layouts/ProfileLayout";
 import StorySinglePage from "./features/StorySinglePage/StorySinglePage";
 import CharacterListPage from "./features/Character/CharacterListPage";
 import CharacterLayout from "./layouts/CharacterLayout";
+import CharacterWardrobe from "./features/Character/Wardrobe/CharacterWardrobe";
 
 export default function App() {
   return (
@@ -30,6 +31,7 @@ export default function App() {
 
       <Route element={<CharacterLayout />} path="editor/characters">
         <Route index element={<CharacterListPage />} />
+        <Route path=":characterId/wardrobes" element={<CharacterWardrobe />} />
       </Route>
 
       <Route path="*" element={<Missing />} />

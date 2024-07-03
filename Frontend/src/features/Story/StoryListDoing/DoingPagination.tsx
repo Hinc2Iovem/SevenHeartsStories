@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import StoryItem from "../StoryItem";
 import { MATCHMEDIA } from "../../../const/MATCHMEDIA";
-import useMatchMedia from "../../../hooks/useMatchMedia";
+import useMatchMedia from "../../../hooks/UI/useMatchMedia";
 
 export default function DoingPagination() {
   const [currentPage, setCurrentPage] = useState(1);
@@ -33,7 +33,7 @@ export default function DoingPagination() {
   };
   return (
     <div className="flex flex-col gap-[2rem]">
-      <div className="grid grid-cols-[repeat(auto-fit,minmax(25rem,1fr))] gap-[1rem] sm:justify-items-start justify-items-center">
+      <div className="grid grid-cols-[repeat(auto-fill,minmax(25rem,1fr))] gap-[1rem] justify-items-center justify-center w-full">
         {Array.from({ length: 10 }).map((_, i) => (
           <StoryItem key={i as number} />
         ))}

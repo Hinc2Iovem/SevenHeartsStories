@@ -1,11 +1,11 @@
 import { Link } from "react-router-dom";
-import storyBg from "../../../assets/images/Story/storyBg.png";
+import storyBg from "../../assets/images/Story/storyBg.png";
 import { useState } from "react";
 
 export default function ProfileRightSide() {
   return (
-    <div className="grid grid-cols-[repeat(auto-fit,minmax(20rem,1fr))] grid-rows-[repeat(auto-fit,minmax(25rem,1fr))] gap-[1rem] sm:justify-items-start justify-items-center w-full">
-      {...Array.from({ length: 10 }).map((_, i) => (
+    <div className="grid grid-cols-[repeat(auto-fill,minmax(25rem,1fr))] gap-[1rem] justify-items-center justify-center w-full">
+      {...Array.from({ length: 1 }).map((_, i) => (
         <ProfileRightSideItem key={(i + 1) as number} />
       ))}
     </div>

@@ -1,11 +1,11 @@
-import add from "../../../assets/images/shared/add.png";
-import scriptwriter from "../../../assets/images/Auth/scriptwriter.png";
+import add from "../../assets/images/shared/add.png";
+import scriptwriter from "../../assets/images/Auth/scriptwriter.png";
+import ButtonHoverPromptModal from "../shared/ButtonAsideHoverPromptModal/ButtonHoverPromptModal";
 // import translator from "../../../assets/images/Auth/translator.png";
-import ButtonHoverPromptModal from "../../shared/ButtonAsideHoverPromptModal/ButtonHoverPromptModal";
 
 export default function ProfileLeftSide() {
   return (
-    <div className="w-[20rem] flex gap-[1rem] flex-col">
+    <div className="w-[20rem] flex gap-[1rem] flex-col flex-shrink-0">
       <div className="w-full h-[20rem] relative bg-white rounded-md shadow-sm">
         <img
           src={add}

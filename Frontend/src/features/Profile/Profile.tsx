@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
-import back from "../../../assets/images/shared/back.png";
-import logout from "../../../assets/images/shared/logout.png";
+import back from "../../assets/images/shared/back.png";
+import logout from "../../assets/images/shared/logout.png";
 import ProfileLeftSide from "./ProfileLeftSide";
 import ProfileRightSide from "./ProfileRightSide";
 
