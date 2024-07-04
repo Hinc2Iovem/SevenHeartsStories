@@ -50,18 +50,18 @@ type UpdateIfValueTypes = {
   name: string | undefined;
   sign: SignTypes | undefined;
   value: number | undefined;
-  IfValueId: string;
+  ifValueId: string;
 };
 
 export const updateIfValueService = async ({
-  IfValueId,
+  ifValueId,
   name,
   sign,
   value,
 }: UpdateIfValueTypes) => {
-  validateMongoId({ value: IfValueId, valueName: "IfValue" });
+  validateMongoId({ value: ifValueId, valueName: "IfValue" });
 
-  const existingIfValue = await IfValue.findById(IfValueId).exec();
+  const existingIfValue = await IfValue.findById(ifValueId).exec();
   if (!existingIfValue) {
     throw createHttpError(400, "IfValue with such id wasn't found");
   }
@@ -82,15 +82,15 @@ export const updateIfValueService = async ({
 };
 
 type DeleteIfValueTypes = {
-  IfValueId: string;
+  ifValueId: string;
 };
 
 export const deleteIfValueService = async ({
-  IfValueId,
+  ifValueId,
 }: DeleteIfValueTypes) => {
-  validateMongoId({ value: IfValueId, valueName: "IfValue" });
+  validateMongoId({ value: ifValueId, valueName: "IfValue" });
 
-  await IfValue.findByIdAndDelete(IfValueId);
+  await IfValue.findByIdAndDelete(ifValueId);
 
-  return `IfValue with id ${IfValueId} was removed`;
+  return `IfValue with id ${ifValueId} was removed`;
 };
