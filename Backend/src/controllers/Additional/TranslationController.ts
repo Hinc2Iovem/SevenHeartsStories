@@ -1,5 +1,4 @@
 import { RequestHandler } from "express";
-import { CharacterTypeAlias } from "../StoryData/CharacterController";
 import {
   appearancePartTranslationUpdateNameTypeService,
   characterCharacteristicTranslationUpdateService,
@@ -18,7 +17,7 @@ import {
   getTranslationSeasonService,
   getTranslationStoryService,
   seasonTranslationUpdateTitleService,
-  storyTranslationUpdateTitleService,
+  storyTranslationUpdateService,
   updateAchievementTranslationService,
   updateChoiceOptionTranslationService,
   updateChoiceTranslationService,
@@ -26,6 +25,7 @@ import {
   updateGetItemTranslationService,
   updateSayTranslationTextService,
 } from "../../services/Additional/TranslationService";
+import { CharacterTypeAlias } from "../StoryData/CharacterController";
 
 // APPEARANCE_PART__________________________________________________________
 
@@ -306,26 +306,30 @@ export const getTranslationSeasonController: RequestHandler<
 
 // STORY________________________________________________________________
 
-type StoryTranslationUpdateTitleParams = {
+type StoryTranslationUpdateParams = {
   storyId: string;
 };
-type StoryTranslationUpdateTitleBody = {
+type StoryTranslationUpdateBody = {
   title: string | undefined;
+  genre: string | undefined;
+  description: string | undefined;
   currentLanguage: string | undefined;
 };
 
 // @route PATCH http://localhost:3500/translation/stories/:storyId
 // @access Private
-export const storyTranslationUpdateTitleController: RequestHandler<
-  StoryTranslationUpdateTitleParams,
+export const storyTranslationUpdateController: RequestHandler<
+  StoryTranslationUpdateParams,
   unknown,
-  StoryTranslationUpdateTitleBody,
+  StoryTranslationUpdateBody,
   unknown
 > = async (req, res, next) => {
   try {
-    const story = await storyTranslationUpdateTitleService({
+    const story = await storyTranslationUpdateService({
       storyId: req.params.storyId,
       title: req.body.title,
+      description: req.body.description,
+      genre: req.body.genre,
       currentLanguage: req.body.currentLanguage,
     });
     if (story) {

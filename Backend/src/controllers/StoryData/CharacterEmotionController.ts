@@ -3,6 +3,7 @@ import {
   characterEmotionCreateService,
   characterEmotionDeleteService,
   characterEmotionGetByCharacterIdService,
+  characterEmotionUpdateImgService,
   characterEmotionUpdateService,
 } from "../../services/StoryData/CharacterEmotionService";
 
@@ -84,6 +85,36 @@ export const characterEmotionUpdateController: RequestHandler<
     });
     if (character) {
       return res.status(201).json(character);
+    } else {
+      return res.status(400).json({ message: "Something went wrong" });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
+type CharacterEmotionUpdateImgUrlParams = {
+  characterEmotionId: string;
+};
+type CharacterEmotionUpdateImgUrlBody = {
+  imgUrl: string | undefined;
+};
+
+// @route PATCH http://localhost:3500/characterEmotions/:characterEmotionId/img
+// @access Private
+export const characterEmotionUpdateImgUrlController: RequestHandler<
+  CharacterEmotionUpdateImgUrlParams,
+  unknown,
+  CharacterEmotionUpdateImgUrlBody,
+  unknown
+> = async (req, res, next) => {
+  try {
+    const characterEmotion = await characterEmotionUpdateImgService({
+      characterEmotionId: req.params.characterEmotionId,
+      imgUrl: req.body.imgUrl,
+    });
+    if (characterEmotion) {
+      return res.status(201).json(characterEmotion);
     } else {
       return res.status(400).json({ message: "Something went wrong" });
     }

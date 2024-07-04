@@ -4,13 +4,13 @@ import ConditionValue from "../../../../models/StoryEditor/PlotField/Condition/C
 import { validateMongoId } from "../../../../utils/validateMongoId";
 import { SignTypes } from "../../../../controllers/StoryEditor/PlotField/Condition/ConditionValueController";
 
-type GetAmbientByPlotFieldCommandConditionIdTypes = {
+type GetByPlotFieldCommandConditionIdTypes = {
   plotFieldCommandConditionId: string;
 };
 
 export const getConditionValueByPlotFieldCommandConditionIdService = async ({
   plotFieldCommandConditionId,
-}: GetAmbientByPlotFieldCommandConditionIdTypes) => {
+}: GetByPlotFieldCommandConditionIdTypes) => {
   validateMongoId({
     value: plotFieldCommandConditionId,
     valueName: "PlotFieldCommand",

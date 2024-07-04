@@ -4,6 +4,7 @@ import {
   deleteBackgroundService,
   updateBackgroundService,
   getBackgroundByPlotFieldCommandIdService,
+  backgroundUpdateImgService,
 } from "../../../../services/StoryEditor/PlotField/Background/BackgroundService";
 
 type GetBackgroundByPlotFieldCommandIdParams = {
@@ -82,6 +83,36 @@ export const updateBackgroundController: RequestHandler<
       pointOfMovement: req.body.pointOfMovement,
       musicName: req.body.musicName,
       backgroundId: req.params.backgroundId,
+    });
+    if (background) {
+      return res.status(201).json(background);
+    } else {
+      return res.status(400).json({ message: "Something went wrong" });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
+type BackgroundUpdateImgUrlParams = {
+  backgroundId: string;
+};
+type BackgroundUpdateImgUrlBody = {
+  imgUrl: string | undefined;
+};
+
+// @route PATCH http://localhost:3500/plotFieldCommands/backgrounds/:backgroundId/img
+// @access Private
+export const backgroundUpdateImgUrlController: RequestHandler<
+  BackgroundUpdateImgUrlParams,
+  unknown,
+  BackgroundUpdateImgUrlBody,
+  unknown
+> = async (req, res, next) => {
+  try {
+    const background = await backgroundUpdateImgService({
+      backgroundId: req.params.backgroundId,
+      imgUrl: req.body.imgUrl,
     });
     if (background) {
       return res.status(201).json(background);

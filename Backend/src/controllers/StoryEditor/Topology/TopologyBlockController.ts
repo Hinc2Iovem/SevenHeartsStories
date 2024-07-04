@@ -10,7 +10,6 @@ import {
   unrelatedTopologyBlockCreateService,
   topologyBlockCreateConnectionService,
   topologyBlockUpdateConnectionService,
-  topologyBlockUpdateSexualOrientationsService,
 } from "../../../services/StoryEditor/Topology/TopologyBlockService";
 
 type GetTopologyBlockByIdParams = {
@@ -228,37 +227,6 @@ export const topologyBlockControllerUpdateCoordinates: RequestHandler<
     const topologyBlock = await topologyBlockUpdateCoordinatesService({
       coordinatesX: req.body.coordinatesX,
       coordinatesY: req.body.coordinatesY,
-      topologyBlockId: req.params.topologyBlockId,
-    });
-    if (topologyBlock) {
-      return res.status(201).json(topologyBlock);
-    } else {
-      return res.status(400).json({ message: "Something went wrong" });
-    }
-  } catch (error) {
-    next(error);
-  }
-};
-
-type TopologyBlockUpdateSexualOrientationParams = {
-  topologyBlockId: string;
-};
-
-type TopologyBlockUpdateSexualOrientationBody = {
-  sexualOrientationType: string | undefined;
-};
-
-// @route PATCH http://localhost:3500/topologyBlocks/:topologyBlockId/sexualOrientation
-// @access Private
-export const topologyBlockControllerUpdateSexualOrientation: RequestHandler<
-  TopologyBlockUpdateSexualOrientationParams,
-  unknown,
-  TopologyBlockUpdateSexualOrientationBody,
-  unknown
-> = async (req, res, next) => {
-  try {
-    const topologyBlock = await topologyBlockUpdateSexualOrientationsService({
-      sexualOrientationType: req.body.sexualOrientationType,
       topologyBlockId: req.params.topologyBlockId,
     });
     if (topologyBlock) {

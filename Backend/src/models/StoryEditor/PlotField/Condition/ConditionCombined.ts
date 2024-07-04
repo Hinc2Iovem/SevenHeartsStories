@@ -3,7 +3,7 @@ import mongoose, { InferSchemaType, model } from "mongoose";
 export const conditionCombinedSchema = new mongoose.Schema({
   plotFieldCommandConditionId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "PlotFieldCommandCondition",
+    ref: "Condition",
   },
   logicalOperator: {
     type: String,

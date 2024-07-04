@@ -1,7 +1,7 @@
 import createHttpError from "http-errors";
-import { TranslationTextFieldName } from "../../../../consts/TRANSLATION_TEXT_FIELD_NAMES";
+import { Types } from "mongoose";
+import { SexualOrientationTypes } from "../../../../consts/SEXUAL_ORIENTATION";
 import { ChoiceOptionType } from "../../../../controllers/StoryEditor/PlotField/Choice/ChoiceOptionController";
-import Translation from "../../../../models/StoryData/Translation";
 import Choice from "../../../../models/StoryEditor/PlotField/Choice/Choice";
 import ChoiceOption from "../../../../models/StoryEditor/PlotField/Choice/ChoiceOption";
 import OptionCharacteristic from "../../../../models/StoryEditor/PlotField/Choice/OptionCharacteristic";
@@ -10,13 +10,10 @@ import OptionRelationship from "../../../../models/StoryEditor/PlotField/Choice/
 import TopologyBlock from "../../../../models/StoryEditor/Topology/TopologyBlock";
 import TopologyBlockConnection from "../../../../models/StoryEditor/Topology/TopologyBlockConnection";
 import TopologyBlockInfo from "../../../../models/StoryEditor/Topology/TopologyBlockInfo";
-import { validateMongoId } from "../../../../utils/validateMongoId";
-import { createTopologyBlockConnection } from "../../../../utils/createTopologyBlockConnection";
-import { Types } from "mongoose";
-import { createTopologyBlock } from "../../../../utils/createTopologyBlock";
-import { checkCurrentLanguage } from "../../../../utils/checkCurrentLanguage";
-import { ChoiceOptionTypes } from "../../../../consts/CHOICE_OPTION_TYPES";
 import { checkChoiceOptionType } from "../../../../utils/checkChoiceOptionType";
+import { createTopologyBlock } from "../../../../utils/createTopologyBlock";
+import { createTopologyBlockConnection } from "../../../../utils/createTopologyBlockConnection";
+import { validateMongoId } from "../../../../utils/validateMongoId";
 
 type GetChoiceOptionByPlotFieldCommandIdTypes = {
   plotFieldCommandChoiceId: string;
@@ -203,6 +200,35 @@ export const updateChoiceOptionService = async ({
     });
     return existingChoiceOption;
   }
+};
+
+type ChoiceOptionUpdateSexualOrientations = {
+  sexualOrientationType: string | undefined;
+  choiceOptionId: string;
+};
+
+export const choiceOptionUpdateSexualOrientationsService = async ({
+  sexualOrientationType,
+  choiceOptionId,
+}: ChoiceOptionUpdateSexualOrientations) => {
+  validateMongoId({ value: choiceOptionId, valueName: "choiceOption" });
+
+  const existingChoiceOption = await ChoiceOption.findById(
+    choiceOptionId
+  ).exec();
+  if (!existingChoiceOption) {
+    throw createHttpError(400, "Such choiceOption doesn't exist");
+  }
+
+  if (
+    sexualOrientationType &&
+    SexualOrientationTypes.includes(sexualOrientationType.toLowerCase())
+  ) {
+    existingChoiceOption.sexualOrientationType =
+      sexualOrientationType.toLowerCase();
+  }
+
+  return await existingChoiceOption.save();
 };
 
 type DeleteChoiceOptionTypes = {

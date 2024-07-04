@@ -4,6 +4,7 @@ import {
   deleteChoiceOptionService,
   updateChoiceOptionService,
   getChoiceOptionByPlotFieldCommandChoiceIdService,
+  choiceOptionUpdateSexualOrientationsService,
 } from "../../../../services/StoryEditor/PlotField/Choice/ChoiceOptionService";
 
 type GetChoiceOptionByPlotFieldCommandChoiceIdParams = {
@@ -110,6 +111,37 @@ export const updateChoiceOptionController: RequestHandler<
       choiceOptionId: req.params.choiceOptionId,
       characterId: req.body.characterId,
       characterCharacteristicId: req.body.characterCharacteristicId,
+    });
+    if (choiceOption) {
+      return res.status(201).json(choiceOption);
+    } else {
+      return res.status(400).json({ message: "Something went wrong" });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
+type ChoiceOptionUpdateSexualOrientationParams = {
+  choiceOptionId: string;
+};
+
+type ChoiceOptionUpdateSexualOrientationBody = {
+  sexualOrientationType: string | undefined;
+};
+
+// @route PATCH http://localhost:3500/plotFieldCommands/choices/options/:choiceOptionId/sexualOrientation
+// @access Private
+export const choiceOptionControllerUpdateSexualOrientation: RequestHandler<
+  ChoiceOptionUpdateSexualOrientationParams,
+  unknown,
+  ChoiceOptionUpdateSexualOrientationBody,
+  unknown
+> = async (req, res, next) => {
+  try {
+    const choiceOption = await choiceOptionUpdateSexualOrientationsService({
+      sexualOrientationType: req.body.sexualOrientationType,
+      choiceOptionId: req.params.choiceOptionId,
     });
     if (choiceOption) {
       return res.status(201).json(choiceOption);

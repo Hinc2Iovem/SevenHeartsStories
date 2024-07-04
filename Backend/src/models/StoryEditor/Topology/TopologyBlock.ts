@@ -1,7 +1,5 @@
 import mongoose, { InferSchemaType, model } from "mongoose";
 
-// sexualOrientationType = "hetero" | "lgbt" | "combined"
-
 export const topologyBlockSchema = new mongoose.Schema({
   episodeId: {
     type: mongoose.Schema.Types.ObjectId,
@@ -17,9 +15,6 @@ export const topologyBlockSchema = new mongoose.Schema({
   coordinatesX: {
     type: Number,
     default: 50,
-  },
-  sexualOrientationType: {
-    type: String,
   },
   coordinatesY: {
     type: Number,

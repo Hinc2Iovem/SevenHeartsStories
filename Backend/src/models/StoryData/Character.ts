@@ -1,5 +1,9 @@
 import mongoose, { InferSchemaType, model } from "mongoose";
 
+// Translation "characterName",
+// "characterDescription",
+//  "characterUnknownName",
+
 //   EmptyCharacter (есть только имя/переводится)
 //   MinorCharacter (кроме имени есть:
 //   unknownName, description, nameTag и список одежды)

@@ -16,8 +16,28 @@ export const storyGetAllService = async () => {
   return existingStories;
 };
 
+type GetAllStoriesByStatusTypes = {
+  storyStatus: string | undefined;
+};
+
+export const storyGetAllByStatusService = async ({
+  storyStatus,
+}: GetAllStoriesByStatusTypes) => {
+  if (!storyStatus?.trim().length) {
+    throw createHttpError(400, "StoryStatus is required");
+  }
+  const existingStories = await Story.find({ storyStatus }).lean();
+
+  if (!existingStories.length) {
+    return [];
+  }
+
+  return existingStories;
+};
+
 type StoryCreateTypes = {
   title: string | undefined;
+  description: string | undefined;
   imgUrl: string | undefined;
   currentLanguage: string | undefined;
   genres: string | undefined;
@@ -27,10 +47,18 @@ export const storyCreateService = async ({
   genres,
   imgUrl,
   currentLanguage,
+  description,
   title,
 }: StoryCreateTypes) => {
-  if (!title?.trim().length || !currentLanguage?.trim().length) {
-    throw createHttpError(400, "Title is required");
+  if (
+    !title?.trim().length ||
+    !description?.trim().length ||
+    !currentLanguage?.trim().length
+  ) {
+    throw createHttpError(
+      400,
+      "Title, description and currentLanguage is required"
+    );
   }
 
   checkCurrentLanguage({ currentLanguage });
@@ -44,6 +72,13 @@ export const storyCreateService = async ({
     language: currentLanguage,
     text: title,
     textFieldName: TranslationTextFieldName.StoryName,
+  });
+
+  await Translation.create({
+    storyId: newStory._id,
+    language: currentLanguage,
+    text: description,
+    textFieldName: TranslationTextFieldName.StoryDescription,
   });
 
   await Translation.create({
@@ -99,43 +134,6 @@ type StoryUpdateGenreTypes = {
   storyId: string;
   genre: string | undefined;
   currentLanguage: string | undefined;
-};
-
-export const storyUpdateGenreService = async ({
-  storyId,
-  genre,
-  currentLanguage,
-}: StoryUpdateGenreTypes) => {
-  validateMongoId({ value: storyId, valueName: "Story" });
-
-  if (!currentLanguage?.trim().length) {
-    throw createHttpError(400, "Language is required");
-  }
-
-  checkCurrentLanguage({ currentLanguage });
-
-  const existingStory = await Story.findById({ storyId }).lean();
-
-  if (!existingStory) {
-    throw createHttpError(400, "Story with such id doesn't exist");
-  }
-
-  const existingTranslation = await Translation.findOne({
-    storyId,
-    textFieldName: TranslationTextFieldName.StoryGenre,
-    language: currentLanguage,
-  }).exec();
-
-  if (!existingTranslation) {
-    throw createHttpError(400, "Translation wasn't found");
-  }
-
-  if (genre?.trim().length) {
-    existingTranslation.text = genre;
-    await existingTranslation.save();
-  }
-
-  return existingTranslation;
 };
 
 type StoryDeleteTypes = {

@@ -12,6 +12,9 @@ export const characterEmotionSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  imgUrl: {
+    type: String,
+  },
 });
 
 type CharacterEmotion = InferSchemaType<typeof characterEmotionSchema>;

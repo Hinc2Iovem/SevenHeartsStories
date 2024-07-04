@@ -1,11 +1,10 @@
 import createHttpError from "http-errors";
-import TopologyBlock from "../../../models/StoryEditor/Topology/TopologyBlock";
-import { validateMongoId } from "../../../utils/validateMongoId";
-import Episode from "../../../models/StoryData/Episode";
-import TopologyBlockInfo from "../../../models/StoryEditor/Topology/TopologyBlockInfo";
 import { Types } from "mongoose";
+import Episode from "../../../models/StoryData/Episode";
+import TopologyBlock from "../../../models/StoryEditor/Topology/TopologyBlock";
 import TopologyBlockConnection from "../../../models/StoryEditor/Topology/TopologyBlockConnection";
-import { SexualOrientationTypes } from "../../../consts/SEXUAL_ORIENTATION";
+import TopologyBlockInfo from "../../../models/StoryEditor/Topology/TopologyBlockInfo";
+import { validateMongoId } from "../../../utils/validateMongoId";
 
 type GetFirstTopologyBlockTypes = {
   episodeId: string;
@@ -161,35 +160,6 @@ export const topologyBlockUpdateCoordinatesService = async ({
   }
   if (coordinatesY) {
     existingTopologyBlock.coordinatesY = coordinatesY;
-  }
-
-  return await existingTopologyBlock.save();
-};
-
-type TopologyBlockUpdateSexualOrientations = {
-  sexualOrientationType: string | undefined;
-  topologyBlockId: string;
-};
-
-export const topologyBlockUpdateSexualOrientationsService = async ({
-  sexualOrientationType,
-  topologyBlockId,
-}: TopologyBlockUpdateSexualOrientations) => {
-  validateMongoId({ value: topologyBlockId, valueName: "topologyBlock" });
-
-  const existingTopologyBlock = await TopologyBlock.findById(
-    topologyBlockId
-  ).exec();
-  if (!existingTopologyBlock) {
-    throw createHttpError(400, "Such topologyBlock doesn't exist");
-  }
-
-  if (
-    sexualOrientationType &&
-    SexualOrientationTypes.includes(sexualOrientationType.toLowerCase())
-  ) {
-    existingTopologyBlock.sexualOrientationType =
-      sexualOrientationType.toLowerCase();
   }
 
   return await existingTopologyBlock.save();
