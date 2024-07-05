@@ -26,7 +26,7 @@ type GetStoryByStatusBody = {
   storyStatus: string | undefined;
 };
 
-// @route GET http://localhost:3500/stories
+// @route GET http://localhost:3500/stories/status
 // @access Private
 export const storyGetAllByStatusController: RequestHandler<
   unknown,

@@ -4,20 +4,18 @@ import IfValue from "../../../../models/StoryEditor/PlotField/If/IfValue";
 import { validateMongoId } from "../../../../utils/validateMongoId";
 import { SignTypes } from "../../../../controllers/StoryEditor/PlotField/Condition/ConditionValueController";
 
-type GetByPlotFieldCommandIfIdTypes = {
-  plotFieldCommandIfId: string;
+type GetByIfIdTypes = {
+  ifId: string;
 };
 
-export const getIfValueByPlotFieldCommandIfIdService = async ({
-  plotFieldCommandIfId,
-}: GetByPlotFieldCommandIfIdTypes) => {
+export const getIfValueByIfIdService = async ({ ifId }: GetByIfIdTypes) => {
   validateMongoId({
-    value: plotFieldCommandIfId,
+    value: ifId,
     valueName: "PlotFieldCommand",
   });
 
   const existingIfValue = await IfValue.find({
-    plotFieldCommandIfId,
+    plotFieldCommandIfId: ifId,
   }).lean();
 
   if (!existingIfValue.length) {

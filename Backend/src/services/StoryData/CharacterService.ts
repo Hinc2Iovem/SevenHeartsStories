@@ -214,52 +214,6 @@ export const characterUpdateService = async ({
   return await existingCharacter.save();
 };
 
-type UpdateCharacterNameTagTypes = {
-  nameTag: string | undefined;
-  characterId: string;
-};
-
-export const characterUpdateNameTagService = async ({
-  nameTag,
-  characterId,
-}: UpdateCharacterNameTagTypes) => {
-  validateMongoId({ value: characterId, valueName: "Character" });
-
-  const existingCharacter = await Character.findById(characterId).exec();
-  if (!existingCharacter) {
-    throw createHttpError(400, "Character with such id doesn't exist");
-  }
-
-  if (nameTag?.trim().length) {
-    existingCharacter.nameTag = nameTag;
-  }
-
-  return await existingCharacter.save();
-};
-
-type UpdateCharacterImgTypes = {
-  img: string | undefined;
-  characterId: string;
-};
-
-export const characterUpdateImgService = async ({
-  img,
-  characterId,
-}: UpdateCharacterImgTypes) => {
-  validateMongoId({ value: characterId, valueName: "Character" });
-
-  const existingCharacter = await Character.findById(characterId).exec();
-  if (!existingCharacter) {
-    throw createHttpError(400, "Character with such id doesn't exist");
-  }
-
-  if (img?.trim().length) {
-    existingCharacter.img = img;
-  }
-
-  return await existingCharacter.save();
-};
-
 type DeleteCharacterTypes = {
   characterId: string;
 };

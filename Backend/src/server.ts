@@ -40,6 +40,10 @@ import {
   commandNameRoute,
   keyRoute,
   staffRoute,
+  choiceOptionVariationsRoute,
+  ifRoute,
+  ifValuesRoute,
+  translationRoute,
 } from "./routes/index";
 
 dotenv.config();
@@ -59,6 +63,8 @@ connectDB();
 app.use(express.json());
 app.use(cookieParser());
 
+app.use("/translations", translationRoute);
+
 app.use("/appearanceParts", appearancePartRoute);
 app.use("/characterCharacteristics", characterCharacteristicRoute);
 app.use("/characters", characterRoute);
@@ -69,14 +75,16 @@ app.use("/episodeInfo", episodeInfoRoute);
 app.use("/stories", seasonRoute);
 app.use("/stories", storyRoute);
 app.use("/stories", musicRoute);
-app.use("/topologyBlocks", topologyBlockRoute);
-app.use("/topologyBlocks", plotFieldCommandRoute);
 app.use("/stories", achievementRoute);
+
 app.use("/plotFieldCommands", ambientRoute);
 app.use("/plotFieldCommands", backgroundRoute);
 app.use("/plotFieldCommands", callRoute);
 app.use("/plotFieldCommands", choiceOptionRoute);
 app.use("/plotFieldCommands", choiceRoute);
+app.use("/plotFieldCommands", choiceOptionVariationsRoute);
+app.use("/plotFieldCommands", ifRoute);
+app.use("/plotFieldCommands", ifValuesRoute);
 app.use("/plotFieldCommands", conditionRoute);
 app.use("/plotFieldCommands", conditionValuesRoute);
 app.use("/plotFieldCommands", cutScenesRoute);
@@ -91,6 +99,10 @@ app.use("/plotFieldCommands", soundRoute);
 app.use("/plotFieldCommands", suitRoute);
 app.use("/plotFieldCommands", waitRoute);
 app.use("/plotFieldCommands", wardrobeRoute);
+
+app.use("/topologyBlocks", topologyBlockRoute);
+app.use("/topologyBlocks", plotFieldCommandRoute);
+
 app.use("/staff", staffRoute);
 
 mongoose.connection.once("open", () => {

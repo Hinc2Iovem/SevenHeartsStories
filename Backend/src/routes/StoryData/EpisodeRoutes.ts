@@ -2,9 +2,11 @@ import express from "express";
 import {
   episodeCreateController,
   episodeDeleteController,
-  episodeUpdateController,
+  episodeResetStatusController,
+  episodesGetBySeasonIdController,
   episodeUpdateSeasonIdController,
 } from "../../controllers/StoryData/EpisodeController";
+import { episodeGetByEpisodeIdController } from "../../controllers/StoryData/EpisodeInfoController";
 
 // Default route === /episodes
 export const episodeRoute = express.Router();
@@ -15,8 +17,11 @@ episodeRoute
 
 episodeRoute
   .route("/:episodeId")
-  .patch(episodeUpdateController)
+  .get(episodeGetByEpisodeIdController)
+  .patch(episodeResetStatusController)
   .delete(episodeDeleteController);
+
+episodeRoute.route("/seasons/:seasonId").get(episodesGetBySeasonIdController);
 
 episodeRoute
   .route("/:episodeId/seasons/:newSeasonId")

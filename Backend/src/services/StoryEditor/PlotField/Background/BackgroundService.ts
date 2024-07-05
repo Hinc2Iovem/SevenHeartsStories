@@ -48,12 +48,14 @@ type UpdateBackgroundTypes = {
   backgroundId: string;
   pointOfMovement: number | undefined;
   musicName: string | undefined;
+  imgUrl: string | undefined;
 };
 
 export const updateBackgroundService = async ({
   backgroundName,
   backgroundId,
   musicName,
+  imgUrl,
   pointOfMovement,
 }: UpdateBackgroundTypes) => {
   validateMongoId({ value: backgroundId, valueName: "Background" });
@@ -74,6 +76,9 @@ export const updateBackgroundService = async ({
   if (pointOfMovement) {
     existingBackground.pointOfMovement = pointOfMovement;
   }
+  if (imgUrl?.trim().length) {
+    existingBackground.imgUrl = imgUrl;
+  }
 
   return await existingBackground.save();
 };
@@ -83,25 +88,25 @@ type UpdateBackgroundImgTypes = {
   imgUrl: string | undefined;
 };
 
-export const backgroundUpdateImgService = async ({
-  backgroundId,
-  imgUrl,
-}: UpdateBackgroundImgTypes) => {
-  validateMongoId({ value: backgroundId, valueName: "Background" });
+// export const backgroundUpdateImgService = async ({
+//   backgroundId,
+//   imgUrl,
+// }: UpdateBackgroundImgTypes) => {
+//   validateMongoId({ value: backgroundId, valueName: "Background" });
 
-  const existingBackground = await Background.findById(backgroundId).exec();
-  if (!existingBackground) {
-    throw createHttpError(400, "Background with such id wasn't found");
-  }
+//   const existingBackground = await Background.findById(backgroundId).exec();
+//   if (!existingBackground) {
+//     throw createHttpError(400, "Background with such id wasn't found");
+//   }
 
-  if (!imgUrl?.trim().length) {
-    throw createHttpError(400, "imgUrl is required");
-  }
+//   if (!imgUrl?.trim().length) {
+//     throw createHttpError(400, "imgUrl is required");
+//   }
 
-  existingBackground.imgUrl = imgUrl;
+//   existingBackground.imgUrl = imgUrl;
 
-  return await existingBackground.save();
-};
+//   return await existingBackground.save();
+// };
 
 type DeleteBackgroundTypes = {
   backgroundId: string;

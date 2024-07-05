@@ -3,10 +3,15 @@ import {
   addAnotherBlockConditionController,
   createConditionController,
   deleteConditionController,
+  getConditionByPlotFieldCommandIdController,
 } from "../../../../controllers/StoryEditor/PlotField/Condition/ConditionController";
 
 // Default route === /plotFieldCommands
 export const conditionRoute = express.Router();
+
+conditionRoute
+  .route("/:plotFieldCommandId/conditions")
+  .delete(getConditionByPlotFieldCommandIdController);
 
 conditionRoute
   .route("/:plotFieldCommandId/conditions/targetBlocks/:targetBlockId")

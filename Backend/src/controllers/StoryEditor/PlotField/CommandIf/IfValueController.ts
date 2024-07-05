@@ -1,56 +1,29 @@
 import { RequestHandler } from "express";
 import {
-  createConditionValueService,
-  deleteConditionValueService,
-  updateConditionValueService,
-  getConditionValueByPlotFieldCommandConditionIdService,
-} from "../../../../services/StoryEditor/PlotField/Condition/ConditionValueService";
+  createIfValueService,
+  deleteIfValueService,
+  getIfValueByIfIdService,
+  updateIfValueService,
+} from "../../../../services/StoryEditor/PlotField/ServiceIf/IfValueService";
 
-type GetConditionValueByPlotFieldCommandConditionIdParams = {
-  plotFieldCommandConditionId: string;
+type GetIfValueByIfIdParams = {
+  ifId: string;
 };
 
-// @route GET http://localhost:3500/plotFieldCommands/conditions/:plotFieldCommandConditionId/conditionValues
+// @route GET http://localhost:3500/plotFieldCommands/ifs/:ifId/ifValues
 // @access Private
-export const getConditionValueByPlotFieldCommandConditionIdController: RequestHandler<
-  GetConditionValueByPlotFieldCommandConditionIdParams,
+export const getIfValueByIfIdController: RequestHandler<
+  GetIfValueByIfIdParams,
   unknown,
   unknown,
   unknown
 > = async (req, res, next) => {
   try {
-    const conditionValue =
-      await getConditionValueByPlotFieldCommandConditionIdService({
-        plotFieldCommandConditionId: req.params.plotFieldCommandConditionId,
-      });
-    if (conditionValue) {
-      return res.status(201).json(conditionValue);
-    } else {
-      return res.status(400).json({ message: "Something went wrong" });
-    }
-  } catch (error) {
-    next(error);
-  }
-};
-
-type CreateConditionValueParams = {
-  conditionId: string;
-};
-
-// @route POST http://localhost:3500/plotFieldCommands/conditions/:conditionId/conditionValues
-// @access Private
-export const createConditionValueController: RequestHandler<
-  CreateConditionValueParams,
-  unknown,
-  unknown,
-  unknown
-> = async (req, res, next) => {
-  try {
-    const conditionValue = await createConditionValueService({
-      conditionId: req.params.conditionId,
+    const ifValue = await getIfValueByIfIdService({
+      ifId: req.params.ifId,
     });
-    if (conditionValue) {
-      return res.status(201).json(conditionValue);
+    if (ifValue) {
+      return res.status(201).json(ifValue);
     } else {
       return res.status(400).json({ message: "Something went wrong" });
     }
@@ -59,35 +32,61 @@ export const createConditionValueController: RequestHandler<
   }
 };
 
-type UpdateConditionValueParams = {
-  conditionValueId: string;
+type CreateIfValueParams = {
+  ifId: string;
+};
+
+// @route POST http://localhost:3500/plotFieldCommands/ifs/:ifId/ifValues
+// @access Private
+export const createIfValueController: RequestHandler<
+  CreateIfValueParams,
+  unknown,
+  unknown,
+  unknown
+> = async (req, res, next) => {
+  try {
+    const ifValue = await createIfValueService({
+      ifId: req.params.ifId,
+    });
+    if (ifValue) {
+      return res.status(201).json(ifValue);
+    } else {
+      return res.status(400).json({ message: "Something went wrong" });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
+type UpdateIfValueParams = {
+  ifValueId: string;
 };
 
 export type SignTypes = ">" | "<" | "<=" | ">=" | "=";
 
-type UpdateConditionValueBody = {
+type UpdateIfValueBody = {
   name: string | undefined;
   sign: SignTypes | undefined;
   value: number | undefined;
 };
 
-// @route PATCH http://localhost:3500/plotFieldCommands/conditions/conditionValues/:conditionValueId
+// @route PATCH http://localhost:3500/plotFieldCommands/ifs/ifValues/:ifValueId
 // @access Private
-export const updateConditionValueController: RequestHandler<
-  UpdateConditionValueParams,
+export const updateIfValueController: RequestHandler<
+  UpdateIfValueParams,
   unknown,
-  UpdateConditionValueBody,
+  UpdateIfValueBody,
   unknown
 > = async (req, res, next) => {
   try {
-    const conditionValue = await updateConditionValueService({
-      conditionValueId: req.params.conditionValueId,
+    const ifValue = await updateIfValueService({
+      ifValueId: req.params.ifValueId,
       name: req.body.name,
       sign: req.body.sign,
       value: req.body.value,
     });
-    if (conditionValue) {
-      return res.status(201).json(conditionValue);
+    if (ifValue) {
+      return res.status(201).json(ifValue);
     } else {
       return res.status(400).json({ message: "Something went wrong" });
     }
@@ -96,24 +95,24 @@ export const updateConditionValueController: RequestHandler<
   }
 };
 
-type DeleteConditionValueParams = {
-  conditionValueId: string;
+type DeleteIfValueParams = {
+  ifValueId: string;
 };
 
-// @route DELETE http://localhost:3500/plotFieldCommands/conditions/conditionValues/:conditionId
+// @route DELETE http://localhost:3500/plotFieldCommands/ifs/ifValues/:ifValueId
 // @access Private
-export const deleteConditionValueController: RequestHandler<
-  DeleteConditionValueParams,
+export const deleteIfValueController: RequestHandler<
+  DeleteIfValueParams,
   unknown,
   unknown,
   unknown
 > = async (req, res, next) => {
   try {
-    const conditionValue = await deleteConditionValueService({
-      conditionValueId: req.params.conditionValueId,
+    const ifValue = await deleteIfValueService({
+      ifValueId: req.params.ifValueId,
     });
-    if (conditionValue) {
-      return res.status(201).json(conditionValue);
+    if (ifValue) {
+      return res.status(201).json(ifValue);
     } else {
       return res.status(400).json({ message: "Something went wrong" });
     }

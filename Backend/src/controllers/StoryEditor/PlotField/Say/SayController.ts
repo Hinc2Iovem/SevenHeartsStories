@@ -58,8 +58,8 @@ export const createSayController: RequestHandler<
     const say = await createSayService({
       characterId: req.params.characterId,
       characterEmotionId: req.params.characterEmotionId,
-      type: req.body.type,
       plotFieldCommandId: req.params.plotFieldCommandId,
+      type: req.body.type,
     });
     if (say) {
       return res.status(201).json(say);

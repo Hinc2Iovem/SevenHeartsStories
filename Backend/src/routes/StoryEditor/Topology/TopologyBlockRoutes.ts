@@ -8,6 +8,7 @@ import {
   topologyBlockControllerUpdateCoordinates,
   topologyBlockControllerUpdateName,
   topologyBlockCreateConnectionController,
+  topologyBlockUpdateConnectionController,
   unrelatedTopologyBlockControllerCreate,
 } from "../../../controllers/StoryEditor/Topology/TopologyBlockController";
 
@@ -43,7 +44,7 @@ topologyBlockRoute
   .route(
     "/connection/sourceBlocks/:sourceBlockId/targetBlocks/:targetBlockId/newTargetBlock/:newTargetBlockId"
   )
-  .patch(topologyBlockControllerUpdateCoordinates);
+  .patch(topologyBlockUpdateConnectionController);
 
 topologyBlockRoute
   .route("/:topologyBlockId/name")

@@ -2,6 +2,7 @@ import express from "express";
 import {
   createAmbientController,
   deleteAmbientController,
+  getAmbientByPlotFieldCommandIdController,
   updateAmbientController,
 } from "../../../../controllers/StoryEditor/PlotField/Ambient/AmbientController";
 
@@ -10,7 +11,8 @@ export const ambientRoute = express.Router();
 
 ambientRoute
   .route("/:plotFieldCommandId/ambients")
-  .post(createAmbientController);
+  .post(createAmbientController)
+  .get(getAmbientByPlotFieldCommandIdController);
 
 ambientRoute
   .route("/ambients/:ambientId")

@@ -68,7 +68,7 @@ type CharacterCharacteristicDeleteParams = {
   characteristicId: string | undefined;
 };
 
-// @route DELETE http://localhost:3500/characterCharacteristic/:characterCharacteristicId
+// @route DELETE http://localhost:3500/characterCharacteristics/:characterCharacteristicId
 // @access Private
 export const characterCharacteristicDeleteController: RequestHandler<
   CharacterCharacteristicDeleteParams,

@@ -4,17 +4,15 @@ import {
   characterDeleteService,
   characterGetAllByStoryIdService,
   characterGetByStoryIdAndNameService,
-  characterUpdateImgService,
-  characterUpdateNameTagService,
-  getAllCharacterNameTagsService,
   characterUpdateService,
+  getAllCharacterNameTagsService,
 } from "../../services/StoryData/CharacterService";
 
 type GetAllCharacterNameTagsParams = {
   storyId: string;
 };
 
-// @route GET http://localhost:3500/characters/stories/:storyId/characterNameTag
+// @route GET http://localhost:3500/characters/stories/:storyId/nameTag
 // @access Private
 export const getAllCharacterNameTagsController: RequestHandler<
   GetAllCharacterNameTagsParams,
@@ -43,7 +41,7 @@ type CharacterGetByStoryIdAndNameBody = {
   name: string | undefined;
 };
 
-// @route GET http://localhost:3500/characters/stories/:storyId/characterName
+// @route GET http://localhost:3500/characters/stories/:storyId/name
 // @access Private
 export const characterGetByStoryIdAndNameController: RequestHandler<
   CharacterGetByStoryIdAndNameParams,
@@ -161,60 +159,6 @@ export const characterUpdateController: RequestHandler<
     const character = await characterUpdateService({
       nameTag: req.body.nameTag,
       type: req.body.type,
-      img: req.body.img,
-      characterId: req.params.characterId,
-    });
-    if (character) {
-      return res.status(201).json(character);
-    } else {
-      return res.status(400).json({ message: "Something went wrong" });
-    }
-  } catch (error) {
-    next(error);
-  }
-};
-
-type CharacterUpdateNameTagBody = {
-  nameTag: string | undefined;
-};
-
-// @route PATCH http://localhost:3500/characters/:characterId/nameTag
-// @access Private
-export const characterUpdateNameTagController: RequestHandler<
-  CharacterUpdateParams,
-  unknown,
-  CharacterUpdateNameTagBody,
-  unknown
-> = async (req, res, next) => {
-  try {
-    const character = await characterUpdateNameTagService({
-      nameTag: req.body.nameTag,
-      characterId: req.params.characterId,
-    });
-    if (character) {
-      return res.status(201).json(character);
-    } else {
-      return res.status(400).json({ message: "Something went wrong" });
-    }
-  } catch (error) {
-    next(error);
-  }
-};
-
-type CharacterUpdateImgBody = {
-  img: string | undefined;
-};
-
-// @route PATCH http://localhost:3500/characters/:characterId/img
-// @access Private
-export const characterUpdateImgController: RequestHandler<
-  CharacterUpdateParams,
-  unknown,
-  CharacterUpdateImgBody,
-  unknown
-> = async (req, res, next) => {
-  try {
-    const character = await characterUpdateImgService({
       img: req.body.img,
       characterId: req.params.characterId,
     });

@@ -10,7 +10,7 @@ type GetMusicByPlotFieldCommandIdParams = {
   plotFieldCommandId: string;
 };
 
-// @route GET http://localhost:3500/plotFieldCommands/:plotFieldCommandId/ambients
+// @route GET http://localhost:3500/plotFieldCommands/:plotFieldCommandId/music
 // @access Private
 export const getMusicByPlotFieldCommandIdController: RequestHandler<
   GetMusicByPlotFieldCommandIdParams,

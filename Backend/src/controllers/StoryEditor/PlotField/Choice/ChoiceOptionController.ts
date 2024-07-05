@@ -11,7 +11,7 @@ type GetChoiceOptionByPlotFieldCommandChoiceIdParams = {
   plotFieldCommandChoiceId: string;
 };
 
-// @route GET http://localhost:3500/plotFieldCommands/choice/options/:plotFieldCommandChoiceId
+// @route GET http://localhost:3500/plotFieldCommands/choice/:plotFieldCommandChoiceId/options
 // @access Private
 export const getChoiceOptionByPlotFieldCommandChoiceIdController: RequestHandler<
   GetChoiceOptionByPlotFieldCommandChoiceIdParams,
@@ -52,7 +52,7 @@ type CreateChoiceOptionBody = {
 };
 
 // TODO KAKAYTA ZALUPA
-// @route POST http://localhost:3500/plotFieldCommands/:plotFieldCommandId/episodes/:episodeId/choices/options/topologyBlocks/:topologyBlockId
+// @route POST http://localhost:3500/plotFieldCommands/:plotFieldCommandId/choices/options/episodes/:episodeId/topologyBlocks/:topologyBlockId
 // @access Private
 export const createChoiceOptionController: RequestHandler<
   CreateChoiceOptionParams,
@@ -103,12 +103,12 @@ export const updateChoiceOptionController: RequestHandler<
 > = async (req, res, next) => {
   try {
     const choiceOption = await updateChoiceOptionService({
+      choiceOptionId: req.params.choiceOptionId,
       amountOfPoints: req.body.amountOfPoints,
       characterName: req.body.characterName,
       priceAmethysts: req.body.priceAmethysts,
       option: req.body.option,
       characteristicName: req.body.characteristicName,
-      choiceOptionId: req.params.choiceOptionId,
       characterId: req.body.characterId,
       characterCharacteristicId: req.body.characterCharacteristicId,
     });

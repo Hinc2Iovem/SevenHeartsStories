@@ -39,7 +39,7 @@ type AppearancePartUpdateBody = {
   currentLanguage: string | undefined;
 };
 
-// @route PATCH http://localhost:3500/translations/appearanceParts/:appearancePartId/nameType
+// @route PATCH http://localhost:3500/translations/appearanceParts/:appearancePartId
 // @access Private
 export const appearancePartTranslationControllerUpdateNameType: RequestHandler<
   AppearancePartUpdateParams,

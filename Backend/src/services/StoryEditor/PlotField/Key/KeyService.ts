@@ -84,34 +84,34 @@ export const updateCommandKeyService = async ({
   return await existingCommandKey.save();
 };
 
-type UpdateCommandKeyTargetBlockTypes = {
-  commandKeyId: string;
-  newTargetBlockId: string;
-};
+// type UpdateCommandKeyTargetBlockTypes = {
+//   commandKeyId: string;
+//   newTargetBlockId: string;
+// };
 
-export const updateCommandKeyTargetBlockIdService = async ({
-  newTargetBlockId,
-  commandKeyId,
-}: UpdateCommandKeyTargetBlockTypes) => {
-  validateMongoId({ value: newTargetBlockId, valueName: "TopologyBlock" });
-  validateMongoId({ value: commandKeyId, valueName: "CommandKey" });
+// export const updateCommandKeyTargetBlockIdService = async ({
+//   newTargetBlockId,
+//   commandKeyId,
+// }: UpdateCommandKeyTargetBlockTypes) => {
+//   validateMongoId({ value: newTargetBlockId, valueName: "TopologyBlock" });
+//   validateMongoId({ value: commandKeyId, valueName: "CommandKey" });
 
-  const existingNewTargetBlockId = await TopologyBlock.findById(
-    newTargetBlockId
-  ).lean();
-  if (!existingNewTargetBlockId) {
-    throw createHttpError(400, "PlotFieldCommand with such id wasn't found");
-  }
+//   const existingNewTargetBlockId = await TopologyBlock.findById(
+//     newTargetBlockId
+//   ).lean();
+//   if (!existingNewTargetBlockId) {
+//     throw createHttpError(400, "PlotFieldCommand with such id wasn't found");
+//   }
 
-  const existingCommandKey = await Key.findById(commandKeyId).exec();
-  if (!existingCommandKey) {
-    throw createHttpError(400, "PlotFieldCommand with such id wasn't found");
-  }
+//   const existingCommandKey = await Key.findById(commandKeyId).exec();
+//   if (!existingCommandKey) {
+//     throw createHttpError(400, "PlotFieldCommand with such id wasn't found");
+//   }
 
-  existingCommandKey.targetBlockId = new Types.ObjectId(newTargetBlockId);
+//   existingCommandKey.targetBlockId = new Types.ObjectId(newTargetBlockId);
 
-  return existingCommandKey.save();
-};
+//   return existingCommandKey.save();
+// };
 
 type DeleteCommandKeyTypes = {
   commandKeyId: string;

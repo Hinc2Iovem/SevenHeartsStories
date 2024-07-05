@@ -1,16 +1,16 @@
 import { RequestHandler } from "express";
 import {
-  addAnotherBlockConditionService,
-  createConditionService,
-  deleteConditionService,
-  getConditionByPlotFieldCommandIdService,
-} from "../../../../services/StoryEditor/PlotField/Condition/ConditionService";
+  addAnotherBlockIfService,
+  createIfService,
+  deleteIfService,
+  getIfByPlotFieldCommandIdService,
+} from "../../../../services/StoryEditor/PlotField/ServiceIf/IfService";
 
 type GetConditionByPlotFieldCommandIdParams = {
   plotFieldCommandId: string;
 };
 
-// @route GET http://localhost:3500/plotFieldCommands/:plotFieldCommandId/conditions
+// @route GET http://localhost:3500/plotFieldCommands/:plotFieldCommandId/ifs
 // @access Private
 export const getConditionByPlotFieldCommandIdController: RequestHandler<
   GetConditionByPlotFieldCommandIdParams,
@@ -19,7 +19,7 @@ export const getConditionByPlotFieldCommandIdController: RequestHandler<
   unknown
 > = async (req, res, next) => {
   try {
-    const condition = await getConditionByPlotFieldCommandIdService({
+    const condition = await getIfByPlotFieldCommandIdService({
       plotFieldCommandId: req.params.plotFieldCommandId,
     });
     if (condition) {
@@ -34,10 +34,9 @@ export const getConditionByPlotFieldCommandIdController: RequestHandler<
 
 type CreateConditionParams = {
   plotFieldCommandId: string;
-  targetBlockId: string;
 };
 
-// @route POST http://localhost:3500/plotFieldCommands/:plotFieldCommandId/conditions/targetBlocks/:targetBlockId
+// @route POST http://localhost:3500/plotFieldCommands/:plotFieldCommandId/ifs
 // @access Private
 export const createConditionController: RequestHandler<
   CreateConditionParams,
@@ -46,9 +45,8 @@ export const createConditionController: RequestHandler<
   unknown
 > = async (req, res, next) => {
   try {
-    const condition = await createConditionService({
+    const condition = await createIfService({
       plotFieldCommandId: req.params.plotFieldCommandId,
-      targetBlockId: req.params.targetBlockId,
     });
     if (condition) {
       return res.status(201).json(condition);
@@ -60,7 +58,7 @@ export const createConditionController: RequestHandler<
   }
 };
 
-// @route POST http://localhost:3500/plotFieldCommands/:plotFieldCommandId/conditions/targetBlock/:targetBlockId/addBlock
+// @route POST http://localhost:3500/plotFieldCommands/:plotFieldCommandId/ifs/addCondititon
 // @access Private
 export const addAnotherBlockConditionController: RequestHandler<
   CreateConditionParams,
@@ -69,9 +67,8 @@ export const addAnotherBlockConditionController: RequestHandler<
   unknown
 > = async (req, res, next) => {
   try {
-    const condition = await addAnotherBlockConditionService({
+    const condition = await addAnotherBlockIfService({
       plotFieldCommandId: req.params.plotFieldCommandId,
-      targetBlockId: req.params.targetBlockId,
     });
     if (condition) {
       return res.status(201).json(condition);
@@ -84,10 +81,10 @@ export const addAnotherBlockConditionController: RequestHandler<
 };
 
 type DeleteConditionParams = {
-  conditionId: string;
+  ifId: string;
 };
 
-// @route DELETE http://localhost:3500/plotFieldCommands/conditions/:conditionId
+// @route DELETE http://localhost:3500/plotFieldCommands/ifs/:ifId
 // @access Private
 export const deleteConditionController: RequestHandler<
   DeleteConditionParams,
@@ -96,8 +93,8 @@ export const deleteConditionController: RequestHandler<
   unknown
 > = async (req, res, next) => {
   try {
-    const condition = await deleteConditionService({
-      conditionId: req.params.conditionId,
+    const condition = await deleteIfService({
+      ifId: req.params.ifId,
     });
     if (condition) {
       return res.status(201).json(condition);

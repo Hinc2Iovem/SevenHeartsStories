@@ -99,51 +99,51 @@ export const updateCallService = async ({
   return await existingCall.save();
 };
 
-type UpdateCallTargetBlockTypes = {
-  callId: string;
-  newTargetBlockId: string;
-};
+// type UpdateCallTargetBlockTypes = {
+//   callId: string;
+//   newTargetBlockId: string;
+// };
 
-export const updateCallTargetBlockIdService = async ({
-  newTargetBlockId,
-  callId,
-}: UpdateCallTargetBlockTypes) => {
-  validateMongoId({ value: newTargetBlockId, valueName: "TopologyBlock" });
-  validateMongoId({ value: callId, valueName: "Call" });
+// export const updateCallTargetBlockIdService = async ({
+//   newTargetBlockId,
+//   callId,
+// }: UpdateCallTargetBlockTypes) => {
+//   validateMongoId({ value: newTargetBlockId, valueName: "TopologyBlock" });
+//   validateMongoId({ value: callId, valueName: "Call" });
 
-  const existingNewTargetBlockId = await TopologyBlock.findById(
-    newTargetBlockId
-  ).lean();
-  if (!existingNewTargetBlockId) {
-    throw createHttpError(400, "PlotFieldCommand with such id wasn't found");
-  }
+//   const existingNewTargetBlockId = await TopologyBlock.findById(
+//     newTargetBlockId
+//   ).lean();
+//   if (!existingNewTargetBlockId) {
+//     throw createHttpError(400, "PlotFieldCommand with such id wasn't found");
+//   }
 
-  const existingCall = await Call.findById(callId).exec();
-  if (!existingCall) {
-    throw createHttpError(400, "PlotFieldCommand with such id wasn't found");
-  }
+//   const existingCall = await Call.findById(callId).exec();
+//   if (!existingCall) {
+//     throw createHttpError(400, "PlotFieldCommand with such id wasn't found");
+//   }
 
-  const currentPlotFieldCommand = await PlotFieldCommand.findById(
-    existingCall.plotFieldCommandId
-  ).lean();
-  const sourceBlockId = currentPlotFieldCommand?.topologyBlockId;
+//   const currentPlotFieldCommand = await PlotFieldCommand.findById(
+//     existingCall.plotFieldCommandId
+//   ).lean();
+//   const sourceBlockId = currentPlotFieldCommand?.topologyBlockId;
 
-  const existingTopologyConnection = await TopologyBlockConnection.findOne({
-    sourceBlockId,
-    targetBlockId: existingCall.targetBlockId,
-  }).exec();
+//   const existingTopologyConnection = await TopologyBlockConnection.findOne({
+//     sourceBlockId,
+//     targetBlockId: existingCall.targetBlockId,
+//   }).exec();
 
-  if (existingTopologyConnection) {
-    existingTopologyConnection.targetBlockId = new Types.ObjectId(
-      newTargetBlockId
-    );
-    await existingTopologyConnection.save();
-  }
+//   if (existingTopologyConnection) {
+//     existingTopologyConnection.targetBlockId = new Types.ObjectId(
+//       newTargetBlockId
+//     );
+//     await existingTopologyConnection.save();
+//   }
 
-  existingCall.targetBlockId = new Types.ObjectId(newTargetBlockId);
+//   existingCall.targetBlockId = new Types.ObjectId(newTargetBlockId);
 
-  return existingCall.save();
-};
+//   return existingCall.save();
+// };
 
 type DeleteCallTypes = {
   callId: string;

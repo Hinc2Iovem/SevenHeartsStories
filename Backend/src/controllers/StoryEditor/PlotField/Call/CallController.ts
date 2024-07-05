@@ -4,7 +4,6 @@ import {
   deleteCallService,
   getCallByPlotFieldCommandIdService,
   updateCallService,
-  updateCallTargetBlockIdService,
 } from "../../../../services/StoryEditor/PlotField/Call/CallService";
 
 type GetCallByPlotFieldCommandIdParams = {
@@ -92,39 +91,39 @@ export const updateCallController: RequestHandler<
   }
 };
 
-type UpdateCallTargetBlockParams = {
-  callId: string;
-  newTargetBlockId: string;
-};
+// type UpdateCallTargetBlockParams = {
+//   callId: string;
+//   newTargetBlockId: string;
+// };
 
-// @route PATCH http://localhost:3500/plotFieldCommands/calls/:callId/targetBlocks/:newTargetBlockId/assingNewBlock
-// @access Private
-export const updateCallTargetBlockIdController: RequestHandler<
-  UpdateCallTargetBlockParams,
-  unknown,
-  unknown,
-  unknown
-> = async (req, res, next) => {
-  try {
-    const call = await updateCallTargetBlockIdService({
-      newTargetBlockId: req.params.newTargetBlockId,
-      callId: req.params.callId,
-    });
-    if (call) {
-      return res.status(201).json(call);
-    } else {
-      return res.status(400).json({ message: "Something went wrong" });
-    }
-  } catch (error) {
-    next(error);
-  }
-};
+// // @route PATCH http://localhost:3500/plotFieldCommands/calls/:callId/targetBlocks/:newTargetBlockId/assingNewBlock
+// // @access Private
+// export const updateCallTargetBlockIdController: RequestHandler<
+//   UpdateCallTargetBlockParams,
+//   unknown,
+//   unknown,
+//   unknown
+// > = async (req, res, next) => {
+//   try {
+//     const call = await updateCallTargetBlockIdService({
+//       newTargetBlockId: req.params.newTargetBlockId,
+//       callId: req.params.callId,
+//     });
+//     if (call) {
+//       return res.status(201).json(call);
+//     } else {
+//       return res.status(400).json({ message: "Something went wrong" });
+//     }
+//   } catch (error) {
+//     next(error);
+//   }
+// };
 
 type DeleteCallParams = {
   callId: string;
 };
 
-// @route DELETE http://localhost:3500/plotFieldCommands/calls/:callId/targetBlocks
+// @route DELETE http://localhost:3500/plotFieldCommands/calls/:callId
 // @access Private
 export const deleteCallController: RequestHandler<
   DeleteCallParams,

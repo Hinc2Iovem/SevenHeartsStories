@@ -2,9 +2,8 @@ import { RequestHandler } from "express";
 import {
   createBackgroundService,
   deleteBackgroundService,
-  updateBackgroundService,
   getBackgroundByPlotFieldCommandIdService,
-  backgroundUpdateImgService,
+  updateBackgroundService,
 } from "../../../../services/StoryEditor/PlotField/Background/BackgroundService";
 
 type GetBackgroundByPlotFieldCommandIdParams = {
@@ -67,6 +66,7 @@ type UpdateBackgroundBody = {
   backgroundName: string | undefined;
   pointOfMovement: number | undefined;
   musicName: string | undefined;
+  imgUrl: string | undefined;
 };
 
 // @route PATCH http://localhost:3500/plotFieldCommands/backgrounds/:backgroundId
@@ -81,6 +81,7 @@ export const updateBackgroundController: RequestHandler<
     const background = await updateBackgroundService({
       backgroundName: req.body.backgroundName,
       pointOfMovement: req.body.pointOfMovement,
+      imgUrl: req.body.imgUrl,
       musicName: req.body.musicName,
       backgroundId: req.params.backgroundId,
     });
@@ -94,35 +95,35 @@ export const updateBackgroundController: RequestHandler<
   }
 };
 
-type BackgroundUpdateImgUrlParams = {
-  backgroundId: string;
-};
-type BackgroundUpdateImgUrlBody = {
-  imgUrl: string | undefined;
-};
+// type BackgroundUpdateImgUrlParams = {
+//   backgroundId: string;
+// };
+// type BackgroundUpdateImgUrlBody = {
+//   imgUrl: string | undefined;
+// };
 
-// @route PATCH http://localhost:3500/plotFieldCommands/backgrounds/:backgroundId/img
-// @access Private
-export const backgroundUpdateImgUrlController: RequestHandler<
-  BackgroundUpdateImgUrlParams,
-  unknown,
-  BackgroundUpdateImgUrlBody,
-  unknown
-> = async (req, res, next) => {
-  try {
-    const background = await backgroundUpdateImgService({
-      backgroundId: req.params.backgroundId,
-      imgUrl: req.body.imgUrl,
-    });
-    if (background) {
-      return res.status(201).json(background);
-    } else {
-      return res.status(400).json({ message: "Something went wrong" });
-    }
-  } catch (error) {
-    next(error);
-  }
-};
+// // @route PATCH http://localhost:3500/plotFieldCommands/backgrounds/:backgroundId/img
+// // @access Private
+// export const backgroundUpdateImgUrlController: RequestHandler<
+//   BackgroundUpdateImgUrlParams,
+//   unknown,
+//   BackgroundUpdateImgUrlBody,
+//   unknown
+// > = async (req, res, next) => {
+//   try {
+//     const background = await backgroundUpdateImgService({
+//       backgroundId: req.params.backgroundId,
+//       imgUrl: req.body.imgUrl,
+//     });
+//     if (background) {
+//       return res.status(201).json(background);
+//     } else {
+//       return res.status(400).json({ message: "Something went wrong" });
+//     }
+//   } catch (error) {
+//     next(error);
+//   }
+// };
 
 type DeleteBackgroundParams = {
   backgroundId: string;

@@ -90,7 +90,7 @@ type DeleteAchievementParams = {
   achievementId: string;
 };
 
-// @route DELETE http://localhost:3500/plotFieldCommands/achievements/:achievementId
+// @route DELETE http://localhost:3500/stories/plotFieldCommands/achievements/:achievementId
 // @access Private
 export const deleteAchievementController: RequestHandler<
   DeleteAchievementParams,

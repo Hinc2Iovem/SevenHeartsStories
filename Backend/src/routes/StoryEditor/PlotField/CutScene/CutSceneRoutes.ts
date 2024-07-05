@@ -2,6 +2,7 @@ import express from "express";
 import {
   createCutSceneController,
   deleteCutSceneController,
+  getCutSceneByPlotFieldCommandIdController,
   updateCutSceneController,
 } from "../../../../controllers/StoryEditor/PlotField/CutScene/CutSceneController";
 
@@ -10,7 +11,9 @@ export const cutScenesRoute = express.Router();
 
 cutScenesRoute
   .route("/:plotFieldCommandId/cutScenes")
-  .post(createCutSceneController);
+  .post(createCutSceneController)
+  .get(getCutSceneByPlotFieldCommandIdController);
+
 cutScenesRoute
   .route("/cutScenes/:cutSceneId")
   .patch(updateCutSceneController)

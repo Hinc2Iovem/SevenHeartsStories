@@ -7,7 +7,7 @@ import {
   appearancePartUpdateImgService,
 } from "../../services/StoryData/AppearancePartService";
 
-// @route GET http://localhost:3500/appearanceParts/characters/:characterId
+// @route GET http://localhost:3500/appearanceParts
 // @access Private
 export const appearancePartGetAllController: RequestHandler = async (
   req,
