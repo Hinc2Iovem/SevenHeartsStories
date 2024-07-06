@@ -1,5 +1,8 @@
 import mongoose, { InferSchemaType, model } from "mongoose";
 
+// Translation ("episodeName",
+// "episodeDescription"),
+
 // episodeStatus = "done" | "doing"
 
 export const episodeSchema = new mongoose.Schema({

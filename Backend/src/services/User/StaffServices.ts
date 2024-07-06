@@ -67,7 +67,7 @@ export const createStaffMemberService = async ({
   }
   return {
     username,
-    roles: [role ?? "scriptwriter"],
+    roles: [role?.toLowerCase() ?? "scriptwriter"],
   };
 };
 

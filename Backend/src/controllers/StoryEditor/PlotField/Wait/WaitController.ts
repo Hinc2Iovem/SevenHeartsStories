@@ -10,7 +10,7 @@ type GetWaitByPlotFieldCommandIdParams = {
   plotFieldCommandId: string;
 };
 
-// @route GET http://localhost:3500/plotFieldCommands/:plotFieldCommandId/waits
+// @route GET http://localhost:3500/plotFieldCommands/:plotFieldCommandId/wait
 // @access Private
 export const getWaitByPlotFieldCommandIdController: RequestHandler<
   GetWaitByPlotFieldCommandIdParams,

@@ -3,6 +3,8 @@ import {
   createCommandWardrobeAppearancePartController,
   createCommandWardrobeController,
   deleteCommandWardrobeController,
+  getCommandWardrobeByAppearancePartIdAndCommandWardrobeIdController,
+  getCommandWardrobeByPlotFieldCommandIdController,
   updateCommandWardrobeController,
 } from "../../../../controllers/StoryEditor/PlotField/Wardrobe/WardrobeController";
 
@@ -10,17 +12,21 @@ import {
 export const wardrobeRoute = express.Router();
 
 wardrobeRoute
+  .route(
+    "/:plotFieldCommandId/wardrobes/:commandWardrobeId/appearanceParts/:appearancePartId"
+  )
+  .get(getCommandWardrobeByAppearancePartIdAndCommandWardrobeIdController);
+
+wardrobeRoute
   .route("/:plotFieldCommandId/wardrobes")
-  .post(createCommandWardrobeController);
+  .post(createCommandWardrobeController)
+  .get(getCommandWardrobeByPlotFieldCommandIdController);
 
 wardrobeRoute
   .route("/wardrobes/:commandWardrobeId/appearanceParts/:appearancePartId")
   .post(createCommandWardrobeAppearancePartController);
 
 wardrobeRoute
-  .route("/wardrobes/:commandWardrobeId/characters/:characterId")
-  .patch(updateCommandWardrobeController);
-
-wardrobeRoute
   .route("/wardrobes/:commandWardrobeId")
+  .patch(updateCommandWardrobeController)
   .delete(deleteCommandWardrobeController);

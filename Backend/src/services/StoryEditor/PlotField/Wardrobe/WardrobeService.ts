@@ -1,13 +1,9 @@
 import createHttpError from "http-errors";
-import { validateMongoId } from "../../../../utils/validateMongoId";
+import AppearancePart from "../../../../models/StoryData/AppearancePart";
 import PlotFieldCommand from "../../../../models/StoryEditor/PlotField/PlotFieldCommand";
 import CommandWardrobe from "../../../../models/StoryEditor/PlotField/Wardrobe/CommandWardrobe";
 import CommandWardrobeAppearancePart from "../../../../models/StoryEditor/PlotField/Wardrobe/CommandWardrobeAppearancePart";
-import AppearancePart from "../../../../models/StoryData/AppearancePart";
-import Translation from "../../../../models/StoryData/Translation";
-import { TranslationTextFieldName } from "../../../../consts/TRANSLATION_TEXT_FIELD_NAMES";
-import Character from "../../../../models/StoryData/Character";
-import { checkCurrentLanguage } from "../../../../utils/checkCurrentLanguage";
+import { validateMongoId } from "../../../../utils/validateMongoId";
 
 type GetCommandWardrobeByPlotFieldCommandIdTypes = {
   plotFieldCommandId: string;

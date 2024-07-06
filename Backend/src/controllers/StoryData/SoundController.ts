@@ -5,7 +5,7 @@ import {
   getSoundsByStoryIdService,
 } from "../../services/StoryData/SoundService";
 
-// @route GET http://localhost:3500/stories/:storyId/sounds
+// @route GET http://localhost:3500/stories/sounds
 // @access Private
 export const getAllSoundsController: RequestHandler = async (
   req,
@@ -54,7 +54,7 @@ type GetSoundByIdParams = {
   soundId: string;
 };
 
-// @route GET http://localhost:3500/stories/sound/:soundId
+// @route GET http://localhost:3500/stories/sounds/:soundId
 // @access Private
 export const getSoundByIdController: RequestHandler<
   GetSoundByIdParams,

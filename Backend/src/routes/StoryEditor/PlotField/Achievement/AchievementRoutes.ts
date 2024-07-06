@@ -2,11 +2,20 @@ import express from "express";
 import {
   createAchievementController,
   deleteAchievementController,
-  updateAchievementController,
+  getAchievementByPlotFieldCommandIdController,
+  getAchievementsByStoryIdController,
 } from "../../../../controllers/StoryEditor/PlotField/Achievement/AchievementController";
 
 // Default route === /stories
 export const achievementRoute = express.Router();
+
+achievementRoute
+  .route("/:storyId/achievements")
+  .get(getAchievementsByStoryIdController);
+
+achievementRoute
+  .route("/plotFieldCommands/:plotFieldCommandId/achievements")
+  .get(getAchievementByPlotFieldCommandIdController);
 
 achievementRoute
   .route("/:storyId/plotFieldCommands/:plotFieldCommandId/achievements")
@@ -14,5 +23,4 @@ achievementRoute
 
 achievementRoute
   .route("/plotFieldCommands/achievements/:achievementId")
-  .patch(updateAchievementController)
   .delete(deleteAchievementController);

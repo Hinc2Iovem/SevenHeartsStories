@@ -13,7 +13,7 @@ type GetCommandWardrobeByAppearancePartIdAndCommandWardrobeIdParams = {
   appearancePartId: string;
 };
 
-// @route GET http://localhost:3500/plotFieldCommands/:plotFieldCommandId/wardrobes/:commandWardrobeId/appearanceParts/:appearancePartId
+// @route GET http://localhost:3500/plotFieldCommands/wardrobes/:commandWardrobeId/appearanceParts/:appearancePartId
 // @access Private
 export const getCommandWardrobeByAppearancePartIdAndCommandWardrobeIdController: RequestHandler<
   GetCommandWardrobeByAppearancePartIdAndCommandWardrobeIdParams,
@@ -68,7 +68,7 @@ type CreateCommandWardrobeParams = {
   plotFieldCommandId: string;
 };
 
-// @route PATCH http://localhost:3500/plotFieldCommands/:plotFieldCommandId/wardrobes
+// @route POST http://localhost:3500/plotFieldCommands/:plotFieldCommandId/wardrobes
 // @access Private
 export const createCommandWardrobeController: RequestHandler<
   CreateCommandWardrobeParams,

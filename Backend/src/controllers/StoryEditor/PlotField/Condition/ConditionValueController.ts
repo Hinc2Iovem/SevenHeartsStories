@@ -3,26 +3,25 @@ import {
   createConditionValueService,
   deleteConditionValueService,
   updateConditionValueService,
-  getConditionValueByPlotFieldCommandConditionIdService,
+  getConditionValueByConditionIdService,
 } from "../../../../services/StoryEditor/PlotField/Condition/ConditionValueService";
 
-type GetConditionValueByPlotFieldCommandConditionIdParams = {
-  plotFieldCommandConditionId: string;
+type GetConditionValueByConditionIdParams = {
+  conditionId: string;
 };
 
-// @route GET http://localhost:3500/plotFieldCommands/conditions/:plotFieldCommandConditionId/conditionValues
+// @route GET http://localhost:3500/plotFieldCommands/conditions/:conditionId/conditionValues
 // @access Private
-export const getConditionValueByPlotFieldCommandConditionIdController: RequestHandler<
-  GetConditionValueByPlotFieldCommandConditionIdParams,
+export const getConditionValueByConditionIdController: RequestHandler<
+  GetConditionValueByConditionIdParams,
   unknown,
   unknown,
   unknown
 > = async (req, res, next) => {
   try {
-    const conditionValue =
-      await getConditionValueByPlotFieldCommandConditionIdService({
-        plotFieldCommandConditionId: req.params.plotFieldCommandConditionId,
-      });
+    const conditionValue = await getConditionValueByConditionIdService({
+      conditionId: req.params.conditionId,
+    });
     if (conditionValue) {
       return res.status(201).json(conditionValue);
     } else {
@@ -100,7 +99,7 @@ type DeleteConditionValueParams = {
   conditionValueId: string;
 };
 
-// @route DELETE http://localhost:3500/plotFieldCommands/conditions/conditionValues/:conditionId
+// @route DELETE http://localhost:3500/plotFieldCommands/conditions/conditionValues/:conditionValueId
 // @access Private
 export const deleteConditionValueController: RequestHandler<
   DeleteConditionValueParams,

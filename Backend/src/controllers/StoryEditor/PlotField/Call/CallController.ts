@@ -4,7 +4,6 @@ import {
   deleteCallService,
   getCallByPlotFieldCommandIdService,
   updateCallService,
-  updateCallTargetBlockIdService,
 } from "../../../../services/StoryEditor/PlotField/Call/CallService";
 
 type GetCallByPlotFieldCommandIdParams = {
@@ -62,24 +61,21 @@ export const createCallController: RequestHandler<
 type UpdateCallParams = {
   callId: string;
   targetBlockId: string;
+  sourceBlockId: string;
 };
 
-type UpdateCallBody = {
-  sourceBlockId: string | undefined;
-};
-
-// @route PATCH http://localhost:3500/plotFieldCommands/calls/:callId/targetBlocks/:targetBlockId
+// @route PATCH http://localhost:3500/plotFieldCommands/calls/:callId/targetBlocks/:targetBlockId/sourceBlocks/:sourceBlockId
 // @access Private
 export const updateCallController: RequestHandler<
   UpdateCallParams,
   unknown,
-  UpdateCallBody,
+  unknown,
   unknown
 > = async (req, res, next) => {
   try {
     const call = await updateCallService({
       callId: req.params.callId,
-      sourceBlockId: req.body.sourceBlockId,
+      sourceBlockId: req.params.sourceBlockId,
       targetBlockId: req.params.targetBlockId,
     });
     if (call) {
@@ -92,39 +88,39 @@ export const updateCallController: RequestHandler<
   }
 };
 
-type UpdateCallTargetBlockParams = {
-  callId: string;
-  newTargetBlockId: string;
-};
+// type UpdateCallTargetBlockParams = {
+//   callId: string;
+//   newTargetBlockId: string;
+// };
 
-// @route PATCH http://localhost:3500/plotFieldCommands/calls/:callId/targetBlocks/:newTargetBlockId/assingNewBlock
-// @access Private
-export const updateCallTargetBlockIdController: RequestHandler<
-  UpdateCallTargetBlockParams,
-  unknown,
-  unknown,
-  unknown
-> = async (req, res, next) => {
-  try {
-    const call = await updateCallTargetBlockIdService({
-      newTargetBlockId: req.params.newTargetBlockId,
-      callId: req.params.callId,
-    });
-    if (call) {
-      return res.status(201).json(call);
-    } else {
-      return res.status(400).json({ message: "Something went wrong" });
-    }
-  } catch (error) {
-    next(error);
-  }
-};
+// // @route PATCH http://localhost:3500/plotFieldCommands/calls/:callId/targetBlocks/:newTargetBlockId/assingNewBlock
+// // @access Private
+// export const updateCallTargetBlockIdController: RequestHandler<
+//   UpdateCallTargetBlockParams,
+//   unknown,
+//   unknown,
+//   unknown
+// > = async (req, res, next) => {
+//   try {
+//     const call = await updateCallTargetBlockIdService({
+//       newTargetBlockId: req.params.newTargetBlockId,
+//       callId: req.params.callId,
+//     });
+//     if (call) {
+//       return res.status(201).json(call);
+//     } else {
+//       return res.status(400).json({ message: "Something went wrong" });
+//     }
+//   } catch (error) {
+//     next(error);
+//   }
+// };
 
 type DeleteCallParams = {
   callId: string;
 };
 
-// @route DELETE http://localhost:3500/plotFieldCommands/calls/:callId/targetBlocks
+// @route DELETE http://localhost:3500/plotFieldCommands/calls/:callId
 // @access Private
 export const deleteCallController: RequestHandler<
   DeleteCallParams,

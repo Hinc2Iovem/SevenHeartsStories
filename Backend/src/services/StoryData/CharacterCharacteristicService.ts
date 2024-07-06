@@ -52,6 +52,7 @@ export const characterCharacteristicCreateService = async ({
   await Translation.create({
     characterCharacteristicId: newCharacteristic._id,
     language: currentLanguage,
+    text: characteristicName,
     textFieldName: TranslationTextFieldName.CharacterCharacteristic,
   });
 
@@ -59,16 +60,19 @@ export const characterCharacteristicCreateService = async ({
 };
 
 type DeleteCharacteristicTypes = {
-  characteristicId: string | undefined;
+  characterCharacteristicId: string | undefined;
 };
 
 export const characterCharacteristicDeleteService = async ({
-  characteristicId,
+  characterCharacteristicId,
 }: DeleteCharacteristicTypes) => {
-  validateMongoId({ value: characteristicId, valueName: "Characteristic" });
+  validateMongoId({
+    value: characterCharacteristicId,
+    valueName: "Characteristic",
+  });
 
   const existingCharacteristic = await CharacterCharacteristic.findById(
-    characteristicId
+    characterCharacteristicId
   ).exec();
   if (!existingCharacteristic) {
     throw createHttpError(400, "Characteristic with such id doesn't exist");
@@ -76,5 +80,5 @@ export const characterCharacteristicDeleteService = async ({
 
   await existingCharacteristic.deleteOne();
 
-  return `Character with id ${characteristicId} was removed`;
+  return `Character with id ${characterCharacteristicId} was removed`;
 };

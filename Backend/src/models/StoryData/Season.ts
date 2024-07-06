@@ -1,5 +1,7 @@
 import mongoose, { InferSchemaType, model } from "mongoose";
 
+// Translation "seasonName"
+
 export const seasonSchema = new mongoose.Schema({
   storyId: {
     type: mongoose.Schema.Types.ObjectId,

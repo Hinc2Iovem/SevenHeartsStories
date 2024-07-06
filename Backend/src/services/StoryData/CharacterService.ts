@@ -6,6 +6,7 @@ import CharacterEmotion from "../../models/StoryData/CharacterEmotion";
 import Translation from "../../models/StoryData/Translation";
 import { TranslationTextFieldName } from "../../consts/TRANSLATION_TEXT_FIELD_NAMES";
 import { checkCurrentLanguage } from "../../utils/checkCurrentLanguage";
+import { CharacterTypes } from "../../consts/CHARACTER_TYPES";
 
 type GetAllCharacterNameTagsTypes = {
   storyId: string;
@@ -20,7 +21,9 @@ export const getAllCharacterNameTagsService = async ({
     const allNameTags: string[] = [];
     existingCharacters.map((c) => {
       if (c.nameTag) {
-        allNameTags.push(c.nameTag);
+        if (!allNameTags.includes(c.nameTag)) {
+          allNameTags.push(c.nameTag);
+        }
       }
     });
     return allNameTags;
@@ -94,21 +97,27 @@ export const characterCreateService = async ({
   unknownName,
 }: CharacterCreateTypes) => {
   validateMongoId({ value: storyId, valueName: "Story" });
-  if (!name?.trim().length || !description?.trim().length) {
-    throw createHttpError(400, "Name and Description is required");
+  if (!name?.trim().length) {
+    throw createHttpError(400, "Name is required");
   }
   if (!currentLanguage?.trim().length) {
     throw createHttpError(400, "Language is required");
   }
 
   checkCurrentLanguage({ currentLanguage });
+  if (type?.trim().length && !CharacterTypes.includes(type?.toLowerCase())) {
+    throw createHttpError(
+      400,
+      "Character Type may be equal only to (maincharacter, minorcharacter or emptycharacter)"
+    );
+  }
 
-  if (type === "EmptyCharacter") {
+  if (type && type.toLowerCase() === "emptycharacter") {
     const character = await Character.create({
       name,
       img: img ?? "",
       storyId,
-      type,
+      type: type.toLowerCase(),
     });
 
     await Translation.create({
@@ -119,14 +128,17 @@ export const characterCreateService = async ({
     });
 
     return character;
-  } else if (type === "MinorCharacter") {
+  } else if (type && type.toLowerCase() === "minorcharacter") {
+    if (!description?.trim().length) {
+      throw createHttpError(400, "Description is required");
+    }
     const character = await Character.create({
       description,
       name,
       nameTag: nameTag ?? "",
       img: img ?? "",
       storyId,
-      type,
+      type: type.toLowerCase(),
       unknownName: unknownName ?? "",
     });
     await Translation.create({
@@ -148,16 +160,14 @@ export const characterCreateService = async ({
       text: description,
     });
     return character;
-  } else if (type === "MainCharacter") {
+  } else if (type && type.toLowerCase() === "maincharacter") {
     const character = await Character.create({
-      description,
       name,
       isMainCharacter: true,
       nameTag: nameTag ?? "",
       img: img ?? "",
       storyId,
-      type,
-      unknownName: unknownName ?? "",
+      type: type.toLowerCase(),
     });
     await Translation.create({
       characterId: character._id,
@@ -165,19 +175,21 @@ export const characterCreateService = async ({
       language: currentLanguage,
       text: name,
     });
-    await Translation.create({
-      characterId: character._id,
-      textFieldName: TranslationTextFieldName.CharacterUnknownName,
-      language: currentLanguage,
-      text: unknownName,
-    });
-    await Translation.create({
-      characterId: character._id,
-      textFieldName: TranslationTextFieldName.CharacterDescription,
-      language: currentLanguage,
-      text: description,
-    });
+
     return character;
+  } else {
+    const character = await Character.create({
+      name,
+      nameTag: nameTag ?? "",
+      img: img ?? "",
+      storyId,
+    });
+    await Translation.create({
+      characterId: character._id,
+      textFieldName: TranslationTextFieldName.CharacterName,
+      language: currentLanguage,
+      text: name,
+    });
   }
 };
 
@@ -208,53 +220,21 @@ export const characterUpdateService = async ({
     existingCharacter.nameTag = nameTag;
   }
   if (type?.trim().length) {
-    existingCharacter.type = type;
-  }
-
-  return await existingCharacter.save();
-};
-
-type UpdateCharacterNameTagTypes = {
-  nameTag: string | undefined;
-  characterId: string;
-};
-
-export const characterUpdateNameTagService = async ({
-  nameTag,
-  characterId,
-}: UpdateCharacterNameTagTypes) => {
-  validateMongoId({ value: characterId, valueName: "Character" });
-
-  const existingCharacter = await Character.findById(characterId).exec();
-  if (!existingCharacter) {
-    throw createHttpError(400, "Character with such id doesn't exist");
-  }
-
-  if (nameTag?.trim().length) {
-    existingCharacter.nameTag = nameTag;
-  }
-
-  return await existingCharacter.save();
-};
-
-type UpdateCharacterImgTypes = {
-  img: string | undefined;
-  characterId: string;
-};
-
-export const characterUpdateImgService = async ({
-  img,
-  characterId,
-}: UpdateCharacterImgTypes) => {
-  validateMongoId({ value: characterId, valueName: "Character" });
-
-  const existingCharacter = await Character.findById(characterId).exec();
-  if (!existingCharacter) {
-    throw createHttpError(400, "Character with such id doesn't exist");
-  }
-
-  if (img?.trim().length) {
-    existingCharacter.img = img;
+    if (!CharacterTypes.includes(type.toLowerCase())) {
+      throw createHttpError(
+        400,
+        "type may only be equal to (maincharacter, minorcharacter or emptycharacter)"
+      );
+    }
+    if (
+      existingCharacter.type.toLowerCase() === "maincharacter" &&
+      type.toLowerCase() !== "maincharacter"
+    ) {
+      existingCharacter.isMainCharacter = false;
+    } else if (type.toLowerCase() === "maincharacter") {
+      existingCharacter.isMainCharacter = true;
+    }
+    existingCharacter.type = type.toLowerCase();
   }
 
   return await existingCharacter.save();

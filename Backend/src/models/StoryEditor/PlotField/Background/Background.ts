@@ -14,6 +14,9 @@ export const plotFieldCommandBackgroundSchema = new mongoose.Schema({
   musicName: {
     type: String,
   },
+  imgUrl: {
+    type: String,
+  },
 });
 
 type PlotFieldCommandBackground = InferSchemaType<

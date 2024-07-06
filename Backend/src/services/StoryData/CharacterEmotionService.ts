@@ -12,12 +12,14 @@ export const characterEmotionGetByCharacterIdService = async ({
 }: GetCharacterEmotionByCharacterIdTypes) => {
   validateMongoId({ value: characterId, valueName: "Character" });
 
-  const existingCharacters = await Character.find({ characterId }).lean();
-  if (!existingCharacters) {
+  const existingCharacterEmotions = await CharacterEmotion.find({
+    characterId,
+  }).lean();
+  if (!existingCharacterEmotions) {
     throw [];
   }
 
-  return existingCharacters;
+  return existingCharacterEmotions;
 };
 
 type CreateCharacterEmotionTypes = {
@@ -74,6 +76,34 @@ export const characterEmotionUpdateService = async ({
 
   return await existingCharacterEmotion.save();
 };
+
+type UpdateCharacterEmotionImgTypes = {
+  imgUrl: string | undefined;
+  characterEmotionId: string;
+};
+
+export const characterEmotionUpdateImgService = async ({
+  characterEmotionId,
+  imgUrl,
+}: UpdateCharacterEmotionImgTypes) => {
+  validateMongoId({ value: characterEmotionId, valueName: "CharacterEmotion" });
+
+  const existingCharacterEmotion = await CharacterEmotion.findById(
+    characterEmotionId
+  ).exec();
+  if (!existingCharacterEmotion) {
+    throw createHttpError(400, "CharacterEmotion with such id wasn't found");
+  }
+
+  if (!imgUrl?.trim().length) {
+    throw createHttpError(400, "imgUrl is required");
+  }
+
+  existingCharacterEmotion.imgUrl = imgUrl;
+
+  return await existingCharacterEmotion.save();
+};
+
 type DeleteCharacterEmotionTypes = {
   characterEmotionId: string;
 };

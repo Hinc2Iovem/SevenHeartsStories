@@ -36,7 +36,7 @@ type CreateNameParams = {
   plotFieldCommandId: string;
 };
 
-// @route POST http://localhost:3500/plotFieldCommands/:plotFieldCommandId/commandNames
+// @route POST http://localhost:3500/plotFieldCommands/:plotFieldCommandId/names
 // @access Private
 export const createNameController: RequestHandler<
   CreateNameParams,

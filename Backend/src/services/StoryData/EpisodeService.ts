@@ -52,12 +52,10 @@ type EpisodeCreateTypes = {
   description: string | undefined;
   currentLanguage: string | undefined;
   seasonId: string;
-  storyId: string;
 };
 
 export const episodeCreateService = async ({
   seasonId,
-  storyId,
   title,
   description,
   currentLanguage,
@@ -94,7 +92,11 @@ export const episodeCreateService = async ({
       episodeId: newEpisode._id,
     });
   }
-  const currentStory = await Story.findById({ storyId }).exec();
+  const currentSeason = await Season.findById(seasonId);
+  if (!currentSeason) {
+    throw createHttpError(400, "Season should have a story, firstly");
+  }
+  const currentStory = await Story.findById(currentSeason?.storyId).exec();
   if (currentStory) {
     currentStory.amountOfEpisodes += 1;
     await currentStory.save();

@@ -1,4 +1,11 @@
 import mongoose, { InferSchemaType, model } from "mongoose";
+// Translation = name(textFieldName === "body",
+// "hair",
+// "dress",
+// "accessory",
+// "emotion",
+// "art",
+// "skin")
 
 export const appearancePartSchema = new mongoose.Schema({
   characterId: {
