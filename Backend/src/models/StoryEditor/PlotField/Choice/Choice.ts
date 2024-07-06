@@ -1,5 +1,6 @@
 import mongoose, { InferSchemaType, model } from "mongoose";
 
+// Translation "choiceQuestion"
 // choiceType = multiple | common | timelimit
 
 export const plotFieldCommandChoiceSchema = new mongoose.Schema({

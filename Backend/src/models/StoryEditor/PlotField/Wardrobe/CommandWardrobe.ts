@@ -1,5 +1,6 @@
 import mongoose, { InferSchemaType, model } from "mongoose";
 
+// Translation "commandWardrobeTitle"
 export const commandWardrobeSchema = new mongoose.Schema({
   plotFieldCommandId: {
     type: mongoose.Schema.Types.ObjectId,

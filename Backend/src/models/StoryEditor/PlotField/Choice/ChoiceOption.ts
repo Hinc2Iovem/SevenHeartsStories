@@ -1,6 +1,8 @@
 import mongoose, { InferSchemaType, model } from "mongoose";
 
+// Translation "choiceOption"
 // type = Premium | Relationship | Characteristic | Common
+// sexualOrientationType = "hetero" | "lgbt" | "combined"
 
 export const plotFieldCommandChoiceOptionSchema = new mongoose.Schema({
   plotFieldCommandChoiceId: {
@@ -14,6 +16,9 @@ export const plotFieldCommandChoiceOptionSchema = new mongoose.Schema({
   type: {
     type: String,
     default: "common",
+  },
+  sexualOrientationType: {
+    type: String,
   },
 });
 

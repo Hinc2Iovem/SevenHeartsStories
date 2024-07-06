@@ -61,7 +61,6 @@ export const episodesGetBySeasonIdController: RequestHandler<
 };
 type EpisodeCreateParams = {
   seasonId: string;
-  storyId: string;
 };
 type EpisodeCreateBody = {
   title: string | undefined;
@@ -69,7 +68,7 @@ type EpisodeCreateBody = {
   currentLanguage: string | undefined;
 };
 
-// @route PATCH http://localhost:3500/episodes/stories/:storyId/seasons/:seasonId
+// @route POST http://localhost:3500/episodes/seasons/:seasonId
 // @access Private
 export const episodeCreateController: RequestHandler<
   EpisodeCreateParams,
@@ -81,7 +80,6 @@ export const episodeCreateController: RequestHandler<
     const episode = await episodeCreateService({
       description: req.body.description,
       seasonId: req.params.seasonId,
-      storyId: req.params.storyId,
       title: req.body.title,
       currentLanguage: req.body.currentLanguage,
     });

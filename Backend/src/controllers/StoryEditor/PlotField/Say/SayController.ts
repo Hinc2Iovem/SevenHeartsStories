@@ -58,8 +58,8 @@ export const createSayController: RequestHandler<
     const say = await createSayService({
       characterId: req.params.characterId,
       characterEmotionId: req.params.characterEmotionId,
-      type: req.body.type,
       plotFieldCommandId: req.params.plotFieldCommandId,
+      type: req.body.type,
     });
     if (say) {
       return res.status(201).json(say);
@@ -108,7 +108,7 @@ type UpdateSayParams = {
   characterEmotionId: string;
 };
 
-// @route PATCH http://localhost:3500/plotFieldCommands/say/:sayId
+// @route PATCH http://localhost:3500/plotFieldCommands/say/:sayId/characters/:characterId/characterEmotions/:characterEmotionId
 // @access Private
 export const updateSayController: RequestHandler<
   UpdateSayParams,

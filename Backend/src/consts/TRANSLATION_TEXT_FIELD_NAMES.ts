@@ -15,6 +15,7 @@ export const TranslationTextFieldName = {
   SeasonName: "seasonName",
   StoryName: "storyName",
   StoryGenre: "storyGenre",
+  StoryDescription: "storyDescription",
   AchievementName: "achievementName",
   ChoiceOption: "choiceOption",
   ChoiceQuestion: "choiceQuestion",

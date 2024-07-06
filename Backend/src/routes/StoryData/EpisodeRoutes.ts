@@ -2,21 +2,25 @@ import express from "express";
 import {
   episodeCreateController,
   episodeDeleteController,
-  episodeUpdateController,
+  episodeResetStatusController,
+  episodesGetBySeasonIdController,
   episodeUpdateSeasonIdController,
+  episodeGetByEpisodeIdController,
 } from "../../controllers/StoryData/EpisodeController";
 
 // Default route === /episodes
 export const episodeRoute = express.Router();
 
 episodeRoute
-  .route("/stories/:storyId/seasons/:seasonId")
-  .post(episodeCreateController);
+  .route("/:episodeId")
+  .get(episodeGetByEpisodeIdController)
+  .patch(episodeResetStatusController)
+  .delete(episodeDeleteController);
 
 episodeRoute
-  .route("/:episodeId")
-  .patch(episodeUpdateController)
-  .delete(episodeDeleteController);
+  .route("/seasons/:seasonId")
+  .post(episodeCreateController)
+  .get(episodesGetBySeasonIdController);
 
 episodeRoute
   .route("/:episodeId/seasons/:newSeasonId")

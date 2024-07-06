@@ -2,6 +2,7 @@ import express from "express";
 import {
   createBackgroundController,
   deleteBackgroundController,
+  getBackgroundByPlotFieldCommandIdController,
   updateBackgroundController,
 } from "../../../../controllers/StoryEditor/PlotField/Background/BackgroundController";
 
@@ -10,7 +11,8 @@ export const backgroundRoute = express.Router();
 
 backgroundRoute
   .route("/:plotFieldCommandId/backgrounds")
-  .post(createBackgroundController);
+  .post(createBackgroundController)
+  .get(getBackgroundByPlotFieldCommandIdController);
 
 backgroundRoute
   .route("/backgrounds/:backgroundId")

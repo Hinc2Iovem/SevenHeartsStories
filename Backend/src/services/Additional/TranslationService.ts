@@ -61,7 +61,7 @@ export const appearancePartTranslationUpdateNameTypeService = async ({
       appearancePartId: existingAppearancePart.id,
       language: currentLanguage,
       text: appearancePartName ?? "",
-      textFieldName: appearancePartType ?? "",
+      textFieldName: appearancePartType?.toLowerCase() ?? "",
     });
   } else {
     if (appearancePartName?.trim().length) {
@@ -120,18 +120,12 @@ type UpdateCharacterTypes = {
   name: string | undefined;
   unknownName: string | undefined;
   description: string | undefined;
-  nameTag: string | undefined;
-  type: CharacterTypeAlias | undefined;
-  img: string | undefined;
   currentLanguage: string | undefined;
 };
 
 export const characterTranslationUpdateService = async ({
   description,
-  img,
   name,
-  nameTag,
-  type,
   unknownName,
   characterId,
   currentLanguage,
@@ -186,15 +180,7 @@ export const characterTranslationUpdateService = async ({
       });
     }
   }
-  if (img?.trim().length) {
-    existingCharacter.img = img;
-  }
-  if (nameTag?.trim().length) {
-    existingCharacter.nameTag = nameTag;
-  }
-  if (type?.trim().length) {
-    existingCharacter.type = type;
-  }
+
   if (unknownName?.trim().length) {
     const existingTranslation = await Translation.findOne({
       characterId,
@@ -420,11 +406,15 @@ export const getTranslationSeasonService = async ({
 type StoryTranslationUpdateTypes = {
   storyId: string;
   title: string | undefined;
+  genre: string | undefined;
+  description: string | undefined;
   currentLanguage: string | undefined;
 };
 
-export const storyTranslationUpdateTitleService = async ({
+export const storyTranslationUpdateService = async ({
   storyId,
+  description,
+  genre,
   title,
   currentLanguage,
 }: StoryTranslationUpdateTypes) => {
@@ -442,19 +432,49 @@ export const storyTranslationUpdateTitleService = async ({
 
   checkCurrentLanguage({ currentLanguage });
 
-  const existingTranslation = await Translation.findOne({
-    storyId: existingStory.id,
-    language: currentLanguage,
-    textFieldName: TranslationTextFieldName.StoryName,
-  }).exec();
-
-  if (!existingTranslation) {
-    throw createHttpError(400, "Translation wasn't found");
+  if (title?.trim().length) {
+    const existingTranslation = await Translation.findOne({
+      storyId: existingStory.id,
+      language: currentLanguage,
+      textFieldName: TranslationTextFieldName.StoryName,
+    }).exec();
+    if (!existingTranslation) {
+      throw createHttpError(400, "Translation wasn't found");
+    }
+    if (title?.trim().length) {
+      existingTranslation.text = title;
+      await existingTranslation.save();
+    }
   }
 
-  if (title?.trim().length) {
-    existingTranslation.text = title;
-    await existingTranslation.save();
+  if (description?.trim().length) {
+    const existingTranslation = await Translation.findOne({
+      storyId: existingStory.id,
+      language: currentLanguage,
+      textFieldName: TranslationTextFieldName.StoryDescription,
+    }).exec();
+    if (!existingTranslation) {
+      throw createHttpError(400, "Translation wasn't found");
+    }
+    if (description?.trim().length) {
+      existingTranslation.text = description;
+      await existingTranslation.save();
+    }
+  }
+
+  if (genre?.trim().length) {
+    const existingTranslation = await Translation.findOne({
+      storyId: existingStory.id,
+      language: currentLanguage,
+      textFieldName: TranslationTextFieldName.StoryGenre,
+    }).exec();
+    if (!existingTranslation) {
+      throw createHttpError(400, "Translation wasn't found");
+    }
+    if (genre?.trim().length) {
+      existingTranslation.text = genre;
+      await existingTranslation.save();
+    }
   }
 
   return existingStory;

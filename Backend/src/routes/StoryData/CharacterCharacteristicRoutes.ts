@@ -2,16 +2,20 @@ import express from "express";
 import {
   characterCharacteristicCreateController,
   characterCharacteristicDeleteController,
-  characterCharacteristicUpdateController,
+  characterCharacteristicGetByCharacterIdController,
 } from "../../controllers/StoryData/CharacterCharacteristicController";
 
 // Default route === /characterCharacteristics
 export const characterCharacteristicRoute = express.Router();
 
 characterCharacteristicRoute
-  .route("/")
+  .route("/characters/:characterId")
+  .get(characterCharacteristicGetByCharacterIdController);
+
+characterCharacteristicRoute
+  .route("/characters/:characterId")
   .post(characterCharacteristicCreateController);
+
 characterCharacteristicRoute
   .route("/:characterCharacteristicId")
-  .patch(characterCharacteristicUpdateController)
   .delete(characterCharacteristicDeleteController);

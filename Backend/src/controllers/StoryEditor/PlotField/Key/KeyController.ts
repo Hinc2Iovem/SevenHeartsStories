@@ -2,9 +2,8 @@ import { RequestHandler } from "express";
 import {
   createCommandKeyService,
   deleteCommandKeyService,
-  updateCommandKeyService,
-  updateCommandKeyTargetBlockIdService,
   getKeyByPlotFieldCommandIdService,
+  updateCommandKeyService,
 } from "../../../../services/StoryEditor/PlotField/Key/KeyService";
 
 type GetKeyByPlotFieldCommandIdParams = {
@@ -62,24 +61,20 @@ export const createKeyController: RequestHandler<
 type UpdateKeyParams = {
   commandKeyId: string;
   targetBlockId: string;
+  sourceBlockId: string;
 };
-
-type UpdateKeyBody = {
-  sourceBlockId: string | undefined;
-};
-
 // @route PATCH http://localhost:3500/plotFieldCommands/commandKeys/:commandKeyId/targetBlocks/:targetBlockId
 // @access Private
 export const updateKeyController: RequestHandler<
   UpdateKeyParams,
   unknown,
-  UpdateKeyBody,
+  unknown,
   unknown
 > = async (req, res, next) => {
   try {
     const key = await updateCommandKeyService({
       commandKeyId: req.params.commandKeyId,
-      sourceBlockId: req.body.sourceBlockId,
+      sourceBlockId: req.params.sourceBlockId,
       targetBlockId: req.params.targetBlockId,
     });
     if (key) {
@@ -92,33 +87,33 @@ export const updateKeyController: RequestHandler<
   }
 };
 
-type UpdateKeyTargetBlockParams = {
-  commandKeyId: string;
-  newTargetBlockId: string;
-};
+// type UpdateKeyTargetBlockParams = {
+//   commandKeyId: string;
+//   newTargetBlockId: string;
+// };
 
-// @route PATCH http://localhost:3500/plotFieldCommands/commandKeys/:commandKeyId/targetBlocks/:newTargetBlockId/assingNewBlock
-// @access Private
-export const updateKeyTargetBlockIdController: RequestHandler<
-  UpdateKeyTargetBlockParams,
-  unknown,
-  unknown,
-  unknown
-> = async (req, res, next) => {
-  try {
-    const key = await updateCommandKeyTargetBlockIdService({
-      newTargetBlockId: req.params.newTargetBlockId,
-      commandKeyId: req.params.commandKeyId,
-    });
-    if (key) {
-      return res.status(201).json(key);
-    } else {
-      return res.status(400).json({ message: "Something went wrong" });
-    }
-  } catch (error) {
-    next(error);
-  }
-};
+// // @route PATCH http://localhost:3500/plotFieldCommands/commandKeys/:commandKeyId/targetBlocks/:newTargetBlockId/assingNewBlock
+// // @access Private
+// export const updateKeyTargetBlockIdController: RequestHandler<
+//   UpdateKeyTargetBlockParams,
+//   unknown,
+//   unknown,
+//   unknown
+// > = async (req, res, next) => {
+//   try {
+//     const key = await updateCommandKeyTargetBlockIdService({
+//       newTargetBlockId: req.params.newTargetBlockId,
+//       commandKeyId: req.params.commandKeyId,
+//     });
+//     if (key) {
+//       return res.status(201).json(key);
+//     } else {
+//       return res.status(400).json({ message: "Something went wrong" });
+//     }
+//   } catch (error) {
+//     next(error);
+//   }
+// };
 
 type DeleteKeyParams = {
   commandKeyId: string;

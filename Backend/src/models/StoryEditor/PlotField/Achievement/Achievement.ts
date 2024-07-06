@@ -1,5 +1,7 @@
 import mongoose, { InferSchemaType, model } from "mongoose";
 
+// Translation "achievementName"
+
 export const plotFieldCommandAchievementSchema = new mongoose.Schema({
   plotFieldCommandId: {
     type: mongoose.Schema.Types.ObjectId,

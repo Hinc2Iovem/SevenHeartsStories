@@ -11,7 +11,7 @@ type EpisodeInfoGetByEpisodeIdAndStaffIdParams = {
   staffId: string;
 };
 
-// @route GET http://localhost:3500/episodes/:episodeId/staff/:staffId
+// @route GET http://localhost:3500/episodeInfo/episodes/:episodeId/staff/:staffId
 // @access Private
 export const episodeGetByEpisodeIdAndStaffIdController: RequestHandler<
   EpisodeInfoGetByEpisodeIdAndStaffIdParams,
@@ -37,7 +37,7 @@ type EpisodeInfoGetParams = {
   episodeId: string;
 };
 
-// @route GET http://localhost:3500/episodes/:episodeId
+// @route GET http://localhost:3500/episodeInfo/episodes/:episodeId
 // @access Private
 export const episodeGetByEpisodeIdController: RequestHandler<
   EpisodeInfoGetParams,
@@ -64,7 +64,7 @@ type EpisodeInfoUpdateParams = {
   staffId: string;
 };
 
-// @route PATCH http://localhost:3500/episodes/:episodeId/staff/:staffId
+// @route PATCH http://localhost:3500/episodeInfo/episodes/:episodeId/staff/:staffId
 // @access Private
 export const episodeAssignWorkersController: RequestHandler<
   EpisodeInfoUpdateParams,
@@ -95,7 +95,7 @@ type EpisodeInfoUpdateStatusBody = {
   episodeStatus: string | undefined;
 };
 
-// @route PATCH http://localhost:3500/episodes/:episodeId/staff/:staffId/status
+// @route PATCH http://localhost:3500/episodeInfo/episodes/:episodeId/staff/:staffId/status
 // @access Private
 export const episodeInfoUpdateStatusController: RequestHandler<
   EpisodeInfoUpdateStatusParams,

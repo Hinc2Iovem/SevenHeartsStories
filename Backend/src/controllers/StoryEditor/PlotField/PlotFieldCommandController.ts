@@ -11,7 +11,7 @@ type GetAllPlotFieldCommands = {
   topologyBlockId: string;
 };
 
-// @route GET http://localhost:3500/topologyBlocks/:topologyBlockId
+// @route GET http://localhost:3500/plotField/topologyBlocks/:topologyBlockId
 // @access Private
 export const getAllPlotFieldCommandsController: RequestHandler<
   GetAllPlotFieldCommands,
@@ -37,7 +37,7 @@ type PlotFieldCommandCreateParams = {
   topologyBlockId: string;
 };
 
-// @route POST http://localhost:3500/topologyBlocks/:topologyBlockId
+// @route POST http://localhost:3500/plotField/topologyBlocks/:topologyBlockId
 // @access Private
 export const plotFieldCommandControllerCreate: RequestHandler<
   PlotFieldCommandCreateParams,
@@ -67,7 +67,7 @@ type PlotFieldCommandUpdateNameBody = {
   commandName: string | undefined;
 };
 
-// @route PATCH http://localhost:3500/topologyBlocks/plotFieldCommands/:plotFieldCommandId/commandName
+// @route PATCH http://localhost:3500/plotField/:plotFieldCommandId/topologyBlocks/commandName
 // @access Private
 export const plotFieldCommandControllerUpdateCommandName: RequestHandler<
   PlotFieldCommandUpdateParams,
@@ -94,7 +94,7 @@ type PlotFieldCommandUpdateOrderBody = {
   newOrder: number;
 };
 
-// @route PATCH http://localhost:3500/topologyBlocks/plotFieldCommands/:plotFieldCommandId/commandOrder
+// @route PATCH http://localhost:3500/plotField/:plotFieldCommandId/topologyBlocks/commandOrder
 // @access Private
 export const plotFieldCommandControllerUpdateCommandOrder: RequestHandler<
   PlotFieldCommandUpdateParams,
@@ -117,7 +117,7 @@ export const plotFieldCommandControllerUpdateCommandOrder: RequestHandler<
   }
 };
 
-// @route DELETE http://localhost:3500/topologyBlocks/plotFieldCommands/:plotFieldCommandId
+// @route DELETE http://localhost:3500/plotField/:plotFieldCommandId/topologyBlocks
 // @access Private
 export const plotFieldCommandControllerDelete: RequestHandler<
   PlotFieldCommandUpdateParams,
