@@ -29,7 +29,6 @@ import {
   musicRoute,
   sayRoute,
   seasonRoute,
-  soundRoute,
   storyRoute,
   suitRoute,
   topologyBlockRoute,
@@ -44,6 +43,8 @@ import {
   ifRoute,
   ifValuesRoute,
   translationRoute,
+  soundCommandRoute,
+  soundRoute,
 } from "./routes/index";
 
 dotenv.config();
@@ -76,6 +77,7 @@ app.use("/stories", seasonRoute);
 app.use("/stories", storyRoute);
 app.use("/stories", musicRoute);
 app.use("/stories", achievementRoute);
+app.use("/stories", soundRoute);
 
 app.use("/plotFieldCommands", ambientRoute);
 app.use("/plotFieldCommands", backgroundRoute);
@@ -95,13 +97,13 @@ app.use("/plotFieldCommands", movesRoute);
 app.use("/plotFieldCommands", commandMusicRoute);
 app.use("/plotFieldCommands", commandNameRoute);
 app.use("/plotFieldCommands", sayRoute);
-app.use("/plotFieldCommands", soundRoute);
+app.use("/plotFieldCommands", soundCommandRoute);
 app.use("/plotFieldCommands", suitRoute);
 app.use("/plotFieldCommands", waitRoute);
 app.use("/plotFieldCommands", wardrobeRoute);
 
 app.use("/topologyBlocks", topologyBlockRoute);
-app.use("/topologyBlocks", plotFieldCommandRoute);
+app.use("/plotField", plotFieldCommandRoute);
 
 app.use("/staff", staffRoute);
 

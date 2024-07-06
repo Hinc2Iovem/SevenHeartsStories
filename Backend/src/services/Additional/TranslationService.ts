@@ -120,18 +120,12 @@ type UpdateCharacterTypes = {
   name: string | undefined;
   unknownName: string | undefined;
   description: string | undefined;
-  nameTag: string | undefined;
-  type: CharacterTypeAlias | undefined;
-  img: string | undefined;
   currentLanguage: string | undefined;
 };
 
 export const characterTranslationUpdateService = async ({
   description,
-  img,
   name,
-  nameTag,
-  type,
   unknownName,
   characterId,
   currentLanguage,
@@ -186,15 +180,7 @@ export const characterTranslationUpdateService = async ({
       });
     }
   }
-  if (img?.trim().length) {
-    existingCharacter.img = img;
-  }
-  if (nameTag?.trim().length) {
-    existingCharacter.nameTag = nameTag;
-  }
-  if (type?.trim().length) {
-    existingCharacter.type = type;
-  }
+
   if (unknownName?.trim().length) {
     const existingTranslation = await Translation.findOne({
       characterId,

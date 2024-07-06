@@ -21,7 +21,9 @@ choiceOptionRoute
   .post(createChoiceOptionController);
 
 choiceOptionRoute
-  .route("/choices/options/:choiceOptionId")
+  .route(
+    "/choices/options/:choiceOptionId/characters/:characterId/characterCharacteristics/:characterCharacteristicId"
+  )
   .patch(updateChoiceOptionController);
 
 choiceOptionRoute

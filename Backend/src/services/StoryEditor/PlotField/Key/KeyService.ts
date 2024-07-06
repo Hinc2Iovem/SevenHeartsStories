@@ -49,7 +49,7 @@ export const createCommandKeyService = async ({
 type UpdateCommandKeyTypes = {
   commandKeyId: string;
   targetBlockId: string;
-  sourceBlockId: string | undefined;
+  sourceBlockId: string;
 };
 
 export const updateCommandKeyService = async ({

@@ -1,8 +1,14 @@
-import mongoose, { InferSchemaType, model } from "mongoose";
+import mongoose, { InferSchemaType, Document, model } from "mongoose";
+
+export interface StoryDocument extends Document {
+  amountOfEpisodes: number;
+  storyStatus: string;
+  imgUrl?: string | null;
+}
 
 // Translation "storyName" "storyGenre"
 // storyStatus = doing | done
-export const storySchema = new mongoose.Schema({
+export const storySchema = new mongoose.Schema<StoryDocument>({
   amountOfEpisodes: {
     type: Number,
     default: 0,
@@ -13,6 +19,7 @@ export const storySchema = new mongoose.Schema({
   },
   imgUrl: {
     type: String,
+    default: null,
   },
 });
 

@@ -8,22 +8,22 @@ import {
 } from "../../../../controllers/StoryEditor/PlotField/Sound/CommandSoundController";
 
 // Default route === /plotFieldCommands
-export const soundRoute = express.Router();
+export const soundCommandRoute = express.Router();
 
-soundRoute
+soundCommandRoute
   .route("/:plotFieldCommandId/sounds")
   .get(getSoundByPlotFieldCommandIdController);
 
-soundRoute
+soundCommandRoute
   .route("/:plotFieldCommandId/stories/:storyId/sounds")
   .post(createSoundController);
 
-soundRoute
+soundCommandRoute
   .route("/stories/:storyId/sounds/:soundId")
   .patch(updateSoundController);
 
-soundRoute
+soundCommandRoute
   .route("/sounds/:soundId/isGlobal")
   .patch(updateSoundIsGlobalController);
 
-soundRoute.route("/sounds/:soundId").delete(deleteSoundController);
+soundCommandRoute.route("/sounds/:soundId").delete(deleteSoundController);

@@ -2,9 +2,9 @@ import { RequestHandler } from "express";
 import {
   storyCreateService,
   storyDeleteService,
-  storyUpdateImgService,
   storyGetAllService,
-  storyGetAllByStatusService,
+  storyUpdateImgService,
+  storyUpdateStatusService,
 } from "../../services/StoryData/StoryService";
 
 // @route GET http://localhost:3500/stories
@@ -22,31 +22,46 @@ export const storyGetAllController: RequestHandler = async (req, res, next) => {
   }
 };
 
-type GetStoryByStatusBody = {
-  storyStatus: string | undefined;
-};
+// type GetStoryByStatusBody = {
+//   storyStatus: string | undefined;
+// };
 
-// @route GET http://localhost:3500/stories/status
-// @access Private
-export const storyGetAllByStatusController: RequestHandler<
-  unknown,
-  unknown,
-  GetStoryByStatusBody,
-  unknown
-> = async (req, res, next) => {
-  try {
-    const story = await storyGetAllByStatusService({
-      storyStatus: req.body.storyStatus,
-    });
-    if (story) {
-      return res.status(201).json(story);
-    } else {
-      return res.status(400).json({ message: "Something went wrong" });
-    }
-  } catch (error) {
-    next(error);
-  }
-};
+// export type NextTypes = {
+//   page: number;
+//   string: number;
+// };
+// export type PrevTypes = {
+//   page: number;
+//   string: number;
+// };
+
+// // @route GET http://localhost:3500/stories/status
+// // @access Private
+// export const storyGetAllByStatusController: RequestHandler<
+//   unknown,
+//   unknown,
+//   GetStoryByStatusBody,
+//   unknown
+// > = async (req, res, next) => {
+//   try {
+//     const paginatedResults = res.locals.paginatedResults;
+
+//     const stories = await storyGetAllByStatusService({
+//       storyStatus: req.body.storyStatus,
+//       results: paginatedResults.results as StoryDocument[],
+//       next: (paginatedResults.next as NextTypes) ?? null,
+//       prev: (paginatedResults.prev as PrevTypes) ?? null,
+//     });
+
+//     if (stories) {
+//       return res.status(200).json(stories);
+//     } else {
+//       return res.status(400).json({ message: "Pagination results not found" });
+//     }
+//   } catch (error) {
+//     next(error);
+//   }
+// };
 
 type StoryCreateBody = {
   title: string | undefined;
@@ -71,6 +86,38 @@ export const storyCreateController: RequestHandler<
       title: req.body.title,
       genres: req.body.genres,
       imgUrl: req.body.imgUrl,
+    });
+    if (story) {
+      return res.status(201).json(story);
+    } else {
+      return res.status(400).json({ message: "Something went wrong" });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
+export type StoryStatusTypes = "done" | "doing";
+
+type StoryUpdateStatusParams = {
+  storyId: string;
+};
+type StoryUpdateStatusBody = {
+  storyStatus: StoryStatusTypes | undefined;
+};
+
+// @route PATCH http://localhost:3500/stories/:storyId/status
+// @access Private
+export const storyUpdateStatusController: RequestHandler<
+  StoryUpdateStatusParams,
+  unknown,
+  StoryUpdateStatusBody,
+  unknown
+> = async (req, res, next) => {
+  try {
+    const story = await storyUpdateStatusService({
+      storyId: req.params.storyId,
+      storyStatus: req.body.storyStatus,
     });
     if (story) {
       return res.status(201).json(story);

@@ -61,24 +61,20 @@ export const createKeyController: RequestHandler<
 type UpdateKeyParams = {
   commandKeyId: string;
   targetBlockId: string;
+  sourceBlockId: string;
 };
-
-type UpdateKeyBody = {
-  sourceBlockId: string | undefined;
-};
-
 // @route PATCH http://localhost:3500/plotFieldCommands/commandKeys/:commandKeyId/targetBlocks/:targetBlockId
 // @access Private
 export const updateKeyController: RequestHandler<
   UpdateKeyParams,
   unknown,
-  UpdateKeyBody,
+  unknown,
   unknown
 > = async (req, res, next) => {
   try {
     const key = await updateCommandKeyService({
       commandKeyId: req.params.commandKeyId,
-      sourceBlockId: req.body.sourceBlockId,
+      sourceBlockId: req.params.sourceBlockId,
       targetBlockId: req.params.targetBlockId,
     });
     if (key) {

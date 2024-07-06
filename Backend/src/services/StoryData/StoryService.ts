@@ -1,10 +1,11 @@
 import createHttpError from "http-errors";
-import { validateMongoId } from "../../utils/validateMongoId";
+import { TranslationTextFieldName } from "../../consts/TRANSLATION_TEXT_FIELD_NAMES";
+import { StoryStatusTypes } from "../../controllers/StoryData/StoryController";
+import Season from "../../models/StoryData/Season";
 import Story from "../../models/StoryData/Story";
 import Translation from "../../models/StoryData/Translation";
-import Season from "../../models/StoryData/Season";
-import { TranslationTextFieldName } from "../../consts/TRANSLATION_TEXT_FIELD_NAMES";
 import { checkCurrentLanguage } from "../../utils/checkCurrentLanguage";
+import { validateMongoId } from "../../utils/validateMongoId";
 
 export const storyGetAllService = async () => {
   const existingStories = await Story.find().lean();
@@ -16,24 +17,47 @@ export const storyGetAllService = async () => {
   return existingStories;
 };
 
-type GetAllStoriesByStatusTypes = {
-  storyStatus: string | undefined;
-};
+// type GetAllStoriesByStatusTypes = {
+//   storyStatus: string | undefined;
+//   results: StoryDocument[];
+//   next: NextTypes;
+//   prev: PrevTypes;
+// };
 
-export const storyGetAllByStatusService = async ({
-  storyStatus,
-}: GetAllStoriesByStatusTypes) => {
-  if (!storyStatus?.trim().length) {
-    throw createHttpError(400, "StoryStatus is required");
-  }
-  const existingStories = await Story.find({ storyStatus }).lean();
+// export const storyGetAllByStatusService = async ({
+//   storyStatus,
+//   results,
+//   next,
+//   prev,
+// }: GetAllStoriesByStatusTypes) => {
+//   if (!storyStatus?.trim().length) {
+//     throw createHttpError(400, "StoryStatus is required");
+//   }
 
-  if (!existingStories.length) {
-    return [];
-  }
+//   const filteredResults = results.filter(
+//     (r) => r.storyStatus.toLowerCase() === storyStatus.toLowerCase()
+//   );
 
-  return existingStories;
-};
+//   if (next && prev) {
+//     return {
+//       next,
+//       prev,
+//       results: filteredResults,
+//     };
+//   } else if (next) {
+//     return {
+//       next,
+//       results: filteredResults,
+//     };
+//   } else if (prev) {
+//     return {
+//       prev,
+//       results: filteredResults,
+//     };
+//   } else {
+//     return filteredResults;
+//   }
+// };
 
 type StoryCreateTypes = {
   title: string | undefined;
@@ -130,10 +154,35 @@ export const storyUpdateImgService = async ({
   return await existingStory.save();
 };
 
-type StoryUpdateGenreTypes = {
+type StoryUpdateStatusTypes = {
   storyId: string;
-  genre: string | undefined;
-  currentLanguage: string | undefined;
+  storyStatus: StoryStatusTypes | undefined;
+};
+
+export const storyUpdateStatusService = async ({
+  storyId,
+  storyStatus,
+}: StoryUpdateStatusTypes) => {
+  validateMongoId({ value: storyId, valueName: "Story" });
+
+  const existingStory = await Story.findById(storyId).exec();
+
+  if (!existingStory) {
+    throw createHttpError(400, "Story with such id doesn't exist");
+  }
+
+  if (storyStatus?.trim().length) {
+    if (storyStatus?.trim() === "doing" || storyStatus?.trim() === "done") {
+      existingStory.storyStatus = storyStatus;
+    } else {
+      throw createHttpError(
+        400,
+        "StoryStatus may be equal to (done or doing) only"
+      );
+    }
+  }
+
+  return await existingStory.save();
 };
 
 type StoryDeleteTypes = {

@@ -9,6 +9,7 @@ export * from "./StoryData/EpisodeInfoRoutes";
 export * from "./StoryData/EpisodeRoutes";
 export * from "./StoryData/SeasonRoutes";
 export * from "./StoryData/StoryRoutes";
+export * from "./StoryData/SoundRoutes";
 export * from "./StoryData/MusicRoutes";
 
 export * from "./StoryEditor/PlotField/Achievement/AchievementRoutes";

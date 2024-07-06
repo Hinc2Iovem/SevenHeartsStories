@@ -21,7 +21,7 @@ topologyBlockRoute
   .delete(topologyBlockControllerDelete);
 
 topologyBlockRoute
-  .route("/:sourceBlockId")
+  .route("/:sourceBlockId/connection")
   .get(getTopologyBlockByConnectionController);
 
 topologyBlockRoute

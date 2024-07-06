@@ -106,9 +106,6 @@ type CharacterUpdateBody = {
   name: string | undefined;
   unknownName: string | undefined;
   description: string | undefined;
-  nameTag: string | undefined;
-  type: CharacterTypeAlias | undefined;
-  img: string | undefined;
   currentLanguage: string | undefined;
 };
 
@@ -125,10 +122,7 @@ export const characterTranslationUpdateController: RequestHandler<
       name: req.body.name,
       unknownName: req.body.unknownName,
       description: req.body.description,
-      nameTag: req.body.nameTag,
-      type: req.body.type,
       currentLanguage: req.body.currentLanguage,
-      img: req.body.img,
       characterId: req.params.characterId,
     });
     if (character) {
@@ -183,7 +177,7 @@ type EpisodeTranslationUpdateBody = {
   description: string | undefined;
 };
 
-// @route PATCH http://localhost:3500/translation/episodes/:episodeId
+// @route PATCH http://localhost:3500/translations/episodes/:episodeId
 // @access Private
 export const episodeTranslationUpdateController: RequestHandler<
   EpisodeTranslationUpdateParams,
@@ -249,7 +243,7 @@ type SeasonTranslationUpdateTitleBody = {
   currentLanguage: string | undefined;
 };
 
-// @route PATCH http://localhost:3500/translation/seasons/:seasonId
+// @route PATCH http://localhost:3500/translations/seasons/:seasonId
 // @access Private
 export const seasonTranslationUpdateTitleController: RequestHandler<
   SeasonTranslationUpdateTitleParams,
@@ -316,7 +310,7 @@ type StoryTranslationUpdateBody = {
   currentLanguage: string | undefined;
 };
 
-// @route PATCH http://localhost:3500/translation/stories/:storyId
+// @route PATCH http://localhost:3500/translations/stories/:storyId
 // @access Private
 export const storyTranslationUpdateController: RequestHandler<
   StoryTranslationUpdateParams,
@@ -350,7 +344,7 @@ type GetStoryBody = {
   currentLanguage: string | undefined;
 };
 
-// @route GET http://localhost:3500/translation/stories/:storyId
+// @route GET http://localhost:3500/translations/stories/:storyId
 // @access Private
 export const getTranslationStoryController: RequestHandler<
   GetStoryParams,
@@ -384,7 +378,7 @@ type CharacterCharacteristicTranslationUpdateBody = {
   currentLanguage: string | undefined;
 };
 
-// @route PATCH http://localhost:3500/translation/characterCharacteristics/:characterCharacteristicId
+// @route PATCH http://localhost:3500/translations/characterCharacteristics/:characterCharacteristicId
 // @access Private
 export const characterCharacteristicTranslationUpdateController: RequestHandler<
   CharacterCharacteristicTranslationUpdateParams,
@@ -417,7 +411,7 @@ type GetCharacterCharacteristicBody = {
   currentLanguage: string | undefined;
 };
 
-// @route GET http://localhost:3500/translation/characterCharacteristics/:characterCharacteristicId
+// @route GET http://localhost:3500/translations/characterCharacteristics/:characterCharacteristicId
 // @access Private
 export const getTranslationCharacterCharacteristicController: RequestHandler<
   GetCharacterCharacteristicParams,
@@ -451,7 +445,7 @@ type UpdateAchievementTranslationBody = {
   currentLanguage: string | undefined;
 };
 
-// @route PATCH http://localhost:3500/translation/plotFieldCommands/achievements/:achievementId
+// @route PATCH http://localhost:3500/translations/plotFieldCommands/achievements/:achievementId
 // @access Private
 export const updateAchievementTranslationController: RequestHandler<
   UpdateAchievementTranslationParams,
@@ -483,7 +477,7 @@ type GetAchievementBody = {
   currentLanguage: string | undefined;
 };
 
-// @route GET http://localhost:3500/translation/plotFieldCommands/achievements/:achievementId
+// @route GET http://localhost:3500/translations/plotFieldCommands/achievements/:achievementId
 // @access Private
 export const getTranslationAchievementController: RequestHandler<
   GetAchievementParams,
@@ -516,7 +510,7 @@ type UpdateChoiceTranslationBody = {
   currentLanguage: string | undefined;
 };
 
-// @route PATCH http://localhost:3500/translation/plotFieldCommands/choices/:choiceId
+// @route PATCH http://localhost:3500/translations/plotFieldCommands/choices/:choiceId
 // @access Private
 export const updateChoiceTranslationController: RequestHandler<
   UpdateChoiceTranslationParams,
@@ -548,7 +542,7 @@ type GetChoiceBody = {
   currentLanguage: string | undefined;
 };
 
-// @route GET http://localhost:3500/translation/plotFieldCommands/choices/:choiceId
+// @route GET http://localhost:3500/translations/plotFieldCommands/choices/:choiceId
 // @access Private
 export const getTranslationChoiceController: RequestHandler<
   GetChoiceParams,
@@ -614,7 +608,7 @@ type GetChoiceOptionBody = {
   currentLanguage: string | undefined;
 };
 
-// @route GET http://localhost:3500/translation/plotFieldCommands/choices/options/:choiceOptionId
+// @route GET http://localhost:3500/translations/plotFieldCommands/choices/options/:choiceOptionId
 // @access Private
 export const getTranslationChoiceOptionController: RequestHandler<
   GetChoiceOptionParams,
@@ -649,7 +643,7 @@ type UpdateGetItemTranslationBody = {
   currentLanguage: string | undefined;
 };
 
-// @route PATCH http://localhost:3500/translation/plotFieldCommands/getItems/:getItemId
+// @route PATCH http://localhost:3500/translations/plotFieldCommands/getItems/:getItemId
 // @access Private
 export const updateGetItemTranslationController: RequestHandler<
   UpdateGetItemTranslationParams,
@@ -683,7 +677,7 @@ type GetGetItemBody = {
   currentLanguage: string | undefined;
 };
 
-// @route GET http://localhost:3500/translation/plotFieldCommands/getItem/:getItemId
+// @route GET http://localhost:3500/translations/plotFieldCommands/getItem/:getItemId
 // @access Private
 export const getTranslationGetItemController: RequestHandler<
   GetGetItemParams,
@@ -717,7 +711,7 @@ type UpdateSayTranslationBody = {
   currentLanguage: string | undefined;
 };
 
-// @route PATCH http://localhost:3500/translation/plotFieldCommands/say/:sayId
+// @route PATCH http://localhost:3500/translations/plotFieldCommands/say/:sayId
 // @access Private
 export const updateSayTranslationTextController: RequestHandler<
   UpdateSayTranslationParams,
@@ -749,7 +743,7 @@ type GetSayBody = {
   currentLanguage: string | undefined;
 };
 
-// @route GET http://localhost:3500/translation/plotFieldCommands/say/:sayId
+// @route GET http://localhost:3500/translations/plotFieldCommands/say/:sayId
 // @access Private
 export const getTranslationSayController: RequestHandler<
   GetSayParams,
@@ -815,7 +809,7 @@ type GetCommandWardrobeBody = {
   currentLanguage: string | undefined;
 };
 
-// @route GET http://localhost:3500/translation/plotFieldCommands/commandWardrobe/:commandWardrobeId
+// @route GET http://localhost:3500/translations/plotFieldCommands/commandWardrobe/:commandWardrobeId
 // @access Private
 export const getTranslationCommandWardrobeController: RequestHandler<
   GetCommandWardrobeParams,

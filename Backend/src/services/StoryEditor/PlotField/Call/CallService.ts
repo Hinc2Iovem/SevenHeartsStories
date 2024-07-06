@@ -50,7 +50,7 @@ export const createCallService = async ({
 type UpdateCallTypes = {
   callId: string;
   targetBlockId: string;
-  sourceBlockId: string | undefined;
+  sourceBlockId: string;
 };
 
 export const updateCallService = async ({

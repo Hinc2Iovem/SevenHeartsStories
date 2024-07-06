@@ -11,16 +11,18 @@ import {
 export const plotFieldCommandRoute = express.Router();
 
 plotFieldCommandRoute
-  .route("/:topologyBlockId")
+  .route("/plotField/topologyBlocks/:topologyBlockId")
   .get(getAllPlotFieldCommandsController)
   .post(plotFieldCommandControllerCreate);
 
 plotFieldCommandRoute
-  .route("/plotFieldCommands/:plotFieldCommandId/commandName")
+  .route("/plotField/:plotFieldCommandId/topologyBlocks/commandName")
   .patch(plotFieldCommandControllerUpdateCommandName);
+
 plotFieldCommandRoute
-  .route("/plotFieldCommands/:plotFieldCommandId/commandOrder")
+  .route("/plotField/:plotFieldCommandId/topologyBlocks/commandOrder")
   .patch(plotFieldCommandControllerUpdateCommandOrder);
+
 plotFieldCommandRoute
-  .route("/plotFieldCommands/:plotFieldCommandId")
+  .route("/plotField/:plotFieldCommandId/topologyBlocks")
   .delete(plotFieldCommandControllerDelete);

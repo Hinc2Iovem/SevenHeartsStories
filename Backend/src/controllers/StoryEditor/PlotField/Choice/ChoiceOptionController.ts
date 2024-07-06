@@ -79,6 +79,8 @@ export const createChoiceOptionController: RequestHandler<
 
 type UpdateChoiceOptionParams = {
   choiceOptionId: string;
+  characterCharacteristicId: string;
+  characterId: string;
 };
 
 type UpdateChoiceOptionBody = {
@@ -89,11 +91,9 @@ type UpdateChoiceOptionBody = {
   requiredKey: string | undefined;
   requiredCharacteristic: string | undefined;
   characteristicName: string | undefined;
-  characterCharacteristicId: string | undefined;
-  characterId: string | undefined;
 };
 
-// @route PATCH http://localhost:3500/plotFieldCommands/choices/options/:choiceOptionId
+// @route PATCH http://localhost:3500/plotFieldCommands/choices/options/:choiceOptionId/characters/:characterId/characterCharacteristics/:characterCharacteristicId
 // @access Private
 export const updateChoiceOptionController: RequestHandler<
   UpdateChoiceOptionParams,
@@ -109,8 +109,8 @@ export const updateChoiceOptionController: RequestHandler<
       priceAmethysts: req.body.priceAmethysts,
       option: req.body.option,
       characteristicName: req.body.characteristicName,
-      characterId: req.body.characterId,
-      characterCharacteristicId: req.body.characterCharacteristicId,
+      characterId: req.params.characterId,
+      characterCharacteristicId: req.params.characterCharacteristicId,
     });
     if (choiceOption) {
       return res.status(201).json(choiceOption);

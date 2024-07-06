@@ -21,8 +21,10 @@ sayRoute
   .post(createSayController);
 
 sayRoute
-  .route("/say/:sayId")
-  .delete(deleteSayController)
+  .route(
+    "/say/:sayId/characters/:characterId/characterEmotions/:characterEmotionId"
+  )
   .patch(updateSayController);
+sayRoute.route("/say/:sayId").delete(deleteSayController);
 
 sayRoute.route("/say/:sayId/commandSide").patch(updateSayCommandSideController);

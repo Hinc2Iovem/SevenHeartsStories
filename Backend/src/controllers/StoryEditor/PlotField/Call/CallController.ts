@@ -61,24 +61,21 @@ export const createCallController: RequestHandler<
 type UpdateCallParams = {
   callId: string;
   targetBlockId: string;
+  sourceBlockId: string;
 };
 
-type UpdateCallBody = {
-  sourceBlockId: string | undefined;
-};
-
-// @route PATCH http://localhost:3500/plotFieldCommands/calls/:callId/targetBlocks/:targetBlockId
+// @route PATCH http://localhost:3500/plotFieldCommands/calls/:callId/targetBlocks/:targetBlockId/sourceBlocks/:sourceBlockId
 // @access Private
 export const updateCallController: RequestHandler<
   UpdateCallParams,
   unknown,
-  UpdateCallBody,
+  unknown,
   unknown
 > = async (req, res, next) => {
   try {
     const call = await updateCallService({
       callId: req.params.callId,
-      sourceBlockId: req.body.sourceBlockId,
+      sourceBlockId: req.params.sourceBlockId,
       targetBlockId: req.params.targetBlockId,
     });
     if (call) {

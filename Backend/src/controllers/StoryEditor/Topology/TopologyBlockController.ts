@@ -67,7 +67,7 @@ type GetTopologyBlockByConnectionParams = {
   sourceBlockId: string;
 };
 
-// @route GET http://localhost:3500/topologyBlocks/:sourceBlockId
+// @route GET http://localhost:3500/topologyBlocks/:sourceBlockId/connection
 // @access Private
 export const getTopologyBlockByConnectionController: RequestHandler<
   GetTopologyBlockByConnectionParams,

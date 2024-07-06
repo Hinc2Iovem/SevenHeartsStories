@@ -108,7 +108,7 @@ type UpdateSayParams = {
   characterEmotionId: string;
 };
 
-// @route PATCH http://localhost:3500/plotFieldCommands/say/:sayId
+// @route PATCH http://localhost:3500/plotFieldCommands/say/:sayId/characters/:characterId/characterEmotions/:characterEmotionId
 // @access Private
 export const updateSayController: RequestHandler<
   UpdateSayParams,

@@ -93,7 +93,15 @@ export const getTopologyBlockByConnectionService = async ({
     return null;
   }
 
-  return await TopologyBlockConnection.find({ sourceBlockId }).lean();
+  const existingTopologyBlocksConnection = await TopologyBlockConnection.find({
+    sourceBlockId,
+  }).lean();
+
+  if (!existingTopologyBlocksConnection.length) {
+    return [];
+  }
+
+  return existingTopologyBlocksConnection;
 };
 
 type TopologyBlockCreateTypes = {

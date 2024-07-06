@@ -116,8 +116,8 @@ type UpdateChoiceOptionTypes = {
   characterName: string | undefined;
   amountOfPoints: number | undefined;
   characteristicName: string | undefined;
-  characterId: string | undefined;
-  characterCharacteristicId: string | undefined;
+  characterId: string;
+  characterCharacteristicId: string;
 };
 
 export const updateChoiceOptionService = async ({
