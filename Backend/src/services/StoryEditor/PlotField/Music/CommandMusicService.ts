@@ -72,7 +72,7 @@ export const updateMusicService = async ({
     musicLibrary.musicName = musicName;
     return await musicLibrary.save();
   } else {
-    return await Music.create({ musicName, commandMusicId: musicId, storyId });
+    return await Music.create({ musicName, storyId });
   }
 };
 

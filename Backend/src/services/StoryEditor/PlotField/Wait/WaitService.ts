@@ -23,10 +23,6 @@ export const getWaitByPlotFieldCommandIdService = async ({
   return existingWait;
 };
 
-type CreateAmbientTypes = {
-  plotFieldCommandId: string;
-};
-
 type CreateWaitTypes = {
   plotFieldCommandId: string;
 };

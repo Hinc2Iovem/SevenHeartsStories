@@ -1,10 +1,7 @@
 import createHttpError from "http-errors";
-import { validateMongoId } from "../../../../utils/validateMongoId";
-import PlotFieldCommand from "../../../../models/StoryEditor/PlotField/PlotFieldCommand";
 import GetItem from "../../../../models/StoryEditor/PlotField/GetItem/GetItem";
-import Translation from "../../../../models/StoryData/Translation";
-import { TranslationTextFieldName } from "../../../../consts/TRANSLATION_TEXT_FIELD_NAMES";
-import { checkCurrentLanguage } from "../../../../utils/checkCurrentLanguage";
+import PlotFieldCommand from "../../../../models/StoryEditor/PlotField/PlotFieldCommand";
+import { validateMongoId } from "../../../../utils/validateMongoId";
 
 type GetItemByPlotFieldCommandIdTypes = {
   plotFieldCommandId: string;

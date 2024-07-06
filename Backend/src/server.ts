@@ -54,12 +54,12 @@ const port = env.PORT;
 
 connectDB();
 
-// const corsOptions = {
-//     origin: "http://localhost:5173",
-//     credentials: true,
-//   };
+const corsOptions = {
+  origin: "http://localhost:5173",
+  credentials: true,
+};
 
-// app.use(cors(corsOptions));
+app.use(cors(corsOptions));
 
 app.use(express.json());
 app.use(cookieParser());

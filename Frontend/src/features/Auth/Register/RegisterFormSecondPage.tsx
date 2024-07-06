@@ -6,10 +6,12 @@ type RegisterFormSecondPageTypes = {
   setRole: React.Dispatch<React.SetStateAction<string>>;
   role: string;
   currentPage: number;
+  canSubmit: boolean;
 };
 
 export default function RegisterFormSecondPage({
   currentPage,
+  canSubmit,
   setCurrentPage,
   role,
   setRole,
@@ -72,8 +74,13 @@ export default function RegisterFormSecondPage({
           Предыдущая
         </button>
         <button
+          disabled={!canSubmit}
           type="submit"
-          className="w-fit text-[1.3rem] self-start px-[1rem] py-[.5rem] rounded-md shadow-md bg-primary-pastel-blue  text-white hover:bg-accent-purplish-blue active:scale-[0.98] transition-all"
+          className={`w-fit text-[1.3rem] self-start px-[1rem] py-[.5rem] rounded-md shadow-md  text-white ${
+            canSubmit
+              ? "hover:bg-accent-purplish-blue bg-primary-pastel-blue"
+              : " bg-primary-light-blue"
+          }  active:scale-[0.98] transition-all`}
         >
           Завершить
         </button>

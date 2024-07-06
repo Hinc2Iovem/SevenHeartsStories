@@ -9,7 +9,6 @@ type StoryListTypes = {
 };
 
 export default function StoryList({ storiesType }: StoryListTypes) {
-  // all stories fetching here
   return (
     <main className="flex flex-col gap-[3rem]">
       {storiesType === "all" ? (

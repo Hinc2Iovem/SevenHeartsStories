@@ -64,6 +64,7 @@ export const episodeAssignWorkerService = async ({
     throw createHttpError(400, `No staff with id: ${staffId} was found`);
   }
 
+
   return await EpisodeInfo.create({ episodeId, staffId });
 };
 

@@ -1,17 +1,18 @@
 import createHttpError from "http-errors";
 import { CreateStaffMemberTypes } from "../../controllers/User/StaffController";
 import { StaffRoles } from "../../consts/STAFF_ROLES";
+import { validateMongoId } from "../../utils/validateMongoId";
 import Staff from "../../models/User/Staff";
 import brcypt from "bcrypt";
-import { validateMongoId } from "../../utils/validateMongoId";
+import env from "../../utils/validateEnv";
 
 export const getAllStaffMembersService = async () => {
-  const existingStaffMember = await Staff.find().lean();
-  if (!existingStaffMember.length) {
+  const existingStaffMembers = await Staff.find().lean();
+  if (!existingStaffMembers.length) {
     return [];
   }
 
-  return existingStaffMember;
+  return existingStaffMembers;
 };
 
 type GetStaffMemberByIdTypes = {
@@ -35,9 +36,18 @@ export const createStaffMemberService = async ({
   password,
   role,
   username,
+  key,
 }: CreateStaffMemberTypes) => {
-  if (!password?.trim().length || !username?.trim().length) {
-    throw createHttpError(400, "Password and username  is required");
+  if (
+    !password?.trim().length ||
+    !username?.trim().length ||
+    !key?.trim().length
+  ) {
+    throw createHttpError(400, "Password, username and key are required");
+  }
+
+  if (env.REG_KEY !== key.trim()) {
+    throw createHttpError(403, "Key is wrong");
   }
 
   if (role?.trim().length && !StaffRoles.includes(role.toLowerCase())) {
@@ -54,21 +64,22 @@ export const createStaffMemberService = async ({
 
   const encryptedPassword = await brcypt.hash(password, 10);
   if (role?.trim().length) {
-    await Staff.create({
+    const newStaffMember = await Staff.create({
       password: encryptedPassword,
       roles: [role?.toLowerCase()],
       username,
     });
+    newStaffMember.password = "";
+    return newStaffMember;
   } else {
-    await Staff.create({
+    const newStaffMember = await Staff.create({
       password: encryptedPassword,
       username,
     });
+
+    newStaffMember.password = "";
+    return newStaffMember;
   }
-  return {
-    username,
-    roles: [role?.toLowerCase() ?? "scriptwriter"],
-  };
 };
 
 type UpdateStaffRolesTypes = {

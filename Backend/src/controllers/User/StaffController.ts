@@ -55,6 +55,7 @@ export type CreateStaffMemberTypes = {
   role: string | undefined;
   username: string | undefined;
   password: string | undefined;
+  key: string | undefined;
 };
 
 // @route POST http://localhost:3500/staff
@@ -70,6 +71,7 @@ export const createStaffMemberController: RequestHandler<
       role: req.body.role,
       username: req.body.username,
       password: req.body.password,
+      key: req.body.key,
     });
     if (staff) {
       return res.status(201).json(staff);

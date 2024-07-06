@@ -3,7 +3,7 @@ import FinishedCarousel from "./FinishedCarousel";
 import FinishedPagination from "./FinishedPagination";
 
 export default function StoryListFinished() {
-  const [finishedStoriesCarousel, setFinishedStoriesCarousel] = useState(true);
+  const [finishedStoriesCarousel, setFinishedStoriesCarousel] = useState(false);
 
   return (
     <div>

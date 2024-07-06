@@ -83,10 +83,10 @@ export const updateBackgroundService = async ({
   return await existingBackground.save();
 };
 
-type UpdateBackgroundImgTypes = {
-  backgroundId: string;
-  imgUrl: string | undefined;
-};
+// type UpdateBackgroundImgTypes = {
+//   backgroundId: string;
+//   imgUrl: string | undefined;
+// };
 
 // export const backgroundUpdateImgService = async ({
 //   backgroundId,

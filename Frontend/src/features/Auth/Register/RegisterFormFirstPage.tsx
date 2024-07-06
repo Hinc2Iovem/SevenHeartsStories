@@ -64,6 +64,7 @@ export default function RegisterFormFirstPage({
         </label>
         <input
           id="password"
+          autoComplete="off"
           className="w-full outline-0 text-[1.3rem] px-[1rem] py-[.8rem] border-[1px] border-primary-pastel-blue rounded-md border-dotted"
           type={showPassword ? "text" : "password"}
           value={password}
