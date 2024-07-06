@@ -7,7 +7,7 @@ import mongoose, { InferSchemaType, model } from "mongoose";
 //   EmptyCharacter (есть только имя/переводится)
 //   MinorCharacter (кроме имени есть:
 //   unknownName, description, nameTag и список одежды)
-//   Mainhero (кроме имени есть:
+//   MainCharacter (кроме имени есть:
 //   список одежды, список характеристик)
 
 export const characterSchema = new mongoose.Schema({
@@ -21,7 +21,7 @@ export const characterSchema = new mongoose.Schema({
   },
   type: {
     type: String,
-    default: "EmptyCharacter",
+    default: "emptycharacter",
   },
   isMainCharacter: {
     type: Boolean,

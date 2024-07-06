@@ -12,15 +12,14 @@ export const characterEmotionRoute = express.Router();
 
 characterEmotionRoute
   .route("/characters/:characterId")
-  .get(characterEmotionGetByCharacterIdController);
-
-characterEmotionRoute.route("/").post(characterEmotionCreateController);
+  .get(characterEmotionGetByCharacterIdController)
+  .post(characterEmotionCreateController);
 
 characterEmotionRoute
   .route("/:characterEmotionId")
-  .patch(characterEmotionUpdateController);
+  .patch(characterEmotionUpdateController)
+  .delete(characterEmotionDeleteController);
 
 characterEmotionRoute
   .route("/:characterEmotionId/img")
-  .patch(characterEmotionUpdateImgUrlController)
-  .delete(characterEmotionDeleteController);
+  .patch(characterEmotionUpdateImgUrlController);

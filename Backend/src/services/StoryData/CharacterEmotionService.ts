@@ -12,12 +12,14 @@ export const characterEmotionGetByCharacterIdService = async ({
 }: GetCharacterEmotionByCharacterIdTypes) => {
   validateMongoId({ value: characterId, valueName: "Character" });
 
-  const existingCharacters = await Character.find({ characterId }).lean();
-  if (!existingCharacters) {
+  const existingCharacterEmotions = await CharacterEmotion.find({
+    characterId,
+  }).lean();
+  if (!existingCharacterEmotions) {
     throw [];
   }
 
-  return existingCharacters;
+  return existingCharacterEmotions;
 };
 
 type CreateCharacterEmotionTypes = {

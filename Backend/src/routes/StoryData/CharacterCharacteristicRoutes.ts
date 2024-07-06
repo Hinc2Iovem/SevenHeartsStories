@@ -13,7 +13,7 @@ characterCharacteristicRoute
   .get(characterCharacteristicGetByCharacterIdController);
 
 characterCharacteristicRoute
-  .route("/")
+  .route("/characters/:characterId")
   .post(characterCharacteristicCreateController);
 
 characterCharacteristicRoute

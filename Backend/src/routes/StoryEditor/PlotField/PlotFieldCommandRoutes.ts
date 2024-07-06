@@ -7,22 +7,22 @@ import {
   plotFieldCommandControllerUpdateCommandOrder,
 } from "../../../controllers/StoryEditor/PlotField/PlotFieldCommandController";
 
-// Default route === /topologyBlocks
+// Default route === /plotField
 export const plotFieldCommandRoute = express.Router();
 
 plotFieldCommandRoute
-  .route("/plotField/topologyBlocks/:topologyBlockId")
+  .route("/topologyBlocks/:topologyBlockId")
   .get(getAllPlotFieldCommandsController)
   .post(plotFieldCommandControllerCreate);
 
 plotFieldCommandRoute
-  .route("/plotField/:plotFieldCommandId/topologyBlocks/commandName")
+  .route("/:plotFieldCommandId/topologyBlocks/commandName")
   .patch(plotFieldCommandControllerUpdateCommandName);
 
 plotFieldCommandRoute
-  .route("/plotField/:plotFieldCommandId/topologyBlocks/commandOrder")
+  .route("/:plotFieldCommandId/topologyBlocks/commandOrder")
   .patch(plotFieldCommandControllerUpdateCommandOrder);
 
 plotFieldCommandRoute
-  .route("/plotField/:plotFieldCommandId/topologyBlocks")
+  .route("/:plotFieldCommandId/topologyBlocks")
   .delete(plotFieldCommandControllerDelete);

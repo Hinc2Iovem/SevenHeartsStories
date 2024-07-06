@@ -40,7 +40,7 @@ type CharacterCharacteristicCreateBody = {
   currentLanguage: string | undefined;
 };
 
-// @route POST http://localhost:3500/characterCharacteristics
+// @route POST http://localhost:3500/characterCharacteristics/characters/:characterId
 // @access Private
 export const characterCharacteristicCreateController: RequestHandler<
   CharacterCharacteristicCreateParams,
@@ -65,7 +65,7 @@ export const characterCharacteristicCreateController: RequestHandler<
 };
 
 type CharacterCharacteristicDeleteParams = {
-  characteristicId: string | undefined;
+  characterCharacteristicId: string;
 };
 
 // @route DELETE http://localhost:3500/characterCharacteristics/:characterCharacteristicId
@@ -78,7 +78,7 @@ export const characterCharacteristicDeleteController: RequestHandler<
 > = async (req, res, next) => {
   try {
     const characterCharacteristic = await characterCharacteristicDeleteService({
-      characteristicId: req.params.characteristicId,
+      characterCharacteristicId: req.params.characterCharacteristicId,
     });
     if (characterCharacteristic) {
       return res.status(201).json(characterCharacteristic);
