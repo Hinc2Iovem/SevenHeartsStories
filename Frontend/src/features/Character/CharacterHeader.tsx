@@ -16,7 +16,7 @@ export default function CharacterHeader() {
   const [showCharacterModal, setShowCharacterModal] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
-  const from = location.state?.pathname || "/stories";
+  const from = location.state?.pathname || "/stories/:storyId";
 
   const handleGoBack = () => {
     navigate(from);

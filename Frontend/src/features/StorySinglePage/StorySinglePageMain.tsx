@@ -3,25 +3,32 @@ import { Link } from "react-router-dom";
 import { useState } from "react";
 import arrowDown from "../../assets/images/shared/arrowDown.png";
 import arrowUp from "../../assets/images/shared/arrowUp.png";
+import ButtonHoverPromptModal from "../shared/ButtonAsideHoverPromptModal/ButtonHoverPromptModal";
 
 export default function StorySinglePageMain() {
   const [shrinkEpisodes, setShrinkEpisodes] = useState(true);
 
   return (
-    <main className="flex flex-col gap-[2rem] mt-[5rem]">
+    <main className="flex flex-col gap-[2rem] mt-[5rem] mb-[3rem]">
       <div className="flex w-full justify-between items-center relative">
         <div className="bg-white p-[1rem] px-[2rem] rounded-md shadow-md">
           <h2 className="text-[2.5rem] text-gray-700">Случай в лесу</h2>
         </div>
-        <button>
-          <img src={add} alt="NewSeason" className="w-[4rem]" />
-        </button>
+        <ButtonHoverPromptModal
+          asideClasses="text-[1.5rem] top-[3.9rem] bottom-[-3.9rem]"
+          contentName="Создать Сезон"
+          positionByAbscissa="right"
+          className="w-fit bg-white rounded-md shadow-sm shadow-gray-500 p-[.2rem]"
+          variant={"rectangle"}
+        >
+          <img src={add} alt="NewSeason" className="w-[3rem]" />
+        </ButtonHoverPromptModal>
 
         <button
           onClick={() => setShrinkEpisodes((prev) => !prev)}
           className={`${
             shrinkEpisodes ? "hidden" : ""
-          } absolute top-[0rem] left-[21.5rem]`}
+          } absolute top-[3rem] left-[21.5rem]`}
         >
           <img src={arrowUp} alt="See more" className="w-[3rem]" />
         </button>
@@ -29,7 +36,7 @@ export default function StorySinglePageMain() {
           onClick={() => setShrinkEpisodes((prev) => !prev)}
           className={`${
             shrinkEpisodes ? "" : "hidden"
-          } absolute top-[0rem] left-[21.5rem]`}
+          } absolute top-[3rem] left-[21.5rem]`}
         >
           <img src={arrowDown} alt="See less" className="w-[3rem]" />
         </button>
@@ -47,9 +54,15 @@ export default function StorySinglePageMain() {
             </li>
           </Link>
         ))}
-        <button>
-          <img src={add} alt="NewSeason" className="w-[4rem]" />
-        </button>
+        <ButtonHoverPromptModal
+          asideClasses="text-[1.5rem] top-[3.9rem] bottom-[-3.9rem]"
+          contentName="Создать Эпизод"
+          positionByAbscissa="left"
+          className="w-fit bg-white rounded-md shadow-sm shadow-gray-500 p-[.2rem]"
+          variant={"rectangle"}
+        >
+          <img src={add} alt="NewEpisode" className="w-[3rem]" />
+        </ButtonHoverPromptModal>
       </ul>
     </main>
   );

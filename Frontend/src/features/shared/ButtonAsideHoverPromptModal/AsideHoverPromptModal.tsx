@@ -5,7 +5,7 @@ import { hidePromptModal } from "./ButtonHoverPromptModal";
 
 const AsideHoverPromptModalStyles = cva(
   [
-    "z-[999] transition-all w-fit absolute bottom-[-4.5rem] py-[.5rem] px-[1rem] whitespace-nowrap",
+    "z-[2] transition-all w-fit absolute bottom-[-4.5rem] py-[.5rem] px-[1rem] whitespace-nowrap",
   ],
   {
     variants: {

@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import createStory from "../../assets/images/Story/createStory.png";
 import profile from "../../assets/images/Story/profile.png";
 import LightBox from "../shared/utilities/LightBox";
+import ButtonHoverPromptModal from "../shared/ButtonAsideHoverPromptModal/ButtonHoverPromptModal";
 
 type StoryHeaderTypes = {
   setSearchValue: React.Dispatch<React.SetStateAction<string>>;
@@ -28,21 +29,30 @@ export default function StoryHeader({
           />
         </form>
         <div className="flex gap-[1rem] items-center">
-          <button
+          <ButtonHoverPromptModal
+            contentName="Создать Историю"
+            positionByAbscissa="right"
+            asideClasses="text-[1.5rem]"
             onClick={() => setShowCreatingModal(true)}
             className="outline-none"
           >
             <img src={createStory} alt="CreateStory" className="w-[3.5rem]" />
-          </button>
-          <Link to={"/profile"}>
-            <img src={profile} alt="Profile" className="w-[3.5rem]" />
-          </Link>
+          </ButtonHoverPromptModal>
+          <ButtonHoverPromptModal
+            contentName="Профиль"
+            positionByAbscissa="right"
+            asideClasses="text-[1.5rem]"
+          >
+            <Link to={"/profile"}>
+              <img src={profile} alt="Profile" className="w-[3.5rem]" />
+            </Link>
+          </ButtonHoverPromptModal>
         </div>
       </header>
       <aside
         className={`${
           showCreatingModal ? "top-[10rem]" : "-top-[100%]"
-        } bg-white md:w-[40rem] w-[30rem] transition-all md:h-[40rem] h-[30rem] rounded-md fixed z-[10] left-1/2 -translate-x-1/2`}
+        } bg-white md:w-[40rem] w-[30rem] transition-all md:h-[40rem] min-h-[30rem] h-fit rounded-md fixed z-[10] left-1/2 -translate-x-1/2`}
       >
         <form className="flex flex-col gap-[1rem] p-[1.5rem]">
           <input

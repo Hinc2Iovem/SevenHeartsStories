@@ -70,10 +70,7 @@ function CharacterItemMinor({ isFrontSide }: { isFrontSide: boolean }) {
           </div>
 
           <div className="flex gap-[1rem] flex-wrap">
-            <Link
-              className="ml-auto"
-              to="/editor/characters/:characterId/wardrobes"
-            >
+            <Link className="ml-auto" to="/wardrobes">
               <button className=" bg-white shadow-md p-[.5rem] rounded-md active:scale-[0.99] hover:scale-[1.01] ">
                 <img src={wardrobe} alt="Wardrobe" className="w-[3rem]" />
               </button>

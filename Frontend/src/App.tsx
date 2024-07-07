@@ -10,7 +10,10 @@ import ProfileLayout from "./layouts/ProfileLayout";
 import StorySinglePage from "./features/StorySinglePage/StorySinglePage";
 import CharacterListPage from "./features/Character/CharacterListPage";
 import CharacterLayout from "./layouts/CharacterLayout";
-import CharacterWardrobe from "./features/Character/Wardrobe/CharacterWardrobe";
+import Wardrobe from "./features/Wardrobe/Wardrobe";
+import WardrobeLayout from "./layouts/WardrobeLayout";
+import EmotionLayout from "./layouts/EmotionLayout";
+import Emotion from "./features/Emotion/Emotion";
 
 export default function App() {
   return (
@@ -28,10 +31,15 @@ export default function App() {
       <Route element={<ProfileLayout />} path="profile">
         <Route index element={<Profile />} />
       </Route>
+      <Route element={<EmotionLayout />} path="emotions">
+        <Route index element={<Emotion />} />
+      </Route>
 
       <Route element={<CharacterLayout />} path="editor/characters">
         <Route index element={<CharacterListPage />} />
-        <Route path=":characterId/wardrobes" element={<CharacterWardrobe />} />
+      </Route>
+      <Route element={<WardrobeLayout />} path="/wardrobes">
+        <Route index element={<Wardrobe />} />
       </Route>
 
       <Route path="*" element={<Missing />} />

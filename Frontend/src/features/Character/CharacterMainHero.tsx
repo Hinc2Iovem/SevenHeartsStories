@@ -6,6 +6,7 @@ import wardrobe from "../../assets/images/Story/wardrobe.png";
 import add from "../../assets/images/shared/add.png";
 import shsBg from "../../assets/images/Story/storyBg.png";
 import "./characterStyle.css";
+import ButtonHoverPromptModal from "../shared/ButtonAsideHoverPromptModal/ButtonHoverPromptModal";
 
 export default function CharacterItemMainHero({
   isFrontSide,
@@ -62,7 +63,11 @@ export default function CharacterItemMainHero({
               onClick={(e) => e.stopPropagation()}
               className="flex items-center gap-[.5rem] bg-white p-[.5rem] rounded-md shadow-md"
             >
-              <button
+              <ButtonHoverPromptModal
+                contentName="Лист характеристик"
+                positionByAbscissa="left"
+                asideClasses="text-[1.5rem]"
+                variant="rectangle"
                 onClick={(e) => {
                   e.stopPropagation();
                   setShowCharacteristicModal(true);
@@ -75,8 +80,12 @@ export default function CharacterItemMainHero({
                   alt="Characteristic"
                   className="w-[3rem]"
                 />
-              </button>
-              <button
+              </ButtonHoverPromptModal>
+              <ButtonHoverPromptModal
+                contentName="Создать характеристику"
+                positionByAbscissa="left"
+                asideClasses="text-[1.5rem]"
+                variant="rectangle"
                 onClick={(e) => {
                   e.stopPropagation();
                   setShowCharacteristicModalCreate(true);
@@ -85,17 +94,20 @@ export default function CharacterItemMainHero({
                 className="active:scale-[0.99] hover:scale-[1.1]"
               >
                 <img src={add} alt="Add" className="w-[2rem]" />
-              </button>
+              </ButtonHoverPromptModal>
             </div>
 
-            <Link
-              className="ml-auto"
-              to="/editor/characters/:characterId/wardrobes"
+            <ButtonHoverPromptModal
+              contentName="Гардероб"
+              positionByAbscissa="right"
+              positionForDiv="ml-auto"
+              asideClasses="text-[1.5rem]"
+              className=" bg-white shadow-md p-[.5rem] rounded-md active:scale-[0.99] hover:scale-[1.01] "
             >
-              <button className=" bg-white shadow-md p-[.5rem] rounded-md active:scale-[0.99] hover:scale-[1.01] ">
+              <Link className="ml-auto" to="/wardrobes">
                 <img src={wardrobe} alt="Wardrobe" className="w-[3rem]" />
-              </button>
-            </Link>
+              </Link>
+            </ButtonHoverPromptModal>
           </div>
         </div>
       )}
