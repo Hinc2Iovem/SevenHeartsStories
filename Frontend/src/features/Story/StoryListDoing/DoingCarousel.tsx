@@ -2,12 +2,17 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import StoryItemCarousel from "../StoryItemCarousel";
 import prev from "../../../assets/images/shared/prev.png";
 import next from "../../../assets/images/shared/next.png";
+import useGetPaginatedStories from "../../../hooks/Fetching/Story/useGetPaginatedStories";
 import "../story.css";
 
 export default function DoingCarousel() {
   const carouselRef = useRef<HTMLDivElement | null>(null);
   const [isAtStart, setIsAtStart] = useState(true);
   const [isAtEnd, setIsAtEnd] = useState(false);
+
+  const { data } = useGetPaginatedStories({
+    storyStatus: "doing",
+  });
 
   const updateButtonVisibility = useCallback(() => {
     if (carouselRef.current) {
@@ -67,6 +72,17 @@ export default function DoingCarousel() {
   useEffect(() => {
     updateButtonVisibility();
   }, [updateButtonVisibility]);
+
+  if (data?.data.amountOfStories === 0) {
+    return (
+      <div>
+        <h1 className="text-[3.5rem] text-gray-600 text-center">
+          Покамись это поле пустое
+        </h1>
+      </div>
+    );
+  }
+
   return (
     <div className="w-full rounded-md relative overflow-hidden">
       {!isAtStart && (
@@ -89,9 +105,10 @@ export default function DoingCarousel() {
         ref={carouselRef}
         className={`overflow-x-auto gap-[1rem] items-center flex w-full p-[1rem] | elementScrollbar`}
       >
-        {...Array.from({ length: 10 }).map((_, i) => (
-          <StoryItemCarousel key={i as number} />
-        ))}
+        {data?.data &&
+          data?.data.results.map((st) => (
+            <StoryItemCarousel key={st._id} {...st} />
+          ))}
       </div>
     </div>
   );

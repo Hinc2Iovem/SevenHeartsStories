@@ -6,7 +6,7 @@ import arrowUp from "../../assets/images/shared/arrowUp.png";
 import ButtonHoverPromptModal from "../shared/ButtonAsideHoverPromptModal/ButtonHoverPromptModal";
 
 export default function StorySinglePageMain() {
-  const [shrinkEpisodes, setShrinkEpisodes] = useState(true);
+  const [shrinkEpisodes, setShrinkEpisodes] = useState(false);
 
   return (
     <main className="flex flex-col gap-[2rem] mt-[5rem] mb-[3rem]">

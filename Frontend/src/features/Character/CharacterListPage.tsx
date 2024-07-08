@@ -1,7 +1,10 @@
 import CharacterHeader from "./CharacterHeader";
 import CharacterItem from "./CharacterItem";
 
-export type CharacterTypes = "EmptyCharacter" | "MinorCharacter" | "MainHero";
+export type CharacterTypes =
+  | "EmptyCharacter"
+  | "MinorCharacter"
+  | "MainCharacter";
 
 export default function CharacterListPage() {
   return (

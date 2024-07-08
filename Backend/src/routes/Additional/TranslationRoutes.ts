@@ -16,6 +16,7 @@ import {
   getTranslationSayController,
   getTranslationSeasonController,
   getTranslationStoryController,
+  getTranslationTextFieldNameController,
   seasonTranslationUpdateTitleController,
   storyTranslationUpdateController,
   updateAchievementTranslationController,
@@ -28,6 +29,10 @@ import {
 
 // Default route === /translations
 export const translationRoute = express.Router();
+
+translationRoute
+  .route("/textFieldNames")
+  .get(getTranslationTextFieldNameController);
 
 translationRoute
   .route("/appearanceParts/:appearancePartId")

@@ -1,13 +1,40 @@
+import { useMutation } from "@tanstack/react-query";
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { axiosCustomized } from "../../api/axios";
 import createStory from "../../assets/images/Story/createStory.png";
 import profile from "../../assets/images/Story/profile.png";
-import LightBox from "../shared/utilities/LightBox";
 import ButtonHoverPromptModal from "../shared/ButtonAsideHoverPromptModal/ButtonHoverPromptModal";
+import LightBox from "../shared/utilities/LightBox";
+import { StoryTypes } from "../../types/StoryData/Story/StoryTypes";
+import { CurrentlyAvailableLanguagesTypes } from "../../types/Additional/CURRENTLY_AVAILABEL_LANGUAGES";
 
 type StoryHeaderTypes = {
   setSearchValue: React.Dispatch<React.SetStateAction<string>>;
   searchValue: string;
+};
+
+type CreatingStoryTypes = {
+  currentLanguage?: CurrentlyAvailableLanguagesTypes;
+  genres: string;
+  title: string;
+  description: string;
+};
+
+const handleCreatingStory = async ({
+  description,
+  genres,
+  title,
+  currentLanguage = "russian",
+}: CreatingStoryTypes): Promise<StoryTypes> => {
+  return await axiosCustomized
+    .post("/stories", {
+      currentLanguage,
+      genres,
+      title,
+      description,
+    })
+    .then((r) => r.data);
 };
 
 export default function StoryHeader({
@@ -15,6 +42,39 @@ export default function StoryHeader({
   searchValue,
 }: StoryHeaderTypes) {
   const [showCreatingModal, setShowCreatingModal] = useState(false);
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [genres, setGenres] = useState("");
+
+  const navigate = useNavigate();
+
+  const createStoryMutation = useMutation({
+    mutationFn: () => handleCreatingStory({ description, genres, title }),
+    mutationKey: ["create", "story", title],
+    onSuccess: (result) => {
+      setTitle("");
+      setDescription("");
+      setGenres("");
+      navigate(`/stories/${result._id}`);
+    },
+  });
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (
+      !title?.trim() ||
+      !description?.trim().length ||
+      !genres?.trim().length
+    ) {
+      console.error("Title, description and genres should be filled");
+      return;
+    }
+    try {
+      createStoryMutation.mutate();
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   return (
     <>
@@ -54,17 +114,31 @@ export default function StoryHeader({
           showCreatingModal ? "top-[10rem]" : "-top-[100%]"
         } bg-white md:w-[40rem] w-[30rem] transition-all md:h-[40rem] min-h-[30rem] h-fit rounded-md fixed z-[10] left-1/2 -translate-x-1/2`}
       >
-        <form className="flex flex-col gap-[1rem] p-[1.5rem]">
+        <form
+          onSubmit={handleSubmit}
+          className="flex flex-col gap-[1rem] p-[1.5rem] h-full"
+        >
           <input
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
             type="text"
             placeholder="Тайтл Истории"
             className="text-[1.5rem] w-full outline-none p-[1rem] border-[2px] border-dotted border-accent-marine-blue rounded-md text-gray-600 font-medium"
           />
           <textarea
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
             placeholder="Описание Истории"
             cols={30}
             rows={10}
             className="text-[1.5rem] max-h-[35rem] w-full outline-none p-[1rem] border-[2px] border-dotted border-accent-marine-blue rounded-md text-gray-600 font-medium"
+          />
+          <input
+            value={genres}
+            onChange={(e) => setGenres(e.target.value)}
+            type="text"
+            placeholder="Жанры Истории"
+            className="text-[1.5rem] w-full outline-none p-[1rem] border-[2px] border-dotted border-accent-marine-blue rounded-md text-gray-600 font-medium"
           />
           <button
             type="submit"

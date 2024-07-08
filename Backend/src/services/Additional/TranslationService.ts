@@ -5,7 +5,10 @@ import Translation from "../../models/StoryData/Translation";
 import AppearancePart from "../../models/StoryData/AppearancePart";
 import { CharacterTypeAlias } from "../../controllers/StoryData/CharacterController";
 import Character from "../../models/StoryData/Character";
-import { TranslationTextFieldName } from "../../consts/TRANSLATION_TEXT_FIELD_NAMES";
+import {
+  AvailableTextFieldNames,
+  TranslationTextFieldName,
+} from "../../consts/TRANSLATION_TEXT_FIELD_NAMES";
 import Episode from "../../models/StoryData/Episode";
 import Season from "../../models/StoryData/Season";
 import Story from "../../models/StoryData/Story";
@@ -16,6 +19,56 @@ import Choice from "../../models/StoryEditor/PlotField/Choice/Choice";
 import GetItem from "../../models/StoryEditor/PlotField/GetItem/GetItem";
 import Say from "../../models/StoryEditor/PlotField/Say/Say";
 import CommandWardrobe from "../../models/StoryEditor/PlotField/Wardrobe/CommandWardrobe";
+// BY_TEXT_FIELD_NAME____________________________________________________________________
+
+type GetByTextFieldNameTypes = {
+  textFieldName: string | undefined;
+  text: string | undefined;
+  currentLanguage: string | undefined;
+};
+
+export const getTranslationTextFieldNameService = async ({
+  currentLanguage,
+  text,
+  textFieldName,
+}: GetByTextFieldNameTypes) => {
+  if (
+    !currentLanguage?.trim().length ||
+    !text?.trim().length ||
+    !textFieldName?.trim().length
+  ) {
+    throw createHttpError(400, "Language, text and textFieldName are required");
+  }
+
+  checkCurrentLanguage({ currentLanguage });
+
+  if (!AvailableTextFieldNames.includes(textFieldName)) {
+    throw createHttpError(
+      400,
+      `Such textFieldName as ${textFieldName} isn't supported, here are some available textFieldNames: ${AvailableTextFieldNames.map(
+        (tfn) => tfn
+      )}`
+    );
+  }
+
+  const existingTranslations = await Translation.find({
+    textFieldName,
+    language: currentLanguage,
+  })
+    .lean()
+    .exec();
+
+  if (!existingTranslations.length) {
+    return [];
+  }
+
+  const filteredResults = existingTranslations.filter((et) =>
+    et.text.toLowerCase().includes(text.toLowerCase())
+  );
+
+  return filteredResults;
+};
+
 // APPEARANCE_PART____________________________________________________________________
 
 type AppearancePartUpdateTypes = {
@@ -101,13 +154,13 @@ export const getTranslationAppearancePartService = async ({
 
   checkCurrentLanguage({ currentLanguage });
 
-  const existingTranslation = await Translation.findOne({
+  const existingTranslation = await Translation.find({
     appearancePartId: existingAppearancePart._id,
     language: currentLanguage,
   }).exec();
 
-  if (!existingTranslation) {
-    return null;
+  if (!existingTranslation.length) {
+    return [];
   }
 
   return existingTranslation;
@@ -226,13 +279,13 @@ export const getTranslationCharacterService = async ({
 
   checkCurrentLanguage({ currentLanguage });
 
-  const existingTranslation = await Translation.findOne({
+  const existingTranslation = await Translation.find({
     characterId: existingCharacter._id,
     language: currentLanguage,
   }).exec();
 
-  if (!existingTranslation) {
-    return null;
+  if (!existingTranslation.length) {
+    return [];
   }
 
   return existingTranslation;
@@ -313,13 +366,13 @@ export const getTranslationEpisodeService = async ({
 
   checkCurrentLanguage({ currentLanguage });
 
-  const existingTranslation = await Translation.findOne({
+  const existingTranslation = await Translation.find({
     episodeId: existingEpisode._id,
     language: currentLanguage,
   }).exec();
 
-  if (!existingTranslation) {
-    return null;
+  if (!existingTranslation.length) {
+    return [];
   }
 
   return existingTranslation;
@@ -389,13 +442,13 @@ export const getTranslationSeasonService = async ({
 
   checkCurrentLanguage({ currentLanguage });
 
-  const existingTranslation = await Translation.findOne({
+  const existingTranslation = await Translation.find({
     seasonId: existingSeason._id,
     language: currentLanguage,
   }).exec();
 
-  if (!existingTranslation) {
-    return null;
+  if (!existingTranslation.length) {
+    return [];
   }
 
   return existingTranslation;
@@ -502,13 +555,13 @@ export const getTranslationStoryService = async ({
 
   checkCurrentLanguage({ currentLanguage });
 
-  const existingTranslation = await Translation.findOne({
+  const existingTranslation = await Translation.find({
     storyId: existingStory._id,
     language: currentLanguage,
   }).exec();
 
-  if (!existingTranslation) {
-    return null;
+  if (!existingTranslation.length) {
+    return [];
   }
 
   return existingTranslation;
@@ -584,13 +637,13 @@ export const getTranslationCharacterCharacteristicService = async ({
 
   checkCurrentLanguage({ currentLanguage });
 
-  const existingTranslation = await Translation.findOne({
+  const existingTranslation = await Translation.find({
     characterCharacteristicId: existingCharacterCharacteristic._id,
     language: currentLanguage,
   }).exec();
 
-  if (!existingTranslation) {
-    return null;
+  if (!existingTranslation.length) {
+    return [];
   }
 
   return existingTranslation;
@@ -667,13 +720,13 @@ export const getTranslationAchievementService = async ({
 
   checkCurrentLanguage({ currentLanguage });
 
-  const existingTranslation = await Translation.findOne({
+  const existingTranslation = await Translation.find({
     commandId: existingAchievement._id,
     language: currentLanguage,
   }).exec();
 
-  if (!existingTranslation) {
-    return null;
+  if (!existingTranslation.length) {
+    return [];
   }
 
   return existingTranslation;
@@ -749,13 +802,13 @@ export const getTranslationChoiceService = async ({
 
   checkCurrentLanguage({ currentLanguage });
 
-  const existingTranslation = await Translation.findOne({
+  const existingTranslation = await Translation.find({
     commandId: existingChoice._id,
     language: currentLanguage,
   }).exec();
 
-  if (!existingTranslation) {
-    return null;
+  if (!existingTranslation.length) {
+    return [];
   }
 
   return existingTranslation;
@@ -841,13 +894,13 @@ export const getTranslationChoiceOptionService = async ({
 
   checkCurrentLanguage({ currentLanguage });
 
-  const existingTranslation = await Translation.findOne({
+  const existingTranslation = await Translation.find({
     choiceOptionId: existingChoiceOption._id,
     language: currentLanguage,
   }).exec();
 
-  if (!existingTranslation) {
-    return null;
+  if (!existingTranslation.length) {
+    return [];
   }
 
   return existingTranslation;
@@ -968,13 +1021,13 @@ export const getTranslationGetItemService = async ({
 
   checkCurrentLanguage({ currentLanguage });
 
-  const existingTranslation = await Translation.findOne({
+  const existingTranslation = await Translation.find({
     commandId: existingGetItem._id,
     language: currentLanguage,
   }).exec();
 
-  if (!existingTranslation) {
-    return null;
+  if (!existingTranslation.length) {
+    return [];
   }
 
   return existingTranslation;
@@ -1052,13 +1105,13 @@ export const getTranslationSayService = async ({
 
   checkCurrentLanguage({ currentLanguage });
 
-  const existingTranslation = await Translation.findOne({
+  const existingTranslation = await Translation.find({
     commandId: existingSay._id,
     language: currentLanguage,
   }).exec();
 
-  if (!existingTranslation) {
-    return null;
+  if (!existingTranslation.length) {
+    return [];
   }
 
   return existingTranslation;
@@ -1142,13 +1195,13 @@ export const getTranslationCommandWardrobeService = async ({
 
   checkCurrentLanguage({ currentLanguage });
 
-  const existingTranslation = await Translation.findOne({
+  const existingTranslation = await Translation.find({
     commandId: existingCommandWardrobe._id,
     language: currentLanguage,
   }).exec();
 
-  if (!existingTranslation) {
-    return null;
+  if (!existingTranslation.length) {
+    return [];
   }
 
   return existingTranslation;

@@ -3,6 +3,7 @@ import {
   storyCreateController,
   storyDeleteController,
   storyGetAllController,
+  storyGetByIdController,
   storyUpdateImgUrlController,
   storyUpdateStatusController,
 } from "../../controllers/StoryData/StoryController";
@@ -18,7 +19,10 @@ storyRoute.route("/status").get(paginatedQuery(Story), (req, res) => {
   res.json(res.locals.paginatedResults);
 });
 
-storyRoute.route("/:storyId").delete(storyDeleteController);
+storyRoute
+  .route("/:storyId")
+  .get(storyGetByIdController)
+  .delete(storyDeleteController);
 
 storyRoute.route("/:storyId/img").patch(storyUpdateImgUrlController);
 

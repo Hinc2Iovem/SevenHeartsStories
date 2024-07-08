@@ -1,14 +1,18 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import useGetTranslationStory from "../../hooks/Fetching/Translation/useGetTranslationStory";
-import useUpdateImg from "../../hooks/Patching/useUpdateImg";
-import { StoryTypes } from "../../types/StoryData/Story/StoryTypes";
-import SyncLoad from "../shared/Loaders/SyncLoader";
-import PreviewImage from "../shared/utilities/PreviewImage";
+import useGetSingleStory from "../../../hooks/Fetching/Story/useGetSingleStory";
+import useUpdateImg from "../../../hooks/Patching/useUpdateImg";
+import { TranslationStoryTypes } from "../../../types/Additional/TranslationTypes";
+import SyncLoad from "../../shared/Loaders/SyncLoader";
+import PreviewImage from "../../shared/utilities/PreviewImage";
 
-export default function StoryItem({ _id, imgUrl }: StoryTypes) {
-  const { data } = useGetTranslationStory({ id: _id, language: "russian" });
-
+export default function DebouncedStoryItem({
+  _id,
+  storyId,
+  text,
+  textFieldName,
+}: TranslationStoryTypes) {
+  const { data } = useGetSingleStory({ storyId });
   const [imagePreview, setPreview] = useState<string | ArrayBuffer | null>(
     null
   );
@@ -28,10 +32,10 @@ export default function StoryItem({ _id, imgUrl }: StoryTypes) {
 
   return (
     <article className="flex flex-col gap-[1rem] w-full rounded-md shadow-sm bg-white h-[30rem] relative">
-      {imgUrl ? (
+      {data?.imgUrl ? (
         <div className="w-full h-1/2 rounded-t-md relative shadow-sm">
           <img
-            src={imgUrl}
+            src={data.imgUrl}
             alt="StoryBackground"
             className="object-cover w-full h-full cursor-pointer rounded-t-md border-[3px] border-white"
           />
@@ -53,11 +57,11 @@ export default function StoryItem({ _id, imgUrl }: StoryTypes) {
       <Link className="flex flex-col" to={"/stories/:storyId"}>
         <div className="flex flex-col gap-[.5rem] p-[1rem]">
           <h3 className="text-[1.8rem] m-0 p-0">
-            {data?.find((d) => d.textFieldName === "storyName")?.text}
+            {textFieldName === "storyName" && text}
           </h3>
           <h4 className="text-[1.3rem]">
             {" "}
-            {data?.find((d) => d.textFieldName === "storyGenre")?.text}
+            {textFieldName === "storyGenre" && text}
           </h4>
         </div>
         <p className="text-[1.2rem] self-end p-[1rem] mt-auto">Эпизодов 0</p>

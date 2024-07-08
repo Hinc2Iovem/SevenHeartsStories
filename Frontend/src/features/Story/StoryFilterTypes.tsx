@@ -1,11 +1,11 @@
-import { StoryTypes } from "./Story";
+import { StoryFilterTypes } from "./Story";
 
 type StoryFilterTypesProps = {
-  setStoriesType: React.Dispatch<React.SetStateAction<StoryTypes>>;
-  storiesType: StoryTypes;
+  setStoriesType: React.Dispatch<React.SetStateAction<StoryFilterTypes>>;
+  storiesType: StoryFilterTypes;
 };
 
-export default function StoryFilterTypes({
+export default function StoryFilterTypesHeader({
   storiesType,
   setStoriesType,
 }: StoryFilterTypesProps) {
@@ -23,9 +23,9 @@ export default function StoryFilterTypes({
       </li>
       <li>
         <button
-          onClick={() => setStoriesType("finished")}
+          onClick={() => setStoriesType("done")}
           className={`text-[1.4rem] ${
-            storiesType === "finished" ? "border-b-[2px] border-gray-700" : ""
+            storiesType === "done" ? "border-b-[2px] border-gray-700" : ""
           } hover:border-b-[2px] hover:border-gray-500 transition-all `}
         >
           Законченные

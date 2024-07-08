@@ -16,6 +16,7 @@ import {
   getTranslationSayService,
   getTranslationSeasonService,
   getTranslationStoryService,
+  getTranslationTextFieldNameService,
   seasonTranslationUpdateTitleService,
   storyTranslationUpdateService,
   updateAchievementTranslationService,
@@ -25,7 +26,38 @@ import {
   updateGetItemTranslationService,
   updateSayTranslationTextService,
 } from "../../services/Additional/TranslationService";
-import { CharacterTypeAlias } from "../StoryData/CharacterController";
+
+// BY_TEXT_FIELD_NAME__________________________________________________________
+
+type GetTextFieldNameQuery = {
+  currentLanguage: string | undefined;
+  textFieldName: string | undefined;
+  text: string | undefined;
+};
+
+// @route GET http://localhost:3500/translations/textFieldNames
+// @access Private
+export const getTranslationTextFieldNameController: RequestHandler<
+  unknown,
+  unknown,
+  unknown,
+  GetTextFieldNameQuery
+> = async (req, res, next) => {
+  try {
+    const textFieldName = await getTranslationTextFieldNameService({
+      currentLanguage: req.query.currentLanguage,
+      textFieldName: req.query.textFieldName,
+      text: req.query.text,
+    });
+    if (textFieldName) {
+      return res.status(201).json(textFieldName);
+    } else {
+      return res.status(400).json({ message: "Something went wrong" });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
 
 // APPEARANCE_PART__________________________________________________________
 
@@ -70,7 +102,7 @@ type GetAppearancePartParams = {
   appearancePartId: string;
 };
 
-type GetAppearancePartBody = {
+type GetAppearancePartQuery = {
   currentLanguage: string | undefined;
 };
 
@@ -79,12 +111,12 @@ type GetAppearancePartBody = {
 export const getTranslationAppearancePartController: RequestHandler<
   GetAppearancePartParams,
   unknown,
-  GetAppearancePartBody,
-  unknown
+  unknown,
+  GetAppearancePartQuery
 > = async (req, res, next) => {
   try {
     const appearancePart = await getTranslationAppearancePartService({
-      currentLanguage: req.body.currentLanguage,
+      currentLanguage: req.query.currentLanguage,
       appearancePartId: req.params.appearancePartId,
     });
     if (appearancePart) {
@@ -139,7 +171,7 @@ type GetCharacterParams = {
   characterId: string;
 };
 
-type GetCharacterBody = {
+type GetCharacterQuery = {
   currentLanguage: string | undefined;
 };
 
@@ -148,12 +180,12 @@ type GetCharacterBody = {
 export const getTranslationCharacterController: RequestHandler<
   GetCharacterParams,
   unknown,
-  GetCharacterBody,
-  unknown
+  unknown,
+  GetCharacterQuery
 > = async (req, res, next) => {
   try {
     const character = await getTranslationCharacterService({
-      currentLanguage: req.body.currentLanguage,
+      currentLanguage: req.query.currentLanguage,
       characterId: req.params.characterId,
     });
     if (character) {
@@ -206,7 +238,7 @@ type GetEpisodeParams = {
   episodeId: string;
 };
 
-type GetEpisodeBody = {
+type GetEpisodeQuery = {
   currentLanguage: string | undefined;
 };
 
@@ -215,12 +247,12 @@ type GetEpisodeBody = {
 export const getTranslationEpisodeController: RequestHandler<
   GetEpisodeParams,
   unknown,
-  GetEpisodeBody,
-  unknown
+  unknown,
+  GetEpisodeQuery
 > = async (req, res, next) => {
   try {
     const episode = await getTranslationEpisodeService({
-      currentLanguage: req.body.currentLanguage,
+      currentLanguage: req.query.currentLanguage,
       episodeId: req.params.episodeId,
     });
     if (episode) {
@@ -271,7 +303,7 @@ type GetSeasonParams = {
   seasonId: string;
 };
 
-type GetSeasonBody = {
+type GetSeasonQuery = {
   currentLanguage: string | undefined;
 };
 
@@ -280,12 +312,12 @@ type GetSeasonBody = {
 export const getTranslationSeasonController: RequestHandler<
   GetSeasonParams,
   unknown,
-  GetSeasonBody,
-  unknown
+  unknown,
+  GetSeasonQuery
 > = async (req, res, next) => {
   try {
     const season = await getTranslationSeasonService({
-      currentLanguage: req.body.currentLanguage,
+      currentLanguage: req.query.currentLanguage,
       seasonId: req.params.seasonId,
     });
     if (season) {
@@ -340,7 +372,7 @@ type GetStoryParams = {
   storyId: string;
 };
 
-type GetStoryBody = {
+type GetStoryQuery = {
   currentLanguage: string | undefined;
 };
 
@@ -349,12 +381,12 @@ type GetStoryBody = {
 export const getTranslationStoryController: RequestHandler<
   GetStoryParams,
   unknown,
-  GetStoryBody,
-  unknown
+  unknown,
+  GetStoryQuery
 > = async (req, res, next) => {
   try {
     const story = await getTranslationStoryService({
-      currentLanguage: req.body.currentLanguage,
+      currentLanguage: req.query.currentLanguage,
       storyId: req.params.storyId,
     });
     if (story) {
@@ -407,7 +439,7 @@ type GetCharacterCharacteristicParams = {
   characterCharacteristicId: string;
 };
 
-type GetCharacterCharacteristicBody = {
+type GetCharacterCharacteristicQuery = {
   currentLanguage: string | undefined;
 };
 
@@ -416,13 +448,13 @@ type GetCharacterCharacteristicBody = {
 export const getTranslationCharacterCharacteristicController: RequestHandler<
   GetCharacterCharacteristicParams,
   unknown,
-  GetCharacterCharacteristicBody,
-  unknown
+  unknown,
+  GetCharacterCharacteristicQuery
 > = async (req, res, next) => {
   try {
     const characterCharacteristic =
       await getTranslationCharacterCharacteristicService({
-        currentLanguage: req.body.currentLanguage,
+        currentLanguage: req.query.currentLanguage,
         characterCharacteristicId: req.params.characterCharacteristicId,
       });
     if (characterCharacteristic) {
@@ -473,7 +505,7 @@ type GetAchievementParams = {
   achievementId: string;
 };
 
-type GetAchievementBody = {
+type GetAchievementQuery = {
   currentLanguage: string | undefined;
 };
 
@@ -482,12 +514,12 @@ type GetAchievementBody = {
 export const getTranslationAchievementController: RequestHandler<
   GetAchievementParams,
   unknown,
-  GetAchievementBody,
-  unknown
+  unknown,
+  GetAchievementQuery
 > = async (req, res, next) => {
   try {
     const achievement = await getTranslationAchievementService({
-      currentLanguage: req.body.currentLanguage,
+      currentLanguage: req.query.currentLanguage,
       achievementId: req.params.achievementId,
     });
     if (achievement) {
@@ -538,7 +570,7 @@ type GetChoiceParams = {
   choiceId: string;
 };
 
-type GetChoiceBody = {
+type GetChoiceQuery = {
   currentLanguage: string | undefined;
 };
 
@@ -547,12 +579,12 @@ type GetChoiceBody = {
 export const getTranslationChoiceController: RequestHandler<
   GetChoiceParams,
   unknown,
-  GetChoiceBody,
-  unknown
+  unknown,
+  GetChoiceQuery
 > = async (req, res, next) => {
   try {
     const choice = await getTranslationChoiceService({
-      currentLanguage: req.body.currentLanguage,
+      currentLanguage: req.query.currentLanguage,
       choiceId: req.params.choiceId,
     });
     if (choice) {
@@ -604,7 +636,7 @@ type GetChoiceOptionParams = {
   choiceOptionId: string;
 };
 
-type GetChoiceOptionBody = {
+type GetChoiceOptionQuery = {
   currentLanguage: string | undefined;
 };
 
@@ -613,12 +645,12 @@ type GetChoiceOptionBody = {
 export const getTranslationChoiceOptionController: RequestHandler<
   GetChoiceOptionParams,
   unknown,
-  GetChoiceOptionBody,
-  unknown
+  unknown,
+  GetChoiceOptionQuery
 > = async (req, res, next) => {
   try {
     const choiceOption = await getTranslationChoiceOptionService({
-      currentLanguage: req.body.currentLanguage,
+      currentLanguage: req.query.currentLanguage,
       choiceOptionId: req.params.choiceOptionId,
     });
     if (choiceOption) {
@@ -673,7 +705,7 @@ type GetGetItemParams = {
   getItemId: string;
 };
 
-type GetGetItemBody = {
+type GetGetItemQuery = {
   currentLanguage: string | undefined;
 };
 
@@ -682,12 +714,12 @@ type GetGetItemBody = {
 export const getTranslationGetItemController: RequestHandler<
   GetGetItemParams,
   unknown,
-  GetGetItemBody,
-  unknown
+  unknown,
+  GetGetItemQuery
 > = async (req, res, next) => {
   try {
     const getItem = await getTranslationGetItemService({
-      currentLanguage: req.body.currentLanguage,
+      currentLanguage: req.query.currentLanguage,
       getItemId: req.params.getItemId,
     });
     if (getItem) {
@@ -739,7 +771,7 @@ type GetSayParams = {
   sayId: string;
 };
 
-type GetSayBody = {
+type GetSayQuery = {
   currentLanguage: string | undefined;
 };
 
@@ -748,12 +780,12 @@ type GetSayBody = {
 export const getTranslationSayController: RequestHandler<
   GetSayParams,
   unknown,
-  GetSayBody,
-  unknown
+  unknown,
+  GetSayQuery
 > = async (req, res, next) => {
   try {
     const say = await getTranslationSayService({
-      currentLanguage: req.body.currentLanguage,
+      currentLanguage: req.query.currentLanguage,
       sayId: req.params.sayId,
     });
     if (say) {
@@ -805,7 +837,7 @@ type GetCommandWardrobeParams = {
   commandWardrobeId: string;
 };
 
-type GetCommandWardrobeBody = {
+type GetCommandWardrobeQuery = {
   currentLanguage: string | undefined;
 };
 
@@ -814,12 +846,12 @@ type GetCommandWardrobeBody = {
 export const getTranslationCommandWardrobeController: RequestHandler<
   GetCommandWardrobeParams,
   unknown,
-  GetCommandWardrobeBody,
-  unknown
+  unknown,
+  GetCommandWardrobeQuery
 > = async (req, res, next) => {
   try {
     const commandWardrobe = await getTranslationCommandWardrobeService({
-      currentLanguage: req.body.currentLanguage,
+      currentLanguage: req.query.currentLanguage,
       commandWardrobeId: req.params.commandWardrobeId,
     });
     if (commandWardrobe) {

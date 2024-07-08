@@ -52,7 +52,7 @@ export default function CharacterHeader() {
         className={`${
           showCharacterModal ? "" : "hidden"
         } fixed top-1/2 z-[4] -translate-y-1/2 left-1/2 -translate-x-1/2 bg-neutral-magnolia rounded-md ${
-          characterType === "EmptyCharacter" ? "min-h-[24rem]" : "min-h-[48rem]"
+          characterType === "MinorCharacter" ? "min-h-[48rem]" : "min-h-[24rem]"
         } sm:w-[40rem] w-[30rem] p-[1rem]`}
       >
         <form className="flex flex-col gap-[2rem]" onSubmit={handleSubmit}>
@@ -87,9 +87,9 @@ export default function CharacterHeader() {
               </li>
               <li>
                 <button
-                  onClick={() => setCharacterType("MainHero")}
+                  onClick={() => setCharacterType("MainCharacter")}
                   className={`text-[1.3rem] ${
-                    characterType === "MainHero"
+                    characterType === "MainCharacter"
                       ? "bg-accent-marine-blue text-white"
                       : "bg-white text-black"
                   } p-[1rem] rounded-md transition-all hover:bg-accent-marine-blue hover:text-white shadow-sm`}
@@ -108,7 +108,7 @@ export default function CharacterHeader() {
               value={name}
               onChange={(e) => setName(e.target.value)}
             />
-            {characterType !== "EmptyCharacter" && (
+            {characterType === "MinorCharacter" && (
               <>
                 <input
                   type="text"

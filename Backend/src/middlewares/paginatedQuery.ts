@@ -1,10 +1,10 @@
 import { RequestHandler } from "express";
-import { Model, Document } from "mongoose";
-import createHttpError from "http-errors";
+import { Document, Model } from "mongoose";
 
 type PaginatedQueryTypes = {
   page: string;
   limit: string;
+  storyStatus: "done" | "doing";
 };
 
 type ResultTypes<T extends Document> = {
@@ -17,18 +17,14 @@ type ResultTypes<T extends Document> = {
     limit: number;
   };
   results: T[];
-};
-
-type RequestBodyTypes = {
-  storyStatus: "done" | "doing";
+  amountOfStories: number;
 };
 
 export default function paginatedQuery<T extends Document>(
   model: Model<T>
-): RequestHandler<unknown, unknown, RequestBodyTypes, PaginatedQueryTypes> {
+): RequestHandler<unknown, unknown, unknown, PaginatedQueryTypes> {
   return async (req, res, next) => {
-    const storyStatus = req.body.storyStatus.toLowerCase();
-    console.log("storyStatus: ", storyStatus);
+    const storyStatus = req.query.storyStatus.toLowerCase();
 
     const page = parseInt(req.query.page);
     const limit = parseInt(req.query.limit);
@@ -57,12 +53,19 @@ export default function paginatedQuery<T extends Document>(
           .limit(limit)
           .skip(startIndex)
           .exec();
+        const overAllAmountOfStories = await model.countDocuments({
+          storyStatus,
+        });
+        console.log("overAllAmountOfStories: ", overAllAmountOfStories);
+        results.amountOfStories = overAllAmountOfStories;
       } else {
         results.results = await model
           .find()
           .limit(limit)
           .skip(startIndex)
           .exec();
+        const overAllAmountOfStories = await model.countDocuments();
+        results.amountOfStories = overAllAmountOfStories;
       }
       res.locals.paginatedResults = results;
       next();

@@ -6,12 +6,12 @@ import CharacterItemMainHero from "./CharacterMainHero";
 import wardrobe from "../../assets/images/Story/wardrobe.png";
 
 export default function CharacterItem() {
-  const [isFrontSide, setIsFrontSide] = useState(false);
+  const [isFrontSide, setIsFrontSide] = useState(true);
   const [characterType, setCharacterType] =
-    useState<CharacterTypes>("MainHero");
+    useState<CharacterTypes>("MainCharacter");
   return (
     <>
-      {characterType === "MainHero" ? (
+      {characterType === "MainCharacter" ? (
         <article
           onClick={() => setIsFrontSide((prev) => !prev)}
           className={`${

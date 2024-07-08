@@ -3,6 +3,7 @@ import {
   storyCreateService,
   storyDeleteService,
   storyGetAllService,
+  storyGetByIdService,
   storyUpdateImgService,
   storyUpdateStatusService,
 } from "../../services/StoryData/StoryService";
@@ -12,6 +13,32 @@ import {
 export const storyGetAllController: RequestHandler = async (req, res, next) => {
   try {
     const story = await storyGetAllService();
+    if (story) {
+      return res.status(201).json(story);
+    } else {
+      return res.status(400).json({ message: "Something went wrong" });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
+type GetStoryByIdParams = {
+  storyId: string;
+};
+
+// @route GET http://localhost:3500/stories/:storyId
+// @access Private
+export const storyGetByIdController: RequestHandler<
+  GetStoryByIdParams,
+  unknown,
+  unknown,
+  unknown
+> = async (req, res, next) => {
+  try {
+    const story = await storyGetByIdService({
+      storyId: req.params.storyId,
+    });
     if (story) {
       return res.status(201).json(story);
     } else {

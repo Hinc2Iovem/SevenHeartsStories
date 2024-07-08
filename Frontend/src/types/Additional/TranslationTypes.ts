@@ -10,6 +10,12 @@ import {
   TranslationTextFieldNameStoryTypes,
 } from "./TRANSLATION_TEXT_FIELD_NAMES";
 
+export type GetTranslationTypes = {
+  path: string;
+  id: string;
+  language?: CurrentlyAvailableLanguagesTypes;
+};
+
 export type TranslationCommandTypes = {
   _id: string;
   commandId: string;

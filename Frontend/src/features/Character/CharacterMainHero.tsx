@@ -1,10 +1,10 @@
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import useOutOfModal from "../../hooks/UI/useOutOfModal";
-import characteristic from "../../assets/images/Story/characteristic.png";
-import wardrobe from "../../assets/images/Story/wardrobe.png";
 import add from "../../assets/images/shared/add.png";
+import characteristic from "../../assets/images/Story/characteristic.png";
 import shsBg from "../../assets/images/Story/storyBg.png";
+import wardrobe from "../../assets/images/Story/wardrobe.png";
+import useOutOfModal from "../../hooks/UI/useOutOfModal";
 import "./characterStyle.css";
 import ButtonHoverPromptModal from "../shared/ButtonAsideHoverPromptModal/ButtonHoverPromptModal";
 
@@ -52,10 +52,8 @@ export default function CharacterItemMainHero({
           <div className="gap-[1rem] flex flex-col">
             <div>
               <h3 className="text-[2rem]">Имя перса</h3>
-              <p className="text-[1.35rem]">Имя(Незнакомец)</p>
-              <p className="text-[1.3rem]">НеймТаг</p>
+              <p className="text-[1.3rem]">НеймТаг: {"SMH"}</p>
             </div>
-            <p className="text-[1.1rem] text-gray-600">Описание Перса</p>
           </div>
 
           <div className="flex gap-[1rem] flex-wrap">

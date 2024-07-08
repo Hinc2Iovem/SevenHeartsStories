@@ -17,6 +17,21 @@ export const storyGetAllService = async () => {
   return existingStories;
 };
 
+type GetStoryByIdTypes = {
+  storyId: string;
+};
+
+export const storyGetByIdService = async ({ storyId }: GetStoryByIdTypes) => {
+  validateMongoId({ value: storyId, valueName: "Story" });
+  const existingStory = await Story.findById(storyId).lean();
+
+  if (!existingStory) {
+    return null;
+  }
+
+  return existingStory;
+};
+
 // type GetAllStoriesByStatusTypes = {
 //   storyStatus: string | undefined;
 //   results: StoryDocument[];

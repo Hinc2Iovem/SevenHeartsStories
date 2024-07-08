@@ -1,11 +1,11 @@
-import { StoryTypes } from "./Story";
+import { StoryFilterTypes } from "./Story";
 import DoingPagination from "./StoryListDoing/DoingPagination";
 import StoryListDoing from "./StoryListDoing/StoryListDoing";
 import FinishedPagination from "./StoryListFinished/FinishedPagination";
 import StoryListFinished from "./StoryListFinished/StoryListFinished";
 
 type StoryListTypes = {
-  storiesType: StoryTypes;
+  storiesType: StoryFilterTypes;
 };
 
 export default function StoryList({ storiesType }: StoryListTypes) {
@@ -16,7 +16,7 @@ export default function StoryList({ storiesType }: StoryListTypes) {
           <StoryListFinished />
           <StoryListDoing />
         </>
-      ) : storiesType === "finished" ? (
+      ) : storiesType === "done" ? (
         <FinishedPagination />
       ) : storiesType === "doing" ? (
         <DoingPagination />
