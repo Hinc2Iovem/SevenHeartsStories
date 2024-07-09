@@ -1,5 +1,9 @@
 import { RequestHandler } from "express";
 import {
+  getAllAssignedStoriesByStaffIdService,
+  getAllStoryAssignWorkersService,
+  getStoryAssignWorkerService,
+  storyAssignWorkerService,
   storyCreateService,
   storyDeleteService,
   storyGetAllService,
@@ -41,6 +45,113 @@ export const storyGetByIdController: RequestHandler<
     });
     if (story) {
       return res.status(201).json(story);
+    } else {
+      return res.status(400).json({ message: "Something went wrong" });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
+type GetAllAssignedStoriesTypes = {
+  staffId: string;
+};
+// @route GET http://localhost:3500/stories/staff/:staffId/assignWorkers
+// @access Private
+export const getAllAssignedStoriesByStaffIdController: RequestHandler<
+  GetAllAssignedStoriesTypes,
+  unknown,
+  unknown,
+  unknown
+> = async (req, res, next) => {
+  try {
+    const storyInfo = await getAllAssignedStoriesByStaffIdService({
+      staffId: req.params.staffId,
+    });
+    if (storyInfo) {
+      return res.status(201).json(storyInfo);
+    } else {
+      return res.status(400).json({ message: "Something went wrong" });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
+type StoryInfoGetAllWorkersParams = {
+  storyId: string;
+};
+
+// @route GET http://localhost:3500/stories/:storyId/assignWorkers
+// @access Private
+export const getAllStoryAssignWorkersController: RequestHandler<
+  StoryInfoGetAllWorkersParams,
+  unknown,
+  unknown,
+  unknown
+> = async (req, res, next) => {
+  try {
+    const storyInfo = await getAllStoryAssignWorkersService({
+      storyId: req.params.storyId,
+    });
+    if (storyInfo) {
+      return res.status(201).json(storyInfo);
+    } else {
+      return res.status(400).json({ message: "Something went wrong" });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
+type StoryInfoGetParams = {
+  storyId: string;
+  staffId: string;
+};
+
+// @route GET http://localhost:3500/stories/:storyId/staff/:staffId/assignWorkers
+// @access Private
+export const getStoryAssignWorkerController: RequestHandler<
+  StoryInfoGetParams,
+  unknown,
+  unknown,
+  unknown
+> = async (req, res, next) => {
+  try {
+    const storyInfo = await getStoryAssignWorkerService({
+      storyId: req.params.storyId,
+      staffId: req.params.staffId,
+    });
+    if (storyInfo) {
+      return res.status(201).json(storyInfo);
+    } else {
+      return res.status(400).json({ message: "Something went wrong" });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
+type StoryInfoUpdateParams = {
+  storyId: string;
+  staffId: string;
+};
+
+// @route PATCH http://localhost:3500/stories/:storyId/staff/:staffId/assignWorkers
+// @access Private
+export const storyAssignWorkersController: RequestHandler<
+  StoryInfoUpdateParams,
+  unknown,
+  unknown,
+  unknown
+> = async (req, res, next) => {
+  try {
+    const storyInfo = await storyAssignWorkerService({
+      storyId: req.params.storyId,
+      staffId: req.params.staffId,
+    });
+    if (storyInfo) {
+      return res.status(201).json(storyInfo);
     } else {
       return res.status(400).json({ message: "Something went wrong" });
     }

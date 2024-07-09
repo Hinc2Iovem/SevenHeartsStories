@@ -1,22 +1,38 @@
-import { useRef, useState } from "react";
-import { Link } from "react-router-dom";
-import { MATCHMEDIA } from "../../const/MATCHMEDIA";
-import ButtonHoverPromptModal from "../shared/ButtonAsideHoverPromptModal/ButtonHoverPromptModal";
+import { useEffect, useState } from "react";
+import { Link, useParams } from "react-router-dom";
 import characters from "../../assets/images/Story/characters.png";
-import wardrobe from "../../assets/images/Story/wardrobe.png";
 import emotion from "../../assets/images/Story/emotion.png";
+import wardrobe from "../../assets/images/Story/wardrobe.png";
 import info from "../../assets/images/shared/info.png";
 import arrowBack from "../../assets/images/shared/prev.png";
-import useOutOfModal from "../../hooks/UI/useOutOfModal";
+import { MATCHMEDIA } from "../../const/MATCHMEDIA";
 import useMatchMedia from "../../hooks/UI/useMatchMedia";
+import ButtonHoverPromptModal from "../shared/ButtonAsideHoverPromptModal/ButtonHoverPromptModal";
 import LightBox from "../shared/utilities/LightBox";
+import AssignStory from "./AssignStory";
+import StoryInfoModal from "./StoryInfoModal";
+import useGetTranslationStory from "../../hooks/Fetching/Translation/useGetTranslationStory";
+import { TranslationStoryTypes } from "../../types/Additional/TranslationTypes";
 
 export default function StorySinglePageHeader() {
   const isMobile = useMatchMedia(MATCHMEDIA.Mobile);
+  const { storyId } = useParams();
   const [infoModal, setInfoModal] = useState(false);
-  const modalRef = useRef<HTMLDivElement | null>(null);
+  const translationStory = useGetTranslationStory({
+    id: storyId ?? "",
+    language: "russian",
+  });
+  const [storyName, setStoryName] = useState<
+    TranslationStoryTypes | undefined
+  >();
 
-  useOutOfModal({ modalRef, setShowModal: setInfoModal, showModal: infoModal });
+  useEffect(() => {
+    if (translationStory.data) {
+      setStoryName(
+        translationStory.data?.find((ts) => ts.textFieldName === "storyName")
+      );
+    }
+  }, [translationStory.data]);
 
   return (
     <>
@@ -48,12 +64,13 @@ export default function StorySinglePageHeader() {
                   alt="Info"
                 />
               </ButtonHoverPromptModal>
-              <aside
-                ref={modalRef}
-                className={`${
-                  infoModal && !isMobile ? "" : "hidden"
-                } absolute z-10 bg-neutral-alabaster rounded-md shadow-sm shadow-gray-600 w-[30rem] min-h-[30rem] right-[0rem] flex flex-col`}
-              ></aside>
+              {infoModal && !isMobile ? (
+                <StoryInfoModal
+                  infoModal={infoModal}
+                  setInfoModal={setInfoModal}
+                  className="w-[30rem] min-h-[30rem] right-[0rem] absolute"
+                />
+              ) : null}
             </div>
             <ButtonHoverPromptModal
               contentName="Эмоции"
@@ -99,16 +116,20 @@ export default function StorySinglePageHeader() {
             </ButtonHoverPromptModal>
           </div>
         </div>
+        <AssignStory />
+
         <h1 className="text-[3.5rem] bg-white text-gray-700 rounded-md shadow-md w-fit px-[1rem]">
-          Ночь Диких Пчёл
+          {storyName?.text}
         </h1>
       </header>
 
-      <aside
-        className={`${
-          infoModal && isMobile ? "" : "hidden"
-        } fixed z-10 bg-neutral-alabaster rounded-md shadow-sm shadow-gray-600 w-[30rem] min-h-[30rem] left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2`}
-      ></aside>
+      {infoModal && isMobile ? (
+        <StoryInfoModal
+          infoModal={infoModal}
+          setInfoModal={setInfoModal}
+          className={`fixed w-[30rem] min-h-[30rem] left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2`}
+        />
+      ) : null}
       {isMobile && (
         <LightBox isLightBox={infoModal} setIsLightBox={setInfoModal} />
       )}

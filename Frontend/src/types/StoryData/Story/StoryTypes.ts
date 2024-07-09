@@ -6,3 +6,10 @@ export type StoryTypes = {
   storyStatus: EpisodeStatusTypes;
   imgUrl?: string;
 };
+
+export type StoryInfoTypes = {
+  _id: string;
+  staffId: string;
+  storyId: string;
+  storyStatus: EpisodeStatusTypes;
+};

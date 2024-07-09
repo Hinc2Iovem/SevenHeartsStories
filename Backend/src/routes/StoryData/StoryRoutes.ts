@@ -1,11 +1,15 @@
 import express from "express";
 import {
+  getAllStoryAssignWorkersController,
+  getStoryAssignWorkerController,
+  storyAssignWorkersController,
   storyCreateController,
   storyDeleteController,
   storyGetAllController,
   storyGetByIdController,
   storyUpdateImgUrlController,
   storyUpdateStatusController,
+  getAllAssignedStoriesByStaffIdController,
 } from "../../controllers/StoryData/StoryController";
 import paginatedQuery from "../../middlewares/paginatedQuery";
 import Story from "../../models/StoryData/Story";
@@ -25,5 +29,18 @@ storyRoute
   .delete(storyDeleteController);
 
 storyRoute.route("/:storyId/img").patch(storyUpdateImgUrlController);
+
+storyRoute
+  .route("/:storyId/assignWorkers")
+  .get(getAllStoryAssignWorkersController);
+
+storyRoute
+  .route("/:storyId/staff/:staffId/assignWorkers")
+  .patch(storyAssignWorkersController)
+  .get(getStoryAssignWorkerController);
+
+storyRoute
+  .route("/staff/:staffId/assignWorkers")
+  .get(getAllAssignedStoriesByStaffIdController);
 
 storyRoute.route("/:storyId/status").patch(storyUpdateStatusController);

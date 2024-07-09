@@ -3,7 +3,9 @@ import {
   createStaffMemberService,
   deleteStaffMemberService,
   getAllStaffMembersService,
+  getStaffInfoMemberByIdService,
   getStaffMemberByIdService,
+  updateStaffImgService,
   updateStaffRolesService,
 } from "../../services/User/StaffServices";
 
@@ -51,6 +53,31 @@ export const getStaffMemberByIdController: RequestHandler<
   }
 };
 
+export type GetStaffInfoMemberByIdParams = {
+  staffId: string;
+};
+// @route GET http://localhost:3500/staff/:staffId/staffInfo
+// @access Private
+export const getStaffInfoMemberByIdController: RequestHandler<
+  GetStaffInfoMemberByIdParams,
+  unknown,
+  unknown,
+  unknown
+> = async (req, res, next) => {
+  try {
+    const staff = await getStaffInfoMemberByIdService({
+      staffId: req.params.staffId,
+    });
+    if (staff) {
+      return res.status(201).json(staff);
+    } else {
+      return res.status(400).json({ message: "Something went wrong" });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
 export type CreateStaffMemberTypes = {
   role: string | undefined;
   username: string | undefined;
@@ -82,6 +109,37 @@ export const createStaffMemberController: RequestHandler<
     next(error);
   }
 };
+
+export type UpdateStaffImgParams = {
+  staffId: string;
+};
+export type UpdateStaffImgBody = {
+  imgUrl: string | undefined;
+};
+
+// @route PATCH http://localhost:3500/staff/:staffId/img
+// @access Private
+export const updateStaffImgController: RequestHandler<
+  UpdateStaffImgParams,
+  unknown,
+  UpdateStaffImgBody,
+  unknown
+> = async (req, res, next) => {
+  try {
+    const staff = await updateStaffImgService({
+      imgUrl: req.body.imgUrl,
+      staffId: req.params.staffId,
+    });
+    if (staff) {
+      return res.status(201).json(staff);
+    } else {
+      return res.status(400).json({ message: "Something went wrong" });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
 export type UpdateStaffRolesParams = {
   staffId: string;
 };
@@ -111,6 +169,7 @@ export const updateStaffRolesController: RequestHandler<
     next(error);
   }
 };
+
 export type DeleteStaffRolesParams = {
   staffId: string;
 };

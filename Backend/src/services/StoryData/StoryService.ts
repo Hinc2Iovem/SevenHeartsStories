@@ -6,6 +6,8 @@ import Story from "../../models/StoryData/Story";
 import Translation from "../../models/StoryData/Translation";
 import { checkCurrentLanguage } from "../../utils/checkCurrentLanguage";
 import { validateMongoId } from "../../utils/validateMongoId";
+import StoryInfo from "../../models/StoryData/StoryInfo";
+import Staff from "../../models/User/Staff";
 
 export const storyGetAllService = async () => {
   const existingStories = await Story.find().lean();
@@ -30,6 +32,109 @@ export const storyGetByIdService = async ({ storyId }: GetStoryByIdTypes) => {
   }
 
   return existingStory;
+};
+
+type GetAllAssignedStoriesTypes = {
+  staffId: string;
+};
+
+export const getAllAssignedStoriesByStaffIdService = async ({
+  staffId,
+}: GetAllAssignedStoriesTypes) => {
+  validateMongoId({ value: staffId, valueName: "Staff" });
+
+  const existingStaff = await Staff.findById(staffId).lean();
+  if (!existingStaff) {
+    throw createHttpError(400, `No staff with id: ${staffId} was found`);
+  }
+
+  const assignedWorkers = await StoryInfo.find({ staffId }).lean();
+  if (!assignedWorkers.length) {
+    return [];
+  }
+
+  return assignedWorkers;
+};
+
+type GetAllStoryAssignWorkersTypes = {
+  storyId: string;
+};
+
+export const getAllStoryAssignWorkersService = async ({
+  storyId,
+}: GetAllStoryAssignWorkersTypes) => {
+  validateMongoId({ value: storyId, valueName: "Story" });
+
+  const existingStory = await Story.findById(storyId).lean();
+  if (!existingStory) {
+    throw createHttpError(400, `No story with id: ${storyId} was found`);
+  }
+
+  const assignedWorkers = await StoryInfo.find({ storyId }).lean();
+  if (!assignedWorkers.length) {
+    return [];
+  }
+
+  return assignedWorkers;
+};
+
+type GetStoryAssignWorkerTypes = {
+  storyId: string;
+  staffId: string;
+};
+
+export const getStoryAssignWorkerService = async ({
+  storyId,
+  staffId,
+}: GetStoryAssignWorkerTypes) => {
+  validateMongoId({ value: staffId, valueName: "Staff" });
+  validateMongoId({ value: storyId, valueName: "Story" });
+
+  const existingStory = await Story.findById(storyId).lean();
+  if (!existingStory) {
+    throw createHttpError(400, `No story with id: ${storyId} was found`);
+  }
+  const existingStaff = await Staff.findById(staffId).lean();
+  if (!existingStaff) {
+    throw createHttpError(400, `No staff with id: ${staffId} was found`);
+  }
+
+  const alreadyAssigned = await StoryInfo.findOne({ staffId, storyId }).lean();
+  if (!alreadyAssigned) {
+    return null;
+  }
+
+  return alreadyAssigned;
+};
+
+type StoryAssignWorkerTypes = {
+  storyId: string;
+  staffId: string;
+};
+
+export const storyAssignWorkerService = async ({
+  storyId,
+  staffId,
+}: StoryAssignWorkerTypes) => {
+  validateMongoId({ value: staffId, valueName: "Staff" });
+  validateMongoId({ value: storyId, valueName: "Story" });
+
+  const existingStory = await Story.findById(storyId).lean();
+  if (!existingStory) {
+    throw createHttpError(400, `No story with id: ${storyId} was found`);
+  }
+  const existingStaff = await Staff.findById(staffId).lean();
+  if (!existingStaff) {
+    throw createHttpError(400, `No staff with id: ${staffId} was found`);
+  }
+
+  const alreadyAssigned = await StoryInfo.findOne({ staffId, storyId });
+
+  if (alreadyAssigned) {
+    throw createHttpError(400, "You are already assigned to this story");
+  } else {
+    return await StoryInfo.create({ storyId, staffId });
+  }
 };
 
 // type GetAllStoriesByStatusTypes = {
@@ -137,8 +242,8 @@ export const storyCreateService = async ({
 
   await Translation.create({
     seasonId: newSeason._id,
-    language: "english",
-    text: "Season 1",
+    language: "russian",
+    text: "Сезон 1",
     textFieldName: TranslationTextFieldName.SeasonName,
   });
 

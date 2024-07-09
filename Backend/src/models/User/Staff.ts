@@ -14,6 +14,9 @@ export const staffSchema = new mongoose.Schema({
     type: [String],
     default: "scriptwriter",
   },
+  imgUrl: {
+    type: String,
+  },
 });
 
 type Staff = InferSchemaType<typeof staffSchema>;

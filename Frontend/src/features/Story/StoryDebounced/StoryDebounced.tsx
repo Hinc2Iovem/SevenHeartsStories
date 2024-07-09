@@ -89,7 +89,7 @@ export default function StoryDebounced({
           className="top-[1rem] right-[1rem]"
         />
       )}
-      <Link className="flex flex-col" to={"/stories/:storyId"}>
+      <Link className="flex flex-col" to={`/stories/${storyId}`}>
         <div className="flex flex-col gap-[.5rem] p-[1rem]">
           <h3 className="text-[1.8rem] m-0 p-0">{storyName}</h3>
           <h4 className="text-[1.3rem]">{genres}</h4>

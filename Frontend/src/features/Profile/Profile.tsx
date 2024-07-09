@@ -3,8 +3,13 @@ import back from "../../assets/images/shared/back.png";
 import logout from "../../assets/images/shared/logout.png";
 import ProfileLeftSide from "./ProfileLeftSide";
 import ProfileRightSide from "./ProfileRightSide";
+import StoryFilterTypesHeader from "../Story/StoryFilterTypes";
+import { StoryFilterTypes } from "../Story/Story";
+import { useState } from "react";
 
 export default function Profile() {
+  const [storiesType, setStoriesType] = useState<StoryFilterTypes>("all");
+
   return (
     <section className="max-w-[146rem] px-[1rem] mx-auto flex sm:flex-row flex-col gap-[3rem] py-[5rem] relative items-center sm:items-start">
       <Link to={"/stories"} className="absolute top-[1rem] left-[1rem]">
@@ -14,7 +19,13 @@ export default function Profile() {
         <img src={logout} alt="Logout" className="w-[3rem]" />
       </button>
       <ProfileLeftSide />
-      <ProfileRightSide />
+      <div className="w-full flex flex-col gap-[1rem]">
+        <StoryFilterTypesHeader
+          setStoriesType={setStoriesType}
+          storiesType={storiesType}
+        />
+        <ProfileRightSide storiesType={storiesType} />
+      </div>
     </section>
   );
 }

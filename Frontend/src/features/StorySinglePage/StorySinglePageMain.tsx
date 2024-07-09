@@ -1,69 +1,73 @@
-import add from "../../assets/images/shared/add.png";
-import { Link } from "react-router-dom";
-import { useState } from "react";
-import arrowDown from "../../assets/images/shared/arrowDown.png";
-import arrowUp from "../../assets/images/shared/arrowUp.png";
-import ButtonHoverPromptModal from "../shared/ButtonAsideHoverPromptModal/ButtonHoverPromptModal";
+import { useParams } from "react-router-dom";
+import useGetSeasonsByStoryId from "../../hooks/Fetching/Season/useGetSeasonsByStoryId";
+import DisplaySeasons from "./DisplaySeasons";
+import useOutOfModal from "../../hooks/UI/useOutOfModal";
+import { useRef, useState } from "react";
+import useCreateNewSeason from "../../hooks/Posting/Season/useCreateNewSeason";
 
 export default function StorySinglePageMain() {
-  const [shrinkEpisodes, setShrinkEpisodes] = useState(false);
+  const { storyId } = useParams();
+  const { data: allSeasonsIds } = useGetSeasonsByStoryId({
+    storyId: storyId ?? "",
+  });
 
+  const [title, setTitle] = useState("");
+  const [showModal, setShowModal] = useState(false);
+  const modalRef = useRef<HTMLDivElement | null>(null);
+  const createNewEpisode = useCreateNewSeason({
+    storyId: storyId ?? "",
+    title,
+  });
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!title.trim().length) {
+      console.log("title and description are required");
+      return;
+    }
+
+    createNewEpisode.mutate();
+    setShowModal(false);
+  };
+
+  useOutOfModal({ setShowModal, showModal, modalRef });
   return (
     <main className="flex flex-col gap-[2rem] mt-[5rem] mb-[3rem]">
-      <div className="flex w-full justify-between items-center relative">
-        <div className="bg-white p-[1rem] px-[2rem] rounded-md shadow-md">
-          <h2 className="text-[2.5rem] text-gray-700">Случай в лесу</h2>
-        </div>
-        <ButtonHoverPromptModal
-          asideClasses="text-[1.5rem] top-[3.9rem] bottom-[-3.9rem]"
-          contentName="Создать Сезон"
-          positionByAbscissa="right"
-          className="w-fit bg-white rounded-md shadow-sm shadow-gray-500 p-[.2rem]"
-          variant={"rectangle"}
+      <button
+        onClick={(e) => {
+          e.stopPropagation();
+          setTitle("");
+          setShowModal(true);
+        }}
+        className="text-[2.5rem] w-fit bg-white px-[1rem] py-[.5rem] rounded-md shadow-md self-end hover:scale-[1.01] active:scale-[0.99]"
+      >
+        Создать новый сезон
+      </button>
+      <div
+        className={`${showModal ? "" : "hidden"} w-[25rem] self-end`}
+        ref={modalRef}
+      >
+        <form
+          onSubmit={handleSubmit}
+          className={`w-full bg-white rounded-md shadow-sm flex flex-col gap-[1rem] p-[1rem]`}
         >
-          <img src={add} alt="NewSeason" className="w-[3rem]" />
-        </ButtonHoverPromptModal>
+          <input
+            type="title"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            className="text-[2rem] text-gray-700 border-double border-l-neutral-light-gray border-[3px] rounded-md px-[1rem] py-[.5rem] rounde-md outline-none"
+            placeholder="Название Сезона"
+          />
 
-        <button
-          onClick={() => setShrinkEpisodes((prev) => !prev)}
-          className={`${
-            shrinkEpisodes ? "hidden" : ""
-          } absolute top-[3rem] left-[21.5rem]`}
-        >
-          <img src={arrowUp} alt="See more" className="w-[3rem]" />
-        </button>
-        <button
-          onClick={() => setShrinkEpisodes((prev) => !prev)}
-          className={`${
-            shrinkEpisodes ? "" : "hidden"
-          } absolute top-[3rem] left-[21.5rem]`}
-        >
-          <img src={arrowDown} alt="See less" className="w-[3rem]" />
-        </button>
+          <button className="w-fit self-end text-[1.5rem] shadow-md rounded-md px-[1rem] py-[.5rem] hover:scale-[1.01] active:scale-[0.98]">
+            Создать
+          </button>
+        </form>
       </div>
 
-      <ul
-        className={`flex flex-col gap-[1rem] ${
-          shrinkEpisodes ? "h-[5rem] overflow-hidden" : ""
-        }`}
-      >
-        {...Array.from({ length: 10 }).map((_, i) => (
-          <Link key={i + 1} to={"/episodes/:episodeId"}>
-            <li className="text-[1.5rem] text-gray-700 bg-white w-full rounded-md shadow-sm shadow-gray-300 p-[1rem] hover:scale-[1.01]">
-              Эпизод {i + 1}
-            </li>
-          </Link>
-        ))}
-        <ButtonHoverPromptModal
-          asideClasses="text-[1.5rem] top-[3.9rem] bottom-[-3.9rem]"
-          contentName="Создать Эпизод"
-          positionByAbscissa="left"
-          className="w-fit bg-white rounded-md shadow-sm shadow-gray-500 p-[.2rem]"
-          variant={"rectangle"}
-        >
-          <img src={add} alt="NewEpisode" className="w-[3rem]" />
-        </ButtonHoverPromptModal>
-      </ul>
+      {allSeasonsIds?.map((si, i) => (
+        <DisplaySeasons key={si._id} index={i + 1} {...si} />
+      ))}
     </main>
   );
 }

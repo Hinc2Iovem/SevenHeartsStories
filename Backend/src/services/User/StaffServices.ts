@@ -5,6 +5,7 @@ import { validateMongoId } from "../../utils/validateMongoId";
 import Staff from "../../models/User/Staff";
 import brcypt from "bcrypt";
 import env from "../../utils/validateEnv";
+import StaffInfo from "../../models/User/StaffInfo";
 
 export const getAllStaffMembersService = async () => {
   const existingStaffMembers = await Staff.find().lean();
@@ -30,6 +31,23 @@ export const getStaffMemberByIdService = async ({
   }
 
   return existingStaffMember;
+};
+
+type GetStaffInfoMemberByIdTypes = {
+  staffId: string;
+};
+
+export const getStaffInfoMemberByIdService = async ({
+  staffId,
+}: GetStaffInfoMemberByIdTypes) => {
+  validateMongoId({ value: staffId, valueName: "Staff" });
+
+  const existingStaffInfo = await StaffInfo.findOne({ staffId }).lean();
+  if (!existingStaffInfo) {
+    return null;
+  }
+
+  return existingStaffInfo;
 };
 
 export const createStaffMemberService = async ({
@@ -82,6 +100,30 @@ export const createStaffMemberService = async ({
   }
 };
 
+type UpdateStaffImgUrlTypes = {
+  imgUrl: string | undefined;
+  staffId: string;
+};
+
+export const updateStaffImgService = async ({
+  imgUrl,
+  staffId,
+}: UpdateStaffImgUrlTypes) => {
+  validateMongoId({ value: staffId, valueName: "Staff" });
+
+  if (!imgUrl?.trim().length) {
+    throw createHttpError(400, "ImgUrl is required");
+  }
+
+  const existingStaffMember = await Staff.findById(staffId).exec();
+  if (!existingStaffMember) {
+    throw createHttpError(400, "User with such id wasn't found");
+  }
+
+  existingStaffMember.imgUrl = imgUrl;
+
+  return await existingStaffMember.save();
+};
 type UpdateStaffRolesTypes = {
   role: string | undefined;
   staffId: string;

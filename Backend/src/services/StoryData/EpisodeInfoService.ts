@@ -64,6 +64,13 @@ export const episodeAssignWorkerService = async ({
     throw createHttpError(400, `No staff with id: ${staffId} was found`);
   }
 
+  const alreadyAssigned = await EpisodeInfo.findOne({
+    staffId,
+    episodeId,
+  }).lean();
+  if (alreadyAssigned) {
+    throw createHttpError(400, "You are already assigned to this episode");
+  }
 
   return await EpisodeInfo.create({ episodeId, staffId });
 };

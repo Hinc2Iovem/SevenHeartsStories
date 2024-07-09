@@ -50,7 +50,7 @@ export default function StoryItem({ _id, imgUrl }: StoryTypes) {
           className="top-[1rem] right-[1rem]"
         />
       )}
-      <Link className="flex flex-col" to={"/stories/:storyId"}>
+      <Link className="flex flex-col" to={`/stories/${_id}`}>
         <div className="flex flex-col gap-[.5rem] p-[1rem]">
           <h3 className="text-[1.8rem] m-0 p-0">
             {data?.find((d) => d.textFieldName === "storyName")?.text}
