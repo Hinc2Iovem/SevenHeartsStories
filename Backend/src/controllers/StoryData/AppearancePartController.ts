@@ -6,6 +6,7 @@ import {
   appearancePartGetByCharacterIdService,
   appearancePartUpdateImgService,
 } from "../../services/StoryData/AppearancePartService";
+import { AppearancePartsTypes } from "../../consts/APPEARANCE_PARTS";
 
 // @route GET http://localhost:3500/appearanceParts
 // @access Private
@@ -28,6 +29,9 @@ export const appearancePartGetAllController: RequestHandler = async (
 type AppearancePartGetByCharacterIdParams = {
   characterId: string;
 };
+type AppearancePartGetByCharacterIdQuery = {
+  type: AppearancePartsTypes;
+};
 
 // @route GET http://localhost:3500/appearanceParts/characters/:characterId
 // @access Private
@@ -35,11 +39,12 @@ export const appearancePartGetByCharacterIdController: RequestHandler<
   AppearancePartGetByCharacterIdParams,
   unknown,
   unknown,
-  unknown
+  AppearancePartGetByCharacterIdQuery
 > = async (req, res, next) => {
   try {
     const appearancePart = await appearancePartGetByCharacterIdService({
       characterId: req.params.characterId,
+      type: req.query.type,
     });
     if (appearancePart) {
       return res.status(201).json(appearancePart);
@@ -92,7 +97,7 @@ type AppearancePartUpdateImgParams = {
   appearancePartId: string;
 };
 type AppearancePartUpdateImgBody = {
-  img: string | undefined;
+  imgUrl: string | undefined;
 };
 
 // @route PATCH http://localhost:3500/appearanceParts/:appearancePartId/img
@@ -106,7 +111,7 @@ export const appearancePartControllerUpdateImg: RequestHandler<
   try {
     const appearancePart = await appearancePartUpdateImgService({
       appearancePartId: req.params.appearancePartId,
-      img: req.body.img,
+      imgUrl: req.body.imgUrl,
     });
     if (appearancePart) {
       return res.status(201).json(appearancePart);

@@ -78,7 +78,7 @@ export default function StorySinglePageHeader() {
               asideClasses="text-[1.3rem] top-[4.5rem] bottom-[-3.2rem]"
               variant="rectangle"
             >
-              <Link to={"/emotions"}>
+              <Link to={`/stories/${storyId}/emotions`}>
                 <img
                   src={emotion}
                   className="w-[4rem] bg-white rounded-md shadow-sm shadow-gray-400"
@@ -92,7 +92,7 @@ export default function StorySinglePageHeader() {
               asideClasses="text-[1.3rem] top-[4.5rem] bottom-[-3.2rem]"
               variant="rectangle"
             >
-              <Link to={"/wardrobes"}>
+              <Link to={`/stories/${storyId}/wardrobes`}>
                 <img
                   src={wardrobe}
                   className="w-[4rem] bg-white rounded-md shadow-sm shadow-gray-400"
@@ -106,7 +106,7 @@ export default function StorySinglePageHeader() {
               asideClasses="text-[1.3rem] top-[4.5rem] bottom-[-3.2rem]"
               variant="rectangle"
             >
-              <Link to={"/editor/characters"}>
+              <Link to={`/stories/${storyId}/characters`}>
                 <img
                   src={characters}
                   className="w-[4rem] bg-white rounded-md shadow-sm shadow-gray-400"

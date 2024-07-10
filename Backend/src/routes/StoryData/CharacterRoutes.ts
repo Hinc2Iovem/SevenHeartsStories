@@ -5,6 +5,7 @@ import {
   characterGetAllByStoryIdController,
   characterGetByStoryIdAndNameController,
   characterUpdateController,
+  characterUpdateImgController,
   getAllCharacterNameTagsController,
 } from "../../controllers/StoryData/CharacterController";
 
@@ -22,6 +23,8 @@ characterRoute
   .get(characterGetAllByStoryIdController);
 
 characterRoute.route("/stories/:storyId").post(characterCreateController);
+
+characterRoute.route("/:characterId/img").patch(characterUpdateImgController);
 
 characterRoute
   .route("/:characterId")

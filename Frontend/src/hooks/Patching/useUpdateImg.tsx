@@ -21,8 +21,6 @@ const handleUploadeImg = async ({ preview, path, id }: UploadImageTypes) => {
     }
   ).then((r) => r.json());
 
-  console.log("frontImg: ", frontImg);
-
   return await axiosCustomized.patch(`${path}/${id}/img`, {
     imgUrl: frontImg.secure_url,
   });

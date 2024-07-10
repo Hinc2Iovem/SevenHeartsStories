@@ -1,19 +1,16 @@
 import { Route, Routes } from "react-router-dom";
-import AuthLayout from "./layouts/AuthLayout";
-import Register from "./features/Auth/Register/Register";
 import Login from "./features/Auth/Login/Login";
-import StoryLayout from "./layouts/StoryLayout";
-import Missing from "./features/Missing/Missing";
-import Story from "./features/Story/Story";
-import Profile from "./features/Profile/Profile";
-import ProfileLayout from "./layouts/ProfileLayout";
-import StorySinglePage from "./features/StorySinglePage/StorySinglePage";
+import Register from "./features/Auth/Register/Register";
 import CharacterListPage from "./features/Character/CharacterListPage";
-import CharacterLayout from "./layouts/CharacterLayout";
-import Wardrobe from "./features/Wardrobe/Wardrobe";
-import WardrobeLayout from "./layouts/WardrobeLayout";
-import EmotionLayout from "./layouts/EmotionLayout";
 import Emotion from "./features/Emotion/Emotion";
+import Missing from "./features/Missing/Missing";
+import Profile from "./features/Profile/Profile";
+import Story from "./features/Story/Story";
+import StorySinglePage from "./features/StorySinglePage/StorySinglePage";
+import Wardrobe from "./features/Wardrobe/Wardrobe";
+import AuthLayout from "./layouts/AuthLayout";
+import ProfileLayout from "./layouts/ProfileLayout";
+import StoryLayout from "./layouts/StoryLayout";
 
 export default function App() {
   return (
@@ -26,20 +23,13 @@ export default function App() {
       <Route element={<StoryLayout />} path="stories">
         <Route index element={<Story />} />
         <Route path=":storyId" element={<StorySinglePage />} />
+        <Route path=":storyId/emotions" element={<Emotion />} />
+        <Route path=":storyId/wardrobes" element={<Wardrobe />} />
+        <Route path=":storyId/characters" element={<CharacterListPage />} />
       </Route>
 
       <Route element={<ProfileLayout />} path="profile">
         <Route index element={<Profile />} />
-      </Route>
-      <Route element={<EmotionLayout />} path="emotions">
-        <Route index element={<Emotion />} />
-      </Route>
-
-      <Route element={<CharacterLayout />} path="editor/characters">
-        <Route index element={<CharacterListPage />} />
-      </Route>
-      <Route element={<WardrobeLayout />} path="/wardrobes">
-        <Route index element={<Wardrobe />} />
       </Route>
 
       <Route path="*" element={<Missing />} />

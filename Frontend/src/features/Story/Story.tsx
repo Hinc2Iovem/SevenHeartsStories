@@ -1,9 +1,6 @@
-import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
-import { axiosCustomized } from "../../api/axios";
+import useGetTranslationByTextFieldName from "../../hooks/Fetching/Translation/useGetTranslationByTextFieldName";
 import useDebounce from "../../hooks/utilities/useDebounce";
-import { CurrentlyAvailableLanguagesTypes } from "../../types/Additional/CURRENTLY_AVAILABEL_LANGUAGES";
-import { TranslationStoryTypes } from "../../types/Additional/TranslationTypes";
 import PaginatedSkeleton from "./Skeleton/PaginatedSkeleton";
 import StoryDebounced from "./StoryDebounced/StoryDebounced";
 import StoryFilterTypesHeader from "./StoryFilterTypes";
@@ -11,24 +8,6 @@ import StoryHeader from "./StoryHeader";
 import StoryList from "./StoryList";
 
 export type StoryFilterTypes = "all" | "done" | "doing";
-
-type DebouncedTranslationsTypes = {
-  language?: CurrentlyAvailableLanguagesTypes;
-  text: string;
-  textFieldName: string;
-};
-
-const getDebouncedStories = async ({
-  language = "russian",
-  text,
-  textFieldName,
-}: DebouncedTranslationsTypes): Promise<TranslationStoryTypes[]> => {
-  return await axiosCustomized
-    .get(
-      `/translations/textFieldNames?currentLanguage=${language}&textFieldName=${textFieldName}&text=${text}`
-    )
-    .then((r) => r.data);
-};
 
 export default function Story() {
   const [storiesType, setStoriesType] = useState<StoryFilterTypes>("all");
@@ -41,12 +20,7 @@ export default function Story() {
     isLoading,
     isError,
     error,
-  } = useQuery({
-    queryKey: ["translation", "stories", debouncedValue],
-    queryFn: () =>
-      getDebouncedStories({ text: debouncedValue, textFieldName: "storyName" }),
-    enabled: debouncedValue?.trim().length > 0,
-  });
+  } = useGetTranslationByTextFieldName({ debouncedValue });
 
   if (isLoading) {
     return (

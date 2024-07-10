@@ -240,6 +240,31 @@ export const characterUpdateService = async ({
   return await existingCharacter.save();
 };
 
+type UpdateCharacterImgTypes = {
+  characterId: string;
+  imgUrl: string | undefined;
+};
+
+export const characterUpdateImgService = async ({
+  imgUrl,
+  characterId,
+}: UpdateCharacterImgTypes) => {
+  validateMongoId({ value: characterId, valueName: "Character" });
+
+  const existingCharacter = await Character.findById(characterId).exec();
+  if (!existingCharacter) {
+    throw createHttpError(400, "Character with such id doesn't exist");
+  }
+
+  if (!imgUrl?.trim().length) {
+    throw createHttpError(400, "Img is required");
+  }
+
+  existingCharacter.img = imgUrl;
+
+  return await existingCharacter.save();
+};
+
 type DeleteCharacterTypes = {
   characterId: string;
 };

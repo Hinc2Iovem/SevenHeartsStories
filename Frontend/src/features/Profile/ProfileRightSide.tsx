@@ -84,7 +84,11 @@ function ProfileRightSideItem({ storyId, storyStatus }: StoryInfoTypes) {
             className="w-full h-full object-cover absolute rounded-md"
           />
         ) : (
-          <PreviewImage imagePreview={imagePreview} setPreview={setPreview} />
+          <PreviewImage
+            imgClasses="w-full h-full object-cover rounded-md absolute top-0 bottom-0 left-0 right-0 border-[2px] border-white"
+            imagePreview={imagePreview}
+            setPreview={setPreview}
+          />
         )}
         <div className="absolute top-[.5rem] right-[.5rem] bg-white rounded-md shadow-md p-[.5rem]">
           <p className="text-[1.5rem] self-end">

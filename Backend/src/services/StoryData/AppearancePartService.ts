@@ -2,7 +2,10 @@ import createHttpError from "http-errors";
 import AppearancePart from "../../models/StoryData/AppearancePart";
 import { validateMongoId } from "../../utils/validateMongoId";
 import Translation from "../../models/StoryData/Translation";
-import { AppearanceParts } from "../../consts/APPEARANCE_PARTS";
+import {
+  AppearanceParts,
+  AppearancePartsTypes,
+} from "../../consts/APPEARANCE_PARTS";
 import { checkCurrentLanguage } from "../../utils/checkCurrentLanguage";
 
 export const appearancePartGetAllService = async () => {
@@ -15,14 +18,24 @@ export const appearancePartGetAllService = async () => {
 };
 type AppearancePartGetByCharacterIdTypes = {
   characterId: string;
+  type: AppearancePartsTypes;
 };
 
 export const appearancePartGetByCharacterIdService = async ({
   characterId,
+  type,
 }: AppearancePartGetByCharacterIdTypes) => {
   validateMongoId({ value: characterId, valueName: "Character" });
-
-  const appearanceParts = await AppearancePart.find({ characterId }).lean();
+  if (!AppearanceParts.includes(type.toLowerCase())) {
+    throw createHttpError(
+      400,
+      "Appearance part can be only of type body, hair, dress, accessory, emotion, art, skin"
+    );
+  }
+  const appearanceParts = await AppearancePart.find({
+    characterId,
+    type: type.toLowerCase(),
+  }).lean();
   if (!appearanceParts.length) {
     return [];
   }
@@ -87,11 +100,11 @@ export const appearancePartCreateService = async ({
 
 type AppearancePartUpdateImgTypes = {
   appearancePartId: string;
-  img: string | undefined;
+  imgUrl: string | undefined;
 };
 
 export const appearancePartUpdateImgService = async ({
-  img,
+  imgUrl,
   appearancePartId,
 }: AppearancePartUpdateImgTypes) => {
   validateMongoId({ value: appearancePartId, valueName: "appearancePart" });
@@ -103,11 +116,11 @@ export const appearancePartUpdateImgService = async ({
     throw createHttpError(400, "Such appearancePart doesn't exist");
   }
 
-  if (!img?.trim().length) {
-    throw createHttpError(400, "Img is required");
+  if (!imgUrl?.trim().length) {
+    throw createHttpError(400, "ImgUrl is required");
   }
 
-  existingAppearancePart.img = img;
+  existingAppearancePart.img = imgUrl;
 
   return await existingAppearancePart.save();
 };

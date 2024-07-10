@@ -154,13 +154,13 @@ export const getTranslationAppearancePartService = async ({
 
   checkCurrentLanguage({ currentLanguage });
 
-  const existingTranslation = await Translation.find({
+  const existingTranslation = await Translation.findOne({
     appearancePartId: existingAppearancePart._id,
     language: currentLanguage,
   }).exec();
 
-  if (!existingTranslation.length) {
-    return [];
+  if (!existingTranslation) {
+    return null;
   }
 
   return existingTranslation;

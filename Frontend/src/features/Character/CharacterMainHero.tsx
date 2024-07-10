@@ -1,18 +1,27 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import add from "../../assets/images/shared/add.png";
 import characteristic from "../../assets/images/Story/characteristic.png";
-import shsBg from "../../assets/images/Story/storyBg.png";
 import wardrobe from "../../assets/images/Story/wardrobe.png";
+import useUpdateImg from "../../hooks/Patching/useUpdateImg";
 import useOutOfModal from "../../hooks/UI/useOutOfModal";
-import "./characterStyle.css";
 import ButtonHoverPromptModal from "../shared/ButtonAsideHoverPromptModal/ButtonHoverPromptModal";
+import PreviewImage from "../shared/utilities/PreviewImage";
+import "./characterStyle.css";
+
+type CharacterItemMainHeroTypes = {
+  isFrontSide: boolean;
+  characterName: string;
+  img?: string;
+  characterId: string;
+};
 
 export default function CharacterItemMainHero({
   isFrontSide,
-}: {
-  isFrontSide: boolean;
-}) {
+  characterId,
+  characterName,
+  img,
+}: CharacterItemMainHeroTypes) {
   const [newCharacteristic, setNewCharacteristic] = useState("");
   const [showCharacteristicModal, setShowCharacteristicModal] = useState(false);
   const characteristicRef = useRef<HTMLDivElement | null>(null);
@@ -33,25 +42,53 @@ export default function CharacterItemMainHero({
     modalRef: characteristicCreateRef,
   });
 
+  const [imagePreview, setPreview] = useState<string | ArrayBuffer | null>(
+    null
+  );
+
+  const uploadImgMutation = useUpdateImg({
+    id: characterId,
+    path: "/characters",
+    preview: imagePreview,
+  });
+
+  useEffect(() => {
+    if (imagePreview) {
+      uploadImgMutation.mutate();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [imagePreview]);
+
   return (
     <>
       {isFrontSide ? (
         <>
-          <img
-            src={shsBg}
-            alt="CharacterImg"
-            className="w-full h-full object-cover rounded-md"
-          />
-          <div className="w-full rounded-b-md bg-neutral-alabaster p-[1rem] absolute bottom-0 text-[1.5rem] shadow-sm shadow-gray-600">
-            Главный перс Имя
-            {/* Sdelatb tyt potom substring */}
+          {img ? (
+            <div className="w-full h-full rounded-t-md relative shadow-sm">
+              <img
+                src={img}
+                alt="StoryBackground"
+                className="object-cover w-full h-full cursor-pointer rounded-t-md border-[3px] border-b-0 border-white"
+              />
+            </div>
+          ) : (
+            <PreviewImage
+              imgClasses="w-full h-full object-cover rounded-md absolute top-0 bottom-0 left-0 right-0 border-[2px] border-b-0 rounded-b-none border-white"
+              imagePreview={imagePreview}
+              setPreview={setPreview}
+            />
+          )}
+          <div className="w-full rounded-b-md bg-neutral-alabaster p-[1rem] absolute bottom-0 text-[1.5rem] shadow-sm border-t-[1px] border-gray-300 rounded-t-md shadow-gray-600">
+            {characterName.length > 30
+              ? characterName.substring(0, 30) + "..."
+              : characterName}
           </div>
         </>
       ) : (
         <div className="flex flex-col gap-[1rem] p-[1rem] justify-between h-full">
           <div className="gap-[1rem] flex flex-col">
             <div>
-              <h3 className="text-[2rem]">Имя перса</h3>
+              <h3 className="text-[2rem]">{characterName}</h3>
               <p className="text-[1.3rem]">НеймТаг: {"SMH"}</p>
             </div>
           </div>

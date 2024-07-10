@@ -1,53 +1,28 @@
-import React, { useState } from "react";
-import LightBox from "../shared/utilities/LightBox";
-import { useLocation, useNavigate } from "react-router-dom";
-import arrowPrev from "../../assets/images/shared/prev.png";
-import createCharacter from "../../assets/images/Character/createCharacter.png";
-import ButtonHoverPromptModal from "../shared/ButtonAsideHoverPromptModal/ButtonHoverPromptModal";
-import { CharacterTypes } from "./CharacterListPage";
+import { useState } from "react";
+import { CharacterTypes } from "../CharacterListPage";
+import LightBox from "../../shared/utilities/LightBox";
 
-export default function CharacterHeader() {
+type CharacterHeaderCreateCharacterModalTypes = {
+  setShowCharacterModal: React.Dispatch<React.SetStateAction<boolean>>;
+  showCharacterModal: boolean;
+};
+
+export default function CharacterHeaderCreateCharacterModal({
+  showCharacterModal,
+  setShowCharacterModal,
+}: CharacterHeaderCreateCharacterModalTypes) {
   const [characterType, setCharacterType] =
     useState<CharacterTypes>("EmptyCharacter");
   const [name, setName] = useState("");
   const [unknownName, setUnknownName] = useState("");
   const [nameTag, setNameTag] = useState("");
   const [description, setDescription] = useState("");
-  const [showCharacterModal, setShowCharacterModal] = useState(false);
-  const location = useLocation();
-  const navigate = useNavigate();
-  const from = location.state?.pathname || "/stories/:storyId";
-
-  const handleGoBack = () => {
-    navigate(from);
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
   };
   return (
     <>
-      <header className="flex justify-between w-full gap-[1rem]">
-        <button
-          onClick={handleGoBack}
-          className="active:scale-[0.99] hover:scale-[1.01]"
-        >
-          <img src={arrowPrev} alt="GoBack" className="w-[4rem]" />
-        </button>
-        <ButtonHoverPromptModal
-          onClick={() => setShowCharacterModal(true)}
-          positionByAbscissa="right"
-          contentName="Создать Персонажа"
-          asideClasses="text-[1.3rem]"
-          className="active:scale-[0.99] hover:scale-[1.01]"
-        >
-          <img
-            src={createCharacter}
-            alt="CreateCharacter"
-            className="w-[4rem]"
-          />
-        </ButtonHoverPromptModal>
-      </header>
       <aside
         className={`${
           showCharacterModal ? "" : "hidden"

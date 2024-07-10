@@ -4,6 +4,7 @@ import {
   characterDeleteService,
   characterGetAllByStoryIdService,
   characterGetByStoryIdAndNameService,
+  characterUpdateImgService,
   characterUpdateService,
   getAllCharacterNameTagsService,
 } from "../../services/StoryData/CharacterService";
@@ -160,6 +161,37 @@ export const characterUpdateController: RequestHandler<
       nameTag: req.body.nameTag,
       type: req.body.type,
       img: req.body.img,
+      characterId: req.params.characterId,
+    });
+    if (character) {
+      return res.status(201).json(character);
+    } else {
+      return res.status(400).json({ message: "Something went wrong" });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
+type CharacterUpdateImgParams = {
+  characterId: string;
+};
+
+type CharacterUpdateImgBody = {
+  imgUrl: string | undefined;
+};
+
+// @route PATCH http://localhost:3500/characters/:characterId/img
+// @access Private
+export const characterUpdateImgController: RequestHandler<
+  CharacterUpdateImgParams,
+  unknown,
+  CharacterUpdateImgBody,
+  unknown
+> = async (req, res, next) => {
+  try {
+    const character = await characterUpdateImgService({
+      imgUrl: req.body.imgUrl,
       characterId: req.params.characterId,
     });
     if (character) {

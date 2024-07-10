@@ -38,6 +38,7 @@ export default function StoryItem({ _id, imgUrl }: StoryTypes) {
         </div>
       ) : (
         <PreviewImage
+          imgClasses="w-full h-full object-cover rounded-md absolute top-0 bottom-0 left-0 right-0 border-[2px] border-white"
           divClasses="w-full h-1/2 p-[1rem] relative shadow-sm"
           imagePreview={imagePreview}
           setPreview={setPreview}

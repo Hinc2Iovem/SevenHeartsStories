@@ -6,6 +6,7 @@ type PreviewImage = {
   setPreview: React.Dispatch<React.SetStateAction<string | ArrayBuffer | null>>;
   imagePreview: string | ArrayBuffer | null;
   divClasses?: string;
+  imgClasses: string;
   children?: React.ReactNode;
 };
 
@@ -13,6 +14,7 @@ export default function PreviewImage({
   setPreview,
   imagePreview,
   divClasses,
+  imgClasses,
   children,
 }: PreviewImage) {
   const onDrop = useCallback(
@@ -42,7 +44,7 @@ export default function PreviewImage({
         alt="addImage"
         className={`${
           imagePreview
-            ? "w-full h-full object-cover rounded-md absolute top-0 bottom-0 left-0 right-0 border-[2px] border-white"
+            ? `${imgClasses}`
             : "absolute w-[5.5rem] h-[5.5rem] left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2"
         }`}
       />
