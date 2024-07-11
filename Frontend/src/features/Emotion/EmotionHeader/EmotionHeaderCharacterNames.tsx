@@ -42,7 +42,11 @@ export default function EmotionHeaderCharacterNames({
           }}
           className="rounded-md flex px-[.5rem] py-[.2rem] items-center justify-between hover:bg-primary-light-blue hover:text-white transition-all "
         >
-          <p className="text-[1.3rem] rounded-md">{currentCharacterName}</p>
+          <p className="text-[1.3rem] rounded-md">
+            {currentCharacterName.length > 20
+              ? currentCharacterName.substring(0, 20) + "..."
+              : currentCharacterName}
+          </p>
           <img src={img} alt="CharacterImg" className="w-[3rem] rounded-md" />
         </button>
       ) : (
@@ -54,7 +58,9 @@ export default function EmotionHeaderCharacterNames({
           }}
           className="text-start text-[1.3rem] px-[.5rem] py-[.2rem] hover:bg-primary-light-blue hover:text-white transition-all rounded-md"
         >
-          {currentCharacterName}
+          {currentCharacterName.length > 20
+            ? currentCharacterName.substring(0, 20) + "..."
+            : currentCharacterName}
         </button>
       )}
     </>

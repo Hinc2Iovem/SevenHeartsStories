@@ -2,13 +2,13 @@ import { useRef, useState } from "react";
 import add from "../../assets/images/shared/add.png";
 import arrowDown from "../../assets/images/shared/arrowDown.png";
 import arrowUp from "../../assets/images/shared/arrowUp.png";
-import useGetTranslationSeason from "../../hooks/Fetching/Translation/useGetTranslationSeason";
-import { SeasonTypes } from "../../types/StoryData/Season/SeasonTypes";
-import ButtonHoverPromptModal from "../shared/ButtonAsideHoverPromptModal/ButtonHoverPromptModal";
 import useGetEpisodesBySeasonId from "../../hooks/Fetching/Episode/useGetEpisodesBySeasonId";
-import EpisodeItem from "./EpisodeItem";
+import useGetTranslationSeason from "../../hooks/Fetching/Translation/useGetTranslationSeason";
 import useCreateNewEpisode from "../../hooks/Posting/Episode/useCreateNewEpisode";
 import useOutOfModal from "../../hooks/UI/useOutOfModal";
+import { SeasonTypes } from "../../types/StoryData/Season/SeasonTypes";
+import ButtonHoverPromptModal from "../shared/ButtonAsideHoverPromptModal/ButtonHoverPromptModal";
+import EpisodeItem from "./EpisodeItem";
 
 type DisplaySeasonsTypes = {
   index: number;

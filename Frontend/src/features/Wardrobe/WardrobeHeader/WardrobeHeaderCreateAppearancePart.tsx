@@ -58,7 +58,7 @@ export default function WardrobeHeaderCreateAppearancePart({
         ref={modalRef}
         className={`${
           showModal ? "" : "hidden"
-        } translate-y-[1rem] absolute top-1/2 z-[10] p-[1rem] min-w-[10rem] w-full max-h-[10rem] overflow-y-auto bg-white shadow-md rounded-md flex flex-col gap-[1rem]`}
+        } translate-y-[2rem] sm:translate-y-[1rem] absolute top-1/2 z-[10] p-[1rem] min-w-[10rem] w-full max-h-[10rem] overflow-y-auto bg-white shadow-md rounded-md flex flex-col gap-[1rem]`}
       >
         <form className="flex flex-col gap-[1rem]" onSubmit={handleSubmit}>
           <input

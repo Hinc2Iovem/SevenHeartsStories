@@ -21,7 +21,7 @@ const getDebouncedStories = async ({
     .then((r) => r.data);
 };
 
-export default function useGetTranslationByTextFieldName({
+export default function useGetStoryTranslationByTextFieldName({
   debouncedValue,
 }: {
   debouncedValue: string;

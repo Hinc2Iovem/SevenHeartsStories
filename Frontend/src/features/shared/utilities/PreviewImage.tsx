@@ -34,21 +34,38 @@ export default function PreviewImage({
     onDrop,
   });
   return (
-    <div
-      {...getRootProps()}
-      className={`cursor-pointer ${divClasses ? divClasses : ""}`}
-    >
-      <input type="file" name="Image" id="image" {...getInputProps()} />
-      <img
-        src={imagePreview ? (imagePreview as string) : plus}
-        alt="addImage"
-        className={`${
-          imagePreview
-            ? `${imgClasses}`
-            : "absolute w-[5.5rem] h-[5.5rem] left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2"
-        }`}
-      />
-      {children ? children : ""}
-    </div>
+    <>
+      {!imagePreview ? (
+        <div
+          {...getRootProps()}
+          className={`cursor-pointer ${divClasses ? divClasses : ""}`}
+        >
+          <input type="file" name="Image" id="image" {...getInputProps()} />
+          <img
+            src={imagePreview ? (imagePreview as string) : plus}
+            alt="addImage"
+            className={`${
+              imagePreview
+                ? `${imgClasses}`
+                : "absolute w-[5.5rem] h-[5.5rem] left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2"
+            }`}
+          />
+          {children ? children : ""}
+        </div>
+      ) : (
+        <div className={`cursor-pointer ${divClasses ? divClasses : ""}`}>
+          <img
+            src={imagePreview ? (imagePreview as string) : plus}
+            alt="addImage"
+            className={`${
+              imagePreview
+                ? `${imgClasses}`
+                : "absolute w-[5.5rem] h-[5.5rem] left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2"
+            }`}
+          />
+          {children ? children : ""}
+        </div>
+      )}
+    </>
   );
 }

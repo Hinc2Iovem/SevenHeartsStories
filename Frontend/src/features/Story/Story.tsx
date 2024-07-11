@@ -1,5 +1,5 @@
 import { useState } from "react";
-import useGetTranslationByTextFieldName from "../../hooks/Fetching/Translation/useGetTranslationByTextFieldName";
+import useGetStoryTranslationByTextFieldName from "../../hooks/Fetching/Story/useGetStoryTranslationByTextFieldName";
 import useDebounce from "../../hooks/utilities/useDebounce";
 import PaginatedSkeleton from "./Skeleton/PaginatedSkeleton";
 import StoryDebounced from "./StoryDebounced/StoryDebounced";
@@ -20,7 +20,7 @@ export default function Story() {
     isLoading,
     isError,
     error,
-  } = useGetTranslationByTextFieldName({ debouncedValue });
+  } = useGetStoryTranslationByTextFieldName({ debouncedValue });
 
   if (isLoading) {
     return (

@@ -31,7 +31,7 @@ export default function EmotionHeaderCharacters({
     value: showCharacterModal,
   });
   return (
-    <div className="flex flex-col gap-[.5rem] relative w-fit">
+    <div className="flex flex-col gap-[.5rem] relative min-w-[20rem]">
       <button
         onClick={() => {
           setShowModal(false);

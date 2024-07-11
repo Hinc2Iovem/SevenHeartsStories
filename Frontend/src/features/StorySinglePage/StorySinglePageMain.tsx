@@ -31,6 +31,7 @@ export default function StorySinglePageMain() {
   };
 
   useOutOfModal({ setShowModal, showModal, modalRef });
+
   return (
     <main className="flex flex-col gap-[2rem] mt-[5rem] mb-[3rem]">
       <button
@@ -64,7 +65,6 @@ export default function StorySinglePageMain() {
           </button>
         </form>
       </div>
-
       {allSeasonsIds?.map((si, i) => (
         <DisplaySeasons key={si._id} index={i + 1} {...si} />
       ))}

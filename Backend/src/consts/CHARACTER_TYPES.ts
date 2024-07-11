@@ -3,3 +3,10 @@ export const CharacterTypes = [
   "minorcharacter",
   "maincharacter",
 ];
+
+export const CharacterTypesWithAll = [
+  "all",
+  "emptycharacter",
+  "minorcharacter",
+  "maincharacter",
+];

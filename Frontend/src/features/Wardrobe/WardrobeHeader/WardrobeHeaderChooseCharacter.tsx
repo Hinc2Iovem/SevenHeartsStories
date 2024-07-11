@@ -32,7 +32,7 @@ export default function WardrobeHeaderChooseCharacter({
     storyId: storyId ?? "",
   });
   return (
-    <div className="flex flex-col gap-[.5rem] relative">
+    <div className="flex flex-col gap-[.5rem] relative min-w-[20rem]">
       <button
         onClick={() => {
           setShowBodyTypeModal(false);

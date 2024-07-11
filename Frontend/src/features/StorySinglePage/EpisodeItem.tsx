@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
-import { EpisodeTypes } from "../../types/StoryData/Episode/EpisodeTypes";
-import useEscapeOfModal from "../../hooks/UI/useEscapeOfModal";
-import useGetTranslationEpisode from "../../hooks/Fetching/Translation/useGetTranslationEpisode";
 import { Link } from "react-router-dom";
+import useGetTranslationEpisode from "../../hooks/Fetching/Translation/useGetTranslationEpisode";
+import useEscapeOfModal from "../../hooks/UI/useEscapeOfModal";
+import { EpisodeTypes } from "../../types/StoryData/Episode/EpisodeTypes";
 
 export default function EpisodeItem({
   _id,

@@ -1,16 +1,24 @@
-import { useState } from "react";
-import { CharacterTypes } from "../CharacterListPage";
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import useCreateCharacter from "../../../hooks/Posting/Character/useCreateCharacter";
 import LightBox from "../../shared/utilities/LightBox";
+import {
+  CharacterTypes,
+  SearchCharacterVariationTypes,
+} from "../CharacterListPage";
 
 type CharacterHeaderCreateCharacterModalTypes = {
   setShowCharacterModal: React.Dispatch<React.SetStateAction<boolean>>;
   showCharacterModal: boolean;
+  searchCharacterType: SearchCharacterVariationTypes;
 };
 
 export default function CharacterHeaderCreateCharacterModal({
   showCharacterModal,
   setShowCharacterModal,
+  searchCharacterType,
 }: CharacterHeaderCreateCharacterModalTypes) {
+  const { storyId } = useParams();
   const [characterType, setCharacterType] =
     useState<CharacterTypes>("EmptyCharacter");
   const [name, setName] = useState("");
@@ -18,9 +26,50 @@ export default function CharacterHeaderCreateCharacterModal({
   const [nameTag, setNameTag] = useState("");
   const [description, setDescription] = useState("");
 
+  const createCharacter = useCreateCharacter({
+    characterType,
+    name,
+    searchCharacterType,
+    storyId: storyId ?? "",
+    description,
+    nameTag,
+    unknownName,
+  });
+
+  useEffect(() => {
+    if (createCharacter.isSuccess) {
+      setName("");
+      setUnknownName("");
+      setNameTag("");
+      setDescription("");
+    }
+  }, [showCharacterModal, createCharacter]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (
+      characterType === "EmptyCharacter" ||
+      characterType === "MainCharacter"
+    ) {
+      if (!name.trim().length) {
+        console.log("Name is required");
+        return;
+      }
+    } else if (characterType === "MinorCharacter") {
+      if (
+        !unknownName.trim().length ||
+        !description.trim().length ||
+        !nameTag.trim().length
+      ) {
+        console.log("UnknownName, description and nameTag are required");
+        return;
+      }
+    }
+
+    createCharacter.mutate();
+    setShowCharacterModal(false);
   };
+
   return (
     <>
       <aside

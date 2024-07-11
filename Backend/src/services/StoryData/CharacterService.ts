@@ -1,12 +1,34 @@
 import createHttpError from "http-errors";
-import { validateMongoId } from "../../utils/validateMongoId";
-import { CharacterTypeAlias } from "../../controllers/StoryData/CharacterController";
+import {
+  CharacterTypes,
+  CharacterTypesWithAll,
+} from "../../consts/CHARACTER_TYPES";
+import { TranslationTextFieldName } from "../../consts/TRANSLATION_TEXT_FIELD_NAMES";
+import {
+  AllPossibleCharacterTypes,
+  CharacterTypeAlias,
+} from "../../controllers/StoryData/CharacterController";
 import Character from "../../models/StoryData/Character";
 import CharacterEmotion from "../../models/StoryData/CharacterEmotion";
 import Translation from "../../models/StoryData/Translation";
-import { TranslationTextFieldName } from "../../consts/TRANSLATION_TEXT_FIELD_NAMES";
 import { checkCurrentLanguage } from "../../utils/checkCurrentLanguage";
-import { CharacterTypes } from "../../consts/CHARACTER_TYPES";
+import { validateMongoId } from "../../utils/validateMongoId";
+
+type GetSingleCharacterByIdTypes = {
+  characterId: string;
+};
+
+export const getSingleCharacterByIdService = async ({
+  characterId,
+}: GetSingleCharacterByIdTypes) => {
+  validateMongoId({ value: characterId, valueName: "Character" });
+  const existingCharacter = await Character.findById(characterId).exec();
+  if (!existingCharacter) {
+    return null;
+  }
+
+  return existingCharacter;
+};
 
 type GetAllCharacterNameTagsTypes = {
   storyId: string;
@@ -29,6 +51,44 @@ export const getAllCharacterNameTagsService = async ({
     return allNameTags;
   }
   return [];
+};
+
+type GetCharactersByStoryIdAmdType = {
+  storyId: string;
+  type: AllPossibleCharacterTypes;
+};
+
+export const characterGetAllByStoryIdAndTypeService = async ({
+  storyId,
+  type,
+}: GetCharactersByStoryIdAmdType) => {
+  validateMongoId({ value: storyId, valueName: "Story" });
+
+  if (!type.trim().length) {
+    throw createHttpError(400, "Type is required");
+  }
+
+  if (!CharacterTypesWithAll.includes(type.toLowerCase())) {
+    throw createHttpError(
+      400,
+      `Type: ${type} is not supported, possible types are: ${CharacterTypesWithAll.map(
+        (c) => c
+      )}.`
+    );
+  }
+  let existingCharacters;
+  if (type === "all") {
+    existingCharacters = await Character.find({ storyId }).exec();
+  } else {
+    existingCharacters = await Character.find({
+      storyId,
+      type: type.toLowerCase(),
+    }).exec();
+  }
+  if (!existingCharacters.length) {
+    return [];
+  }
+  return existingCharacters;
 };
 
 type GetCharactersByStoryId = {
@@ -161,6 +221,13 @@ export const characterCreateService = async ({
     });
     return character;
   } else if (type && type.toLowerCase() === "maincharacter") {
+    const existingMainCharacter = await Character.findOne({
+      storyId,
+      isMainCharacter: true,
+    });
+    if (existingMainCharacter) {
+      throw createHttpError(400, "Main Character is already exists");
+    }
     const character = await Character.create({
       name,
       isMainCharacter: true,

@@ -12,10 +12,12 @@ type CharacterHeaderTypes = {
   setSearchValue: React.Dispatch<React.SetStateAction<string>>;
   searchCharacterType: SearchCharacterVariationTypes;
   searchValue: string;
+  debouncedValue: string;
 };
 
 export default function CharacterHeader({
   searchCharacterType,
+  debouncedValue,
   searchValue,
   setSearchCharacterType,
   setSearchValue,
@@ -50,13 +52,16 @@ export default function CharacterHeader({
             />
           </ButtonHoverPromptModal>
         </div>
-        <CharacterHeaderSearchTypeBtns
-          setSearchCharacterType={setSearchCharacterType}
-          searchCharacterType={searchCharacterType}
-        />
+        {!debouncedValue.trim().length ? (
+          <CharacterHeaderSearchTypeBtns
+            setSearchCharacterType={setSearchCharacterType}
+            searchCharacterType={searchCharacterType}
+          />
+        ) : null}
       </header>
 
       <CharacterHeaderCreateCharacterModal
+        searchCharacterType={searchCharacterType}
         setShowCharacterModal={setShowCharacterModal}
         showCharacterModal={showCharacterModal}
       />

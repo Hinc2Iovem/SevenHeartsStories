@@ -2,12 +2,40 @@ import { RequestHandler } from "express";
 import {
   characterCreateService,
   characterDeleteService,
+  characterGetAllByStoryIdAndTypeService,
   characterGetAllByStoryIdService,
   characterGetByStoryIdAndNameService,
   characterUpdateImgService,
   characterUpdateService,
   getAllCharacterNameTagsService,
+  getSingleCharacterByIdService,
 } from "../../services/StoryData/CharacterService";
+
+type GetSingleCharacterByIdParams = {
+  characterId: string;
+};
+
+// @route GET http://localhost:3500/characters/:characterId
+// @access Private
+export const getSingleCharacterByIdController: RequestHandler<
+  GetSingleCharacterByIdParams,
+  unknown,
+  unknown,
+  unknown
+> = async (req, res, next) => {
+  try {
+    const character = await getSingleCharacterByIdService({
+      characterId: req.params.characterId,
+    });
+    if (character) {
+      return res.status(201).json(character);
+    } else {
+      return res.status(400).json({ message: "Something went wrong" });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
 
 type GetAllCharacterNameTagsParams = {
   storyId: string;
@@ -54,6 +82,42 @@ export const characterGetByStoryIdAndNameController: RequestHandler<
     const character = await characterGetByStoryIdAndNameService({
       storyId: req.params.storyId,
       name: req.body.name,
+    });
+    if (character) {
+      return res.status(201).json(character);
+    } else {
+      return res.status(400).json({ message: "Something went wrong" });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
+type CharacterGetAllByStoryIdAndTypeParams = {
+  storyId: string;
+};
+
+export type AllPossibleCharacterTypes =
+  | "all"
+  | "maincharacter"
+  | "minorcharacter"
+  | "emptycharacter";
+
+type CharacterGetAllByStoryIdAndTypeQuery = {
+  type: AllPossibleCharacterTypes;
+};
+// @route GET http://localhost:3500/characters/stories/:storyId/type
+// @access Private
+export const characterGetAllByStoryIdAndTypeController: RequestHandler<
+  CharacterGetAllByStoryIdAndTypeParams,
+  unknown,
+  unknown,
+  CharacterGetAllByStoryIdAndTypeQuery
+> = async (req, res, next) => {
+  try {
+    const character = await characterGetAllByStoryIdAndTypeService({
+      storyId: req.params.storyId,
+      type: req.query.type,
     });
     if (character) {
       return res.status(201).json(character);

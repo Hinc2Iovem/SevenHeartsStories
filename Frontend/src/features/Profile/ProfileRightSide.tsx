@@ -33,7 +33,7 @@ export default function ProfileRightSide({
   }, [data, storiesType]);
 
   return (
-    <div className="grid grid-cols-[repeat(auto-fill,minmax(25rem,1fr))] gap-[1rem] justify-items-center justify-center w-full">
+    <div className="grid grid-cols-[repeat(auto-fill,minmax(20rem,1fr))] gap-[1rem] justify-items-center justify-center w-full">
       {memoizedData?.map((st) => (
         <ProfileRightSideItem key={st._id} {...st} />
       ))}

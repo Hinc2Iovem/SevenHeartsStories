@@ -2,11 +2,13 @@ import express from "express";
 import {
   characterCreateController,
   characterDeleteController,
+  characterGetAllByStoryIdAndTypeController,
   characterGetAllByStoryIdController,
   characterGetByStoryIdAndNameController,
   characterUpdateController,
   characterUpdateImgController,
   getAllCharacterNameTagsController,
+  getSingleCharacterByIdController,
 } from "../../controllers/StoryData/CharacterController";
 
 // Default route === /characters
@@ -20,13 +22,17 @@ characterRoute
   .get(characterGetByStoryIdAndNameController);
 characterRoute
   .route("/stories/:storyId")
-  .get(characterGetAllByStoryIdController);
+  .get(characterGetAllByStoryIdController)
+  .post(characterCreateController);
 
-characterRoute.route("/stories/:storyId").post(characterCreateController);
+characterRoute
+  .route("/stories/:storyId/type")
+  .get(characterGetAllByStoryIdAndTypeController);
 
 characterRoute.route("/:characterId/img").patch(characterUpdateImgController);
 
 characterRoute
   .route("/:characterId")
+  .get(getSingleCharacterByIdController)
   .patch(characterUpdateController)
   .delete(characterDeleteController);

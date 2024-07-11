@@ -43,7 +43,7 @@ export default function CharacterItemMainHero({
   });
 
   const [imagePreview, setPreview] = useState<string | ArrayBuffer | null>(
-    null
+    img ? img : null
   );
 
   const uploadImgMutation = useUpdateImg({
