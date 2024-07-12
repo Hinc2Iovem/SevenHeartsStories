@@ -6,6 +6,7 @@ import {
   episodesGetBySeasonIdController,
   episodeUpdateSeasonIdController,
   episodeGetByEpisodeIdController,
+  episodeUpdateOrderController,
 } from "../../controllers/StoryData/EpisodeController";
 
 // Default route === /episodes
@@ -21,6 +22,8 @@ episodeRoute
   .route("/seasons/:seasonId")
   .post(episodeCreateController)
   .get(episodesGetBySeasonIdController);
+
+episodeRoute.route("/:episodeId/newOrder").patch(episodeUpdateOrderController);
 
 episodeRoute
   .route("/:episodeId/seasons/:newSeasonId")

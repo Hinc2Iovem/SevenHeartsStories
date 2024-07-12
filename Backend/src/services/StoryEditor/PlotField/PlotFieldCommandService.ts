@@ -36,7 +36,7 @@ export const plotFieldCommandCreateService = async ({
 
   const commandOrder = existingPlotFieldCommands.length
     ? existingPlotFieldCommands.length
-    : 1;
+    : 0;
 
   return await PlotFieldCommand.create({ topologyBlockId, commandOrder });
 };

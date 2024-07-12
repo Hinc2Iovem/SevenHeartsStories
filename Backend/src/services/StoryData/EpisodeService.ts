@@ -68,11 +68,11 @@ export const episodeCreateService = async ({
 
   checkCurrentLanguage({ currentLanguage });
 
-  const allEpisodesBySeasonId = await Episode.find({ seasonId }).lean();
-  const episodeOrder = allEpisodesBySeasonId.length
-    ? allEpisodesBySeasonId.length + 1
-    : 1;
+  const allEpisodesBySeasonId = await Episode.find({
+    seasonId,
+  }).countDocuments();
 
+  const episodeOrder = allEpisodesBySeasonId ? allEpisodesBySeasonId : 0;
   const newEpisode = await Episode.create({
     episodeOrder,
     seasonId,
@@ -120,7 +120,7 @@ export const episodeCreateService = async ({
   });
 
   await PlotFieldCommand.create({
-    commandOrder: 1,
+    commandOrder: 0,
     topologyBlockId: firstTopologyBlock._id,
   });
 
@@ -143,6 +143,84 @@ export const episodeResetStatusService = async ({
   }
 
   existingEpisode.episodeStatus = EpisodeStatuses.Doing;
+
+  return await existingEpisode.save();
+};
+
+type EpisodeUpdateOrderTypes = {
+  episodeId: string;
+  newOrder: number;
+};
+
+export const episodeUpdateOrderService = async ({
+  episodeId,
+  newOrder,
+}: EpisodeUpdateOrderTypes) => {
+  validateMongoId({ value: episodeId, valueName: "Episode" });
+
+  const existingEpisode = await Episode.findById(episodeId).exec();
+
+  if (!existingEpisode) {
+    throw createHttpError(400, "Episode with such id doesn't exist");
+  }
+
+  const seasonId = existingEpisode.seasonId;
+  const oldOrder: number = existingEpisode.episodeOrder as number;
+
+  const difference = oldOrder - newOrder;
+  if (difference === 1 || difference === -1) {
+    const prevEpisode = await Episode.findOne({
+      seasonId,
+      episodeOrder: newOrder,
+    }).exec();
+    if (prevEpisode) {
+      prevEpisode.episodeOrder = oldOrder;
+      await prevEpisode.save();
+    }
+    existingEpisode.episodeOrder = newOrder;
+  } else {
+    const allEpisodeIds = [];
+
+    if (oldOrder > newOrder) {
+      for (let i = newOrder; i < oldOrder; i++) {
+        const episode = await Episode.findOne({
+          seasonId,
+          episodeOrder: i,
+        }).exec();
+        if (episode) {
+          allEpisodeIds.push(episode._id);
+        }
+      }
+
+      for (const episodeId of allEpisodeIds) {
+        const episode = await Episode.findById(episodeId).exec();
+        if (episode) {
+          episode.episodeOrder = (episode.episodeOrder as number) + 1;
+          await episode.save();
+        }
+      }
+    } else {
+      for (let i = oldOrder + 1; i <= newOrder; i++) {
+        const episode = await Episode.findOne({
+          seasonId,
+          episodeOrder: i,
+        }).exec();
+        if (episode) {
+          allEpisodeIds.push(episode._id);
+        }
+      }
+
+      for (const episodeId of allEpisodeIds) {
+        const episode = await Episode.findById(episodeId).exec();
+        if (episode) {
+          episode.episodeOrder = (episode.episodeOrder as number) - 1;
+          await episode.save();
+        }
+      }
+    }
+
+    existingEpisode.episodeOrder = newOrder;
+  }
 
   return await existingEpisode.save();
 };

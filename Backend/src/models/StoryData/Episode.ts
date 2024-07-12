@@ -13,7 +13,6 @@ export const episodeSchema = new mongoose.Schema({
   },
   episodeOrder: {
     type: Number,
-    default: 1,
   },
   episodeStatus: {
     type: String,

@@ -6,6 +6,7 @@ import {
   episodeGetByEpisodeIdService,
   episodeResetStatusService,
   episodesGetBySeasonIdService,
+  episodeUpdateOrderService,
 } from "../../services/StoryData/EpisodeService";
 
 type EpisodeGetByEpisodeIdParams = {
@@ -93,6 +94,36 @@ export const episodeCreateController: RequestHandler<
   }
 };
 
+type EpisodeUpdateOrderParams = {
+  episodeId: string;
+};
+
+type EpisodeUpdateOrderBody = {
+  newOrder: number;
+};
+
+// @route PATCH http://localhost:3500/episodes/:episodeId/newOrder
+// @access Private
+export const episodeUpdateOrderController: RequestHandler<
+  EpisodeUpdateOrderParams,
+  unknown,
+  EpisodeUpdateOrderBody,
+  unknown
+> = async (req, res, next) => {
+  try {
+    const episode = await episodeUpdateOrderService({
+      episodeId: req.params.episodeId,
+      newOrder: req.body.newOrder,
+    });
+    if (episode) {
+      return res.status(201).json(episode);
+    } else {
+      return res.status(400).json({ message: "Something went wrong" });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
 type EpisodeUpdateSeasonIdParams = {
   episodeId: string;
   newSeasonId: string;

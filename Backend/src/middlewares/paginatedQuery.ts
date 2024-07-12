@@ -56,7 +56,6 @@ export default function paginatedQuery<T extends Document>(
         const overAllAmountOfStories = await model.countDocuments({
           storyStatus,
         });
-        console.log("overAllAmountOfStories: ", overAllAmountOfStories);
         results.amountOfStories = overAllAmountOfStories;
       } else {
         results.results = await model

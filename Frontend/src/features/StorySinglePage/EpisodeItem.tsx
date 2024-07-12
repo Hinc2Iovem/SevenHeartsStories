@@ -3,12 +3,18 @@ import { Link } from "react-router-dom";
 import useGetTranslationEpisode from "../../hooks/Fetching/Translation/useGetTranslationEpisode";
 import useEscapeOfModal from "../../hooks/UI/useEscapeOfModal";
 import { EpisodeTypes } from "../../types/StoryData/Episode/EpisodeTypes";
+import { DraggableProvided } from "react-beautiful-dnd";
+
+type EpisodeItemTypes = {
+  provided: DraggableProvided;
+} & EpisodeTypes;
 
 export default function EpisodeItem({
   _id,
   episodeOrder,
   episodeStatus,
-}: EpisodeTypes) {
+  provided,
+}: EpisodeItemTypes) {
   const [isEpisodeInfoOpen, setIsEpisodeInfoOpen] = useState(false);
   const { data } = useGetTranslationEpisode({ episodeId: _id });
   const [episodeTitle, setEpisodeTitle] = useState("");
@@ -32,15 +38,22 @@ export default function EpisodeItem({
   }, [data]);
 
   return (
-    <li>
-      <button
+    <li
+      {...provided.draggableProps}
+      {...provided.dragHandleProps}
+      ref={provided.innerRef}
+      className="w-full bg-white gap-[1rem] flex flex-col"
+    >
+      <div
         onClick={() => setIsEpisodeInfoOpen((prev) => !prev)}
         className={` ${
           isEpisodeInfoOpen ? "" : " hover:scale-[1.01]"
-        } outline-gray-400 text-start text-[1.5rem] text-gray-700 bg-white w-full rounded-md shadow-sm shadow-gray-300 p-[1rem]`}
+        } outline-gray-400 text-start bg-white w-full rounded-md shadow-sm shadow-gray-300 p-[1rem]`}
       >
-        {episodeTitle.trim().length ? episodeTitle : `Эпизод ${episodeOrder}`}
-      </button>
+        <h3 className="text-[1.5rem] text-gray-700">
+          {episodeTitle.trim().length ? episodeTitle : `Эпизод ${episodeOrder}`}
+        </h3>
+      </div>
       <div
         className={`${
           isEpisodeInfoOpen ? "" : "hidden"

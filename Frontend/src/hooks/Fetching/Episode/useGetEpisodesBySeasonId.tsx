@@ -15,5 +15,6 @@ export default function useGetEpisodesBySeasonId({
       await axiosCustomized
         .get<EpisodeTypes[]>(`/episodes/seasons/${seasonId}`)
         .then((r) => r.data),
+    select: (data) => data.sort((a, b) => a.episodeOrder - b.episodeOrder),
   });
 }

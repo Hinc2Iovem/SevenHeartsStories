@@ -430,8 +430,6 @@ export const getTranslationSeasonService = async ({
   currentLanguage,
 }: GetTranslationSeasonTypes) => {
   validateMongoId({ value: seasonId, valueName: "season" });
-  console.log("seasonId", seasonId);
-  console.log("currentLanguage", currentLanguage);
 
   const existingSeason = await Season.findById(seasonId).exec();
   if (!existingSeason) {
@@ -449,7 +447,6 @@ export const getTranslationSeasonService = async ({
     language: currentLanguage,
   }).exec();
 
-  console.log("existingTranslation", existingTranslation);
 
   if (!existingTranslation) {
     return null;
