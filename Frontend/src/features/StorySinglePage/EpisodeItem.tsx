@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import useGetTranslationEpisode from "../../hooks/Fetching/Translation/useGetTranslationEpisode";
 import useEscapeOfModal from "../../hooks/UI/useEscapeOfModal";
 import { EpisodeTypes } from "../../types/StoryData/Episode/EpisodeTypes";
-import { DraggableProvided } from "react-beautiful-dnd";
+import { DraggableProvided } from "@hello-pangea/dnd";
 
 type EpisodeItemTypes = {
   provided: DraggableProvided;

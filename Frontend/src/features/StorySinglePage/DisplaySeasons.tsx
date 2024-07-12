@@ -1,9 +1,7 @@
 import { useEffect, useRef, useState } from "react";
-import { DragDropContext, Draggable, DropResult } from "react-beautiful-dnd";
 import add from "../../assets/images/shared/add.png";
 import arrowDown from "../../assets/images/shared/arrowDown.png";
 import arrowUp from "../../assets/images/shared/arrowUp.png";
-import { StrictModeDroppable } from "../../helpers/StrictModeDroppable";
 import useGetEpisodesBySeasonId from "../../hooks/Fetching/Episode/useGetEpisodesBySeasonId";
 import useGetTranslationSeason from "../../hooks/Fetching/Translation/useGetTranslationSeason";
 import useUpdateEpisodeOrder from "../../hooks/Patching/Episode/useUpdateEpisodeOrder";
@@ -12,6 +10,13 @@ import useOutOfModal from "../../hooks/UI/useOutOfModal";
 import { SeasonTypes } from "../../types/StoryData/Season/SeasonTypes";
 import ButtonHoverPromptModal from "../shared/ButtonAsideHoverPromptModal/ButtonHoverPromptModal";
 import EpisodeItem from "./EpisodeItem";
+import {
+  DragDropContext,
+  Draggable,
+  Droppable,
+  DroppableProvided,
+  DropResult,
+} from "@hello-pangea/dnd";
 
 type DisplaySeasonsTypes = {
   index: number;
@@ -96,8 +101,8 @@ export default function DisplaySeasons({ _id, index }: DisplaySeasonsTypes) {
       </div>
 
       <DragDropContext onDragEnd={handleOnDragEnd}>
-        <StrictModeDroppable droppableId="episodes">
-          {(provided) => (
+        <Droppable droppableId="episodes">
+          {(provided: DroppableProvided) => (
             <ul
               {...provided.droppableProps}
               ref={provided.innerRef}
@@ -123,7 +128,7 @@ export default function DisplaySeasons({ _id, index }: DisplaySeasonsTypes) {
               {provided.placeholder}
             </ul>
           )}
-        </StrictModeDroppable>
+        </Droppable>
       </DragDropContext>
 
       <div className={`${showModal ? "" : "hidden"} w-[25rem]`} ref={modalRef}>
