@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import wardrobe from "../../assets/images/Story/wardrobe.png";
 import useGetCharacterById from "../../hooks/Fetching/Character/useGetCharacterById";
-import useGetTranslationCharacters from "../../hooks/Fetching/Translation/useGetTranslationCharacters";
+import useGetTranslationCharacters from "../../hooks/Fetching/Translation/Characters/useGetTranslationCharacters";
 import useUpdateImg from "../../hooks/Patching/useUpdateImg";
 import { TranslationCharacterTypes } from "../../types/Additional/TranslationTypes";
 import PreviewImage from "../shared/utilities/PreviewImage";

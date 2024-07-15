@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import useGetTranslationCharacters from "../../../hooks/Fetching/Translation/Characters/useGetTranslationCharacters";
-import { CharacterGetTypes } from "../../../types/StoryData/Character/CharacterTypes";
+import useGetTranslationCharacters from "../../../../../../../hooks/Fetching/Translation/Characters/useGetTranslationCharacters";
+import { CharacterGetTypes } from "../../../../../../../types/StoryData/Character/CharacterTypes";
 
 type EmotionCharacterNameTypes = {
   setCharacterName: React.Dispatch<React.SetStateAction<string>>;
@@ -8,7 +8,7 @@ type EmotionCharacterNameTypes = {
   setShowCharacterModal: React.Dispatch<React.SetStateAction<boolean>>;
 } & CharacterGetTypes;
 
-export default function EmotionHeaderCharacterNames({
+export default function PlotfieldCharactersPrompt({
   _id,
   img,
   setCharacterName,

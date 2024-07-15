@@ -1,5 +1,6 @@
 import express from "express";
 import {
+  createSayBlankController,
   createSayController,
   deleteSayController,
   getSayByPlotFieldCommandIdController,
@@ -19,6 +20,10 @@ sayRoute
     "/:plotFieldCommandId/say/characters/:characterId/characterEmotions/:characterEmotionId"
   )
   .post(createSayController);
+
+sayRoute
+  .route("/:plotFieldCommandId/say/characters/:characterId")
+  .post(createSayBlankController);
 
 sayRoute
   .route(

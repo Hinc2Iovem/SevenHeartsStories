@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { CharacterGetTypes } from "../../types/StoryData/Character/CharacterTypes";
 import wardrobe from "../../assets/images/Story/wardrobe.png";
-import useGetTranslationCharacters from "../../hooks/Fetching/Translation/useGetTranslationCharacters";
+import useGetTranslationCharacters from "../../hooks/Fetching/Translation/Characters/useGetTranslationCharacters";
 import useUpdateImg from "../../hooks/Patching/useUpdateImg";
 import PreviewImage from "../shared/utilities/PreviewImage";
 import CharacterItemMainHero from "./CharacterMainHero";
@@ -43,7 +43,7 @@ export default function CharacterItem({
           onClick={() => setIsFrontSide((prev) => !prev)}
           className={`${
             isFrontSide ? "hover:scale-[1.01]" : ""
-          } cursor-pointer flex flex-col rounded-md bg-white w-full h-[30rem] border-[2px] border-dashed border-gray-300 relative`}
+          } cursor-pointer flex flex-col rounded-md bg-white w-full h-full min-h-[30rem] border-[2px] border-dashed border-gray-300 relative`}
         >
           <CharacterItemMainHero
             img={img}
@@ -57,7 +57,7 @@ export default function CharacterItem({
           onClick={() => setIsFrontSide((prev) => !prev)}
           className={`${
             isFrontSide ? "hover:scale-[1.01]" : ""
-          } cursor-pointer flex flex-col rounded-md bg-white w-full h-[30rem] border-[2px] border-dashed border-gray-300 relative`}
+          } cursor-pointer flex flex-col rounded-md bg-white w-full h-full min-h-[30rem] border-[2px] border-dashed border-gray-300 relative`}
         >
           <CharacterItemMinor
             img={img}
@@ -74,7 +74,7 @@ export default function CharacterItem({
           onClick={() => setIsFrontSide((prev) => !prev)}
           className={`${
             isFrontSide ? "hover:scale-[1.01]" : ""
-          } cursor-pointer flex flex-col rounded-md bg-white w-full h-[30rem] border-[2px] border-dashed border-gray-300 relative`}
+          } cursor-pointer flex flex-col rounded-md bg-white w-full h-full min-h-[30rem] border-[2px] border-dashed border-gray-300 relative`}
         >
           <CharacterItemEmpty
             img={img}

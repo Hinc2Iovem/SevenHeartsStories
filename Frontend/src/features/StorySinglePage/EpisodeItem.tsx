@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import useGetTranslationEpisode from "../../hooks/Fetching/Translation/useGetTranslationEpisode";
 import useEscapeOfModal from "../../hooks/UI/useEscapeOfModal";
 import { EpisodeTypes } from "../../types/StoryData/Episode/EpisodeTypes";
@@ -15,6 +15,7 @@ export default function EpisodeItem({
   episodeStatus,
   provided,
 }: EpisodeItemTypes) {
+  const { storyId } = useParams();
   const [isEpisodeInfoOpen, setIsEpisodeInfoOpen] = useState(false);
   const { data } = useGetTranslationEpisode({ episodeId: _id });
   const [episodeTitle, setEpisodeTitle] = useState("");
@@ -74,7 +75,7 @@ export default function EpisodeItem({
         </p>
         <Link
           className="mt-auto w-fit self-end text-[1.5rem] text-gray-700 hover:text-primary-pastel-blue transition-all"
-          to={`/editor/episodes/${_id}`}
+          to={`/stories/${storyId}/editor/episodes/${_id}`}
         >
           На страницу Эпизода
         </Link>

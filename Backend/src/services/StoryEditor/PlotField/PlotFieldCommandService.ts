@@ -1,6 +1,6 @@
 import createHttpError from "http-errors";
-import { validateMongoId } from "../../../utils/validateMongoId";
 import PlotFieldCommand from "../../../models/StoryEditor/PlotField/PlotFieldCommand";
+import { validateMongoId } from "../../../utils/validateMongoId";
 
 type GetAllPlotFieldCommandsTypes = {
   topologyBlockId: string;

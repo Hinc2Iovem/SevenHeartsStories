@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
-import { axiosCustomized } from "../../../api/axios";
-import { TranslationCharacterTypes } from "../../../types/Additional/TranslationTypes";
+import { axiosCustomized } from "../../../../api/axios";
+import { TranslationCharacterTypes } from "../../../../types/Additional/TranslationTypes";
 
 export default function useGetTranslationCharacters({
   characterId,

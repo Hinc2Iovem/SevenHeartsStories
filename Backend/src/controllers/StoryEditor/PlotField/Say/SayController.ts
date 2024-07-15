@@ -1,5 +1,6 @@
 import { RequestHandler } from "express";
 import {
+  createSayBlankService,
   createSayService,
   deleteSayService,
   getSayByPlotFieldCommandIdService,
@@ -39,7 +40,7 @@ type CreateSayParams = {
   characterEmotionId: string;
 };
 
-export type SayType = "author" | "character";
+export type SayType = "author" | "character" | "notify" | "hint";
 
 type CreateSayBody = {
   text: string | undefined;
@@ -58,6 +59,40 @@ export const createSayController: RequestHandler<
     const say = await createSayService({
       characterId: req.params.characterId,
       characterEmotionId: req.params.characterEmotionId,
+      plotFieldCommandId: req.params.plotFieldCommandId,
+      type: req.body.type,
+    });
+    if (say) {
+      return res.status(201).json(say);
+    } else {
+      return res.status(400).json({ message: "Something went wrong" });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
+type CreateSayBlankParams = {
+  plotFieldCommandId: string;
+  characterId: string;
+};
+
+type CreateSayBlankBody = {
+  text: string | undefined;
+  type: SayType | undefined;
+};
+
+// @route POST http://localhost:3500/plotFieldCommands/:plotFieldCommandId/say/characters/:characterId
+// @access Private
+export const createSayBlankController: RequestHandler<
+  CreateSayBlankParams,
+  unknown,
+  CreateSayBlankBody,
+  unknown
+> = async (req, res, next) => {
+  try {
+    const say = await createSayBlankService({
+      characterId: req.params.characterId,
       plotFieldCommandId: req.params.plotFieldCommandId,
       type: req.body.type,
     });

@@ -32,6 +32,8 @@ type CreateSayTypes = {
   plotFieldCommandId: string;
 };
 
+const AllPossibleTypeVariations = ["author", "character", "hint", "notify"];
+
 export const createSayService = async ({
   characterEmotionId,
   characterId,
@@ -51,6 +53,15 @@ export const createSayService = async ({
     throw createHttpError(400, "Type is required");
   }
 
+  if (!AllPossibleTypeVariations.includes(type.toLowerCase())) {
+    throw createHttpError(
+      400,
+      `Such type isn't supported, possible types: ${AllPossibleTypeVariations.map(
+        (tv) => tv
+      )}`
+    );
+  }
+
   if (type?.toLowerCase() === "author") {
     return await Say.create({ plotFieldCommandId, type: "author" });
   } else if (type?.toLowerCase() === "character") {
@@ -62,6 +73,55 @@ export const createSayService = async ({
     return await Say.create({
       characterId,
       characterEmotionId,
+      plotFieldCommandId,
+      type: "character",
+    });
+  } else if (type?.toLowerCase() === "notify") {
+    return await Say.create({ plotFieldCommandId, type: "notify" });
+  } else if (type?.toLowerCase() === "hint") {
+    return await Say.create({ plotFieldCommandId, type: "hint" });
+  }
+};
+
+type CreateSayBlankTypes = {
+  characterId: string;
+  type: SayType | undefined;
+  plotFieldCommandId: string;
+};
+
+export const createSayBlankService = async ({
+  characterId,
+  type,
+  plotFieldCommandId,
+}: CreateSayBlankTypes) => {
+  validateMongoId({ value: plotFieldCommandId, valueName: "PlotFieldCommand" });
+
+  const existingPlotFieldCommand = await PlotFieldCommand.findById(
+    plotFieldCommandId
+  ).lean();
+  if (!existingPlotFieldCommand) {
+    throw createHttpError(400, "PlotFieldCommand with such id wasn't found");
+  }
+
+  if (!type?.trim().length) {
+    throw createHttpError(400, "Type is required");
+  }
+
+  if (!AllPossibleTypeVariations.includes(type.toLowerCase())) {
+    throw createHttpError(
+      400,
+      `Such type isn't supported, possible types: ${AllPossibleTypeVariations.map(
+        (tv) => tv
+      )}`
+    );
+  }
+
+  if (type?.toLowerCase() === "author") {
+    return await Say.create({ plotFieldCommandId, type: "author" });
+  } else if (type?.toLowerCase() === "character") {
+    validateMongoId({ value: characterId, valueName: "Character" });
+    return await Say.create({
+      characterId,
       plotFieldCommandId,
       type: "character",
     });

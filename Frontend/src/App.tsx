@@ -2,6 +2,7 @@ import { Route, Routes } from "react-router-dom";
 import Login from "./features/Auth/Login/Login";
 import Register from "./features/Auth/Register/Register";
 import CharacterListPage from "./features/Character/CharacterListPage";
+import EpisodeEditor from "./features/Editor/EpisodeEditor";
 import Emotion from "./features/Emotion/Emotion";
 import Missing from "./features/Missing/Missing";
 import Profile from "./features/Profile/Profile";
@@ -26,6 +27,10 @@ export default function App() {
         <Route path=":storyId/emotions" element={<Emotion />} />
         <Route path=":storyId/wardrobes" element={<Wardrobe />} />
         <Route path=":storyId/characters" element={<CharacterListPage />} />
+        <Route
+          path=":storyId/editor/episodes/:episodeId"
+          element={<EpisodeEditor />}
+        />
       </Route>
 
       <Route element={<ProfileLayout />} path="profile">

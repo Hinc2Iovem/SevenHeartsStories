@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import useGetAllCharactersByStoryId from "../../../hooks/Fetching/Character/useGetAllCharactersByStoryId";
-import useGetTranslationCharacters from "../../../hooks/Fetching/Translation/useGetTranslationCharacters";
+import useGetTranslationCharacters from "../../../hooks/Fetching/Translation/Characters/useGetTranslationCharacters";
 import useEscapeOfModal from "../../../hooks/UI/useEscapeOfModal";
 import { CharacterGetTypes } from "../../../types/StoryData/Character/CharacterTypes";
 
