@@ -1,5 +1,4 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import {
   AllPossiblePlotFieldCommands,
@@ -7,50 +6,54 @@ import {
 } from "../../../../../../const/PLOTFIELD_COMMANDS";
 import useGetAllCharacterNames from "../../../../../../hooks/Fetching/Translation/Characters/useGetAllCharacterNames";
 import useGetTranslationCharactersQueries from "../../../../../../hooks/Fetching/Translation/Characters/useGetTranslationCharactersQueries";
-import { axiosCustomized } from "../../../../../../api/axios";
 import { CommandSayVariationTypes } from "../../../../../../types/StoryEditor/PlotField/Say/SayTypes";
-import useCreateSayCommand from "../hooks/Say/useCreateSayCommand";
 import useCreateSayCharacterCommand from "../hooks/Say/useCreateSayCharacterCommand";
-// queryKey: ["plotfield", "topologyBlock", topologyBlockId]
+import useCreateSayCommand from "../hooks/Say/useCreateSayCommand";
+import useUpdateCommandName from "../hooks/useUpdateCommandName";
+import PlotFieldBlankCreateCharacter from "./PlotFieldBlankCreateCharacter";
 
 type PlotFieldBlankTypes = {
-  plotFieldIdCommandId: string;
+  plotFieldCommandId: string;
   topologyBlockId: string;
 };
 
 export default function PlotfieldBlank({
-  plotFieldIdCommandId,
+  plotFieldCommandId,
   topologyBlockId,
 }: PlotFieldBlankTypes) {
   const { storyId } = useParams();
+  const [showCreateCharacterModal, setShowCreateCharacterModal] =
+    useState(false);
 
   const translatedCharacters = useGetTranslationCharactersQueries({
     storyId: storyId ?? "",
   });
+
   const allNames = useGetAllCharacterNames({ translatedCharacters });
   const [characterId, setCharacterId] = useState("");
   const [value, setValue] = useState("");
 
-  const queryClient = useQueryClient();
-  const updateCommandName = useMutation({
-    mutationFn: async ({ valueForSay }: { valueForSay: boolean }) =>
-      await axiosCustomized.patch(
-        `/plotField/${plotFieldIdCommandId}/topologyBlocks/commandName`,
-        {
-          commandName: valueForSay ? "say" : value,
-        }
-      ),
+  const currentInput = useRef<HTMLInputElement | null>(null);
+
+  useEffect(() => {
+    if (!showCreateCharacterModal) {
+      currentInput.current?.focus();
+    }
+  }, [showCreateCharacterModal]);
+
+  const updateCommandName = useUpdateCommandName({
+    plotFieldCommandId,
+    value,
+    topologyBlockId,
   });
 
   const createSayCharacterCommand = useCreateSayCharacterCommand({
     characterId,
-    plotFieldIdCommandId,
-    topologyBlockId,
+    plotFieldCommandId,
   });
 
   const createSayCommand = useCreateSayCommand({
-    plotFieldIdCommandId,
-    topologyBlockId,
+    plotFieldCommandId,
   });
 
   const handleSetCharacterId = (index: number) => {
@@ -76,7 +79,6 @@ export default function PlotfieldBlank({
     type?: CommandSayVariationTypes;
   }) => {
     if (submittedByCharacter) {
-      updateCommandName.mutate({ valueForSay: true });
       if (type) {
         if (type === "character") {
           createSayCharacterCommand.mutate({ type });
@@ -84,6 +86,7 @@ export default function PlotfieldBlank({
           createSayCommand.mutate({ type });
         }
       }
+      updateCommandName.mutate({ valueForSay: true });
     } else if (!submittedByCharacter) {
       updateCommandName.mutate({ valueForSay: false });
     }
@@ -102,12 +105,16 @@ export default function PlotfieldBlank({
     ) {
       let type: CommandSayVariationTypes = "" as CommandSayVariationTypes;
       let index = -1;
-      if (value !== "hint" && value !== "author" && value !== "notify") {
+      if (
+        value.toLowerCase() !== "hint" &&
+        value.toLowerCase() !== "author" &&
+        value.toLowerCase() !== "notify"
+      ) {
         type = "character";
         index = allNames.findIndex((v) => v === value.toLowerCase());
         handleSetCharacterId(index);
       } else {
-        type = value;
+        type = value as CommandSayVariationTypes;
       }
 
       submittedByCharacter = true;
@@ -116,16 +123,16 @@ export default function PlotfieldBlank({
       submittedByCharacter = false;
       handleSubmit({ submittedByCharacter });
     } else {
-      console.log("Такой команды или персонажа с таким именем не существует");
-      // Дать возможность создать перса тут
+      setShowCreateCharacterModal(true);
       return;
     }
   };
 
   return (
-    <div className="shadow-sm shadow-gray-300 bg-white rounded-md px-[1rem] py-[.5rem] relative">
-      <form onSubmit={handleFormSubmit}>
+    <div className="shadow-sm shadow-gray-300 bg-white rounded-md relative">
+      <form className="px-[1rem] py-[.5rem]" onSubmit={handleFormSubmit}>
         <input
+          ref={currentInput}
           type="text"
           value={value}
           placeholder="author"
@@ -133,6 +140,13 @@ export default function PlotfieldBlank({
           className="outline-none text-[1.5rem] text-gray-600 w-full"
         />
       </form>
+      <PlotFieldBlankCreateCharacter
+        setShowModal={setShowCreateCharacterModal}
+        characterName={value}
+        plotFieldCommandId={plotFieldCommandId}
+        topologyBlockId={topologyBlockId}
+        showModal={showCreateCharacterModal}
+      />
     </div>
   );
 }

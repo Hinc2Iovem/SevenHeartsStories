@@ -3,9 +3,36 @@ import {
   characterEmotionCreateService,
   characterEmotionDeleteService,
   characterEmotionGetByCharacterIdService,
+  characterEmotionGetByIdService,
   characterEmotionUpdateImgService,
   characterEmotionUpdateService,
 } from "../../services/StoryData/CharacterEmotionService";
+
+type CharacterEmotionGetByIdParams = {
+  characterEmotionId: string;
+};
+
+// @route GET http://localhost:3500/characterEmotions/:characterEmotionId
+// @access Private
+export const characterEmotionGetByIdController: RequestHandler<
+  CharacterEmotionGetByIdParams,
+  unknown,
+  unknown,
+  unknown
+> = async (req, res, next) => {
+  try {
+    const character = await characterEmotionGetByIdService({
+      characterEmotionId: req.params.characterEmotionId,
+    });
+    if (character) {
+      return res.status(201).json(character);
+    } else {
+      return res.status(400).json({ message: "Something went wrong" });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
 
 type CharacterEmotionGetByCharacterIdParams = {
   characterId: string;

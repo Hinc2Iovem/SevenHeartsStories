@@ -20,7 +20,7 @@ export type AllPossiblePlotFieldComamndsTypes =
   | "move"
   | "music"
   | "name"
-  | "author"
+  | "say"
   | "sound"
   | "suit"
   | "wait"

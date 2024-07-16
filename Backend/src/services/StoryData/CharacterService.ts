@@ -73,7 +73,7 @@ export const characterGetAllByStoryIdAndTypeService = async ({
       400,
       `Type: ${type} is not supported, possible types are: ${CharacterTypesWithAll.map(
         (c) => c
-      )}.`
+      )}`
     );
   }
   let existingCharacters;
@@ -165,7 +165,11 @@ export const characterCreateService = async ({
   }
 
   checkCurrentLanguage({ currentLanguage });
-  if (type?.trim().length && !CharacterTypes.includes(type?.toLowerCase())) {
+
+  if (!type?.trim().length) {
+    throw createHttpError(400, "Type is required");
+  }
+  if (!CharacterTypes.includes(type?.toLowerCase())) {
     throw createHttpError(
       400,
       "Character Type may be equal only to (maincharacter, minorcharacter or emptycharacter)"
@@ -258,6 +262,54 @@ export const characterCreateService = async ({
       text: name,
     });
   }
+};
+
+type CharacterCreateBlankTypes = {
+  storyId: string;
+  name: string | undefined;
+  type: CharacterTypeAlias | undefined;
+  currentLanguage: string | undefined;
+};
+
+export const characterCreateBlankService = async ({
+  currentLanguage,
+  name,
+  storyId,
+  type,
+}: CharacterCreateBlankTypes) => {
+  validateMongoId({ value: storyId, valueName: "Story" });
+  if (!name?.trim().length) {
+    throw createHttpError(400, "Name is required");
+  }
+  if (!currentLanguage?.trim().length) {
+    throw createHttpError(400, "Language is required");
+  }
+
+  checkCurrentLanguage({ currentLanguage });
+  if (!type?.trim().length) {
+    throw createHttpError(400, "Type is required");
+  }
+
+  if (!CharacterTypes.includes(type?.toLowerCase())) {
+    throw createHttpError(
+      400,
+      "Character Type may be equal only to (maincharacter, minorcharacter or emptycharacter)"
+    );
+  }
+
+  const character = await Character.create({
+    name,
+    storyId,
+    type: type.toLowerCase(),
+  });
+  await Translation.create({
+    characterId: character._id,
+    textFieldName: TranslationTextFieldName.CharacterName,
+    language: currentLanguage,
+    text: name,
+  });
+
+  return character;
 };
 
 type UpdateCharacterTypes = {

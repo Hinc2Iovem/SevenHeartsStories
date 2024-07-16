@@ -1,5 +1,6 @@
 import { RequestHandler } from "express";
 import {
+  characterCreateBlankService,
   characterCreateService,
   characterDeleteService,
   characterGetAllByStoryIdAndTypeService,
@@ -191,6 +192,41 @@ export const characterCreateController: RequestHandler<
       nameTag: req.body.nameTag,
       type: req.body.type,
       img: req.body.img,
+    });
+    if (character) {
+      return res.status(201).json(character);
+    } else {
+      return res.status(400).json({ message: "Something went wrong" });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
+type CharacterCreateBlankParams = {
+  storyId: string;
+};
+
+type CharacterCreateBlankBody = {
+  name: string | undefined;
+  currentLanguage: string | undefined;
+  type: CharacterTypeAlias | undefined;
+};
+
+// @route POST http://localhost:3500/characters/stories/:storyId/blank
+// @access Private
+export const characterCreateBlankController: RequestHandler<
+  CharacterCreateBlankParams,
+  unknown,
+  CharacterCreateBlankBody,
+  unknown
+> = async (req, res, next) => {
+  try {
+    const character = await characterCreateBlankService({
+      storyId: req.params.storyId,
+      name: req.body.name,
+      currentLanguage: req.body.currentLanguage,
+      type: req.body.type,
     });
     if (character) {
       return res.status(201).json(character);

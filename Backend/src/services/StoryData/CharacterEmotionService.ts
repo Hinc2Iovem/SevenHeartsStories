@@ -3,6 +3,24 @@ import Character from "../../models/StoryData/Character";
 import CharacterEmotion from "../../models/StoryData/CharacterEmotion";
 import { validateMongoId } from "../../utils/validateMongoId";
 
+type GetCharacterEmotionByypes = {
+  characterEmotionId: string;
+};
+
+export const characterEmotionGetByIdService = async ({
+  characterEmotionId,
+}: GetCharacterEmotionByypes) => {
+  validateMongoId({ value: characterEmotionId, valueName: "CharacterEmotion" });
+
+  const existingCharacterEmotions = await CharacterEmotion.findById(
+    characterEmotionId
+  ).lean();
+  if (!existingCharacterEmotions) {
+    throw null;
+  }
+
+  return existingCharacterEmotions;
+};
 type GetCharacterEmotionByCharacterIdTypes = {
   characterId: string;
 };
@@ -15,7 +33,7 @@ export const characterEmotionGetByCharacterIdService = async ({
   const existingCharacterEmotions = await CharacterEmotion.find({
     characterId,
   }).lean();
-  if (!existingCharacterEmotions) {
+  if (!existingCharacterEmotions.length) {
     throw [];
   }
 

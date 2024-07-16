@@ -6,6 +6,7 @@ import {
   getSayByPlotFieldCommandIdService,
   updateSayCommandSideService,
   updateSayService,
+  updateSayTypeService,
 } from "../../../../services/StoryEditor/PlotField/Say/SayService";
 
 type GetSayByPlotFieldCommandIdParams = {
@@ -156,6 +157,70 @@ export const updateSayController: RequestHandler<
       sayId: req.params.sayId,
       characterId: req.params.characterId,
       characterEmotionId: req.params.characterEmotionId,
+    });
+    if (say) {
+      return res.status(201).json(say);
+    } else {
+      return res.status(400).json({ message: "Something went wrong" });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
+type UpdateSayCharacterOrEmotionIdParams = {
+  sayId: string;
+};
+
+type UpdateSayCharacterOrEmotionIdBody = {
+  characterId: string;
+  characterEmotionId: string;
+};
+
+// @route PATCH http://localhost:3500/plotFieldCommands/say/:sayId/characterOrEmotionId
+// @access Private
+export const updateSayCharacterOrEmotionIdController: RequestHandler<
+  UpdateSayCharacterOrEmotionIdParams,
+  unknown,
+  UpdateSayCharacterOrEmotionIdBody,
+  unknown
+> = async (req, res, next) => {
+  try {
+    const say = await updateSayService({
+      sayId: req.params.sayId,
+      characterId: req.body.characterId,
+      characterEmotionId: req.body.characterEmotionId,
+    });
+    if (say) {
+      return res.status(201).json(say);
+    } else {
+      return res.status(400).json({ message: "Something went wrong" });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
+type UpdateSayTypeParams = {
+  sayId: string;
+};
+
+type UpdateSayTypeBody = {
+  type: SayType | undefined;
+};
+
+// @route PATCH http://localhost:3500/plotFieldCommands/say/:sayId/type
+// @access Private
+export const updateSayTypeController: RequestHandler<
+  UpdateSayTypeParams,
+  unknown,
+  UpdateSayTypeBody,
+  unknown
+> = async (req, res, next) => {
+  try {
+    const say = await updateSayTypeService({
+      sayId: req.params.sayId,
+      type: req.body.type,
     });
     if (say) {
       return res.status(201).json(say);

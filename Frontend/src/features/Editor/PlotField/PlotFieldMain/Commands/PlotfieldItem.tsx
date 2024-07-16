@@ -1,5 +1,6 @@
 import { PlotFieldTypes } from "../../../../../types/StoryEditor/PlotField/PlotFieldTypes";
 import PlotfieldBlank from "./Blank/PlotfieldBlank";
+import CommandSayField from "./Say/CommandSayField";
 
 export default function PlotfieldItem({
   _id,
@@ -12,9 +13,11 @@ export default function PlotfieldItem({
     <li className="w-full flex gap-[1rem]">
       {!command ? (
         <PlotfieldBlank
-          plotFieldIdCommandId={_id}
+          plotFieldCommandId={_id}
           topologyBlockId={topologyBlockId}
         />
+      ) : command === "say" ? (
+        <CommandSayField plotFieldCommandId={_id} />
       ) : null}
     </li>
   );

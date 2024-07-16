@@ -4,6 +4,7 @@ import PlotFieldCommand from "../../../../models/StoryEditor/PlotField/PlotField
 import Say from "../../../../models/StoryEditor/PlotField/Say/Say";
 import { validateMongoId } from "../../../../utils/validateMongoId";
 import { Types } from "mongoose";
+import { AllCommandSayTypeVariationsWithoutCharacter } from "../../../../consts/COMMAND_SAY";
 
 type GetSayByPlotFieldCommandIdTypes = {
   plotFieldCommandId: string;
@@ -154,8 +155,47 @@ export const updateSayService = async ({
     existingSay.characterEmotionId = new Types.ObjectId(characterEmotionId);
   }
   if (characterId?.trim().length) {
+    existingSay.characterEmotionId = null;
     existingSay.characterId = new Types.ObjectId(characterId);
   }
+
+  return await existingSay.save();
+};
+
+type UpdateSayTypeTypes = {
+  type: SayType | undefined;
+  sayId: string;
+};
+
+export const updateSayTypeService = async ({
+  sayId,
+  type,
+}: UpdateSayTypeTypes) => {
+  validateMongoId({ value: sayId, valueName: "Say" });
+
+  const existingSay = await Say.findById(sayId).exec();
+  if (!existingSay) {
+    throw createHttpError(400, "Say with such id wasn't found");
+  }
+
+  if (!type?.trim().length) {
+    throw createHttpError(400, "type is required");
+  }
+
+  if (
+    !AllCommandSayTypeVariationsWithoutCharacter.includes(
+      type.toLocaleLowerCase()
+    )
+  ) {
+    throw createHttpError(
+      400,
+      `Such type is not supported, possible types: ${AllCommandSayTypeVariationsWithoutCharacter.map(
+        (t) => t
+      )}`
+    );
+  }
+
+  existingSay.type = type;
 
   return await existingSay.save();
 };

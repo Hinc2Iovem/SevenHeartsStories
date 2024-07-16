@@ -5,9 +5,10 @@ import {
   SearchCharacterVariationTypes,
 } from "../../../features/Character/CharacterListPage";
 import { CurrentlyAvailableLanguagesTypes } from "../../../types/Additional/CURRENTLY_AVAILABEL_LANGUAGES";
+import { CharacterGetTypes } from "../../../types/StoryData/Character/CharacterTypes";
 
 type CreateCharacterTypes = {
-  searchCharacterType: SearchCharacterVariationTypes;
+  searchCharacterType?: SearchCharacterVariationTypes;
   storyId: string;
   unknownName?: string;
   description?: string;
@@ -32,14 +33,16 @@ export default function useCreateCharacter({
   return useMutation({
     mutationKey: ["story", storyId, "new", "character", name],
     mutationFn: async () =>
-      await axiosCustomized.post(`/characters/stories/${storyId}`, {
-        name,
-        currentLanguage: language,
-        unknownName,
-        description,
-        nameTag,
-        type: characterType.toLowerCase(),
-      }),
+      await axiosCustomized
+        .post<CharacterGetTypes>(`/characters/stories/${storyId}`, {
+          name,
+          currentLanguage: language,
+          unknownName,
+          description,
+          nameTag,
+          type: characterType.toLowerCase(),
+        })
+        .then((r) => r.data),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ["story", storyId, "characters", searchCharacterType],

@@ -4,8 +4,10 @@ import {
   createSayController,
   deleteSayController,
   getSayByPlotFieldCommandIdController,
+  updateSayCharacterOrEmotionIdController,
   updateSayCommandSideController,
   updateSayController,
+  updateSayTypeController,
 } from "../../../../controllers/StoryEditor/PlotField/Say/SayController";
 
 // Default route === /plotFieldCommands
@@ -30,6 +32,12 @@ sayRoute
     "/say/:sayId/characters/:characterId/characterEmotions/:characterEmotionId"
   )
   .patch(updateSayController);
+
+sayRoute
+  .route("/say/:sayId/characterOrEmotionId")
+  .patch(updateSayCharacterOrEmotionIdController);
+
+sayRoute.route("/say/:sayId/type").patch(updateSayTypeController);
 sayRoute.route("/say/:sayId").delete(deleteSayController);
 
 sayRoute.route("/say/:sayId/commandSide").patch(updateSayCommandSideController);

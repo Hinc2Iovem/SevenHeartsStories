@@ -3,6 +3,7 @@ import {
   characterEmotionCreateController,
   characterEmotionDeleteController,
   characterEmotionGetByCharacterIdController,
+  characterEmotionGetByIdController,
   characterEmotionUpdateController,
   characterEmotionUpdateImgUrlController,
 } from "../../controllers/StoryData/CharacterEmotionController";
@@ -17,6 +18,7 @@ characterEmotionRoute
 
 characterEmotionRoute
   .route("/:characterEmotionId")
+  .get(characterEmotionGetByIdController)
   .patch(characterEmotionUpdateController)
   .delete(characterEmotionDeleteController);
 

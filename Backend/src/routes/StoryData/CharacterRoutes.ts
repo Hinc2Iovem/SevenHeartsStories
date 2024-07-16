@@ -1,5 +1,6 @@
 import express from "express";
 import {
+  characterCreateBlankController,
   characterCreateController,
   characterDeleteController,
   characterGetAllByStoryIdAndTypeController,
@@ -24,6 +25,10 @@ characterRoute
   .route("/stories/:storyId")
   .get(characterGetAllByStoryIdController)
   .post(characterCreateController);
+
+characterRoute
+  .route("/stories/:storyId/blank")
+  .post(characterCreateBlankController);
 
 characterRoute
   .route("/stories/:storyId/type")
