@@ -68,6 +68,7 @@ export const updateNameService = async ({
   if (!existingName) {
     throw createHttpError(400, "No such Name Command");
   }
+
   existingName.name = newName;
   existingName.characterId = new Types.ObjectId(characterId);
   return await existingName.save();

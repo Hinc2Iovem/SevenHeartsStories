@@ -5,6 +5,15 @@ export type PlotFieldTypes = {
   commandOrder: number;
 };
 
+export type PlotFieldCommandIfTypes = {
+  _id: string;
+  topologyBlockId: string;
+  isElse: boolean;
+  commandIfId?: string;
+  command: AllPossiblePlotFieldComamndsTypes;
+  commandOrder: number;
+};
+
 export type AllPossiblePlotFieldComamndsTypes =
   | "achievement"
   | "ambient"

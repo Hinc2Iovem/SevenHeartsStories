@@ -7,7 +7,6 @@ export const plotFieldCommandOptionPremiumSchema = new mongoose.Schema({
   },
   priceAmethysts: {
     type: Number,
-    required: true,
   },
 });
 

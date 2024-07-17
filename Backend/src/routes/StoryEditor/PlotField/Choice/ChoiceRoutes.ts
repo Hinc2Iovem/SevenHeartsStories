@@ -4,6 +4,8 @@ import {
   deleteChoiceController,
   getChoiceByPlotFieldCommandIdController,
   updateChoiceController,
+  updateChoiceTextController,
+  updateChoiceTypeController,
 } from "../../../../controllers/StoryEditor/PlotField/Choice/ChoiceController";
 
 // Default route === /plotFieldCommands
@@ -14,9 +16,9 @@ choiceRoute
   .get(getChoiceByPlotFieldCommandIdController)
   .post(createChoiceController);
 
-choiceRoute
-  .route(
-    "/choices/:choiceId/exitBlocks/:exitBlockId/characters/:characterId/characterEmotions/:characterEmotionId"
-  )
-  .patch(updateChoiceController);
+choiceRoute.route("/choices/:choiceId").patch(updateChoiceController);
+
+choiceRoute.route("/choices/:choiceId/text").patch(updateChoiceTextController);
+choiceRoute.route("/choices/:choiceId/type").patch(updateChoiceTypeController);
+
 choiceRoute.route("/choices/:choiceId").delete(deleteChoiceController);

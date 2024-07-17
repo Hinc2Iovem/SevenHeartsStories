@@ -2,6 +2,26 @@ import createHttpError from "http-errors";
 import PlotFieldCommand from "../../../models/StoryEditor/PlotField/PlotFieldCommand";
 import { validateMongoId } from "../../../utils/validateMongoId";
 
+type GetAllPlotFieldCommandsByIfIdTypes = {
+  commandIfId: string;
+};
+
+export const getAllPlotFieldCommandsByIfIdService = async ({
+  commandIfId,
+}: GetAllPlotFieldCommandsByIfIdTypes) => {
+  validateMongoId({ value: commandIfId, valueName: "CommandIf" });
+
+  const existingCommands = await PlotFieldCommand.find({
+    commandIfId,
+  }).lean();
+
+  if (!existingCommands.length) {
+    return [];
+  }
+
+  return existingCommands;
+};
+
 type GetAllPlotFieldCommandsTypes = {
   topologyBlockId: string;
 };
@@ -19,6 +39,44 @@ export const getAllPlotFieldCommandsService = async ({
   }
 
   return existingCommands;
+};
+
+type PlotFieldCommandCreateInsideIfBlockTypes = {
+  commandIfId: string;
+  topologyBlockId: string;
+  isElse?: boolean;
+};
+
+export const plotFieldCommandCreateInsideIfBlockService = async ({
+  commandIfId,
+  topologyBlockId,
+  isElse,
+}: PlotFieldCommandCreateInsideIfBlockTypes) => {
+  validateMongoId({ value: commandIfId, valueName: "CommandIf" });
+  validateMongoId({ value: topologyBlockId, valueName: "TopologyBlock" });
+
+  const existingPlotFieldCommands = await PlotFieldCommand.find({
+    topologyBlockId,
+  }).lean();
+
+  const commandOrder = existingPlotFieldCommands.length
+    ? existingPlotFieldCommands.length
+    : 0;
+
+  if (isElse) {
+    return await PlotFieldCommand.create({
+      commandIfId,
+      commandOrder,
+      topologyBlockId,
+      isElse,
+    });
+  } else {
+    return await PlotFieldCommand.create({
+      commandIfId,
+      commandOrder,
+      topologyBlockId,
+    });
+  }
 };
 
 type PlotFieldCommandCreateTypes = {

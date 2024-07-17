@@ -2,7 +2,6 @@ import { ConditionSignTypes } from "../Condition/ConditionTypes";
 
 export type IfCommandTypes = {
   _id: string;
-  isElse: boolean;
   plotFieldCommandId: string;
 };
 

@@ -11,7 +11,6 @@ export const plotFieldCommandOptionRelationshipSchema = new mongoose.Schema({
   },
   amountOfPoints: {
     type: Number,
-    required: true,
   },
 });
 

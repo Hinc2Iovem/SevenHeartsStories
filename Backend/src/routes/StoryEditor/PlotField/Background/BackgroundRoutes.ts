@@ -4,6 +4,7 @@ import {
   deleteBackgroundController,
   getBackgroundByPlotFieldCommandIdController,
   updateBackgroundController,
+  updateBackgroundImgController,
 } from "../../../../controllers/StoryEditor/PlotField/Background/BackgroundController";
 
 // Default route === /plotFieldCommands
@@ -18,3 +19,7 @@ backgroundRoute
   .route("/backgrounds/:backgroundId")
   .patch(updateBackgroundController)
   .delete(deleteBackgroundController);
+
+backgroundRoute
+  .route("/backgrounds/:backgroundId/img")
+  .patch(updateBackgroundImgController);

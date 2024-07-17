@@ -64,17 +64,20 @@ export const updateIfValueService = async ({
     throw createHttpError(400, "IfValue with such id wasn't found");
   }
 
-  if (!sign || !value || !name?.trim().length) {
-    throw createHttpError(400, "Sign, value and name are required");
+  if (sign) {
+    if (!regexSign.test(sign)) {
+      throw createHttpError(400, "Sign can only be equal to: >,<,<=,>=,=");
+    }
+    existingIfValue.sign = sign;
   }
 
-  if (!regexSign.test(sign)) {
-    throw createHttpError(400, "Sign can only be equal to: >,<,<=,>=,=");
+  if (value) {
+    existingIfValue.value = value;
   }
 
-  existingIfValue.name = name;
-  existingIfValue.sign = sign;
-  existingIfValue.value = value;
+  if (name?.trim().length) {
+    existingIfValue.name = name;
+  }
 
   return await existingIfValue.save();
 };

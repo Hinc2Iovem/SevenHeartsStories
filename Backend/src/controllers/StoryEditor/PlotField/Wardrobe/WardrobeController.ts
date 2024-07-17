@@ -10,10 +10,9 @@ import {
 
 type GetCommandWardrobeByAppearancePartIdAndCommandWardrobeIdParams = {
   commandWardrobeId: string;
-  appearancePartId: string;
 };
 
-// @route GET http://localhost:3500/plotFieldCommands/wardrobes/:commandWardrobeId/appearanceParts/:appearancePartId
+// @route GET http://localhost:3500/plotFieldCommands/wardrobes/:commandWardrobeId
 // @access Private
 export const getCommandWardrobeByAppearancePartIdAndCommandWardrobeIdController: RequestHandler<
   GetCommandWardrobeByAppearancePartIdAndCommandWardrobeIdParams,
@@ -25,7 +24,6 @@ export const getCommandWardrobeByAppearancePartIdAndCommandWardrobeIdController:
     const commandWardrobe =
       await getCommandWardrobeByAppearancePartIdAndCommandWardrobeIdService({
         commandWardrobeId: req.params.commandWardrobeId,
-        appearancePartId: req.params.appearancePartId,
       });
     if (commandWardrobe) {
       return res.status(201).json(commandWardrobe);
@@ -95,7 +93,6 @@ type UpdateCommandWardrobeParams = {
 };
 
 type UpdateCommandWardrobeBody = {
-  title: string | undefined;
   isCurrentDressed: boolean | undefined;
 };
 
@@ -110,7 +107,6 @@ export const updateCommandWardrobeController: RequestHandler<
   try {
     const commandWardrobe = await updateCommandWardrobeService({
       isCurrentDressed: req.body.isCurrentDressed,
-      title: req.body.title,
       commandWardrobeId: req.params.commandWardrobeId,
     });
     if (commandWardrobe) {

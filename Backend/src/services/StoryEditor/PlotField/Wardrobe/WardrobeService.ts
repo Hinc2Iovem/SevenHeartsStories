@@ -27,20 +27,16 @@ export const getCommandWardrobeByPlotFieldCommandIdService = async ({
 
 type GetCommandWardrobeByAppearancePartIdAndCommandWardrobeIdTypes = {
   commandWardrobeId: string;
-  appearancePartId: string;
 };
 
 export const getCommandWardrobeByAppearancePartIdAndCommandWardrobeIdService =
   async ({
     commandWardrobeId,
-    appearancePartId,
   }: GetCommandWardrobeByAppearancePartIdAndCommandWardrobeIdTypes) => {
     validateMongoId({ value: commandWardrobeId, valueName: "CommandWardrobe" });
-    validateMongoId({ value: appearancePartId, valueName: "AppearancePart" });
 
     const existingCommandWardrobeAppearancePart =
       await CommandWardrobeAppearancePart.find({
-        appearancePartId,
         commandWardrobeId,
       }).lean();
 
@@ -73,25 +69,15 @@ export const createCommandWardrobeService = async ({
 };
 
 type UpdateCommandWardrobeTypes = {
-  title: string | undefined;
   commandWardrobeId: string;
   isCurrentDressed: boolean | undefined;
 };
 
 export const updateCommandWardrobeService = async ({
-  title,
   isCurrentDressed,
   commandWardrobeId,
 }: UpdateCommandWardrobeTypes) => {
   validateMongoId({ value: commandWardrobeId, valueName: "CommandWardrobe" });
-
-  if (!title?.trim().length) {
-    throw createHttpError(400, "Title is required");
-  }
-
-  if (isCurrentDressed === undefined || isCurrentDressed === null) {
-    throw createHttpError(400, "isCurrentDressed is required");
-  }
 
   const existingCommandWardrobe = await CommandWardrobe.findById(
     commandWardrobeId
@@ -100,7 +86,9 @@ export const updateCommandWardrobeService = async ({
     throw createHttpError(400, "CommandWardrobe with such id wasn't found");
   }
 
-  existingCommandWardrobe.isCurrentDressed = isCurrentDressed;
+  if (isCurrentDressed) {
+    existingCommandWardrobe.isCurrentDressed = isCurrentDressed;
+  }
 
   return existingCommandWardrobe;
 };

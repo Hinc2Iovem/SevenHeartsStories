@@ -11,7 +11,7 @@ export const conditionValuesRoute = express.Router();
 
 conditionValuesRoute
   .route("/conditions/:conditionId/conditionValues")
-  .delete(getConditionValueByConditionIdController);
+  .get(getConditionValueByConditionIdController);
 
 conditionValuesRoute
   .route("/conditions/:conditionId/conditionValues")

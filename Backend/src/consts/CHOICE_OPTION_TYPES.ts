@@ -4,3 +4,5 @@ export const ChoiceOptionTypes = [
   "characteristic",
   "relationship",
 ];
+
+export const AllChoiceVariations = ["common", "multiple", "timelimit"];

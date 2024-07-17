@@ -63,7 +63,7 @@ type UpdateKeyParams = {
   targetBlockId: string;
   sourceBlockId: string;
 };
-// @route PATCH http://localhost:3500/plotFieldCommands/commandKeys/:commandKeyId/targetBlocks/:targetBlockId
+// @route PATCH http://localhost:3500/plotFieldCommands/commandKeys/:commandKeyId/sourceBlocks/:sourceBlockId/targetBlocks/:targetBlockId
 // @access Private
 export const updateKeyController: RequestHandler<
   UpdateKeyParams,

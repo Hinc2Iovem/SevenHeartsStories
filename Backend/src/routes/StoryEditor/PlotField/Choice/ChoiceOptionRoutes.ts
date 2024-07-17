@@ -5,6 +5,7 @@ import {
   deleteChoiceOptionController,
   getChoiceOptionByPlotFieldCommandChoiceIdController,
   updateChoiceOptionController,
+  updateChoiceOptionTopologyBlockController,
 } from "../../../../controllers/StoryEditor/PlotField/Choice/ChoiceOptionController";
 
 // Default route === /plotFieldCommands
@@ -16,15 +17,17 @@ choiceOptionRoute
 
 choiceOptionRoute
   .route(
-    "/:plotFieldCommandId/choices/options/episodes/:episodeId/topologyBlocks/:topologyBlockId"
+    "/choices/:plotFieldCommandChoiceId/options/episodes/:episodeId/topologyBlocks/:topologyBlockId"
   )
   .post(createChoiceOptionController);
 
 choiceOptionRoute
-  .route(
-    "/choices/options/:choiceOptionId/characters/:characterId/characterCharacteristics/:characterCharacteristicId"
-  )
+  .route("/choices/options/:choiceOptionId")
   .patch(updateChoiceOptionController);
+
+choiceOptionRoute
+  .route("/choices/options/:choiceOptionId/topologyBlocks/:topologyBlockId")
+  .patch(updateChoiceOptionTopologyBlockController);
 
 choiceOptionRoute
   .route("/choices/options/:choiceOptionId/sexualOrientation")

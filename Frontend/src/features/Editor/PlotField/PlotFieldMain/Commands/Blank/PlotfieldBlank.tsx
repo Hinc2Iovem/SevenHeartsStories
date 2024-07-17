@@ -11,6 +11,25 @@ import useCreateSayCharacterCommand from "../hooks/Say/useCreateSayCharacterComm
 import useCreateSayCommand from "../hooks/Say/useCreateSayCommand";
 import useUpdateCommandName from "../hooks/useUpdateCommandName";
 import PlotFieldBlankCreateCharacter from "./PlotFieldBlankCreateCharacter";
+import { AllPossiblePlotFieldComamndsTypes } from "../../../../../../types/StoryEditor/PlotField/PlotFieldTypes";
+import useCreateAchievement from "../hooks/Achievement/useCreateAchievement";
+import useCreateAmbient from "../hooks/Ambient/useCreateAmbient";
+import useCreateBackground from "../hooks/Background/useCreateBackground";
+import useCreateCall from "../hooks/Call/useCreateCall";
+import useCreateChoice from "../hooks/Choice/useCreateChoice";
+import useCreateCommandIf from "../hooks/If/useCreateCommandIf";
+import useCreateCondition from "../hooks/Condition/useCreateCondition";
+import useCreateCutScene from "../hooks/CutScene/useCreateCutScene";
+import useCreateEffect from "../hooks/Effect/useCreateEffect";
+import useCreateGetItem from "../hooks/GetItem/useCreateGetItem";
+import useCreateKey from "../hooks/Key/useCreateKey";
+import useCreateMove from "../hooks/Move/useCreateMove";
+import useCreateMusic from "../hooks/Music/useCreateMusic";
+import useCreateName from "../hooks/Name/useCreateName";
+import useCreateSound from "../hooks/Sound/useCreateSound";
+import useCreateSuit from "../hooks/Suit/useCreateSuit";
+import useCreateWait from "../hooks/Wait/useCreateWait";
+import useCreateWardrobe from "../hooks/Wardrobe/useCreateWardrobe";
 
 type PlotFieldBlankTypes = {
   plotFieldCommandId: string;
@@ -71,6 +90,34 @@ export default function PlotfieldBlank({
     }
   };
 
+  const createCommandAchievement = useCreateAchievement({
+    plotFieldCommandId,
+    storyId: storyId ?? "",
+  });
+  const createCommandAmbient = useCreateAmbient({ plotFieldCommandId });
+  const createBackground = useCreateBackground({ plotFieldCommandId });
+  const createCall = useCreateCall({ plotFieldCommandId });
+  const createChoice = useCreateChoice({ plotFieldCommandId });
+  const createCommandIf = useCreateCommandIf({ plotFieldCommandId });
+  const createCondition = useCreateCondition({ plotFieldCommandId });
+  const createCutScene = useCreateCutScene({ plotFieldCommandId });
+  const createEffect = useCreateEffect({ plotFieldCommandId });
+  const createGetItem = useCreateGetItem({ plotFieldCommandId });
+  const createKey = useCreateKey({ plotFieldCommandId });
+  const createMove = useCreateMove({ plotFieldCommandId });
+  const createMusic = useCreateMusic({
+    plotFieldCommandId,
+    storyId: storyId ?? "",
+  });
+  const createName = useCreateName({ plotFieldCommandId });
+  const createSound = useCreateSound({
+    plotFieldCommandId,
+    storyId: storyId ?? "",
+  });
+  const createSuit = useCreateSuit({ plotFieldCommandId });
+  const createWait = useCreateWait({ plotFieldCommandId });
+  const createWardrobe = useCreateWardrobe({ plotFieldCommandId });
+
   const handleSubmit = ({
     submittedByCharacter,
     type,
@@ -88,6 +135,45 @@ export default function PlotfieldBlank({
       }
       updateCommandName.mutate({ valueForSay: true });
     } else if (!submittedByCharacter) {
+      const allCommands: AllPossiblePlotFieldComamndsTypes =
+        value.toLowerCase() as AllPossiblePlotFieldComamndsTypes;
+      if (allCommands === "achievement") {
+        createCommandAchievement.mutate();
+      } else if (allCommands === "ambient") {
+        createCommandAmbient.mutate();
+      } else if (allCommands === "background") {
+        createBackground.mutate();
+      } else if (allCommands === "call") {
+        createCall.mutate();
+      } else if (allCommands === "choice") {
+        createChoice.mutate();
+      } else if (allCommands === "condition") {
+        createCondition.mutate();
+      } else if (allCommands === "cutscene") {
+        createCutScene.mutate();
+      } else if (allCommands === "effect") {
+        createEffect.mutate();
+      } else if (allCommands === "getitem") {
+        createGetItem.mutate();
+      } else if (allCommands === "if") {
+        createCommandIf.mutate();
+      } else if (allCommands === "key") {
+        createKey.mutate();
+      } else if (allCommands === "move") {
+        createMove.mutate();
+      } else if (allCommands === "music") {
+        createMusic.mutate();
+      } else if (allCommands === "name") {
+        createName.mutate();
+      } else if (allCommands === "sound") {
+        createSound.mutate();
+      } else if (allCommands === "suit") {
+        createSuit.mutate();
+      } else if (allCommands === "wait") {
+        createWait.mutate();
+      } else if (allCommands === "wardrobe") {
+        createWardrobe.mutate();
+      }
       updateCommandName.mutate({ valueForSay: false });
     }
   };

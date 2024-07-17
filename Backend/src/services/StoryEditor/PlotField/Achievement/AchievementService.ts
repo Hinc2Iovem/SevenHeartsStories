@@ -1,13 +1,10 @@
 import createHttpError from "http-errors";
-import Achievement from "../../../../models/StoryEditor/PlotField/Achievement/Achievement";
-import { validateMongoId } from "../../../../utils/validateMongoId";
-import PlotFieldCommand from "../../../../models/StoryEditor/PlotField/PlotFieldCommand";
 import Story from "../../../../models/StoryData/Story";
-import TopologyBlockInfo from "../../../../models/StoryEditor/Topology/TopologyBlockInfo";
-import Translation from "../../../../models/StoryData/Translation";
-import { TranslationTextFieldName } from "../../../../consts/TRANSLATION_TEXT_FIELD_NAMES";
+import Achievement from "../../../../models/StoryEditor/PlotField/Achievement/Achievement";
+import PlotFieldCommand from "../../../../models/StoryEditor/PlotField/PlotFieldCommand";
 import TopologyBlock from "../../../../models/StoryEditor/Topology/TopologyBlock";
-import { checkCurrentLanguage } from "../../../../utils/checkCurrentLanguage";
+import TopologyBlockInfo from "../../../../models/StoryEditor/Topology/TopologyBlockInfo";
+import { validateMongoId } from "../../../../utils/validateMongoId";
 
 type GetAchievementByPlotFieldCommandIdTypes = {
   plotFieldCommandId: string;

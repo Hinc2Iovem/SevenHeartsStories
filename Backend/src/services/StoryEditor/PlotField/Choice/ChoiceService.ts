@@ -1,12 +1,10 @@
 import createHttpError from "http-errors";
+import { Types } from "mongoose";
+import { AllChoiceVariations } from "../../../../consts/CHOICE_OPTION_TYPES";
 import { ChoiceType } from "../../../../controllers/StoryEditor/PlotField/Choice/ChoiceController";
+import { validateMongoId } from "../../../../utils/validateMongoId";
 import Choice from "../../../../models/StoryEditor/PlotField/Choice/Choice";
 import PlotFieldCommand from "../../../../models/StoryEditor/PlotField/PlotFieldCommand";
-import { validateMongoId } from "../../../../utils/validateMongoId";
-import Translation from "../../../../models/StoryData/Translation";
-import { TranslationTextFieldName } from "../../../../consts/TRANSLATION_TEXT_FIELD_NAMES";
-import { Types } from "mongoose";
-import { checkCurrentLanguage } from "../../../../utils/checkCurrentLanguage";
 
 type GetChoiceByPlotFieldCommandIdTypes = {
   plotFieldCommandId: string;
@@ -53,9 +51,9 @@ type UpdateChoiceTypes = {
   choiceId: string;
   timeLimit: number | undefined;
   choiceType: ChoiceType | undefined;
-  exitBlockId: string;
-  characterId: string;
-  characterEmotionId: string;
+  exitBlockId: string | undefined;
+  characterId: string | undefined;
+  characterEmotionId: string | undefined;
   isAuthor: boolean | undefined;
 };
 
@@ -70,24 +68,29 @@ export const updateChoiceService = async ({
 }: UpdateChoiceTypes) => {
   validateMongoId({ value: choiceId, valueName: "Choice" });
 
-  if (isAuthor === undefined || isAuthor === null) {
-    throw createHttpError(400, "isAuthor is required");
-  }
-
   const existingChoice = await Choice.findById(choiceId).exec();
   if (!existingChoice) {
     throw createHttpError(400, "Choice with such id wasn't found");
   }
-
-  if (isAuthor === false) {
-    validateMongoId({ value: characterId, valueName: "Character" });
-    validateMongoId({
-      value: characterEmotionId,
-      valueName: "CharacterEmotion",
-    });
-    existingChoice.isAuthor = isAuthor;
-    existingChoice.characterId = new Types.ObjectId(characterId);
-    existingChoice.characterEmotionId = new Types.ObjectId(characterEmotionId);
+  if (isAuthor === true) {
+    existingChoice.characterId = null;
+    existingChoice.characterEmotionId = null;
+    existingChoice.isAuthor = true;
+  } else {
+    existingChoice.isAuthor = false;
+    if (characterId?.trim().length) {
+      validateMongoId({ value: characterId, valueName: "Character" });
+      existingChoice.characterId = new Types.ObjectId(characterId);
+    }
+    if (characterEmotionId?.trim().length) {
+      validateMongoId({
+        value: characterEmotionId,
+        valueName: "CharacterEmotion",
+      });
+      existingChoice.characterEmotionId = new Types.ObjectId(
+        characterEmotionId
+      );
+    }
   }
 
   if (choiceType) {
@@ -97,6 +100,83 @@ export const updateChoiceService = async ({
     } else if (choiceType === "multiple") {
       validateMongoId({ value: exitBlockId, valueName: "ExitBlock" });
       existingChoice.exitBlockId = new Types.ObjectId(exitBlockId);
+    }
+  }
+
+  return await existingChoice.save();
+};
+
+type UpdateChoiceTypeTypes = {
+  choiceId: string;
+  choiceType: ChoiceType | undefined;
+};
+
+export const updateChoiceTypeService = async ({
+  choiceId,
+  choiceType,
+}: UpdateChoiceTypeTypes) => {
+  validateMongoId({ value: choiceId, valueName: "Choice" });
+
+  const existingChoice = await Choice.findById(choiceId).exec();
+  if (!existingChoice) {
+    throw createHttpError(400, "Choice with such id wasn't found");
+  }
+
+  if (!choiceType?.trim().length) {
+    throw createHttpError(400, "Choice Type is required");
+  }
+
+  if (!AllChoiceVariations.includes(choiceType.toLowerCase())) {
+    throw createHttpError(
+      400,
+      `Unexpected choice type, possible types: ${AllChoiceVariations.map(
+        (c) => c
+      )}`
+    );
+  }
+
+  existingChoice.choiceType = choiceType.toLowerCase();
+  return await existingChoice.save();
+};
+
+type UpdateChoiceTextTypes = {
+  choiceId: string;
+  isAuthor: boolean | undefined;
+  characterId: string | undefined;
+  characterEmotionId: string | undefined;
+};
+
+export const updateChoiceTextService = async ({
+  choiceId,
+  characterEmotionId,
+  characterId,
+  isAuthor,
+}: UpdateChoiceTextTypes) => {
+  validateMongoId({ value: choiceId, valueName: "Choice" });
+
+  const existingChoice = await Choice.findById(choiceId).exec();
+  if (!existingChoice) {
+    throw createHttpError(400, "Choice with such id wasn't found");
+  }
+
+  if (isAuthor) {
+    existingChoice.characterId = null;
+    existingChoice.characterEmotionId = null;
+    existingChoice.isAuthor = true;
+  } else {
+    existingChoice.isAuthor = false;
+    if (characterId?.trim().length) {
+      validateMongoId({ value: characterId, valueName: "Character" });
+      existingChoice.characterId = new Types.ObjectId(characterId);
+    }
+    if (characterEmotionId?.trim().length) {
+      validateMongoId({
+        value: characterEmotionId,
+        valueName: "CharacterEmotion",
+      });
+      existingChoice.characterEmotionId = new Types.ObjectId(
+        characterEmotionId
+      );
     }
   }
 

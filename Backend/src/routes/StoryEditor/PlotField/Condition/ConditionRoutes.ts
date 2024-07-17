@@ -11,11 +11,12 @@ export const conditionRoute = express.Router();
 
 conditionRoute
   .route("/:plotFieldCommandId/conditions")
-  .delete(getConditionByPlotFieldCommandIdController);
+  .get(getConditionByPlotFieldCommandIdController);
 
 conditionRoute
   .route("/:plotFieldCommandId/conditions/targetBlocks/:targetBlockId")
   .post(createConditionController);
+
 conditionRoute
   .route("/:plotFieldCommandId/conditions/targetBlocks/:targetBlockId/addBlock")
   .post(addAnotherBlockConditionController);

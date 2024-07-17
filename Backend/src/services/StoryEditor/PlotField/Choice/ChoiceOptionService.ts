@@ -2,10 +2,10 @@ import createHttpError from "http-errors";
 import { Types } from "mongoose";
 import { SexualOrientationTypes } from "../../../../consts/SEXUAL_ORIENTATION";
 import { ChoiceOptionType } from "../../../../controllers/StoryEditor/PlotField/Choice/ChoiceOptionController";
+import Translation from "../../../../models/StoryData/Translation";
 import Choice from "../../../../models/StoryEditor/PlotField/Choice/Choice";
 import ChoiceOption from "../../../../models/StoryEditor/PlotField/Choice/ChoiceOption";
 import OptionCharacteristic from "../../../../models/StoryEditor/PlotField/Choice/OptionCharacteristic";
-import OptionPremium from "../../../../models/StoryEditor/PlotField/Choice/OptionPremium";
 import OptionRelationship from "../../../../models/StoryEditor/PlotField/Choice/OptionRelationship";
 import TopologyBlock from "../../../../models/StoryEditor/Topology/TopologyBlock";
 import TopologyBlockConnection from "../../../../models/StoryEditor/Topology/TopologyBlockConnection";
@@ -14,6 +14,7 @@ import { checkChoiceOptionType } from "../../../../utils/checkChoiceOptionType";
 import { createTopologyBlock } from "../../../../utils/createTopologyBlock";
 import { createTopologyBlockConnection } from "../../../../utils/createTopologyBlockConnection";
 import { validateMongoId } from "../../../../utils/validateMongoId";
+import OptionPremium from "../../../../models/StoryEditor/PlotField/Choice/OptionPremium";
 
 type GetChoiceOptionByPlotFieldCommandIdTypes = {
   plotFieldCommandChoiceId: string;
@@ -36,6 +37,43 @@ export const getChoiceOptionByPlotFieldCommandChoiceIdService = async ({
   }
 
   return existingChoiceOption;
+};
+
+type UpdateChoiceOptionTopologyBlock = {
+  choiceOptionId: string;
+  topologyBlockId: string;
+};
+
+export const updateChoiceOptionTopologyBlockService = async ({
+  choiceOptionId,
+  topologyBlockId,
+}: UpdateChoiceOptionTopologyBlock) => {
+  validateMongoId({
+    value: choiceOptionId,
+    valueName: "ChoiceOption",
+  });
+  validateMongoId({
+    value: topologyBlockId,
+    valueName: "TopologyBlock",
+  });
+
+  const existingChoiceOption = await ChoiceOption.findById(
+    choiceOptionId
+  ).exec();
+  if (!existingChoiceOption) {
+    throw createHttpError(400, "Such ChoiceOption does not exist");
+  }
+
+  const existingTopologyBlock = await TopologyBlock.findById(
+    topologyBlockId
+  ).lean();
+  if (!existingTopologyBlock) {
+    throw createHttpError(400, "Such TopologyBlock does not exist");
+  }
+
+  existingChoiceOption.topologyBlockId = new Types.ObjectId(topologyBlockId);
+
+  return await existingChoiceOption.save();
 };
 
 type CreateChoiceOptionTypes = {
@@ -106,6 +144,20 @@ export const createChoiceOptionService = async ({
     type: type ?? "common",
   });
 
+  if (type === "characteristic") {
+    await OptionCharacteristic.create({
+      plotFieldCommandChoiceOptionId: newChoiceOption._id,
+    });
+  } else if (type === "premium") {
+    await OptionPremium.create({
+      plotFieldCommandChoiceOptionId: newChoiceOption._id,
+    });
+  } else if (type === "relationship") {
+    await OptionRelationship.create({
+      plotFieldCommandChoiceOptionId: newChoiceOption._id,
+    });
+  }
+
   return newChoiceOption;
 };
 
@@ -113,17 +165,13 @@ type UpdateChoiceOptionTypes = {
   choiceOptionId: string;
   option: string | undefined;
   priceAmethysts: number | undefined;
-  characterName: string | undefined;
   amountOfPoints: number | undefined;
-  characteristicName: string | undefined;
-  characterId: string;
-  characterCharacteristicId: string;
+  characterId: string | undefined;
+  characterCharacteristicId: string | undefined;
 };
 
 export const updateChoiceOptionService = async ({
   amountOfPoints,
-  characterName,
-  characteristicName,
   choiceOptionId,
   option,
   priceAmethysts,
@@ -142,62 +190,74 @@ export const updateChoiceOptionService = async ({
     throw createHttpError(400, "Choice Option with such id wasn't found");
   }
 
-  if (!option?.trim().length) {
-    throw createHttpError(400, "option is required");
+  if (option?.trim().length) {
+    const existingTranslation = await Translation.findOne({
+      choiceOptionId,
+    }).exec();
+    if (existingTranslation) {
+      existingTranslation.text = option;
+      await existingTranslation.save();
+    }
   }
 
   if (existingChoiceOption.type === "common") {
     return existingChoiceOption;
   } else if (existingChoiceOption.type === "characteristic") {
-    if (!amountOfPoints || !characteristicName?.trim().length) {
-      throw createHttpError(
-        400,
-        "Amount of Points and Characterstic Name are required"
+    const optionCharacteristic = await OptionCharacteristic.findOne({
+      plotFieldCommandChoiceOptionId: choiceOptionId,
+    }).exec();
+    if (!optionCharacteristic) {
+      throw createHttpError(400, "OptionCharacteristic wasn't found");
+    }
+
+    if (amountOfPoints) {
+      optionCharacteristic.amountOfPoints = amountOfPoints;
+    }
+    if (characterCharacteristicId?.trim().length) {
+      validateMongoId({
+        value: characterCharacteristicId,
+        valueName: "CharacterCharacteristic",
+      });
+
+      optionCharacteristic.characterCharacteristicId = new Types.ObjectId(
+        characterCharacteristicId
       );
     }
-    if (!characterCharacteristicId?.trim().length) {
-      throw createHttpError(
-        400,
-        "With the type of characteristic, characterCharacteristicId is required"
-      );
-    }
-    validateMongoId({
-      value: characterCharacteristicId,
-      valueName: "CharacterCharacteristic",
-    });
-    await OptionCharacteristic.create({
-      amountOfPoints,
-      plotFieldCommandChoiceOptionId: existingChoiceOption._id,
-      characterCharacteristicId,
-    });
 
     return existingChoiceOption;
   } else if (existingChoiceOption.type === "premium") {
-    if (!priceAmethysts) {
-      throw createHttpError(400, "You need to Enter Amount Of Amethysts");
+    const existingOptionPremium = await OptionPremium.findOne({
+      plotFieldCommandChoiceOptionId: choiceOptionId,
+    }).exec();
+
+    if (!existingOptionPremium) {
+      throw createHttpError(400, "ExistingOptionPremium wasn't found");
     }
 
-    await OptionPremium.create({
-      plotFieldCommandChoiceOptionId: existingChoiceOption._id,
-      priceAmethysts,
-    });
+    if (priceAmethysts) {
+      existingOptionPremium.priceAmethysts = priceAmethysts;
+    }
     return existingChoiceOption;
   } else if (existingChoiceOption.type === "relationship") {
-    if (!amountOfPoints || !characterName?.trim().length) {
-      throw createHttpError(
-        400,
-        "You need to Enter Amount Of Points and Character Name"
-      );
+    const existingOptionRelationship = await OptionRelationship.findOne({
+      plotFieldCommandChoiceOptionId: choiceOptionId,
+    }).exec();
+
+    if (!existingOptionRelationship) {
+      throw createHttpError(400, "ExistingOptionRelationship wasn't found");
     }
-    validateMongoId({
-      value: characterId,
-      valueName: "Character",
-    });
-    await OptionRelationship.create({
-      plotFieldCommandChoiceOptionId: existingChoiceOption._id,
-      amountOfPoints,
-      characterId,
-    });
+
+    if (amountOfPoints) {
+      existingOptionRelationship.amountOfPoints = amountOfPoints;
+    }
+    if (characterId?.trim().length) {
+      validateMongoId({
+        value: characterId,
+        valueName: "Character",
+      });
+      existingOptionRelationship.characterId = new Types.ObjectId(characterId);
+    }
+
     return existingChoiceOption;
   }
 };

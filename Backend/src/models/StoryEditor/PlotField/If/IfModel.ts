@@ -5,14 +5,6 @@ export const ifModelSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "PlotFieldCommand",
   },
-  isCombined: {
-    type: Boolean,
-    default: false,
-  },
-  isElse: {
-    type: Boolean,
-    default: false,
-  },
 });
 
 type IfModel = InferSchemaType<typeof ifModelSchema>;

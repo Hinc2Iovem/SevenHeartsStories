@@ -1,4 +1,5 @@
 import { PlotFieldTypes } from "../../../../../types/StoryEditor/PlotField/PlotFieldTypes";
+import CommandAchievementField from "./Achievement/CommandAchievementField";
 import PlotfieldBlank from "./Blank/PlotfieldBlank";
 import CommandSayField from "./Say/CommandSayField";
 
@@ -18,6 +19,8 @@ export default function PlotfieldItem({
         />
       ) : command === "say" ? (
         <CommandSayField plotFieldCommandId={_id} />
+      ) : command === "achievement" ? (
+        <CommandAchievementField command={command} plotFieldCommandId={_id} />
       ) : null}
     </li>
   );

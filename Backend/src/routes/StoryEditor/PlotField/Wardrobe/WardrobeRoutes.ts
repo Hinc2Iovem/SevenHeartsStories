@@ -12,9 +12,7 @@ import {
 export const wardrobeRoute = express.Router();
 
 wardrobeRoute
-  .route(
-    "/:plotFieldCommandId/wardrobes/:commandWardrobeId/appearanceParts/:appearancePartId"
-  )
+  .route("/wardrobes/:commandWardrobeId")
   .get(getCommandWardrobeByAppearancePartIdAndCommandWardrobeIdController);
 
 wardrobeRoute

@@ -1,6 +1,5 @@
 import { RequestHandler } from "express";
 import {
-  addAnotherBlockIfService,
   createIfService,
   deleteIfService,
   getIfByPlotFieldCommandIdService,
@@ -58,27 +57,31 @@ export const createConditionController: RequestHandler<
   }
 };
 
-// @route POST http://localhost:3500/plotFieldCommands/:plotFieldCommandId/ifs/addCondititon
-// @access Private
-export const addAnotherBlockConditionController: RequestHandler<
-  CreateConditionParams,
-  unknown,
-  unknown,
-  unknown
-> = async (req, res, next) => {
-  try {
-    const condition = await addAnotherBlockIfService({
-      plotFieldCommandId: req.params.plotFieldCommandId,
-    });
-    if (condition) {
-      return res.status(201).json(condition);
-    } else {
-      return res.status(400).json({ message: "Something went wrong" });
-    }
-  } catch (error) {
-    next(error);
-  }
-};
+// type AddAnotherValueBlockTypes = {
+//   commandIfId: string;
+// };
+
+// // @route POST http://localhost:3500/plotFieldCommands/ifs/:commandIfId/addCondititon
+// // @access Private
+// export const addAnotherBlockConditionController: RequestHandler<
+//   AddAnotherValueBlockTypes,
+//   unknown,
+//   unknown,
+//   unknown
+// > = async (req, res, next) => {
+//   try {
+//     const condition = await addAnotherBlockIfService({
+//       commandIfId: req.params.commandIfId,
+//     });
+//     if (condition) {
+//       return res.status(201).json(condition);
+//     } else {
+//       return res.status(400).json({ message: "Something went wrong" });
+//     }
+//   } catch (error) {
+//     next(error);
+//   }
+// };
 
 type DeleteConditionParams = {
   ifId: string;

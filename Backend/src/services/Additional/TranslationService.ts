@@ -447,7 +447,6 @@ export const getTranslationSeasonService = async ({
     language: currentLanguage,
   }).exec();
 
-
   if (!existingTranslation) {
     return null;
   }

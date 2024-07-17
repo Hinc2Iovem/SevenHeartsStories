@@ -7,6 +7,14 @@ export const plotFieldCommandSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "TopologyBlock",
   },
+  commandIfId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "IfModel",
+  },
+  isElse: {
+    type: Boolean,
+    default: false,
+  },
   command: {
     type: String,
   },

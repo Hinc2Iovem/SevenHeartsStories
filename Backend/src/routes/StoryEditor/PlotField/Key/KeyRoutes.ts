@@ -15,7 +15,9 @@ keyRoute
   .post(createKeyController);
 
 keyRoute
-  .route("/commandKeys/:commandKeyId/targetBlocks/:targetBlockId")
+  .route(
+    "/commandKeys/:commandKeyId/sourceBlocks/:sourceBlockId/targetBlocks/:targetBlockId"
+  )
   .patch(updateKeyController);
 
 keyRoute.route("/commandKeys/:commandKeyId").delete(deleteKeyController);

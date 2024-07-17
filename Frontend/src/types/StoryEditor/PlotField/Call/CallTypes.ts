@@ -1,4 +1,4 @@
-export type BackgroundTypes = {
+export type CallTypes = {
   _id: string;
   plotFieldCommandId: string;
   targetBlockId: string;

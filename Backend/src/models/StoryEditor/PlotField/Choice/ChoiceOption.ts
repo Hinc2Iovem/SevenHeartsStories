@@ -19,6 +19,7 @@ export const plotFieldCommandChoiceOptionSchema = new mongoose.Schema({
   },
   sexualOrientationType: {
     type: String,
+    default: "combined",
   },
 });
 

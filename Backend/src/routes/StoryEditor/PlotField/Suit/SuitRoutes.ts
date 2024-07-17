@@ -18,7 +18,4 @@ suitRoute
   .route("/characters/:characterId/suits/:suitId")
   .patch(updateSuitController);
 
-suitRoute
-  .route("/suits/:suitId")
-  .patch(updateSuitController)
-  .delete(deleteSuitController);
+suitRoute.route("/suits/:suitId").delete(deleteSuitController);

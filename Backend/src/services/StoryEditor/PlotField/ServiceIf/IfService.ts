@@ -40,10 +40,6 @@ export const createIfService = async ({
     throw createHttpError(400, "PlotFieldCommand with such id wasn't found");
   }
 
-  await IfModel.create({
-    plotFieldCommandId,
-    isElse: true,
-  });
   const condition = await IfModel.create({
     plotFieldCommandId,
   });
@@ -52,24 +48,22 @@ export const createIfService = async ({
   return condition;
 };
 
-export const addAnotherBlockIfService = async ({
-  plotFieldCommandId,
-}: CreateIfTypes) => {
-  validateMongoId({ value: plotFieldCommandId, valueName: "PlotFieldCommand" });
+// type AddAnotherValueBlockTypes = {
+//   commandIfId: string;
+// };
 
-  const existingPlotFieldCommand = await PlotFieldCommand.findById(
-    plotFieldCommandId
-  ).lean();
-  if (!existingPlotFieldCommand) {
-    throw createHttpError(400, "PlotFieldCommand with such id wasn't found");
-  }
+// export const addAnotherBlockIfService = async ({
+//   commandIfId,
+// }: AddAnotherValueBlockTypes) => {
+//   validateMongoId({ value: commandIfId, valueName: "CommandIf" });
 
-  const condition = await IfModel.create({
-    plotFieldCommandId,
-  });
-  await IfValue.create({ plotFieldCommandIfId: condition._id });
-  return condition;
-};
+//   const existingCommandIfId = await IfModel.findById(commandIfId).lean();
+//   if (!existingCommandIfId) {
+//     throw createHttpError(400, "CommandIfId with such id wasn't found");
+//   }
+
+//   return await IfValue.create({ plotFieldCommandIfId: commandIfId });
+// };
 
 type DeleteIfTypes = {
   ifId: string;

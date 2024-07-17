@@ -1,12 +1,39 @@
 import { RequestHandler } from "express";
 import {
+  getAllPlotFieldCommandsByIfIdService,
   getAllPlotFieldCommandsService,
+  plotFieldCommandCreateInsideIfBlockService,
   plotFieldCommandCreateService,
   plotFieldCommandDeleteService,
   plotFieldCommandUpdateCommandNameService,
   plotFieldCommandUpdateCommandOrderService,
 } from "../../../services/StoryEditor/PlotField/PlotFieldCommandService";
 
+type GetAllPlotFieldCommandsByIfId = {
+  commandIfId: string;
+};
+
+// @route GET http://localhost:3500/plotField/commandIfs/:commandIfId
+// @access Private
+export const getAllPlotFieldCommandsByIfIdController: RequestHandler<
+  GetAllPlotFieldCommandsByIfId,
+  unknown,
+  unknown,
+  unknown
+> = async (req, res, next) => {
+  try {
+    const plotFieldCommands = await getAllPlotFieldCommandsByIfIdService({
+      commandIfId: req.params.commandIfId,
+    });
+    if (plotFieldCommands) {
+      return res.status(201).json(plotFieldCommands);
+    } else {
+      return res.status(400).json({ message: "Something went wrong" });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
 type GetAllPlotFieldCommands = {
   topologyBlockId: string;
 };
@@ -25,6 +52,39 @@ export const getAllPlotFieldCommandsController: RequestHandler<
     });
     if (plotFieldCommands) {
       return res.status(201).json(plotFieldCommands);
+    } else {
+      return res.status(400).json({ message: "Something went wrong" });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
+type PlotFieldCommandCreateInsideIfBlockParams = {
+  commandIfId: string;
+  topologyBlockId: string;
+};
+
+type PlotFieldCommandCreateInsideIfBlockBody = {
+  isElse?: boolean;
+};
+
+// @route POST http://localhost:3500/plotField/topologyBlocks/:topologyBlockId/commandIfs/:commandIfId
+// @access Private
+export const plotFieldCommandCreateInsideIfBlockController: RequestHandler<
+  PlotFieldCommandCreateInsideIfBlockParams,
+  unknown,
+  PlotFieldCommandCreateInsideIfBlockBody,
+  unknown
+> = async (req, res, next) => {
+  try {
+    const plotFieldCommand = await plotFieldCommandCreateInsideIfBlockService({
+      commandIfId: req.params.commandIfId,
+      topologyBlockId: req.params.topologyBlockId,
+      isElse: req.body.isElse,
+    });
+    if (plotFieldCommand) {
+      return res.status(201).json(plotFieldCommand);
     } else {
       return res.status(400).json({ message: "Something went wrong" });
     }
