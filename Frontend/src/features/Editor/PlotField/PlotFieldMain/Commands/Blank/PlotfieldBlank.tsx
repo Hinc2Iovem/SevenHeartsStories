@@ -110,10 +110,7 @@ export default function PlotfieldBlank({
   const createMove = useCreateMove({ plotFieldCommandId });
   const createMusic = useCreateMusic({ plotFieldCommandId });
   const createName = useCreateName({ plotFieldCommandId });
-  const createSound = useCreateSound({
-    plotFieldCommandId,
-    storyId: storyId ?? "",
-  });
+  const createSound = useCreateSound({ plotFieldCommandId });
   const createSuit = useCreateSuit({ plotFieldCommandId });
   const createWait = useCreateWait({ plotFieldCommandId });
   const createWardrobe = useCreateWardrobe({ plotFieldCommandId });

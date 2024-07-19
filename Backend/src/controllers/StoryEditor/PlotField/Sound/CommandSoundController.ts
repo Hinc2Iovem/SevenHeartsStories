@@ -35,10 +35,9 @@ export const getSoundByPlotFieldCommandIdController: RequestHandler<
 
 type CreateSoundParams = {
   plotFieldCommandId: string;
-  storyId: string;
 };
 
-// @route POST http://localhost:3500/plotFieldCommands/:plotFieldCommandId/stories/:storyId/sounds
+// @route POST http://localhost:3500/plotFieldCommands/:plotFieldCommandId/sounds
 // @access Private
 export const createSoundController: RequestHandler<
   CreateSoundParams,
@@ -49,7 +48,6 @@ export const createSoundController: RequestHandler<
   try {
     const sound = await createSoundService({
       plotFieldCommandId: req.params.plotFieldCommandId,
-      storyId: req.params.storyId,
     });
     if (sound) {
       return res.status(201).json(sound);
@@ -62,15 +60,15 @@ export const createSoundController: RequestHandler<
 };
 
 type UpdateSoundParams = {
-  soundId: string;
   storyId: string;
+  commandSoundId: string;
 };
 
 type UpdateSoundBody = {
   soundName: string | undefined;
 };
 
-// @route PATCH http://localhost:3500/plotFieldCommands/stories/:storyId/sounds/:soundId
+// @route PATCH http://localhost:3500/plotFieldCommands/stories/:storyId/commandSounds/:commandSoundId
 // @access Private
 export const updateSoundController: RequestHandler<
   UpdateSoundParams,
@@ -81,8 +79,8 @@ export const updateSoundController: RequestHandler<
   try {
     const sound = await updateSoundService({
       soundName: req.body.soundName,
-      soundId: req.params.soundId,
       storyId: req.params.storyId,
+      commandSoundId: req.params.commandSoundId,
     });
     if (sound) {
       return res.status(201).json(sound);

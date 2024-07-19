@@ -12,14 +12,11 @@ export const soundCommandRoute = express.Router();
 
 soundCommandRoute
   .route("/:plotFieldCommandId/sounds")
-  .get(getSoundByPlotFieldCommandIdController);
-
-soundCommandRoute
-  .route("/:plotFieldCommandId/stories/:storyId/sounds")
+  .get(getSoundByPlotFieldCommandIdController)
   .post(createSoundController);
 
 soundCommandRoute
-  .route("/stories/:storyId/sounds/:soundId")
+  .route("/stories/:storyId/commandSounds/:commandSoundId")
   .patch(updateSoundController);
 
 soundCommandRoute

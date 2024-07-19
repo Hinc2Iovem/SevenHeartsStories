@@ -2,6 +2,7 @@ import { RequestHandler } from "express";
 import {
   getAllSoundsService,
   getSoundByIdService,
+  getSoundsByStoryIdAndGlobalService,
   getSoundsByStoryIdService,
 } from "../../services/StoryData/SoundService";
 
@@ -24,6 +25,31 @@ export const getAllSoundsController: RequestHandler = async (
   }
 };
 
+type GetAllByStoryIdAndGlobalParams = {
+  storyId: string;
+};
+
+// @route GET http://localhost:3500/stories/:storyId/sounds/isGlobal
+// @access Private
+export const getSoundsByStoryIdAndGlobalController: RequestHandler<
+  GetAllByStoryIdAndGlobalParams,
+  unknown,
+  unknown,
+  unknown
+> = async (req, res, next) => {
+  try {
+    const sounds = await getSoundsByStoryIdAndGlobalService({
+      storyId: req.params.storyId,
+    });
+    if (sounds) {
+      return res.status(201).json(sounds);
+    } else {
+      return res.status(400).json({ message: "Something went wrong" });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
 type GetAllByStoryIdParams = {
   storyId: string;
 };

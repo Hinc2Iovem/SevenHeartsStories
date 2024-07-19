@@ -8,6 +8,7 @@ import CommandKeyField from "./Key/CommandKeyField";
 import CommandMoveField from "./Move/CommandMoveField";
 import CommandMusicField from "./Music/CommandMusicField";
 import CommandSayField from "./Say/CommandSayField";
+import CommandSoundField from "./Sound/CommandSoundField";
 
 export default function PlotfieldItem({
   _id,
@@ -39,6 +40,8 @@ export default function PlotfieldItem({
         <CommandMoveField command={command} plotFieldCommandId={_id} />
       ) : command === "music" ? (
         <CommandMusicField command={command} plotFieldCommandId={_id} />
+      ) : command === "sound" ? (
+        <CommandSoundField command={command} plotFieldCommandId={_id} />
       ) : null}
     </li>
   );

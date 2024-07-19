@@ -1,90 +1,91 @@
 import { useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
-import useGetAllMusicByStoryId from "../hooks/Music/useGetAllMusicByStoryId";
-import useGetCommandMusic from "../hooks/Music/useGetCommandMusic";
-import useGetMusicById from "../hooks/Music/useGetMusicById";
-import useUpdateMusicText from "../hooks/Music/useUpdateMusicText";
 import useEscapeOfModal from "../../../../../../hooks/UI/useEscapeOfModal";
+import useGetAllSoundByStoryIdAndIsGlobal from "../hooks/Sound/useGetAllSoundsByStoryIdAndIsGlobal";
+import useGetCommandSound from "../hooks/Sound/useGetCommandSound";
+import useGetSoundById from "../hooks/Sound/useGetSoundById";
+import useUpdateSoundText from "../hooks/Sound/useUpdateSoundText";
 import "../Prompts/promptStyles.css";
 
-type CommandMusicFieldTypes = {
+type CommandSoundFieldTypes = {
   plotFieldCommandId: string;
   command: string;
 };
 
-export default function CommandMusicField({
+export default function CommandSoundField({
   plotFieldCommandId,
   command,
-}: CommandMusicFieldTypes) {
+}: CommandSoundFieldTypes) {
   const { storyId } = useParams();
-  const [showMusicDropDown, setShowMusicDropDown] = useState(false);
-  const [createNewMusicForm, setCreateNewMusicForm] = useState(false);
-  const [newMusicName, setNewMusicName] = useState("");
-  const [nameValue] = useState<string>(command ?? "Music");
-  const [musicName, setMusicName] = useState<string>("");
-  const [currentMusicName, setCurrentMusicName] = useState<string>("");
-  const { data: allMusic } = useGetAllMusicByStoryId({
+  const [showSoundDropDown, setShowSoundDropDown] = useState(false);
+  const [createNewSoundForm, setCreateNewSoundForm] = useState(false);
+  const [newSoundName, setNewSoundName] = useState("");
+  const [nameValue] = useState<string>(command ?? "Sound");
+  const [soundName, setSoundName] = useState<string>("");
+  const [currentSoundName, setCurrentSoundName] = useState("");
+  const { data: allSound } = useGetAllSoundByStoryIdAndIsGlobal({
     storyId: storyId ?? "",
   });
-  const allMusicMemoized = useMemo(() => {
-    const allMusicNames = allMusic?.map((a) => a.musicName) ?? [];
-    return allMusicNames;
-  }, [allMusic]);
 
-  const { data: commandMusic } = useGetCommandMusic({
+  const allSoundMemoized = useMemo(() => {
+    const allSoundNames = allSound?.map((a) => a.soundName) ?? [];
+    return allSoundNames;
+  }, [allSound]);
+
+  const { data: commandSound } = useGetCommandSound({
     plotFieldCommandId,
   });
-  const [commandMusicId, setCommandMusicId] = useState("");
-  const { data: music } = useGetMusicById({
-    musicId: commandMusic?.musicId ?? "",
+  const [commandSoundId, setCommandSoundId] = useState("");
+  const { data: sound } = useGetSoundById({
+    soundId: commandSound?.soundId ?? "",
   });
 
   useEffect(() => {
-    if (musicName?.trim().length) {
-      setCurrentMusicName(musicName);
-    } else if (newMusicName?.trim().length) {
-      setCurrentMusicName(newMusicName);
+    if (soundName?.trim().length) {
+      setCurrentSoundName(soundName);
+    } else if (newSoundName?.trim().length) {
+      setCurrentSoundName(newSoundName);
     }
-  }, [musicName, newMusicName]);
+  }, [soundName, newSoundName]);
 
   useEffect(() => {
-    if (commandMusic) {
-      setCommandMusicId(commandMusic._id);
+    if (commandSound) {
+      setCommandSoundId(commandSound._id);
     }
-  }, [commandMusic]);
+  }, [commandSound]);
 
   useEffect(() => {
-    if (music) {
-      setMusicName(music.musicName);
+    if (sound) {
+      setSoundName(sound.soundName);
     }
-  }, [music]);
+  }, [sound]);
 
-  const updateMusicText = useUpdateMusicText({
+  const updateSoundText = useUpdateSoundText({
     storyId: storyId ?? "",
-    commandMusicId,
+    commandSoundId,
   });
 
   useEffect(() => {
-    if (musicName?.trim().length) {
-      updateMusicText.mutate({ musicName });
+    if (soundName?.trim().length) {
+      updateSoundText.mutate({ soundName });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [musicName]);
+  }, [soundName]);
 
   useEscapeOfModal({
-    setValue: setShowMusicDropDown,
-    value: showMusicDropDown,
+    setValue: setShowSoundDropDown,
+    value: showSoundDropDown,
   });
 
-  const handleNewMusicSubmit = (e: React.FormEvent) => {
+  const handleNewSoundSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newMusicName?.trim().length) {
+    if (!newSoundName?.trim().length) {
       console.log("Заполните поле");
       return;
     }
-    setMusicName("");
-    updateMusicText.mutate({ musicName: newMusicName });
-    setCreateNewMusicForm(false);
+    setSoundName("");
+    updateSoundText.mutate({ soundName: newSoundName });
+    setCreateNewSoundForm(false);
   };
   return (
     <div className="flex flex-wrap gap-[1rem] w-full bg-primary-light-blue rounded-md p-[.5rem] sm:flex-row flex-col items-center">
@@ -95,15 +96,15 @@ export default function CommandMusicField({
       </div>
       <div
         className={`${
-          createNewMusicForm ? "hidden" : ""
+          createNewSoundForm ? "hidden" : ""
         } sm:w-[77%] flex-grow w-full md:flex-row flex-col flex-wrap flex justify-between items-center gap-[1rem] p-[.5rem] relative`}
       >
         <button
-          onClick={() => setShowMusicDropDown((prev) => !prev)}
+          onClick={() => setShowSoundDropDown((prev) => !prev)}
           className="text-[1.3rem] outline-gray-400 bg-white rounded-md px-[1rem] py-[.5rem] self-start sm:w-[77%] flex-grow w-full text-start"
         >
-          {currentMusicName?.trim().length ? (
-            currentMusicName
+          {currentSoundName?.trim().length ? (
+            currentSoundName
           ) : (
             <span className="text-gray-600 text-[1.3rem]">Пусто</span>
           )}
@@ -111,28 +112,28 @@ export default function CommandMusicField({
         <div className="flex gap-[1rem] flex-wrap self-start">
           <button
             onClick={() => {
-              setNewMusicName("");
-              setCreateNewMusicForm(true);
+              setNewSoundName("");
+              setCreateNewSoundForm(true);
             }}
             className="text-[1.3rem] outline-gray-400 bg-green-400 text-white hover:opacity-85 rounded-md px-[1rem] py-[.5rem]"
           >
-            Добавить Музыку
+            Добавить Звук
           </button>
         </div>
         <ul
           className={`${
-            showMusicDropDown ? "" : "hidden"
+            showSoundDropDown ? "" : "hidden"
           }  bottom-[-.5rem] right-[-.5rem] bg-neutral-alabaster rounded-md z-[10] flex-grow w-[20rem] flex flex-col gap-[.2rem] max-h-[15rem] overflow-y-auto overflow-x-hidden p-[.5rem] absolute | scrollBar`}
         >
-          {allMusicMemoized.map((mm, i) => (
-            <li key={mm + i}>
+          {allSoundMemoized.map((mm) => (
+            <li key={mm}>
               <button
                 onClick={() => {
-                  setShowMusicDropDown(false);
-                  setMusicName(mm);
+                  setShowSoundDropDown(false);
+                  setSoundName(mm);
                 }}
                 className={`${
-                  musicName === mm
+                  soundName === mm
                     ? "bg-orange-200 text-white"
                     : "bg-white outline-gray-300 text-gray-600 "
                 } text-start hover:bg-orange-200 hover:text-white transition-all cursor-pointer hover:scale-[1.01] active:scale-[0.99] w-full text-[1.6rem] px-[1rem] py-[.5rem] rounded-md shadow-md`}
@@ -145,25 +146,25 @@ export default function CommandMusicField({
       </div>
 
       <form
-        onSubmit={handleNewMusicSubmit}
+        onSubmit={handleNewSoundSubmit}
         className={`${
-          createNewMusicForm ? "" : "hidden"
+          createNewSoundForm ? "" : "hidden"
         } sm:w-[77%] flex-grow w-full flex flex-col gap-[1rem]`}
       >
         <button
           type="button"
-          onClick={() => setCreateNewMusicForm(false)}
+          onClick={() => setCreateNewSoundForm(false)}
           className="w-fit self-end bg-white text-red-500 text-[1.3rem] rounded-md px-[1rem]"
         >
           X
         </button>
         <div className="flex gap-[1rem]">
           <input
-            value={newMusicName}
+            value={newSoundName}
             type="text"
             className="w-full outline-gray-300 text-gray-600 text-[1.6rem] px-[1rem] py-[.5rem] rounded-md shadow-md"
             placeholder="Майкл Джордэн"
-            onChange={(e) => setNewMusicName(e.target.value)}
+            onChange={(e) => setNewSoundName(e.target.value)}
           />
           <button className="text-[1.3rem] bg-green-400 text-white rounded-md px-[1rem] hover:scale-[1.01] hover:opacity-85 active:scale-[0.99]">
             Создать

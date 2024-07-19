@@ -10,6 +10,24 @@ export const getAllSoundsService = async () => {
   return allSound;
 };
 
+type GetSoundAndGlobalTypes = {
+  storyId: string;
+};
+
+export const getSoundsByStoryIdAndGlobalService = async ({
+  storyId,
+}: GetSoundAndGlobalTypes) => {
+  validateMongoId({ value: storyId, valueName: "story" });
+
+  const allSound = await Sound.find({ storyId, isGlobal: false }).lean();
+  const allSoundsGlobal = await Sound.find({ isGlobal: true }).lean();
+  if (!allSound.length && !allSoundsGlobal.length) {
+    return [];
+  }
+
+  const returnArray = [...allSound, ...allSoundsGlobal];
+  return returnArray;
+};
 type GetSoundTypes = {
   storyId: string;
 };

@@ -26,12 +26,10 @@ export const getSoundByPlotFieldCommandIdService = async ({
 
 type CreateSoundTypes = {
   plotFieldCommandId: string;
-  storyId: string;
 };
 
 export const createSoundService = async ({
   plotFieldCommandId,
-  storyId,
 }: CreateSoundTypes) => {
   validateMongoId({ value: plotFieldCommandId, valueName: "PlotFieldCommand" });
 
@@ -42,8 +40,6 @@ export const createSoundService = async ({
     throw createHttpError(400, "PlotFieldCommand with such id wasn't found");
   }
 
-  const newSoundLibrary = await Sound.create({ storyId });
-
   return await CommandSound.create({
     plotFieldCommandId,
     soundId: newSoundLibrary._id,
@@ -52,32 +48,43 @@ export const createSoundService = async ({
 
 type UpdateSoundTypes = {
   soundName: string | undefined;
-  soundId: string;
+  commandSoundId: string;
   storyId: string;
 };
 
 export const updateSoundService = async ({
   soundName,
+  commandSoundId,
   storyId,
-  soundId,
 }: UpdateSoundTypes) => {
-  validateMongoId({ value: soundId, valueName: "Sound" });
+  validateMongoId({ value: commandSoundId, valueName: "CommandSound" });
   validateMongoId({ value: storyId, valueName: "Story" });
-
-  const existingSound = await Sound.findById(soundId).exec();
-  if (!existingSound) {
-    throw createHttpError(400, "Sound with such id wasn't found");
-  }
 
   if (!soundName?.trim().length) {
     throw createHttpError(400, "Sound is required");
   }
 
-  if (existingSound) {
-    existingSound.soundName = soundName;
-    return await existingSound.save();
+  const soundLibrary = await Sound.findOne({ soundName })
+    .collation({ locale: "en", strength: 2 })
+    .lean()
+    .exec();
+  const soundCommand = await CommandSound.findById(commandSoundId).exec();
+
+  if (!soundLibrary) {
+    const newSoundInLibrary = await Sound.create({ soundName, storyId });
+    if (soundCommand) {
+      soundCommand.soundId = newSoundInLibrary._id;
+      return await soundCommand.save();
+    } else {
+      throw createHttpError(400, "Sound command wasn't even created");
+    }
   } else {
-    await Sound.create({ soundName, storyId });
+    if (soundCommand) {
+      soundCommand.soundId = soundLibrary._id;
+      return await soundCommand.save();
+    } else {
+      throw createHttpError(400, "Sound command wasn't even created");
+    }
   }
 };
 
