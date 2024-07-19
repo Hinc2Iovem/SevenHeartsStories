@@ -1,9 +1,9 @@
 import createHttpError from "http-errors";
 import Condition from "../../../../models/StoryEditor/PlotField/Condition/Condition";
-import { validateMongoId } from "../../../../utils/validateMongoId";
-import PlotFieldCommand from "../../../../models/StoryEditor/PlotField/PlotFieldCommand";
-import TopologyBlock from "../../../../models/StoryEditor/Topology/TopologyBlock";
+import ConditionBlock from "../../../../models/StoryEditor/PlotField/Condition/ConditionBlock";
 import ConditionValue from "../../../../models/StoryEditor/PlotField/Condition/ConditionValue";
+import PlotFieldCommand from "../../../../models/StoryEditor/PlotField/PlotFieldCommand";
+import { validateMongoId } from "../../../../utils/validateMongoId";
 
 type GetConditionByPlotFieldCommandIdTypes = {
   plotFieldCommandId: string;
@@ -26,16 +26,13 @@ export const getConditionByPlotFieldCommandIdService = async ({
 };
 
 type CreateConditionTypes = {
-  targetBlockId: string;
   plotFieldCommandId: string;
 };
 
 export const createConditionService = async ({
-  targetBlockId,
   plotFieldCommandId,
 }: CreateConditionTypes) => {
   validateMongoId({ value: plotFieldCommandId, valueName: "PlotFieldCommand" });
-  validateMongoId({ value: targetBlockId, valueName: "Topology Block" });
 
   const existingPlotFieldCommand = await PlotFieldCommand.findById(
     plotFieldCommandId
@@ -43,51 +40,21 @@ export const createConditionService = async ({
   if (!existingPlotFieldCommand) {
     throw createHttpError(400, "PlotFieldCommand with such id wasn't found");
   }
-  const existingTargetBlock = await TopologyBlock.findById(
-    targetBlockId
-  ).lean();
-  if (!existingTargetBlock) {
-    throw createHttpError(400, "TopologyBlock with such id wasn't found");
-  }
 
-  await Condition.create({
+  const condition = await Condition.create({
     plotFieldCommandId,
+  });
+
+  const ifConditionBlock = await ConditionBlock.create({
+    conditionId: condition._id,
+  });
+
+  await ConditionBlock.create({
+    conditionId: condition._id,
     isElse: true,
-    targetBlockId,
   });
-  const condition = await Condition.create({
-    plotFieldCommandId,
-    targetBlockId,
-  });
-  await ConditionValue.create({ plotFieldCommandConditionId: condition._id });
-  return condition;
-};
 
-export const addAnotherBlockConditionService = async ({
-  targetBlockId,
-  plotFieldCommandId,
-}: CreateConditionTypes) => {
-  validateMongoId({ value: plotFieldCommandId, valueName: "PlotFieldCommand" });
-  validateMongoId({ value: targetBlockId, valueName: "Topology Block" });
-
-  const existingPlotFieldCommand = await PlotFieldCommand.findById(
-    plotFieldCommandId
-  ).lean();
-  if (!existingPlotFieldCommand) {
-    throw createHttpError(400, "PlotFieldCommand with such id wasn't found");
-  }
-  const existingTargetBlock = await TopologyBlock.findById(
-    targetBlockId
-  ).lean();
-  if (!existingTargetBlock) {
-    throw createHttpError(400, "TopologyBlock with such id wasn't found");
-  }
-
-  const condition = await Condition.create({
-    plotFieldCommandId,
-    targetBlockId,
-  });
-  await ConditionValue.create({ plotFieldCommandConditionId: condition._id });
+  await ConditionValue.create({ conditionBlockId: ifConditionBlock._id });
   return condition;
 };
 

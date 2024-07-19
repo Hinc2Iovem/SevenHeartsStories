@@ -9,7 +9,7 @@ export const plotFieldCommandAchievementSchema = new mongoose.Schema({
   },
   storyId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "PlotFieldCommand",
+    ref: "Story",
   },
 });
 

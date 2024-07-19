@@ -11,14 +11,11 @@ export const commandMusicRoute = express.Router();
 
 commandMusicRoute
   .route("/:plotFieldCommandId/music")
-  .get(getMusicByPlotFieldCommandIdController);
-
-commandMusicRoute
-  .route("/:plotFieldCommandId/stories/:storyId/music")
+  .get(getMusicByPlotFieldCommandIdController)
   .post(createMusicController);
 
 commandMusicRoute
-  .route("/stories/:storyId/music/:musicId")
+  .route("/stories/:storyId/commandMusic/:commandMusicId")
   .patch(updateMusicController);
 
 commandMusicRoute.route("/music/:musicId").delete(deleteMusicController);

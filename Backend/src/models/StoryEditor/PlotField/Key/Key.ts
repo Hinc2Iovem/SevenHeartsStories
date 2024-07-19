@@ -5,9 +5,12 @@ export const commandKeySchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "PlotFieldCommand",
   },
-  targetBlockId: {
+  storyId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "TopologyBlock",
+    ref: "Story",
+  },
+  text: {
+    type: String,
   },
 });
 

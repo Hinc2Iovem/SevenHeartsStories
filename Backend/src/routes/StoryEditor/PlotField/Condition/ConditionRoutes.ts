@@ -1,6 +1,5 @@
 import express from "express";
 import {
-  addAnotherBlockConditionController,
   createConditionController,
   deleteConditionController,
   getConditionByPlotFieldCommandIdController,
@@ -14,12 +13,8 @@ conditionRoute
   .get(getConditionByPlotFieldCommandIdController);
 
 conditionRoute
-  .route("/:plotFieldCommandId/conditions/targetBlocks/:targetBlockId")
+  .route("/:plotFieldCommandId/conditions")
   .post(createConditionController);
-
-conditionRoute
-  .route("/:plotFieldCommandId/conditions/targetBlocks/:targetBlockId/addBlock")
-  .post(addAnotherBlockConditionController);
 
 conditionRoute
   .route("/conditions/:conditionId")

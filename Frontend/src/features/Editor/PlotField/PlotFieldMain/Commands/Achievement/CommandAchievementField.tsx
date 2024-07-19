@@ -13,7 +13,7 @@ export default function CommandAchievementField({
   plotFieldCommandId,
   command,
 }: CommandAchievementFieldTypes) {
-  const [nameValue, setNameValue] = useState(command ?? "");
+  const [nameValue] = useState(command ?? "achievement");
   const [textValue, setTextValue] = useState("");
 
   const { data: commandAchievement } = useGetCommandAchievement({
@@ -35,7 +35,7 @@ export default function CommandAchievementField({
     if (translatedAchievement) {
       translatedAchievement.forEach((ac) => {
         if (ac.textFieldName === "achievementName") {
-          setNameValue(ac.text);
+          setTextValue(ac.text);
         }
       });
     }
@@ -62,7 +62,10 @@ export default function CommandAchievementField({
           {nameValue}
         </h3>
       </div>
-      <form className="sm:w-[77%] flex-grow w-full">
+      <form
+        onSubmit={(e) => e.preventDefault()}
+        className="sm:w-[77%] flex-grow w-full"
+      >
         <textarea
           value={textValue}
           className=" w-full outline-gray-300 text-gray-600 text-[1.6rem] px-[1rem] py-[.5rem] rounded-md shadow-md sm:max-h-[20rem] max-h-[40rem]"

@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import useGetAllEmotionsByCharacterId from "../../../../../../../../hooks/Fetching/CharacterEmotion/useGetAllEmotionsByCharacterId";
-import CommandSayCreateEmotionFieldModal from "./ModalCreateEmotion/CommandSayCreateEmotionFieldModal";
-import useUpdateNameOrEmotion from "../../../hooks/Say/useUpdateNameOrEmotion";
-import useGetEmotionEnabled from "../../../hooks/Emotion/useGetEmotionEnabled";
 import { CommandSayVariationTypes } from "../../../../../../../../types/StoryEditor/PlotField/Say/SayTypes";
+import useGetEmotionEnabled from "../../../hooks/Emotion/useGetEmotionEnabled";
+import useUpdateNameOrEmotion from "../../../hooks/Say/useUpdateNameOrEmotion";
+import CommandSayCreateEmotionFieldModal from "./ModalCreateEmotion/CommandSayCreateEmotionFieldModal";
 
 type FormEmotionTypes = {
   characterEmotionId: string;

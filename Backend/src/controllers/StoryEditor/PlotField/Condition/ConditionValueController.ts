@@ -3,24 +3,24 @@ import {
   createConditionValueService,
   deleteConditionValueService,
   updateConditionValueService,
-  getConditionValueByConditionIdService,
+  getConditionValueByConditionBlockIdService,
 } from "../../../../services/StoryEditor/PlotField/Condition/ConditionValueService";
 
-type GetConditionValueByConditionIdParams = {
-  conditionId: string;
+type GetConditionValueByConditionBlockIdParams = {
+  conditionBlockId: string;
 };
 
-// @route GET http://localhost:3500/plotFieldCommands/conditions/:conditionId/conditionValues
+// @route GET http://localhost:3500/plotFieldCommands/conditionBlocks/:conditionBlockId/conditionValues
 // @access Private
-export const getConditionValueByConditionIdController: RequestHandler<
-  GetConditionValueByConditionIdParams,
+export const getConditionValueByConditionBlockIdController: RequestHandler<
+  GetConditionValueByConditionBlockIdParams,
   unknown,
   unknown,
   unknown
 > = async (req, res, next) => {
   try {
-    const conditionValue = await getConditionValueByConditionIdService({
-      conditionId: req.params.conditionId,
+    const conditionValue = await getConditionValueByConditionBlockIdService({
+      conditionBlockId: req.params.conditionBlockId,
     });
     if (conditionValue) {
       return res.status(201).json(conditionValue);
@@ -33,10 +33,10 @@ export const getConditionValueByConditionIdController: RequestHandler<
 };
 
 type CreateConditionValueParams = {
-  conditionId: string;
+  conditionBlockId: string;
 };
 
-// @route POST http://localhost:3500/plotFieldCommands/conditions/:conditionId/conditionValues
+// @route POST http://localhost:3500/plotFieldCommands/conditionBlocks/:conditionBlockId/conditionValues
 // @access Private
 export const createConditionValueController: RequestHandler<
   CreateConditionValueParams,
@@ -46,7 +46,7 @@ export const createConditionValueController: RequestHandler<
 > = async (req, res, next) => {
   try {
     const conditionValue = await createConditionValueService({
-      conditionId: req.params.conditionId,
+      conditionBlockId: req.params.conditionBlockId,
     });
     if (conditionValue) {
       return res.status(201).json(conditionValue);

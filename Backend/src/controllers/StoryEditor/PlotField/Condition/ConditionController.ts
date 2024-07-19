@@ -1,6 +1,5 @@
 import { RequestHandler } from "express";
 import {
-  addAnotherBlockConditionService,
   createConditionService,
   deleteConditionService,
   getConditionByPlotFieldCommandIdService,
@@ -34,10 +33,9 @@ export const getConditionByPlotFieldCommandIdController: RequestHandler<
 
 type CreateConditionParams = {
   plotFieldCommandId: string;
-  targetBlockId: string;
 };
 
-// @route POST http://localhost:3500/plotFieldCommands/:plotFieldCommandId/conditions/targetBlocks/:targetBlockId
+// @route POST http://localhost:3500/plotFieldCommands/:plotFieldCommandId/conditions
 // @access Private
 export const createConditionController: RequestHandler<
   CreateConditionParams,
@@ -48,30 +46,6 @@ export const createConditionController: RequestHandler<
   try {
     const condition = await createConditionService({
       plotFieldCommandId: req.params.plotFieldCommandId,
-      targetBlockId: req.params.targetBlockId,
-    });
-    if (condition) {
-      return res.status(201).json(condition);
-    } else {
-      return res.status(400).json({ message: "Something went wrong" });
-    }
-  } catch (error) {
-    next(error);
-  }
-};
-
-// @route POST http://localhost:3500/plotFieldCommands/:plotFieldCommandId/conditions/targetBlock/:targetBlockId/addBlock
-// @access Private
-export const addAnotherBlockConditionController: RequestHandler<
-  CreateConditionParams,
-  unknown,
-  unknown,
-  unknown
-> = async (req, res, next) => {
-  try {
-    const condition = await addAnotherBlockConditionService({
-      plotFieldCommandId: req.params.plotFieldCommandId,
-      targetBlockId: req.params.targetBlockId,
     });
     if (condition) {
       return res.status(201).json(condition);

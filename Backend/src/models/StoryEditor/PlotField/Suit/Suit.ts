@@ -11,7 +11,6 @@ export const suitSchema = new mongoose.Schema({
   },
   suitName: {
     type: String,
-    required: true,
   },
 });
 

@@ -3,6 +3,7 @@ import {
   createKeyController,
   deleteKeyController,
   getKeyByPlotFieldCommandIdController,
+  getKeyByStoryIdController,
   updateKeyController,
 } from "../../../../controllers/StoryEditor/PlotField/Key/KeyController";
 
@@ -11,13 +12,14 @@ export const keyRoute = express.Router();
 
 keyRoute
   .route("/:plotFieldCommandId/keys")
-  .get(getKeyByPlotFieldCommandIdController)
-  .post(createKeyController);
+  .get(getKeyByPlotFieldCommandIdController);
 
 keyRoute
-  .route(
-    "/commandKeys/:commandKeyId/sourceBlocks/:sourceBlockId/targetBlocks/:targetBlockId"
-  )
-  .patch(updateKeyController);
+  .route("/:plotFieldCommandId/stories/:storyId/keys")
+  .post(createKeyController);
+
+keyRoute.route("/stories/:storyId/keys").get(getKeyByStoryIdController);
+
+keyRoute.route("/commandKeys/:commandKeyId/text").patch(updateKeyController);
 
 keyRoute.route("/commandKeys/:commandKeyId").delete(deleteKeyController);

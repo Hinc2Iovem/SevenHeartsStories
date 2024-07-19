@@ -9,4 +9,4 @@ export const musicRoute = express.Router();
 
 musicRoute.route("/:storyId/music").get(getMusicController);
 
-musicRoute.route("/:storyId/music/:musicId").get(getMusicByIdController);
+musicRoute.route("/music/:musicId").get(getMusicByIdController);

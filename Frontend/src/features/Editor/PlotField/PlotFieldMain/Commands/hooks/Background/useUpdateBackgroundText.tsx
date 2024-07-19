@@ -17,7 +17,7 @@ export default function useUpdateBackgroundText({
   return useMutation({
     mutationFn: async () =>
       await axiosCustomized.patch(
-        `/plotFieldCommands/backgrounds${backgroundId}`,
+        `/plotFieldCommands/backgrounds/${backgroundId}`,
         {
           backgroundName,
           pointOfMovement,

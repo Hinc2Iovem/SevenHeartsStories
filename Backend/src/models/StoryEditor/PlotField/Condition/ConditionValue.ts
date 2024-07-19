@@ -1,13 +1,9 @@
 import mongoose, { InferSchemaType, model } from "mongoose";
 
 export const conditionValueSchema = new mongoose.Schema({
-  plotFieldCommandConditionId: {
+  conditionBlockId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "Condition",
-  },
-  plotFieldCommandConditionCombinedId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "PlotFieldCommandConditionCombined",
+    ref: "ConditionBlock",
   },
   name: {
     type: String,

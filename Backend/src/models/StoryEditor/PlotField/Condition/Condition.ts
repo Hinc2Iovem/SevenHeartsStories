@@ -5,18 +5,6 @@ export const conditionSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "PlotFieldCommand",
   },
-  targetBlockId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "TopologyBlock",
-  },
-  isCombined: {
-    type: Boolean,
-    default: false,
-  },
-  isElse: {
-    type: Boolean,
-    default: false,
-  },
 });
 
 type Condition = InferSchemaType<typeof conditionSchema>;

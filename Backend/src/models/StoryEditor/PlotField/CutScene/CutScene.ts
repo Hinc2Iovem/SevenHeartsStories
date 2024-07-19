@@ -7,7 +7,6 @@ export const cutSceneSchema = new mongoose.Schema({
   },
   cutSceneName: {
     type: String,
-    required: true,
   },
 });
 

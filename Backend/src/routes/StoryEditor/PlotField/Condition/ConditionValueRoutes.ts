@@ -2,7 +2,7 @@ import express from "express";
 import {
   createConditionValueController,
   deleteConditionValueController,
-  getConditionValueByConditionIdController,
+  getConditionValueByConditionBlockIdController,
   updateConditionValueController,
 } from "../../../../controllers/StoryEditor/PlotField/Condition/ConditionValueController";
 
@@ -10,16 +10,17 @@ import {
 export const conditionValuesRoute = express.Router();
 
 conditionValuesRoute
-  .route("/conditions/:conditionId/conditionValues")
-  .get(getConditionValueByConditionIdController);
+  .route("/conditionBlocks/:conditionBlockId/conditionValues")
+  .get(getConditionValueByConditionBlockIdController);
 
 conditionValuesRoute
-  .route("/conditions/:conditionId/conditionValues")
+  .route("/conditionBlocks/:conditionBlockId/conditionValues")
   .post(createConditionValueController);
+
 conditionValuesRoute
-  .route("/conditions/conditionValues/:conditionValueId")
+  .route("/conditionBlocks/conditionValues/:conditionValueId")
   .patch(updateConditionValueController);
 
 conditionValuesRoute
-  .route("/conditions/conditionValues/:conditionValueId")
+  .route("/conditionBlocks/conditionValues/:conditionValueId")
   .delete(deleteConditionValueController);

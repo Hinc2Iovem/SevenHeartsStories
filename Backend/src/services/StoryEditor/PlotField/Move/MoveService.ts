@@ -45,7 +45,7 @@ export const createMoveService = async ({
 };
 
 type UpdateMoveTypes = {
-  moveValue: number | undefined;
+  moveValue: string | undefined;
   moveId: string;
 };
 
@@ -60,7 +60,7 @@ export const updateMoveService = async ({
     throw createHttpError(400, "Move with such id wasn't found");
   }
 
-  if (!moveValue) {
+  if (!moveValue?.trim().length) {
     throw createHttpError(400, "MoveValue is required");
   }
 

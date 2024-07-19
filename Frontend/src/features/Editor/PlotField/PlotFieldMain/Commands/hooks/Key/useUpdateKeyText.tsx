@@ -3,19 +3,20 @@ import { axiosCustomized } from "../../../../../../../api/axios";
 
 type UpdateKeyTextTypes = {
   commandKeyId: string;
-  sourceBlockId: string;
-  targetBlockId: string;
+  text: string;
 };
 
 export default function useUpdateKeyText({
   commandKeyId,
-  sourceBlockId,
-  targetBlockId,
+  text,
 }: UpdateKeyTextTypes) {
   return useMutation({
     mutationFn: async () =>
       await axiosCustomized.patch(
-        `/plotFieldCommands/commandKeys/${commandKeyId}/sourceBlocks/${sourceBlockId}/targetBlocks/${targetBlockId}`
+        `/plotFieldCommands/commandKeys/${commandKeyId}/text`,
+        {
+          text,
+        }
       ),
   });
 }

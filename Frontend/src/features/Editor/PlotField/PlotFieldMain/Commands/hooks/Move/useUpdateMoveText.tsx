@@ -3,7 +3,7 @@ import { axiosCustomized } from "../../../../../../../api/axios";
 
 type UpdateMoveTextTypes = {
   moveId: string;
-  moveValue: number;
+  moveValue: string;
 };
 
 export default function useUpdateMoveText({

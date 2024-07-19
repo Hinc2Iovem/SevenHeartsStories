@@ -1,23 +1,23 @@
 import createHttpError from "http-errors";
-import Condition from "../../../../models/StoryEditor/PlotField/Condition/Condition";
+import { SignTypes } from "../../../../controllers/StoryEditor/PlotField/Condition/ConditionValueController";
+import ConditionBlock from "../../../../models/StoryEditor/PlotField/Condition/ConditionBlock";
 import ConditionValue from "../../../../models/StoryEditor/PlotField/Condition/ConditionValue";
 import { validateMongoId } from "../../../../utils/validateMongoId";
-import { SignTypes } from "../../../../controllers/StoryEditor/PlotField/Condition/ConditionValueController";
 
-type GetByConditionIdTypes = {
-  conditionId: string;
+type GetByConditionBlockIdTypes = {
+  conditionBlockId: string;
 };
 
-export const getConditionValueByConditionIdService = async ({
-  conditionId,
-}: GetByConditionIdTypes) => {
+export const getConditionValueByConditionBlockIdService = async ({
+  conditionBlockId,
+}: GetByConditionBlockIdTypes) => {
   validateMongoId({
-    value: conditionId,
-    valueName: "PlotFieldCommand",
+    value: conditionBlockId,
+    valueName: "ConditionBlock",
   });
 
   const existingConditionValue = await ConditionValue.find({
-    plotFieldCommandConditionId: conditionId,
+    conditionBlockId,
   }).lean();
 
   if (!existingConditionValue.length) {
@@ -28,21 +28,23 @@ export const getConditionValueByConditionIdService = async ({
 };
 
 type CreateConditionValueTypes = {
-  conditionId: string;
+  conditionBlockId: string;
 };
 
 export const createConditionValueService = async ({
-  conditionId,
+  conditionBlockId,
 }: CreateConditionValueTypes) => {
-  validateMongoId({ value: conditionId, valueName: "Condition" });
+  validateMongoId({ value: conditionBlockId, valueName: "ConditionBlock" });
 
-  const existingCondition = await Condition.findById(conditionId).lean();
-  if (!existingCondition) {
-    throw createHttpError(400, "Condition with such id wasn't found");
+  const existingConditionBlock = await ConditionBlock.findById(
+    conditionBlockId
+  ).lean();
+  if (!existingConditionBlock) {
+    throw createHttpError(400, "ConditionBlock with such id wasn't found");
   }
 
   return await ConditionValue.create({
-    plotFieldCommandConditionId: conditionId,
+    conditionBlockId: conditionBlockId,
   });
 };
 
@@ -70,17 +72,18 @@ export const updateConditionValueService = async ({
     throw createHttpError(400, "ConditionValue with such id wasn't found");
   }
 
-  if (!sign || !value || !name?.trim().length) {
-    throw createHttpError(400, "Sign, value and name are required");
+  if (sign) {
+    if (!regexSign.test(sign)) {
+      throw createHttpError(400, "Sign can only be equal to: >,<,<=,>=,=");
+    }
+    existingConditionValue.sign = sign;
   }
-
-  if (!regexSign.test(sign)) {
-    throw createHttpError(400, "Sign can only be equal to: >,<,<=,>=,=");
+  if (value) {
+    existingConditionValue.value = value;
   }
-
-  existingConditionValue.name = name;
-  existingConditionValue.sign = sign;
-  existingConditionValue.value = value;
+  if (name?.trim().length) {
+    existingConditionValue.name = name;
+  }
 
   return await existingConditionValue.save();
 };

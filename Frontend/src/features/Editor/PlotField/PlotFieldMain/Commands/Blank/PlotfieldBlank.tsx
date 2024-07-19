@@ -103,12 +103,12 @@ export default function PlotfieldBlank({
   const createCutScene = useCreateCutScene({ plotFieldCommandId });
   const createEffect = useCreateEffect({ plotFieldCommandId });
   const createGetItem = useCreateGetItem({ plotFieldCommandId });
-  const createKey = useCreateKey({ plotFieldCommandId });
-  const createMove = useCreateMove({ plotFieldCommandId });
-  const createMusic = useCreateMusic({
+  const createKey = useCreateKey({
     plotFieldCommandId,
     storyId: storyId ?? "",
   });
+  const createMove = useCreateMove({ plotFieldCommandId });
+  const createMusic = useCreateMusic({ plotFieldCommandId });
   const createName = useCreateName({ plotFieldCommandId });
   const createSound = useCreateSound({
     plotFieldCommandId,
@@ -215,8 +215,8 @@ export default function PlotfieldBlank({
   };
 
   return (
-    <div className="shadow-sm shadow-gray-300 bg-white rounded-md relative">
-      <form className="px-[1rem] py-[.5rem]" onSubmit={handleFormSubmit}>
+    <div className="shadow-sm shadow-gray-300 bg-white rounded-md relative w-full">
+      <form className="px-[1rem] py-[.5rem] w-full" onSubmit={handleFormSubmit}>
         <input
           ref={currentInput}
           type="text"

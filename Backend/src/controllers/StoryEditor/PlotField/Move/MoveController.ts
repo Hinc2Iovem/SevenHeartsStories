@@ -63,7 +63,7 @@ type UpdateMoveParams = {
 };
 
 type UpdateMoveBody = {
-  moveValue: number | undefined;
+  moveValue: string | undefined;
 };
 
 // @route PATCH http://localhost:3500/plotFieldCommands/moves/:moveId

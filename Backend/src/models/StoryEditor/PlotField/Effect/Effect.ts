@@ -7,7 +7,6 @@ export const effectSchema = new mongoose.Schema({
   },
   effectName: {
     type: String,
-    required: true,
   },
 });
 

@@ -22,6 +22,7 @@ export * from "./StoryEditor/PlotField/Choice/ChoiceOptionVariationsRoutes";
 export * from "./StoryEditor/PlotField/CommandIf/IfRoutes";
 export * from "./StoryEditor/PlotField/CommandIf/IfValueRoutes";
 export * from "./StoryEditor/PlotField/Condition/ConditionRoutes";
+export * from "./StoryEditor/PlotField/Condition/ConditionBlockRoutes";
 export * from "./StoryEditor/PlotField/Condition/ConditionValueRoutes";
 export * from "./StoryEditor/PlotField/CutScene/CutSceneRoutes";
 export * from "./StoryEditor/PlotField/Effect/EffectRoutes";

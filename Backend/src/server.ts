@@ -45,6 +45,7 @@ import {
   translationRoute,
   soundCommandRoute,
   soundRoute,
+  conditionBlockRoute,
 } from "./routes/index";
 
 dotenv.config();
@@ -88,6 +89,7 @@ app.use("/plotFieldCommands", choiceOptionVariationsRoute);
 app.use("/plotFieldCommands", ifRoute);
 app.use("/plotFieldCommands", ifValuesRoute);
 app.use("/plotFieldCommands", conditionRoute);
+app.use("/commandConditions", conditionBlockRoute);
 app.use("/plotFieldCommands", conditionValuesRoute);
 app.use("/plotFieldCommands", cutScenesRoute);
 app.use("/plotFieldCommands", effectsRoute);

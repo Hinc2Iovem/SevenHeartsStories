@@ -1,5 +1,6 @@
 export type KeyTypes = {
   _id: string;
-  targetBlockId: string;
+  text: string;
+  storyId: string;
   plotFieldCommandId: string;
 };

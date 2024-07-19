@@ -26,12 +26,10 @@ export const getMusicByPlotFieldCommandIdService = async ({
 
 type CreateMusicTypes = {
   plotFieldCommandId: string;
-  storyId: string;
 };
 
 export const createMusicService = async ({
   plotFieldCommandId,
-  storyId,
 }: CreateMusicTypes) => {
   validateMongoId({ value: plotFieldCommandId, valueName: "PlotFieldCommand" });
 
@@ -42,37 +40,49 @@ export const createMusicService = async ({
     throw createHttpError(400, "PlotFieldCommand with such id wasn't found");
   }
 
-  const newMusicLibrary = await Music.create({ storyId });
-
   return await CommandMusic.create({
     plotFieldCommandId,
-    musicId: newMusicLibrary._id,
   });
 };
 
 type UpdateMusicTypes = {
   musicName: string | undefined;
-  musicId: string;
+  commandMusicId: string;
   storyId: string;
 };
 
 export const updateMusicService = async ({
   musicName,
-  musicId,
+  commandMusicId,
   storyId,
 }: UpdateMusicTypes) => {
-  validateMongoId({ value: musicId, valueName: "Music" });
+  validateMongoId({ value: commandMusicId, valueName: "CommandMusic" });
 
   if (!musicName?.trim().length) {
     throw createHttpError(400, "Music is required");
   }
 
-  const musicLibrary = await Music.findById(musicId).exec();
-  if (musicLibrary) {
-    musicLibrary.musicName = musicName;
-    return await musicLibrary.save();
+  const musicLibrary = await Music.findOne({ musicName })
+    .collation({ locale: "en", strength: 2 })
+    .lean()
+    .exec();
+  const musicCommand = await CommandMusic.findById(commandMusicId).exec();
+
+  if (!musicLibrary) {
+    const newMusicInLibrary = await Music.create({ musicName, storyId });
+    if (musicCommand) {
+      musicCommand.musicId = newMusicInLibrary._id;
+      return await musicCommand.save();
+    } else {
+      throw createHttpError(400, "Music command wasn't even created");
+    }
   } else {
-    return await Music.create({ musicName, storyId });
+    if (musicCommand) {
+      musicCommand.musicId = musicLibrary._id;
+      return await musicCommand.save();
+    } else {
+      throw createHttpError(400, "Music command wasn't even created");
+    }
   }
 };
 

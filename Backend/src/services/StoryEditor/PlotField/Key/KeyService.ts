@@ -1,10 +1,28 @@
 import createHttpError from "http-errors";
-import { Types } from "mongoose";
+import Story from "../../../../models/StoryData/Story";
 import Key from "../../../../models/StoryEditor/PlotField/Key/Key";
 import PlotFieldCommand from "../../../../models/StoryEditor/PlotField/PlotFieldCommand";
-import TopologyBlock from "../../../../models/StoryEditor/Topology/TopologyBlock";
 import { validateMongoId } from "../../../../utils/validateMongoId";
 
+type GetKeyByStoryIdTypes = {
+  storyId: string;
+};
+
+export const getKeyByStoryIdService = async ({
+  storyId,
+}: GetKeyByStoryIdTypes) => {
+  validateMongoId({ value: storyId, valueName: "Story" });
+
+  const existingKey = await Key.find({
+    storyId,
+  }).lean();
+
+  if (!existingKey.length) {
+    return [];
+  }
+
+  return existingKey;
+};
 type GetKeyByPlotFieldCommandIdTypes = {
   plotFieldCommandId: string;
 };
@@ -27,12 +45,15 @@ export const getKeyByPlotFieldCommandIdService = async ({
 
 type CreateCommandKeyTypes = {
   plotFieldCommandId: string;
+  storyId: string;
 };
 
 export const createCommandKeyService = async ({
   plotFieldCommandId,
+  storyId,
 }: CreateCommandKeyTypes) => {
   validateMongoId({ value: plotFieldCommandId, valueName: "PlotFieldCommand" });
+  validateMongoId({ value: storyId, valueName: "Story" });
 
   const existingPlotFieldCommand = await PlotFieldCommand.findById(
     plotFieldCommandId
@@ -41,45 +62,36 @@ export const createCommandKeyService = async ({
     throw createHttpError(400, "PlotFieldCommand with such id wasn't found");
   }
 
+  const existingStory = await Story.findById(storyId).lean();
+  if (!existingStory) {
+    throw createHttpError(400, "Story with such id wasn't found");
+  }
+
   return await Key.create({
     plotFieldCommandId,
+    storyId,
   });
 };
 
 type UpdateCommandKeyTypes = {
   commandKeyId: string;
-  targetBlockId: string;
-  sourceBlockId: string;
+  text: string;
 };
 
 export const updateCommandKeyService = async ({
-  targetBlockId,
+  text,
   commandKeyId,
-  sourceBlockId,
 }: UpdateCommandKeyTypes) => {
   validateMongoId({ value: commandKeyId, valueName: "CommandKey" });
-  validateMongoId({ value: targetBlockId, valueName: "TargetBlock" });
-  validateMongoId({ value: sourceBlockId, valueName: "SourceBlock" });
-
-  const existingSourceBlockId = await TopologyBlock.findById(
-    sourceBlockId
-  ).lean();
-  if (!existingSourceBlockId) {
-    throw createHttpError(400, "TopologyBlock with such id wasn't found");
-  }
 
   const existingCommandKey = await Key.findById(commandKeyId).exec();
   if (!existingCommandKey) {
     throw createHttpError(400, "CommandKey with such id wasn't found");
   }
-  const existingTargetBlock = await TopologyBlock.findById(
-    targetBlockId
-  ).lean();
-  if (!existingTargetBlock) {
-    throw createHttpError(400, "TopologyBlock with such id wasn't found");
-  }
 
-  existingCommandKey.targetBlockId = new Types.ObjectId(targetBlockId);
+  if (text?.trim().length) {
+    existingCommandKey.text = text;
+  }
 
   return await existingCommandKey.save();
 };

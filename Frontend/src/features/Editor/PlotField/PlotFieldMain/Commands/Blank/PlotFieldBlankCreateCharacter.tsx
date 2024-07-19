@@ -89,7 +89,7 @@ export default function PlotFieldBlankCreateCharacter({
           ref={cursorRef}
           className="w-fit self-end text-[1.5rem] border-[1px] border-dotted border-black rounded-md px-[1rem] focus:shadow-inner active:bg-black shadow-md shadow-gray-200"
         >
-          Создать
+          Создать Персонажа
         </button>
       </form>
     </aside>

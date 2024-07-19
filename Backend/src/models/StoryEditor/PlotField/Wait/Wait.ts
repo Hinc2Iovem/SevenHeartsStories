@@ -7,7 +7,6 @@ export const waitSchema = new mongoose.Schema({
   },
   waitValue: {
     type: Number,
-    required: true,
   },
 });
 

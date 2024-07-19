@@ -7,7 +7,6 @@ export const ambientSchema = new mongoose.Schema({
   },
   ambientName: {
     type: String,
-    required: true,
   },
 });
 

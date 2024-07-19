@@ -34,10 +34,9 @@ export const getMusicByPlotFieldCommandIdController: RequestHandler<
 
 type CreateMusicParams = {
   plotFieldCommandId: string;
-  storyId: string;
 };
 
-// @route POST http://localhost:3500/plotFieldCommands/:plotFieldCommandId/stories/:storyId/music
+// @route POST http://localhost:3500/plotFieldCommands/:plotFieldCommandId/music
 // @access Private
 export const createMusicController: RequestHandler<
   CreateMusicParams,
@@ -48,7 +47,6 @@ export const createMusicController: RequestHandler<
   try {
     const music = await createMusicService({
       plotFieldCommandId: req.params.plotFieldCommandId,
-      storyId: req.params.storyId,
     });
     if (music) {
       return res.status(201).json(music);
@@ -61,7 +59,7 @@ export const createMusicController: RequestHandler<
 };
 
 type UpdateMusicParams = {
-  musicId: string;
+  commandMusicId: string;
   storyId: string;
 };
 
@@ -69,7 +67,7 @@ type UpdateMusicBody = {
   musicName: string | undefined;
 };
 
-// @route PATCH http://localhost:3500/plotFieldCommands/stories/:storyId/music/:musicId
+// @route PATCH http://localhost:3500/plotFieldCommands/stories/:storyId/commandMusic/:commandMusicId
 // @access Private
 export const updateMusicController: RequestHandler<
   UpdateMusicParams,
@@ -80,7 +78,7 @@ export const updateMusicController: RequestHandler<
   try {
     const music = await updateMusicService({
       musicName: req.body.musicName,
-      musicId: req.params.musicId,
+      commandMusicId: req.params.commandMusicId,
       storyId: req.params.storyId,
     });
     if (music) {

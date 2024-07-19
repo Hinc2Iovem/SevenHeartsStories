@@ -1,24 +1,34 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { axiosCustomized } from "../../../../../../../api/axios";
 
 type UpdateMusicTextTypes = {
-  musicId: string;
+  commandMusicId: string;
   storyId: string;
+};
+
+type UpdateMusicTextMutationTypes = {
   musicName: string;
 };
 
 export default function useUpdateMusicText({
-  musicId,
+  commandMusicId,
   storyId,
-  musicName,
 }: UpdateMusicTextTypes) {
+  const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async () =>
+    mutationFn: async ({ musicName }: UpdateMusicTextMutationTypes) =>
       await axiosCustomized.patch(
-        `/plotFieldCommands/stories/${storyId}/music/${musicId}`,
+        `/plotFieldCommands/stories/${storyId}/commandMusic/${commandMusicId}`,
         {
           musicName,
         }
       ),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["stories", storyId, "music"],
+        exact: true,
+        type: "active",
+      });
+    },
   });
 }

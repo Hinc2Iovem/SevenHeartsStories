@@ -4,7 +4,34 @@ import {
   deleteCommandKeyService,
   getKeyByPlotFieldCommandIdService,
   updateCommandKeyService,
+  getKeyByStoryIdService,
 } from "../../../../services/StoryEditor/PlotField/Key/KeyService";
+
+type GetKeyByStoryIdParams = {
+  storyId: string;
+};
+
+// @route GET http://localhost:3500/plotFieldCommands/stories/:storyId/keys
+// @access Private
+export const getKeyByStoryIdController: RequestHandler<
+  GetKeyByStoryIdParams,
+  unknown,
+  unknown,
+  unknown
+> = async (req, res, next) => {
+  try {
+    const key = await getKeyByStoryIdService({
+      storyId: req.params.storyId,
+    });
+    if (key) {
+      return res.status(201).json(key);
+    } else {
+      return res.status(400).json({ message: "Something went wrong" });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
 
 type GetKeyByPlotFieldCommandIdParams = {
   plotFieldCommandId: string;
@@ -34,9 +61,10 @@ export const getKeyByPlotFieldCommandIdController: RequestHandler<
 
 type CreateKeyParams = {
   plotFieldCommandId: string;
+  storyId: string;
 };
 
-// @route POST http://localhost:3500/plotFieldCommands/:plotFieldCommandId/keys
+// @route POST http://localhost:3500/plotFieldCommands/:plotFieldCommandId/stories/:storyId/keys
 // @access Private
 export const createKeyController: RequestHandler<
   CreateKeyParams,
@@ -47,6 +75,7 @@ export const createKeyController: RequestHandler<
   try {
     const key = await createCommandKeyService({
       plotFieldCommandId: req.params.plotFieldCommandId,
+      storyId: req.params.storyId,
     });
     if (key) {
       return res.status(201).json(key);
@@ -60,22 +89,23 @@ export const createKeyController: RequestHandler<
 
 type UpdateKeyParams = {
   commandKeyId: string;
-  targetBlockId: string;
-  sourceBlockId: string;
 };
-// @route PATCH http://localhost:3500/plotFieldCommands/commandKeys/:commandKeyId/sourceBlocks/:sourceBlockId/targetBlocks/:targetBlockId
+
+type UpdateKeyBody = {
+  text: string;
+};
+// @route PATCH http://localhost:3500/plotFieldCommands/commandKeys/:commandKeyId/text
 // @access Private
 export const updateKeyController: RequestHandler<
   UpdateKeyParams,
   unknown,
-  unknown,
+  UpdateKeyBody,
   unknown
 > = async (req, res, next) => {
   try {
     const key = await updateCommandKeyService({
       commandKeyId: req.params.commandKeyId,
-      sourceBlockId: req.params.sourceBlockId,
-      targetBlockId: req.params.targetBlockId,
+      text: req.body.text,
     });
     if (key) {
       return res.status(201).json(key);

@@ -6,8 +6,7 @@ export const moveSchema = new mongoose.Schema({
     ref: "PlotFieldCommand",
   },
   moveValue: {
-    type: Number,
-    required: true,
+    type: String,
   },
 });
 
