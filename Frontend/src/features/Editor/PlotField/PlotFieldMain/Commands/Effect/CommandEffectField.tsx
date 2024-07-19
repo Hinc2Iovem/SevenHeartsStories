@@ -57,8 +57,9 @@ export default function CommandEffectField({
         onSubmit={(e) => e.preventDefault()}
         className="sm:w-[77%] flex-grow w-full"
       >
-        <textarea
+        <input
           value={textValue}
+          type="text"
           className=" w-full outline-gray-300 text-gray-600 text-[1.6rem] px-[1rem] py-[.5rem] rounded-md shadow-md sm:max-h-[20rem] max-h-[40rem]"
           placeholder="Such a lovely day"
           onChange={(e) => setTextValue(e.target.value)}

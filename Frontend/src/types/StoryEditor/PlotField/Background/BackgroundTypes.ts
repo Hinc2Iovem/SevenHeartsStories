@@ -2,7 +2,7 @@ export type BackgroundTypes = {
   _id: string;
   plotFieldCommandId: string;
   imgUrl?: string;
-  musicName?: string;
+  musicId?: string;
   backgroundName?: string;
-  pointOfMovement?: number;
+  pointOfMovement?: string;
 };

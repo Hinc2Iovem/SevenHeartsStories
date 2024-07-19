@@ -3,15 +3,13 @@ import { axiosCustomized } from "../../../../../../../api/axios";
 
 type UpdateBackgroundTextTypes = {
   backgroundId: string;
-  backgroundName: string;
-  musicName?: string;
-  pointOfMovement?: number;
+  backgroundName?: string;
+  pointOfMovement?: string;
 };
 
 export default function useUpdateBackgroundText({
   backgroundId,
   backgroundName,
-  musicName,
   pointOfMovement,
 }: UpdateBackgroundTextTypes) {
   return useMutation({
@@ -21,7 +19,6 @@ export default function useUpdateBackgroundText({
         {
           backgroundName,
           pointOfMovement,
-          musicName,
         }
       ),
   });

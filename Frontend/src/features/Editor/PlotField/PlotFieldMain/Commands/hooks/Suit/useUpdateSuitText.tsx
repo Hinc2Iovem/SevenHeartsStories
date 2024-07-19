@@ -3,19 +3,19 @@ import { axiosCustomized } from "../../../../../../../api/axios";
 
 type UpdateSuitTextTypes = {
   suitId: string;
-  characterIdId: string;
+  characterId: string;
   suitName: string;
 };
 
 export default function useUpdateSuitText({
   suitId,
-  characterIdId,
+  characterId,
   suitName,
 }: UpdateSuitTextTypes) {
   return useMutation({
     mutationFn: async () =>
       await axiosCustomized.patch(
-        `/plotFieldCommands/characters/${characterIdId}/suits/${suitId}`,
+        `/plotFieldCommands/characters/${characterId}/suits/${suitId}`,
         {
           suitName,
         }

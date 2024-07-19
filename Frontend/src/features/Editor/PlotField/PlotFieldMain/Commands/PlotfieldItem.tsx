@@ -1,14 +1,18 @@
 import { PlotFieldTypes } from "../../../../../types/StoryEditor/PlotField/PlotFieldTypes";
 import CommandAchievementField from "./Achievement/CommandAchievementField";
 import CommandAmbientField from "./Ambient/CommandAmbientField";
+import CommandBackgroundField from "./Background/CommandBackgroundField";
 import PlotfieldBlank from "./Blank/PlotfieldBlank";
 import CommandCutSceneField from "./CutScene/CommandCutSceneField";
 import CommandEffectField from "./Effect/CommandEffectField";
 import CommandKeyField from "./Key/CommandKeyField";
 import CommandMoveField from "./Move/CommandMoveField";
 import CommandMusicField from "./Music/CommandMusicField";
+import CommandNameField from "./Name/CommandNameField";
 import CommandSayField from "./Say/CommandSayField";
 import CommandSoundField from "./Sound/CommandSoundField";
+import CommandSuitField from "./Suit/CommandSuitField";
+import CommandWaitField from "./Wait/CommandWaitField";
 
 export default function PlotfieldItem({
   _id,
@@ -42,6 +46,14 @@ export default function PlotfieldItem({
         <CommandMusicField command={command} plotFieldCommandId={_id} />
       ) : command === "sound" ? (
         <CommandSoundField command={command} plotFieldCommandId={_id} />
+      ) : command === "suit" ? (
+        <CommandSuitField command={command} plotFieldCommandId={_id} />
+      ) : command === "wait" ? (
+        <CommandWaitField command={command} plotFieldCommandId={_id} />
+      ) : command === "name" ? (
+        <CommandNameField command={command} plotFieldCommandId={_id} />
+      ) : command === "background" ? (
+        <CommandBackgroundField command={command} plotFieldCommandId={_id} />
       ) : null}
     </li>
   );

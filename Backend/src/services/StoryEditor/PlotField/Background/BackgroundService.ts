@@ -2,6 +2,8 @@ import createHttpError from "http-errors";
 import Background from "../../../../models/StoryEditor/PlotField/Background/Background";
 import { validateMongoId } from "../../../../utils/validateMongoId";
 import PlotFieldCommand from "../../../../models/StoryEditor/PlotField/PlotFieldCommand";
+import { Types } from "mongoose";
+import Music from "../../../../models/StoryData/Music";
 
 type GetBackgroundByPlotFieldCommandIdTypes = {
   plotFieldCommandId: string;
@@ -46,14 +48,12 @@ export const createBackgroundService = async ({
 type UpdateBackgroundTypes = {
   backgroundName: string | undefined;
   backgroundId: string;
-  pointOfMovement: number | undefined;
-  musicName: string | undefined;
+  pointOfMovement: string | undefined;
 };
 
 export const updateBackgroundService = async ({
   backgroundName,
   backgroundId,
-  musicName,
   pointOfMovement,
 }: UpdateBackgroundTypes) => {
   validateMongoId({ value: backgroundId, valueName: "Background" });
@@ -63,19 +63,61 @@ export const updateBackgroundService = async ({
     throw createHttpError(400, "Background with such id wasn't found");
   }
 
-  if (!backgroundName?.trim().length) {
-    throw createHttpError(400, "Background is required");
+  if (backgroundName?.trim().length) {
+    existingBackground.backgroundName = backgroundName;
   }
 
-  existingBackground.backgroundName = backgroundName;
-  if (musicName?.trim().length) {
-    existingBackground.musicName = musicName;
-  }
-  if (pointOfMovement) {
+  if (pointOfMovement?.trim().length) {
     existingBackground.pointOfMovement = pointOfMovement;
   }
 
   return await existingBackground.save();
+};
+
+type UpdateBackgroundMusicIdTypes = {
+  backgroundId: string;
+  storyId: string;
+  musicName: string | undefined;
+};
+
+export const backgroundUpdateMusicIdService = async ({
+  backgroundId,
+  storyId,
+  musicName,
+}: UpdateBackgroundMusicIdTypes) => {
+  validateMongoId({ value: backgroundId, valueName: "Background" });
+
+  const existingBackground = await Background.findById(backgroundId).exec();
+  if (!existingBackground) {
+    throw createHttpError(400, "Background with such id wasn't found");
+  }
+
+  if (!musicName?.trim().length) {
+    throw createHttpError(400, "imgUrl is required");
+  }
+
+  const musicLibrary = await Music.findOne({ musicName })
+    .collation({ locale: "en", strength: 2 })
+    .lean()
+    .exec();
+  const backgroundCommand = await Background.findById(backgroundId).exec();
+
+  if (!musicLibrary) {
+    const newMusicInLibrary = await Music.create({ musicName, storyId });
+    if (backgroundCommand) {
+      backgroundCommand.musicId = newMusicInLibrary._id;
+      return await backgroundCommand.save();
+    } else {
+      throw createHttpError(400, "Music command wasn't even created");
+    }
+  } else {
+    if (backgroundCommand) {
+      backgroundCommand.musicId = musicLibrary._id;
+      return await backgroundCommand.save();
+    } else {
+      throw createHttpError(400, "Sound command wasn't even created");
+    }
+  }
 };
 
 type UpdateBackgroundImgTypes = {

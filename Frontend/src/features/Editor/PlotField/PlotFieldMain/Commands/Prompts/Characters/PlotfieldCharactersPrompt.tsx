@@ -5,6 +5,7 @@ import { CharacterGetTypes } from "../../../../../../../types/StoryData/Characte
 type EmotionCharacterNameTypes = {
   setCharacterName: React.Dispatch<React.SetStateAction<string>>;
   setCharacterId: React.Dispatch<React.SetStateAction<string>>;
+  setCharacterImg?: React.Dispatch<React.SetStateAction<string>>;
   setShowCharacterModal: React.Dispatch<React.SetStateAction<boolean>>;
 } & CharacterGetTypes;
 
@@ -14,6 +15,7 @@ export default function PlotfieldCharactersPrompt({
   setCharacterName,
   setCharacterId,
   setShowCharacterModal,
+  setCharacterImg,
 }: EmotionCharacterNameTypes) {
   const { data: translationCharacter } = useGetTranslationCharacters({
     characterId: _id,
@@ -39,6 +41,9 @@ export default function PlotfieldCharactersPrompt({
             setCharacterName(currentCharacterName);
             setCharacterId(_id);
             setShowCharacterModal(false);
+            if (setCharacterImg) {
+              setCharacterImg(img);
+            }
           }}
           className="rounded-md flex px-[.5rem] py-[.2rem] items-center justify-between hover:bg-primary-light-blue hover:text-white transition-all "
         >
@@ -55,6 +60,9 @@ export default function PlotfieldCharactersPrompt({
             setCharacterName(currentCharacterName);
             setCharacterId(_id);
             setShowCharacterModal(false);
+            if (setCharacterImg) {
+              setCharacterImg("");
+            }
           }}
           className="text-start text-[1.3rem] px-[.5rem] py-[.2rem] hover:bg-primary-light-blue hover:text-white transition-all rounded-md"
         >

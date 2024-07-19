@@ -1,50 +1,49 @@
 import { useEffect, useState } from "react";
-import useGetCommandKey from "../hooks/Key/useGetCommandKey";
-import useDebounce from "../../../../../../hooks/utilities/useDebounce";
-import useUpdateKeyText from "../hooks/Key/useUpdateKeyText";
+import useGetCommandWait from "../hooks/Wait/useGetCommandWait";
+import useUpdateWaitText from "../hooks/Wait/useUpdateWaitText";
 
-type CommandKeyFieldTypes = {
+type CommandWaitFieldTypes = {
   plotFieldCommandId: string;
   command: string;
 };
 
-export default function CommandKeyField({
+export default function CommandWaitField({
   plotFieldCommandId,
   command,
-}: CommandKeyFieldTypes) {
-  const [nameValue] = useState<string>(command ?? "Key");
-  const [textValue, setTextValue] = useState("");
+}: CommandWaitFieldTypes) {
+  const [nameValue] = useState<string>(command ?? "Wait");
+  const [waitValue, setWaitValue] = useState<number>(0);
 
-  const { data: commandKey } = useGetCommandKey({
+  const { data: commandWait } = useGetCommandWait({
     plotFieldCommandId,
   });
-  const [commandKeyId, setCommandKeyId] = useState("");
+  const [commandWaitId, setCommandWaitId] = useState("");
 
   useEffect(() => {
-    if (commandKey) {
-      setCommandKeyId(commandKey._id);
+    if (commandWait) {
+      setCommandWaitId(commandWait._id);
     }
-  }, [commandKey]);
+  }, [commandWait]);
 
   useEffect(() => {
-    if (commandKey?.text) {
-      setTextValue(commandKey.text);
+    if (commandWait?.waitValue) {
+      setWaitValue(commandWait.waitValue);
     }
-  }, [commandKey]);
+  }, [commandWait]);
 
-  const debouncedValue = useDebounce({ value: textValue, delay: 500 });
-
-  const updateKeyText = useUpdateKeyText({
-    commandKeyId,
-    text: debouncedValue,
+  const updateWaitText = useUpdateWaitText({
+    waitValue,
+    waitId: commandWaitId,
   });
 
   useEffect(() => {
-    if (debouncedValue?.trim().length) {
-      updateKeyText.mutate();
+    if (waitValue) {
+      updateWaitText.mutate();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [debouncedValue]);
+  }, [waitValue]);
+
+  console.log("waitValue: ", waitValue);
 
   return (
     <div className="flex flex-wrap gap-[1rem] w-full bg-primary-light-blue rounded-md p-[.5rem] sm:flex-row flex-col">
@@ -58,11 +57,11 @@ export default function CommandKeyField({
         className="sm:w-[77%] flex-grow w-full"
       >
         <input
-          value={textValue}
+          value={waitValue || ""}
           type="text"
           className=" w-full outline-gray-300 text-gray-600 text-[1.6rem] px-[1rem] py-[.5rem] rounded-md shadow-md sm:max-h-[20rem] max-h-[40rem]"
           placeholder="Such a lovely day"
-          onChange={(e) => setTextValue(e.target.value)}
+          onChange={(e) => setWaitValue(+e.target.value)}
         />
       </form>
     </div>

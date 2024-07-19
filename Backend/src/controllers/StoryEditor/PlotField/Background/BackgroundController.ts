@@ -1,6 +1,7 @@
 import { RequestHandler } from "express";
 import {
   backgroundUpdateImgService,
+  backgroundUpdateMusicIdService,
   createBackgroundService,
   deleteBackgroundService,
   getBackgroundByPlotFieldCommandIdService,
@@ -65,8 +66,7 @@ type UpdateBackgroundParams = {
 
 type UpdateBackgroundBody = {
   backgroundName: string | undefined;
-  pointOfMovement: number | undefined;
-  musicName: string | undefined;
+  pointOfMovement: string | undefined;
 };
 
 // @route PATCH http://localhost:3500/plotFieldCommands/backgrounds/:backgroundId
@@ -81,8 +81,39 @@ export const updateBackgroundController: RequestHandler<
     const background = await updateBackgroundService({
       backgroundName: req.body.backgroundName,
       pointOfMovement: req.body.pointOfMovement,
-      musicName: req.body.musicName,
       backgroundId: req.params.backgroundId,
+    });
+    if (background) {
+      return res.status(201).json(background);
+    } else {
+      return res.status(400).json({ message: "Something went wrong" });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
+type BackgroundUpdateMusicIdParams = {
+  backgroundId: string;
+  storyId: string;
+};
+type BackgroundUpdateMusicIdBody = {
+  musicName: string | undefined;
+};
+
+// @route PATCH http://localhost:3500/plotFieldCommands/stories/:storyId/backgrounds/:backgroundId/musicName
+// @access Private
+export const updateBackgroundMusicIdController: RequestHandler<
+  BackgroundUpdateMusicIdParams,
+  unknown,
+  BackgroundUpdateMusicIdBody,
+  unknown
+> = async (req, res, next) => {
+  try {
+    const background = await backgroundUpdateMusicIdService({
+      backgroundId: req.params.backgroundId,
+      storyId: req.params.storyId,
+      musicName: req.body.musicName,
     });
     if (background) {
       return res.status(201).json(background);

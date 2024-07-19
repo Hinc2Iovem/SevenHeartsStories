@@ -9,10 +9,11 @@ export const plotFieldCommandBackgroundSchema = new mongoose.Schema({
     type: String,
   },
   pointOfMovement: {
-    type: Number,
-  },
-  musicName: {
     type: String,
+  },
+  musicId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Music",
   },
   imgUrl: {
     type: String,

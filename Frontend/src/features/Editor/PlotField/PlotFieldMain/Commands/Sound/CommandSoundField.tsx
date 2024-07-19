@@ -88,7 +88,7 @@ export default function CommandSoundField({
     setCreateNewSoundForm(false);
   };
   return (
-    <div className="flex flex-wrap gap-[1rem] w-full bg-primary-light-blue rounded-md p-[.5rem] sm:flex-row flex-col items-center">
+    <div className="flex flex-wrap gap-[1rem] w-full bg-primary-light-blue rounded-md p-[.5rem] sm:flex-row flex-col">
       <div className="sm:w-[20%] min-w-[10rem] flex-grow w-full relative">
         <h3 className="text-[1.3rem] text-start outline-gray-300 w-full capitalize px-[1rem] py-[.5rem] rounded-md shadow-md bg-white cursor-default">
           {nameValue}
@@ -97,11 +97,11 @@ export default function CommandSoundField({
       <div
         className={`${
           createNewSoundForm ? "hidden" : ""
-        } sm:w-[77%] flex-grow w-full md:flex-row flex-col flex-wrap flex justify-between items-center gap-[1rem] p-[.5rem] relative`}
+        } sm:w-[77%] flex-grow w-full flex-col flex-wrap flex justify-between gap-[1rem] relative`}
       >
         <button
           onClick={() => setShowSoundDropDown((prev) => !prev)}
-          className="text-[1.3rem] outline-gray-400 bg-white rounded-md px-[1rem] py-[.5rem] self-start sm:w-[77%] flex-grow w-full text-start"
+          className="text-[1.3rem] outline-gray-400 bg-white rounded-md px-[1rem] py-[.5rem] self-start flex-grow w-full text-start"
         >
           {currentSoundName?.trim().length ? (
             currentSoundName
@@ -109,17 +109,15 @@ export default function CommandSoundField({
             <span className="text-gray-600 text-[1.3rem]">Пусто</span>
           )}
         </button>
-        <div className="flex gap-[1rem] flex-wrap self-start">
-          <button
-            onClick={() => {
-              setNewSoundName("");
-              setCreateNewSoundForm(true);
-            }}
-            className="text-[1.3rem] outline-gray-400 bg-green-400 text-white hover:opacity-85 rounded-md px-[1rem] py-[.5rem]"
-          >
-            Добавить Звук
-          </button>
-        </div>
+        <button
+          onClick={() => {
+            setNewSoundName("");
+            setCreateNewSoundForm(true);
+          }}
+          className="text-[1.3rem] outline-gray-400 bg-green-400 text-white hover:opacity-85 rounded-md px-[1rem] py-[.5rem] self-end"
+        >
+          Добавить Звук
+        </button>
         <ul
           className={`${
             showSoundDropDown ? "" : "hidden"

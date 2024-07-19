@@ -1,25 +1,22 @@
-import { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
+import useUpdateBackgroundMusicText from "../hooks/Background/useUpdateBackgroundMusicText";
 import useGetAllMusicByStoryId from "../hooks/Music/useGetAllMusicByStoryId";
-import useGetCommandMusic from "../hooks/Music/useGetCommandMusic";
 import useGetMusicById from "../hooks/Music/useGetMusicById";
-import useUpdateMusicText from "../hooks/Music/useUpdateMusicText";
 import useEscapeOfModal from "../../../../../../hooks/UI/useEscapeOfModal";
-import "../Prompts/promptStyles.css";
 
-type CommandMusicFieldTypes = {
-  plotFieldCommandId: string;
-  command: string;
+type BackgroundMusicFormTypes = {
+  backgroundId: string;
+  musicId: string;
 };
 
-export default function CommandMusicField({
-  plotFieldCommandId,
-  command,
-}: CommandMusicFieldTypes) {
+export default function BackgroundMusicForm({
+  backgroundId,
+  musicId,
+}: BackgroundMusicFormTypes) {
   const { storyId } = useParams();
-  const [nameValue] = useState<string>(command ?? "Music");
-  const [musicName, setMusicName] = useState<string>("");
   const [showMusicDropDown, setShowMusicDropDown] = useState(false);
+  const [musicName, setMusicName] = useState("");
   const [createNewMusicForm, setCreateNewMusicForm] = useState(false);
   const [newMusicName, setNewMusicName] = useState("");
   const [currentMusicName, setCurrentMusicName] = useState<string>("");
@@ -31,12 +28,8 @@ export default function CommandMusicField({
     return allMusicNames;
   }, [allMusic]);
 
-  const { data: commandMusic } = useGetCommandMusic({
-    plotFieldCommandId,
-  });
-  const [commandMusicId, setCommandMusicId] = useState("");
   const { data: music } = useGetMusicById({
-    musicId: commandMusic?.musicId ?? "",
+    musicId: musicId ?? "",
   });
 
   useEffect(() => {
@@ -48,20 +41,14 @@ export default function CommandMusicField({
   }, [musicName, newMusicName]);
 
   useEffect(() => {
-    if (commandMusic) {
-      setCommandMusicId(commandMusic._id);
-    }
-  }, [commandMusic]);
-
-  useEffect(() => {
     if (music) {
       setMusicName(music.musicName);
     }
   }, [music]);
 
-  const updateMusicText = useUpdateMusicText({
+  const updateMusicText = useUpdateBackgroundMusicText({
     storyId: storyId ?? "",
-    commandMusicId,
+    backgroundId,
   });
 
   useEffect(() => {
@@ -86,26 +73,22 @@ export default function CommandMusicField({
     updateMusicText.mutate({ musicName: newMusicName });
     setCreateNewMusicForm(false);
   };
+
   return (
-    <div className="flex flex-wrap gap-[1rem] w-full bg-primary-light-blue rounded-md p-[.5rem] sm:flex-row flex-col">
-      <div className="sm:w-[20%] min-w-[10rem] flex-grow w-full relative">
-        <h3 className="text-[1.3rem] text-start outline-gray-300 w-full capitalize px-[1rem] py-[.5rem] rounded-md shadow-md bg-white cursor-default">
-          {nameValue}
-        </h3>
-      </div>
+    <>
       <div
         className={`${
           createNewMusicForm ? "hidden" : ""
-        } sm:w-[77%] flex-grow w-full flex-col flex-wrap flex items-center gap-[1rem] relative`}
+        } sm:w-[77%] flex-grow w-full flex-wrap sm:flex-row flex-col flex items-center gap-[1rem] relative`}
       >
         <button
           onClick={() => setShowMusicDropDown((prev) => !prev)}
-          className="text-[1.3rem] outline-gray-400 bg-white rounded-md px-[1rem] py-[.5rem] flex-grow w-full text-start"
+          className="text-[1.3rem] flex-grow outline-gray-400 bg-white rounded-md px-[1rem] py-[.5rem] sm:w-auto w-full sm:text-start text-center"
         >
           {currentMusicName?.trim().length ? (
             currentMusicName
           ) : (
-            <span className="text-gray-600 text-[1.3rem]">Пусто</span>
+            <span className="text-gray-600 text-[1.3rem]">Название Музыки</span>
           )}
         </button>
         <button
@@ -113,14 +96,14 @@ export default function CommandMusicField({
             setNewMusicName("");
             setCreateNewMusicForm(true);
           }}
-          className="text-[1.3rem] outline-gray-400 bg-green-400 text-white hover:opacity-85 rounded-md px-[1rem] py-[.5rem] self-end"
+          className="text-[1.3rem] flex-shrink-0 block outline-gray-400 bg-green-400 text-white hover:opacity-85 rounded-md px-[1rem] py-[.5rem] self-end sm:w-auto w-full sm:text-start text-center"
         >
           Добавить Музыку
         </button>
         <ul
           className={`${
             showMusicDropDown ? "" : "hidden"
-          }  bottom-[-.5rem] right-[-.5rem] bg-neutral-alabaster rounded-md z-[10] flex-grow w-[20rem] flex flex-col gap-[.2rem] max-h-[15rem] overflow-y-auto overflow-x-hidden p-[.5rem] absolute | scrollBar`}
+          } translate-y-[70%] left-[-.5rem] bg-neutral-alabaster rounded-md z-[10] flex-grow w-full flex flex-col gap-[.2rem] max-h-[15rem] overflow-y-auto overflow-x-hidden p-[.5rem] absolute | scrollBar`}
         >
           {allMusicMemoized.map((mm, i) => (
             <li key={mm + i}>
@@ -168,6 +151,6 @@ export default function CommandMusicField({
           </button>
         </div>
       </form>
-    </div>
+    </>
   );
 }

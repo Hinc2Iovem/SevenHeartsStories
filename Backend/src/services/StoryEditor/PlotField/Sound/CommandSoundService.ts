@@ -42,7 +42,6 @@ export const createSoundService = async ({
 
   return await CommandSound.create({
     plotFieldCommandId,
-    soundId: newSoundLibrary._id,
   });
 };
 

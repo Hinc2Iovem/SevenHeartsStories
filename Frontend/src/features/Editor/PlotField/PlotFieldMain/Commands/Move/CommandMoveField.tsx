@@ -39,8 +39,6 @@ export default function CommandMoveField({
     moveId: commandMoveId,
   });
 
-  console.log(regexCheckDecimalNumberBetweenZeroAndOne.test("0.0"));
-
   useEffect(() => {
     if (moveValue.trim().length) {
       if (regexCheckDecimalNumberBetweenZeroAndOne.test(moveValue)) {
@@ -81,7 +79,7 @@ export default function CommandMoveField({
           showNotificationModal ? "" : "hidden"
         } absolute -translate-y-[2rem] right-0 bg-white shadow-md rounded-md border-red-400 border-[2px] border-dashed w-[70%] text-[1.4rem] p-[.5rem] text-right text-red-300`}
       >
-        Значение должно быть десятичным числом в промежутке от 0.0 или 1.0
+        Значение должно быть десятичным числом в промежутке от 0.0 до 1.0
       </aside>
     </div>
   );
