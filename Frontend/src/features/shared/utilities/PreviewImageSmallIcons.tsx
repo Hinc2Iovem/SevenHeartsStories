@@ -7,6 +7,7 @@ type PreviewImage = {
   imagePreview: string | ArrayBuffer | null;
   divClasses?: string;
   imgClasses: string;
+  imgNotExistingClasses?: string;
   children?: React.ReactNode;
 };
 
@@ -16,6 +17,7 @@ export default function PreviewImageSmallIcons({
   divClasses,
   imgClasses,
   children,
+  imgNotExistingClasses = "w-[70%] absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 rounded-md",
 }: PreviewImage) {
   const onDrop = useCallback(
     (acceptedFiles: Array<File>) => {
@@ -30,6 +32,7 @@ export default function PreviewImageSmallIcons({
     [setPreview]
   );
 
+  //
   const { getRootProps, getInputProps } = useDropzone({
     onDrop,
   });
@@ -44,7 +47,7 @@ export default function PreviewImageSmallIcons({
           <img
             src={imagePreview ? (imagePreview as string) : plus}
             alt="addImage"
-            className={`w-[70%] absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 rounded-md`}
+            className={`${imgNotExistingClasses}`}
           />
           {children ? children : ""}
         </div>

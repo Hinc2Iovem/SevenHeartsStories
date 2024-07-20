@@ -21,6 +21,6 @@ export default function useGetTranslationCharacterEnabled({
           `/translations/characters/${characterId}?currentLanguage=${language}`
         )
         .then((r) => r.data),
-    enabled: commandSayType === "character",
+    enabled: commandSayType === "character" && !!characterId,
   });
 }

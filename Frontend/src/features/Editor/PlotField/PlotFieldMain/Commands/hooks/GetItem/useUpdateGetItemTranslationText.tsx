@@ -7,7 +7,7 @@ type UpdateGetItemTextTypes = {
   buttonText?: string;
   itemName?: string;
   itemDescription?: string;
-  language: CurrentlyAvailableLanguagesTypes;
+  language?: CurrentlyAvailableLanguagesTypes;
 };
 
 export default function useUpdateGetItemTranslationText({

@@ -3,8 +3,10 @@ import {
   appearancePartCreateService,
   appearancePartDeleteService,
   appearancePartGetAllService,
+  appearancePartGetByCharacterIdAndTypeService,
   appearancePartGetByCharacterIdService,
   appearancePartUpdateImgService,
+  appearancePartGetByAppearancePartIdService,
 } from "../../services/StoryData/AppearancePartService";
 import { AppearancePartsTypes } from "../../consts/APPEARANCE_PARTS";
 
@@ -26,11 +28,35 @@ export const appearancePartGetAllController: RequestHandler = async (
     next(error);
   }
 };
+
+type AppearancePartGetByAppearancePartIdParams = {
+  appearancePartId: string;
+};
+
+// @route GET http://localhost:3500/appearanceParts/:appearancePartId
+// @access Private
+export const appearancePartGetByAppearancePartIdController: RequestHandler<
+  AppearancePartGetByAppearancePartIdParams,
+  unknown,
+  unknown,
+  unknown
+> = async (req, res, next) => {
+  try {
+    const appearancePart = await appearancePartGetByAppearancePartIdService({
+      appearancePartId: req.params.appearancePartId,
+    });
+    if (appearancePart) {
+      return res.status(201).json(appearancePart);
+    } else {
+      return res.status(400).json({ message: "Something went wrong" });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
 type AppearancePartGetByCharacterIdParams = {
   characterId: string;
-};
-type AppearancePartGetByCharacterIdQuery = {
-  type: AppearancePartsTypes;
 };
 
 // @route GET http://localhost:3500/appearanceParts/characters/:characterId
@@ -39,10 +65,38 @@ export const appearancePartGetByCharacterIdController: RequestHandler<
   AppearancePartGetByCharacterIdParams,
   unknown,
   unknown,
-  AppearancePartGetByCharacterIdQuery
+  unknown
 > = async (req, res, next) => {
   try {
     const appearancePart = await appearancePartGetByCharacterIdService({
+      characterId: req.params.characterId,
+    });
+    if (appearancePart) {
+      return res.status(201).json(appearancePart);
+    } else {
+      return res.status(400).json({ message: "Something went wrong" });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+type AppearancePartGetByCharacterIdAndTypeParams = {
+  characterId: string;
+};
+type AppearancePartGetByCharacterIdAndTypeQuery = {
+  type: AppearancePartsTypes;
+};
+
+// @route GET http://localhost:3500/appearanceParts/characters/:characterId/type?type
+// @access Private
+export const appearancePartGetByCharacterIdAndTypeController: RequestHandler<
+  AppearancePartGetByCharacterIdAndTypeParams,
+  unknown,
+  unknown,
+  AppearancePartGetByCharacterIdAndTypeQuery
+> = async (req, res, next) => {
+  try {
+    const appearancePart = await appearancePartGetByCharacterIdAndTypeService({
       characterId: req.params.characterId,
       type: req.query.type,
     });

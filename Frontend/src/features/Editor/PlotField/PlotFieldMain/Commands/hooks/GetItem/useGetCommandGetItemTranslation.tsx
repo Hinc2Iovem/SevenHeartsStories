@@ -5,7 +5,7 @@ import { CurrentlyAvailableLanguagesTypes } from "../../../../../../../types/Add
 
 type GetCommandGetItemTypes = {
   getItemId: string;
-  language: CurrentlyAvailableLanguagesTypes;
+  language?: CurrentlyAvailableLanguagesTypes;
 };
 
 export default function useGetCommandGetItemTranslation({
@@ -20,5 +20,6 @@ export default function useGetCommandGetItemTranslation({
           `/translations/plotFieldCommands/getItems/${getItemId}?currentLanguage=${language}`
         )
         .then((r) => r.data),
+    enabled: !!getItemId,
   });
 }

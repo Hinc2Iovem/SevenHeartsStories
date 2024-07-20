@@ -6,6 +6,10 @@ export const commandWardrobeSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "PlotFieldCommand",
   },
+  characterId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Character",
+  },
   isCurrentDressed: {
     type: Boolean,
     default: false,

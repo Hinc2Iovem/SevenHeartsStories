@@ -13,5 +13,6 @@ export default function useGetCharacterById({
       await axiosCustomized
         .get<CharacterGetTypes>(`/characters/${characterId}`)
         .then((r) => r.data),
+    enabled: !!characterId,
   });
 }

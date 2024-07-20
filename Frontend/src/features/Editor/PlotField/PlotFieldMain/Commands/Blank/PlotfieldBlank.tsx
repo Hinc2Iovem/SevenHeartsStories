@@ -34,11 +34,13 @@ import useCreateWardrobe from "../hooks/Wardrobe/useCreateWardrobe";
 type PlotFieldBlankTypes = {
   plotFieldCommandId: string;
   topologyBlockId: string;
+  commandIfId: string;
 };
 
 export default function PlotfieldBlank({
   plotFieldCommandId,
   topologyBlockId,
+  commandIfId,
 }: PlotFieldBlankTypes) {
   const { storyId } = useParams();
   const [showCreateCharacterModal, setShowCreateCharacterModal] =
@@ -64,6 +66,7 @@ export default function PlotfieldBlank({
     plotFieldCommandId,
     value,
     topologyBlockId,
+    commandIfId: commandIfId ?? "",
   });
 
   const createSayCharacterCommand = useCreateSayCharacterCommand({

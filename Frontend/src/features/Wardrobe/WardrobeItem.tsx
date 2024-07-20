@@ -1,20 +1,12 @@
-import { useQuery } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
+import useGetTranslationAppearancePart from "../../hooks/Fetching/Translation/useGetTranslationAppearancePart";
+import useUpdateImg from "../../hooks/Patching/useUpdateImg";
 import { AppearancePartTypes } from "../../types/StoryData/AppearancePart/AppearancePartTypes";
 import PreviewImage from "../shared/utilities/PreviewImage";
-import { useEffect, useState } from "react";
-import { axiosCustomized } from "../../api/axios";
-import { TranslationAppearancePartTypes } from "../../types/Additional/TranslationTypes";
-import useUpdateImg from "../../hooks/Patching/useUpdateImg";
 
 export default function WardrobeItem({ _id, img }: AppearancePartTypes) {
-  const { data: translationAppearancePart } = useQuery({
-    queryKey: ["translation", "appearancePart", _id],
-    queryFn: async () =>
-      await axiosCustomized
-        .get<TranslationAppearancePartTypes>(
-          `/translations/appearanceParts/${_id}?currentLanguage=russian`
-        )
-        .then((r) => r.data),
+  const { data: translationAppearancePart } = useGetTranslationAppearancePart({
+    appearancePartId: _id,
   });
 
   const [imagePreview, setPreview] = useState<string | ArrayBuffer | null>(

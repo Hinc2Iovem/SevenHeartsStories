@@ -4,6 +4,7 @@ import PlotFieldCommand from "../../../../models/StoryEditor/PlotField/PlotField
 import CommandWardrobe from "../../../../models/StoryEditor/PlotField/Wardrobe/CommandWardrobe";
 import CommandWardrobeAppearancePart from "../../../../models/StoryEditor/PlotField/Wardrobe/CommandWardrobeAppearancePart";
 import { validateMongoId } from "../../../../utils/validateMongoId";
+import { Types } from "mongoose";
 
 type GetCommandWardrobeByPlotFieldCommandIdTypes = {
   plotFieldCommandId: string;
@@ -71,9 +72,11 @@ export const createCommandWardrobeService = async ({
 type UpdateCommandWardrobeTypes = {
   commandWardrobeId: string;
   isCurrentDressed: boolean | undefined;
+  characterId: string | undefined;
 };
 
 export const updateCommandWardrobeService = async ({
+  characterId,
   isCurrentDressed,
   commandWardrobeId,
 }: UpdateCommandWardrobeTypes) => {
@@ -90,7 +93,12 @@ export const updateCommandWardrobeService = async ({
     existingCommandWardrobe.isCurrentDressed = isCurrentDressed;
   }
 
-  return existingCommandWardrobe;
+  if (characterId?.trim().length) {
+    validateMongoId({ value: characterId, valueName: "Character" });
+    existingCommandWardrobe.characterId = new Types.ObjectId(characterId);
+  }
+
+  return await existingCommandWardrobe.save();
 };
 
 type CreateCommandWardrobeAppearanceTypeTypes = {
@@ -114,8 +122,18 @@ export const createCommandWardrobeAppearancePartService = async ({
   const existingAppearancePart = await AppearancePart.findById(
     appearancePartId
   ).lean();
+
   if (!existingAppearancePart) {
     throw createHttpError(400, "AppearancePart with such id wasn't found");
+  }
+
+  const alreadyExistingBlock = await CommandWardrobeAppearancePart.findOne({
+    commandWardrobeId,
+    appearancePartId,
+  }).lean();
+
+  if (alreadyExistingBlock) {
+    return alreadyExistingBlock;
   }
 
   return await CommandWardrobeAppearancePart.create({

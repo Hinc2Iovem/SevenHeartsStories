@@ -1,5 +1,7 @@
 export type PlotFieldTypes = {
   _id: string;
+  commandIfId?: string;
+  isElse?: boolean;
   topologyBlockId: string;
   command: AllPossiblePlotFieldComamndsTypes;
   commandOrder: number;

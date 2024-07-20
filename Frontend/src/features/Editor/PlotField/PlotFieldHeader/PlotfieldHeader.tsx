@@ -1,8 +1,7 @@
-import ButtonHoverPromptModal from "../../../shared/ButtonAsideHoverPromptModal/ButtonHoverPromptModal";
 import command from "../../../../assets/images/Editor/command.png";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { axiosCustomized } from "../../../../api/axios";
 import plus from "../../../../assets/images/shared/add.png";
+import ButtonHoverPromptModal from "../../../shared/ButtonAsideHoverPromptModal/ButtonHoverPromptModal";
+import useCreateBlankCommand from "../PlotFieldMain/Commands/hooks/useCreateBlankCommand";
 
 type PlotFieldHeaderTypes = {
   topologyBlockId: string;
@@ -11,21 +10,7 @@ type PlotFieldHeaderTypes = {
 export default function PlotfieldHeader({
   topologyBlockId,
 }: PlotFieldHeaderTypes) {
-  const queryClient = useQueryClient();
-  const createCommand = useMutation({
-    mutationKey: ["new", "plotfield", "topologyBlock", topologyBlockId],
-    mutationFn: async () =>
-      await axiosCustomized.post(
-        `/plotField/topologyBlocks/${topologyBlockId}`
-      ),
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ["plotfield", "topologyBlock", topologyBlockId],
-        type: "active",
-        exact: true,
-      });
-    },
-  });
+  const createCommand = useCreateBlankCommand({ topologyBlockId });
 
   return (
     <header className="flex gap-[1rem]">

@@ -37,6 +37,7 @@ export default function PlotfieldCharactersPrompt({
     <>
       {img ? (
         <button
+          type="button"
           onClick={() => {
             setCharacterName(currentCharacterName);
             setCharacterId(_id);
@@ -56,6 +57,7 @@ export default function PlotfieldCharactersPrompt({
         </button>
       ) : (
         <button
+          type="button"
           onClick={() => {
             setCharacterName(currentCharacterName);
             setCharacterId(_id);

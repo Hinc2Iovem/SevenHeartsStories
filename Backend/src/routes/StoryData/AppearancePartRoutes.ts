@@ -4,6 +4,8 @@ import {
   appearancePartControllerDelete,
   appearancePartControllerUpdateImg,
   appearancePartGetAllController,
+  appearancePartGetByAppearancePartIdController,
+  appearancePartGetByCharacterIdAndTypeController,
   appearancePartGetByCharacterIdController,
 } from "../../controllers/StoryData/AppearancePartController";
 
@@ -13,9 +15,17 @@ export const appearancePartRoute = express.Router();
 appearancePartRoute.route("/").get(appearancePartGetAllController);
 
 appearancePartRoute
+  .route("/:appearancePartId")
+  .get(appearancePartGetByAppearancePartIdController);
+
+appearancePartRoute
   .route("/characters/:characterId")
   .get(appearancePartGetByCharacterIdController)
   .post(appearancePartControllerCreate);
+
+appearancePartRoute
+  .route("/characters/:characterId/type")
+  .get(appearancePartGetByCharacterIdAndTypeController);
 
 appearancePartRoute
   .route("/:appearancePartId/img")

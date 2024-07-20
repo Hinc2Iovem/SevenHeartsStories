@@ -1,6 +1,7 @@
 export type CommandWardrobeTypes = {
   _id: string;
   plotFieldCommandId: string;
+  characterId: string;
   isCurrentDressed: boolean;
 };
 

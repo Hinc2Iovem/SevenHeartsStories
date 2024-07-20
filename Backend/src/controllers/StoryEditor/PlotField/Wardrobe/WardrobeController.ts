@@ -94,6 +94,7 @@ type UpdateCommandWardrobeParams = {
 
 type UpdateCommandWardrobeBody = {
   isCurrentDressed: boolean | undefined;
+  characterId: string | undefined;
 };
 
 // @route PATCH http://localhost:3500/plotFieldCommands/wardrobes/:commandWardrobeId
@@ -106,8 +107,9 @@ export const updateCommandWardrobeController: RequestHandler<
 > = async (req, res, next) => {
   try {
     const commandWardrobe = await updateCommandWardrobeService({
-      isCurrentDressed: req.body.isCurrentDressed,
       commandWardrobeId: req.params.commandWardrobeId,
+      isCurrentDressed: req.body.isCurrentDressed,
+      characterId: req.body.characterId,
     });
     if (commandWardrobe) {
       return res.status(201).json(commandWardrobe);

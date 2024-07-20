@@ -33,6 +33,7 @@ export const getAllPlotFieldCommandsService = async ({
 
   const existingCommands = await PlotFieldCommand.find({
     topologyBlockId,
+    commandIfId: null || undefined,
   }).lean();
   if (!existingCommands.length) {
     return [];

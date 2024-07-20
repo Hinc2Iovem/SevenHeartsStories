@@ -4,10 +4,12 @@ import { axiosCustomized } from "../../../../../../../api/axios";
 type UpdateWardrobeCurrentDressedTypes = {
   commandWardrobeId: string;
   isCurrentDressed: boolean;
+  characterId: string;
 };
 
-export default function useUpdateWardrobeCurrentDressed({
+export default function useUpdateWardrobeCurrentDressedAndCharacterId({
   commandWardrobeId,
+  characterId,
   isCurrentDressed,
 }: UpdateWardrobeCurrentDressedTypes) {
   return useMutation({
@@ -16,6 +18,7 @@ export default function useUpdateWardrobeCurrentDressed({
         `/plotFieldCommands/wardrobes/${commandWardrobeId}`,
         {
           isCurrentDressed,
+          characterId,
         }
       ),
   });

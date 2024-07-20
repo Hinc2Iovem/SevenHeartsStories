@@ -5,7 +5,7 @@ import { CurrentlyAvailableLanguagesTypes } from "../../../../../../../types/Add
 
 type GetCommandWardrobeTypes = {
   commandWardrobeId: string;
-  language: CurrentlyAvailableLanguagesTypes;
+  language?: CurrentlyAvailableLanguagesTypes;
 };
 
 export default function useGetCommandWardrobeTranslation({

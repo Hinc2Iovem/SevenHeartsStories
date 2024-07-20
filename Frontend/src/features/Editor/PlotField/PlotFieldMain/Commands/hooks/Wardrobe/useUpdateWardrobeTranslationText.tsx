@@ -5,7 +5,7 @@ import { CurrentlyAvailableLanguagesTypes } from "../../../../../../../types/Add
 type UpdateWardrobeTextTypes = {
   commandWardrobeId: string;
   title: string;
-  language: CurrentlyAvailableLanguagesTypes;
+  language?: CurrentlyAvailableLanguagesTypes;
 };
 
 export default function useUpdateWardrobeTranslationText({

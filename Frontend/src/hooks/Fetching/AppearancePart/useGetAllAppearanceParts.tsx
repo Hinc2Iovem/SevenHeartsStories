@@ -15,7 +15,7 @@ export default function useGetAllAppearancePartsByCharacterIdAndType({
     queryFn: async () =>
       await axiosCustomized
         .get<AppearancePartTypes[]>(
-          `/appearanceParts/characters/${characterId}?type=${appearanceType}`
+          `/appearanceParts/characters/${characterId}/type?type=${appearanceType}`
         )
         .then((r) => r.data),
   });

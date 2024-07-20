@@ -1,9 +1,8 @@
 import createHttpError from "http-errors";
-import Background from "../../../../models/StoryEditor/PlotField/Background/Background";
-import { validateMongoId } from "../../../../utils/validateMongoId";
-import PlotFieldCommand from "../../../../models/StoryEditor/PlotField/PlotFieldCommand";
-import { Types } from "mongoose";
 import Music from "../../../../models/StoryData/Music";
+import Background from "../../../../models/StoryEditor/PlotField/Background/Background";
+import PlotFieldCommand from "../../../../models/StoryEditor/PlotField/PlotFieldCommand";
+import { validateMongoId } from "../../../../utils/validateMongoId";
 
 type GetBackgroundByPlotFieldCommandIdTypes = {
   plotFieldCommandId: string;

@@ -16,15 +16,51 @@ export const appearancePartGetAllService = async () => {
 
   return appearanceParts;
 };
+
+type AppearancePartGetByAppearancePartIdTypes = {
+  appearancePartId: string;
+};
+
+export const appearancePartGetByAppearancePartIdService = async ({
+  appearancePartId,
+}: AppearancePartGetByAppearancePartIdTypes) => {
+  validateMongoId({ value: appearancePartId, valueName: "AppearancePart" });
+  const appearanceParts = await AppearancePart.findById(
+    appearancePartId
+  ).lean();
+  if (!appearanceParts) {
+    return null;
+  }
+
+  return appearanceParts;
+};
 type AppearancePartGetByCharacterIdTypes = {
   characterId: string;
-  type: AppearancePartsTypes;
 };
 
 export const appearancePartGetByCharacterIdService = async ({
   characterId,
-  type,
 }: AppearancePartGetByCharacterIdTypes) => {
+  validateMongoId({ value: characterId, valueName: "Character" });
+  const appearanceParts = await AppearancePart.find({
+    characterId,
+  }).lean();
+  if (!appearanceParts.length) {
+    return [];
+  }
+
+  return appearanceParts;
+};
+
+type AppearancePartGetByCharacterIdAndTypeTypes = {
+  characterId: string;
+  type: AppearancePartsTypes;
+};
+
+export const appearancePartGetByCharacterIdAndTypeService = async ({
+  characterId,
+  type,
+}: AppearancePartGetByCharacterIdAndTypeTypes) => {
   validateMongoId({ value: characterId, valueName: "Character" });
   if (!AppearanceParts.includes(type.toLowerCase())) {
     throw createHttpError(

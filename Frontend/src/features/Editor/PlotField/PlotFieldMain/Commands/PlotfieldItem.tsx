@@ -5,6 +5,8 @@ import CommandBackgroundField from "./Background/CommandBackgroundField";
 import PlotfieldBlank from "./Blank/PlotfieldBlank";
 import CommandCutSceneField from "./CutScene/CommandCutSceneField";
 import CommandEffectField from "./Effect/CommandEffectField";
+import CommandGetItemField from "./GetItem/CommandGetItemField";
+import CommandIfField from "./If/CommandIfField";
 import CommandKeyField from "./Key/CommandKeyField";
 import CommandMoveField from "./Move/CommandMoveField";
 import CommandMusicField from "./Music/CommandMusicField";
@@ -13,19 +15,25 @@ import CommandSayField from "./Say/CommandSayField";
 import CommandSoundField from "./Sound/CommandSoundField";
 import CommandSuitField from "./Suit/CommandSuitField";
 import CommandWaitField from "./Wait/CommandWaitField";
+import CommandWardrobeField from "./Wardrobe/CommandWardrobeField";
 
 export default function PlotfieldItem({
   _id,
   command,
   commandOrder,
   topologyBlockId,
+  commandIfId,
 }: PlotFieldTypes) {
-  const commandType = "";
   return (
-    <li className="w-full flex gap-[1rem]">
+    <li
+      className={`${
+        commandIfId ? "ml-[1rem] pr-[1rem]" : ""
+      } w-full flex gap-[1rem]`}
+    >
       {!command ? (
         <PlotfieldBlank
           plotFieldCommandId={_id}
+          commandIfId={commandIfId ?? ""}
           topologyBlockId={topologyBlockId}
         />
       ) : command === "say" ? (
@@ -54,6 +62,16 @@ export default function PlotfieldItem({
         <CommandNameField command={command} plotFieldCommandId={_id} />
       ) : command === "background" ? (
         <CommandBackgroundField command={command} plotFieldCommandId={_id} />
+      ) : command === "getitem" ? (
+        <CommandGetItemField command={command} plotFieldCommandId={_id} />
+      ) : command === "if" ? (
+        <CommandIfField
+          topologyBlockId={topologyBlockId}
+          command={command}
+          plotFieldCommandId={_id}
+        />
+      ) : command === "wardrobe" ? (
+        <CommandWardrobeField command={command} plotFieldCommandId={_id} />
       ) : null}
     </li>
   );

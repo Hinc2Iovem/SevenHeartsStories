@@ -12,8 +12,8 @@ export default function useGetCommandGetItem({
   return useQuery({
     queryKey: ["plotfieldCommand", plotFieldCommandId, "getItem"],
     queryFn: async () =>
-      await axiosCustomized.get<GetItemTypes>(
-        `/plotFieldCommands/${plotFieldCommandId}/getItems`
-      ),
+      await axiosCustomized
+        .get<GetItemTypes>(`/plotFieldCommands/${plotFieldCommandId}/getItems`)
+        .then((r) => r.data),
   });
 }
