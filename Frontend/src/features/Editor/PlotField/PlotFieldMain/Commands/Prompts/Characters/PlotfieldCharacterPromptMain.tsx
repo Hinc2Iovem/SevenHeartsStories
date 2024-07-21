@@ -30,7 +30,7 @@ export default function PlotfieldCharacterPromptMain({
     <aside
       className={`${showCharacterModal ? "" : "hidden"} ${
         characterName ? "translate-y-[1rem]" : "translate-y-[2rem]"
-      } absolute top-1/2 z-[10] p-[1rem] min-w-[10rem] w-full max-h-[10rem] overflow-y-auto bg-white shadow-md rounded-md flex flex-col gap-[1rem] | scrollBar`}
+      } absolute top-1/2 z-[10] p-[1rem] min-w-fit w-full max-h-[10rem] overflow-y-auto bg-white shadow-md rounded-md flex flex-col gap-[1rem] | scrollBar`}
     >
       {allCharacters &&
         allCharacters?.map((c) => (

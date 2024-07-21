@@ -3,7 +3,7 @@ import {
   choiceOptionControllerUpdateSexualOrientation,
   createChoiceOptionController,
   deleteChoiceOptionController,
-  getChoiceOptionByPlotFieldCommandChoiceIdController,
+  getAllChoiceOptionsByChoiceIdController,
   updateChoiceOptionController,
   updateChoiceOptionTopologyBlockController,
 } from "../../../../controllers/StoryEditor/PlotField/Choice/ChoiceOptionController";
@@ -13,7 +13,7 @@ export const choiceOptionRoute = express.Router();
 
 choiceOptionRoute
   .route("/choice/:plotFieldCommandChoiceId/options")
-  .get(getChoiceOptionByPlotFieldCommandChoiceIdController);
+  .get(getAllChoiceOptionsByChoiceIdController);
 
 choiceOptionRoute
   .route(

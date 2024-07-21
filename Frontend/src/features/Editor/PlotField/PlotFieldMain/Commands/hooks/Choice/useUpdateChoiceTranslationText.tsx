@@ -5,7 +5,7 @@ import { CurrentlyAvailableLanguagesTypes } from "../../../../../../../types/Add
 type UpdateChoiceTextTypes = {
   choiceId: string;
   choiceQuestion: string;
-  language: CurrentlyAvailableLanguagesTypes;
+  language?: CurrentlyAvailableLanguagesTypes;
 };
 
 export default function useUpdateChoiceTranslationText({

@@ -16,24 +16,24 @@ import { createTopologyBlockConnection } from "../../../../utils/createTopologyB
 import { validateMongoId } from "../../../../utils/validateMongoId";
 import OptionPremium from "../../../../models/StoryEditor/PlotField/Choice/OptionPremium";
 
-type GetChoiceOptionByPlotFieldCommandIdTypes = {
+type GetAllChoiceOptionsByChoiceIdTypes = {
   plotFieldCommandChoiceId: string;
 };
 
-export const getChoiceOptionByPlotFieldCommandChoiceIdService = async ({
+export const getAllChoiceOptionsByChoiceIdService = async ({
   plotFieldCommandChoiceId,
-}: GetChoiceOptionByPlotFieldCommandIdTypes) => {
+}: GetAllChoiceOptionsByChoiceIdTypes) => {
   validateMongoId({
     value: plotFieldCommandChoiceId,
     valueName: "PlotFieldCommandChoice",
   });
 
-  const existingChoiceOption = await ChoiceOption.findOne({
+  const existingChoiceOption = await ChoiceOption.find({
     plotFieldCommandChoiceId,
   }).lean();
 
-  if (!existingChoiceOption) {
-    return null;
+  if (!existingChoiceOption.length) {
+    return [];
   }
 
   return existingChoiceOption;

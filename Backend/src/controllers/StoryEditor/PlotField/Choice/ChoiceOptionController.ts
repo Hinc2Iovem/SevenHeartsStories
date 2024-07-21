@@ -3,29 +3,27 @@ import {
   createChoiceOptionService,
   deleteChoiceOptionService,
   updateChoiceOptionService,
-  getChoiceOptionByPlotFieldCommandChoiceIdService,
   choiceOptionUpdateSexualOrientationsService,
   updateChoiceOptionTopologyBlockService,
+  getAllChoiceOptionsByChoiceIdService,
 } from "../../../../services/StoryEditor/PlotField/Choice/ChoiceOptionService";
 
-type GetChoiceOptionByPlotFieldCommandChoiceIdParams = {
+type GetAllChoiceOptionsByChoiceIdParams = {
   plotFieldCommandChoiceId: string;
 };
 
 // @route GET http://localhost:3500/plotFieldCommands/choice/:plotFieldCommandChoiceId/options
 // @access Private
-export const getChoiceOptionByPlotFieldCommandChoiceIdController: RequestHandler<
-  GetChoiceOptionByPlotFieldCommandChoiceIdParams,
+export const getAllChoiceOptionsByChoiceIdController: RequestHandler<
+  GetAllChoiceOptionsByChoiceIdParams,
   unknown,
   unknown,
   unknown
 > = async (req, res, next) => {
   try {
-    const choiceOption = await getChoiceOptionByPlotFieldCommandChoiceIdService(
-      {
-        plotFieldCommandChoiceId: req.params.plotFieldCommandChoiceId,
-      }
-    );
+    const choiceOption = await getAllChoiceOptionsByChoiceIdService({
+      plotFieldCommandChoiceId: req.params.plotFieldCommandChoiceId,
+    });
     if (choiceOption) {
       return res.status(201).json(choiceOption);
     } else {

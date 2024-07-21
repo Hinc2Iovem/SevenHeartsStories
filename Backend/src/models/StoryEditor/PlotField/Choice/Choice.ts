@@ -10,7 +10,6 @@ export const plotFieldCommandChoiceSchema = new mongoose.Schema({
   },
   choiceType: {
     type: String,
-    default: "common",
   },
   exitBlockId: {
     type: mongoose.Schema.Types.ObjectId,

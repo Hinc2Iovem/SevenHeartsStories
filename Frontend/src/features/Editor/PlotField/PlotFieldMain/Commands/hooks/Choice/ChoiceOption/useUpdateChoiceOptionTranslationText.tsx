@@ -5,7 +5,7 @@ import { axiosCustomized } from "../../../../../../../../api/axios";
 type UpdateChoiceOptionTextTypes = {
   choiceOptionId: string;
   option: string;
-  language: CurrentlyAvailableLanguagesTypes;
+  language?: CurrentlyAvailableLanguagesTypes;
 };
 
 export default function useUpdateChoiceOptionTranslationText({

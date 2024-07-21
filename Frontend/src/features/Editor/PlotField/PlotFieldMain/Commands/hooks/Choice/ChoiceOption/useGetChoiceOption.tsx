@@ -6,14 +6,14 @@ type GetChoiceTypes = {
   plotFieldCommandChoiceId: string;
 };
 
-export default function useGetChoice({
+export default function useGetAllChoiceOptionsByChoiceId({
   plotFieldCommandChoiceId,
 }: GetChoiceTypes) {
   return useQuery({
     queryKey: ["choice", plotFieldCommandChoiceId, "option"],
     queryFn: async () =>
       await axiosCustomized
-        .get<ChoiceOptionTypes>(
+        .get<ChoiceOptionTypes[]>(
           `/plotFieldCommands/choice/${plotFieldCommandChoiceId}/options`
         )
         .then((r) => r.data),

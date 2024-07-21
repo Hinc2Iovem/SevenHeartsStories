@@ -15,5 +15,6 @@ export default function useGetAllEmotionsByCharacterId({
           `/characterEmotions/characters/${characterId}`
         )
         .then((r) => r.data),
+    enabled: !!characterId,
   });
 }

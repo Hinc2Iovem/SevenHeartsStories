@@ -3,6 +3,7 @@ import CommandAchievementField from "./Achievement/CommandAchievementField";
 import CommandAmbientField from "./Ambient/CommandAmbientField";
 import CommandBackgroundField from "./Background/CommandBackgroundField";
 import PlotfieldBlank from "./Blank/PlotfieldBlank";
+import CommandChoiceField from "./Choice/CommandChoiceField";
 import CommandCutSceneField from "./CutScene/CommandCutSceneField";
 import CommandEffectField from "./Effect/CommandEffectField";
 import CommandGetItemField from "./GetItem/CommandGetItemField";
@@ -72,6 +73,12 @@ export default function PlotfieldItem({
         />
       ) : command === "wardrobe" ? (
         <CommandWardrobeField command={command} plotFieldCommandId={_id} />
+      ) : command === "choice" ? (
+        <CommandChoiceField
+          command={command}
+          topologyBlockId={topologyBlockId}
+          plotFieldCommandId={_id}
+        />
       ) : null}
     </li>
   );

@@ -4,9 +4,12 @@ import { ChoiceVariationsTypes } from "../../../../../../../types/StoryEditor/Pl
 
 type UpdateChoiceTextTypes = {
   choiceId: string;
+};
+
+type UpdateChoiceOnMutationTypes = {
   exitBlockId?: string;
-  characterId: string;
-  characterEmotionId: string;
+  characterId?: string;
+  characterEmotionId?: string;
   isAuthor?: boolean;
   choiceType?: ChoiceVariationsTypes;
   timeLimit?: number;
@@ -14,25 +17,23 @@ type UpdateChoiceTextTypes = {
 
 export default function useUpdateChoiceText({
   choiceId,
-  characterEmotionId,
-  characterId,
-  choiceType = "common",
-  exitBlockId,
-  isAuthor,
-  timeLimit,
 }: UpdateChoiceTextTypes) {
   return useMutation({
-    mutationFn: async () =>
-      await axiosCustomized.patch(
-        `/plotFieldCommands/choices/${choiceId}`,
-        {
-          isAuthor,
-          choiceType,
-          timeLimit,
-          characterEmotionId,
-          characterId,
-          exitBlockId
-        }
-      ),
+    mutationFn: async ({
+      characterEmotionId,
+      characterId,
+      choiceType = "common",
+      exitBlockId,
+      isAuthor,
+      timeLimit,
+    }: UpdateChoiceOnMutationTypes) =>
+      await axiosCustomized.patch(`/plotFieldCommands/choices/${choiceId}`, {
+        isAuthor,
+        choiceType,
+        timeLimit,
+        characterEmotionId,
+        characterId,
+        exitBlockId,
+      }),
   });
 }

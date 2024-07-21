@@ -5,10 +5,10 @@ import { axiosCustomized } from "../../../../../../../../api/axios";
 
 type GetCommandChoiceTypes = {
   choiceOptionId: string;
-  language: CurrentlyAvailableLanguagesTypes;
+  language?: CurrentlyAvailableLanguagesTypes;
 };
 
-export default function useGetCommandChoiceTranslation({
+export default function useGetCommandChoiceOptionTranslation({
   choiceOptionId,
   language = "russian",
 }: GetCommandChoiceTypes) {

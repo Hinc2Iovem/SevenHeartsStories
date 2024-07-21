@@ -46,7 +46,7 @@ export default function PlotfieldCharactersPrompt({
               setCharacterImg(img);
             }
           }}
-          className="rounded-md flex px-[.5rem] py-[.2rem] items-center justify-between hover:bg-primary-light-blue hover:text-white transition-all "
+          className="whitespace-nowrap w-full flex-wrap rounded-md flex px-[.5rem] py-[.2rem] items-center justify-between hover:bg-primary-light-blue hover:text-white transition-all "
         >
           <p className="text-[1.3rem] rounded-md">
             {currentCharacterName.length > 20
@@ -66,7 +66,7 @@ export default function PlotfieldCharactersPrompt({
               setCharacterImg("");
             }
           }}
-          className="text-start text-[1.3rem] px-[.5rem] py-[.2rem] hover:bg-primary-light-blue hover:text-white transition-all rounded-md"
+          className="whitespace-nowrap w-full flex-wrap text-start text-[1.3rem] px-[.5rem] py-[.2rem] hover:bg-primary-light-blue hover:text-white transition-all rounded-md"
         >
           {currentCharacterName.length > 20
             ? currentCharacterName.substring(0, 20) + "..."

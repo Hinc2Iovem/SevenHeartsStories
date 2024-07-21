@@ -78,6 +78,7 @@ export const updateChoiceService = async ({
     existingChoice.isAuthor = true;
   } else {
     existingChoice.isAuthor = false;
+
     if (characterId?.trim().length) {
       validateMongoId({ value: characterId, valueName: "Character" });
       existingChoice.characterId = new Types.ObjectId(characterId);
@@ -94,10 +95,10 @@ export const updateChoiceService = async ({
   }
 
   if (choiceType) {
-    existingChoice.choiceType = choiceType;
-    if (choiceType === "timelimit") {
+    existingChoice.choiceType = choiceType.toLowerCase();
+    if (choiceType.toLowerCase() === "timelimit") {
       existingChoice.timeLimit = timeLimit;
-    } else if (choiceType === "multiple") {
+    } else if (choiceType.toLowerCase() === "multiple") {
       validateMongoId({ value: exitBlockId, valueName: "ExitBlock" });
       existingChoice.exitBlockId = new Types.ObjectId(exitBlockId);
     }

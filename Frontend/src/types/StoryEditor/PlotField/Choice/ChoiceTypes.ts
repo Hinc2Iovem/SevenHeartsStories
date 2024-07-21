@@ -1,10 +1,23 @@
 import { SexualOrientationTypes } from "./SEXUAL_ORIENTATION_TYPES";
 
+export const ChoiceOptionVariations: ChoiceOptionVariationsTypes[] = [
+  "characteristic",
+  "common",
+  "premium",
+  "relationship",
+];
+
 export type ChoiceOptionVariationsTypes =
   | "premium"
   | "common"
   | "characteristic"
   | "relationship";
+
+export const ChoiceVariations: ChoiceVariationsTypes[] = [
+  "common",
+  "timelimit",
+  "multiple",
+];
 
 export type ChoiceVariationsTypes = "common" | "multiple" | "timelimit";
 
@@ -12,7 +25,7 @@ export type ChoiceTypes = {
   _id: string;
   plotFieldCommandId: string;
   choiceType: ChoiceVariationsTypes;
-  exitBlock?: string;
+  exitBlockId?: string;
   isAuthor: boolean;
   characterId?: string;
   characterEmotionId?: string;

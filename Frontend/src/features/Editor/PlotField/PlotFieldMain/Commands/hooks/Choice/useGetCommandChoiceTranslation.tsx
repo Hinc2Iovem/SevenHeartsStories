@@ -5,7 +5,7 @@ import { CurrentlyAvailableLanguagesTypes } from "../../../../../../../types/Add
 
 type GetCommandChoiceTypes = {
   choiceId: string;
-  language: CurrentlyAvailableLanguagesTypes;
+  language?: CurrentlyAvailableLanguagesTypes;
 };
 
 export default function useGetCommandChoiceTranslation({

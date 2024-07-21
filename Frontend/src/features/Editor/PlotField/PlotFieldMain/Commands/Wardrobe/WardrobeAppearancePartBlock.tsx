@@ -48,7 +48,11 @@ export default function WardrobeAppearancePartBlock({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [imagePreview]);
   return (
-    <div className="w-full h-[10rem] max-h-[10rem] flex flex-col bg-white rounded-md gap-[.5rem] shadow-md hover:scale-[1.01] relative">
+    <div
+      className={`${
+        showFullName ? "z-10" : ""
+      } w-full h-[10rem] max-h-[10rem] flex flex-col bg-white rounded-md gap-[.5rem] shadow-md hover:scale-[1.01] relative`}
+    >
       {appearancePartImg ? (
         <img
           src={(appearancePartImg as string) || ""}
@@ -84,7 +88,7 @@ export default function WardrobeAppearancePartBlock({
         }}
         className={`${
           showFullName ? "" : "hidden"
-        } absolute z-[50] bottom-[0rem] bg-white w-fit whitespace-nowrap rounded-md shadow-md shadow-gray-400 text-[1.2rem] p-[.5rem]`}
+        } absolute bottom-[0rem] bg-white w-fit whitespace-nowrap rounded-md shadow-md shadow-gray-400 text-[1.2rem] p-[.5rem]`}
       >
         {appearancePartName}
       </aside>
