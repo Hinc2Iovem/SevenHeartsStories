@@ -17,7 +17,6 @@ export const plotFieldCommandChoiceSchema = new mongoose.Schema({
   },
   isAuthor: {
     type: Boolean,
-    default: true,
   },
   characterId: {
     type: mongoose.Schema.Types.ObjectId,

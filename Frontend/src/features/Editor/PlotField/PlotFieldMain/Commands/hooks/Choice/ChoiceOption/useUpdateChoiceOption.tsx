@@ -3,23 +3,27 @@ import { axiosCustomized } from "../../../../../../../../api/axios";
 
 type UpdateChoiceOptionTypes = {
   choiceOptionId: string;
-  option: string | undefined;
-  priceAmethysts: number | undefined;
-  amountOfPoints: number | undefined;
-  characterCharacteristicId: string | undefined;
-  characterId: string | undefined;
+};
+
+type UpdateChoiceOptionOnMutationTypes = {
+  option?: string;
+  priceAmethysts?: number;
+  amountOfPoints?: number;
+  characterCharacteristicId?: string;
+  characterId?: string;
 };
 
 export default function useUpdateChoiceOption({
-  amountOfPoints,
-  characterCharacteristicId,
-  characterId,
   choiceOptionId,
-  option,
-  priceAmethysts,
 }: UpdateChoiceOptionTypes) {
   return useMutation({
-    mutationFn: async () =>
+    mutationFn: async ({
+      amountOfPoints,
+      characterCharacteristicId,
+      characterId,
+      option,
+      priceAmethysts,
+    }: UpdateChoiceOptionOnMutationTypes) =>
       await axiosCustomized.patch(
         `/plotFieldCommands/choices/options/${choiceOptionId}`,
         {

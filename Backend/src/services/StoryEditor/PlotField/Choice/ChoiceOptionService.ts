@@ -115,7 +115,7 @@ export const createChoiceOptionService = async ({
   const topologyBlocks = await TopologyBlockConnection.find({
     sourceBlockId: topologyBlockId,
   }).lean();
-  const topologyBlockNumber = topologyBlocks.length ?? 1;
+  const topologyBlockNumber = topologyBlocks.length || 1;
 
   const newTopologyBlock = await createTopologyBlock({
     coordinatesX: (existingCurrentTopologyBlock.coordinatesX ?? 0) + 50,
@@ -201,7 +201,7 @@ export const updateChoiceOptionService = async ({
   }
 
   if (existingChoiceOption.type === "common") {
-    return existingChoiceOption;
+    return await existingChoiceOption.save();
   } else if (existingChoiceOption.type === "characteristic") {
     const optionCharacteristic = await OptionCharacteristic.findOne({
       plotFieldCommandChoiceOptionId: choiceOptionId,
@@ -224,7 +224,7 @@ export const updateChoiceOptionService = async ({
       );
     }
 
-    return existingChoiceOption;
+    return await optionCharacteristic.save();
   } else if (existingChoiceOption.type === "premium") {
     const existingOptionPremium = await OptionPremium.findOne({
       plotFieldCommandChoiceOptionId: choiceOptionId,
@@ -237,7 +237,7 @@ export const updateChoiceOptionService = async ({
     if (priceAmethysts) {
       existingOptionPremium.priceAmethysts = priceAmethysts;
     }
-    return existingChoiceOption;
+    return await existingOptionPremium.save();
   } else if (existingChoiceOption.type === "relationship") {
     const existingOptionRelationship = await OptionRelationship.findOne({
       plotFieldCommandChoiceOptionId: choiceOptionId,
@@ -258,7 +258,7 @@ export const updateChoiceOptionService = async ({
       existingOptionRelationship.characterId = new Types.ObjectId(characterId);
     }
 
-    return existingChoiceOption;
+    return await existingOptionRelationship.save();
   }
 };
 

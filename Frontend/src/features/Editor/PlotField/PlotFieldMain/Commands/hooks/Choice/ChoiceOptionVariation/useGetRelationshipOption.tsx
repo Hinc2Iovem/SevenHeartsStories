@@ -14,8 +14,9 @@ export default function useGetRelationshipOption({
     queryFn: async () =>
       await axiosCustomized
         .get<OptionRelationshipTypes>(
-          `/choice/options/${plotFieldCommandChoiceOptionId}/choiceOptionRelationship`
+          `/plotFieldCommands/choice/options/${plotFieldCommandChoiceOptionId}/choiceOptionRelationship`
         )
         .then((r) => r.data),
+    enabled: !!plotFieldCommandChoiceOptionId,
   });
 }

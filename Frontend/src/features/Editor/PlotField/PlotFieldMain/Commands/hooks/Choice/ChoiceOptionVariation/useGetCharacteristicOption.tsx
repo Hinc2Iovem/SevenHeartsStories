@@ -14,8 +14,9 @@ export default function useGetCharacteristicOption({
     queryFn: async () =>
       await axiosCustomized
         .get<OptionCharacteristicTypes>(
-          `/choice/options/${plotFieldCommandChoiceOptionId}/choiceOptionCharacteristic`
+          `/plotFieldCommands/choice/options/${plotFieldCommandChoiceOptionId}/choiceOptionCharacteristic`
         )
         .then((r) => r.data),
+    enabled: !!plotFieldCommandChoiceOptionId,
   });
 }

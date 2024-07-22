@@ -1,4 +1,4 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { axiosCustomized } from "../../../../../../../../api/axios";
 import { ChoiceOptionVariationsTypes } from "../../../../../../../../types/StoryEditor/PlotField/Choice/ChoiceTypes";
 
@@ -16,6 +16,7 @@ export default function useCreateChoiceOption({
   plotFieldCommandChoiceId,
   topologyBlockId,
 }: CreateChoiceOptionTypes) {
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async ({ type }: CreateChoiceOptionOnMutationTypes) =>
       await axiosCustomized.post(
@@ -24,5 +25,12 @@ export default function useCreateChoiceOption({
           type,
         }
       ),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["choice", plotFieldCommandChoiceId, "option"],
+        exact: true,
+        type: "active",
+      });
+    },
   });
 }

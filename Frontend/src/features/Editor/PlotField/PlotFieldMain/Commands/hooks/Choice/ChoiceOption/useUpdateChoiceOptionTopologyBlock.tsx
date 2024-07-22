@@ -3,17 +3,21 @@ import { axiosCustomized } from "../../../../../../../../api/axios";
 
 type UpdateChoiceOptionTopologyBlockTypes = {
   choiceOptionId: string;
+};
+
+type UpdateChoiceOptionTopologyBlockOnMutationTypes = {
   topologyBlockId: string;
 };
 
 export default function useUpdateChoiceOptionTopologyBlock({
   choiceOptionId,
-  topologyBlockId,
 }: UpdateChoiceOptionTopologyBlockTypes) {
   return useMutation({
-    mutationFn: async () =>
+    mutationFn: async ({
+      topologyBlockId,
+    }: UpdateChoiceOptionTopologyBlockOnMutationTypes) =>
       await axiosCustomized.patch(
-        `/choices/options/${choiceOptionId}/topologyBlocks/${topologyBlockId}`
+        `/plotFieldCommands/choices/options/${choiceOptionId}/topologyBlocks/${topologyBlockId}`
       ),
   });
 }

@@ -3,25 +3,27 @@ import {
   characterCharacteristicDeleteService,
   characterCharacteristicCreateService,
   characterCharacteristicGetByCharacterIdService,
+  characterCharacteristicGetByIdService,
 } from "../../services/StoryData/CharacterCharacteristicService";
 
-type CharacterCharacteristicGetByCharacterIdParams = {
-  characterId: string;
+type CharacterCharacteristicGetByIdParams = {
+  characterCharacteristicId: string;
 };
 
-// @route GET http://localhost:3500/characterCharacteristics/characters/:characterId
+// @route GET http://localhost:3500/characterCharacteristics/:characterCharacteristicId
 // @access Private
-export const characterCharacteristicGetByCharacterIdController: RequestHandler<
-  CharacterCharacteristicGetByCharacterIdParams,
+export const characterCharacteristicGetByIdController: RequestHandler<
+  CharacterCharacteristicGetByIdParams,
   unknown,
   unknown,
   unknown
 > = async (req, res, next) => {
   try {
-    const characterCharacteristic =
-      await characterCharacteristicGetByCharacterIdService({
-        characterId: req.params.characterId,
-      });
+    const characterCharacteristic = await characterCharacteristicGetByIdService(
+      {
+        characterCharacteristicId: req.params.characterCharacteristicId,
+      }
+    );
     if (characterCharacteristic) {
       return res.status(201).json(characterCharacteristic);
     } else {
@@ -31,26 +33,39 @@ export const characterCharacteristicGetByCharacterIdController: RequestHandler<
     next(error);
   }
 };
-type CharacterCharacteristicCreateParams = {
-  characterId: string;
-};
+
+// @route GET http://localhost:3500/characterCharacteristics
+// @access Private
+export const characterCharacteristicGetByCharacterIdController: RequestHandler =
+  async (req, res, next) => {
+    try {
+      const characterCharacteristic =
+        await characterCharacteristicGetByCharacterIdService();
+      if (characterCharacteristic) {
+        return res.status(201).json(characterCharacteristic);
+      } else {
+        return res.status(400).json({ message: "Something went wrong" });
+      }
+    } catch (error) {
+      next(error);
+    }
+  };
 
 type CharacterCharacteristicCreateBody = {
   characteristicName: string | undefined;
   currentLanguage: string | undefined;
 };
 
-// @route POST http://localhost:3500/characterCharacteristics/characters/:characterId
+// @route POST http://localhost:3500/characterCharacteristics
 // @access Private
 export const characterCharacteristicCreateController: RequestHandler<
-  CharacterCharacteristicCreateParams,
+  unknown,
   unknown,
   CharacterCharacteristicCreateBody,
   unknown
 > = async (req, res, next) => {
   try {
     const characterCharacteristic = await characterCharacteristicCreateService({
-      characterId: req.params.characterId,
       characteristicName: req.body.characteristicName,
       currentLanguage: req.body.currentLanguage,
     });

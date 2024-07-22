@@ -15,5 +15,6 @@ export default function useGetCommandChoice({
       await axiosCustomized
         .get<ChoiceTypes>(`/plotFieldCommands/${plotFieldCommandId}/choices`)
         .then((r) => r.data),
+    enabled: !!plotFieldCommandId,
   });
 }

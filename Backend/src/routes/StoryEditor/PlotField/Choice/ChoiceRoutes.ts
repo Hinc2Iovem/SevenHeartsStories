@@ -4,7 +4,7 @@ import {
   deleteChoiceController,
   getChoiceByPlotFieldCommandIdController,
   updateChoiceController,
-  updateChoiceTextController,
+  updateChoiceIsAuthorController,
   updateChoiceTypeController,
 } from "../../../../controllers/StoryEditor/PlotField/Choice/ChoiceController";
 
@@ -18,7 +18,9 @@ choiceRoute
 
 choiceRoute.route("/choices/:choiceId").patch(updateChoiceController);
 
-choiceRoute.route("/choices/:choiceId/text").patch(updateChoiceTextController);
+choiceRoute
+  .route("/choices/:choiceId/isAuthor")
+  .patch(updateChoiceIsAuthorController);
 choiceRoute.route("/choices/:choiceId/type").patch(updateChoiceTypeController);
 
 choiceRoute.route("/choices/:choiceId").delete(deleteChoiceController);

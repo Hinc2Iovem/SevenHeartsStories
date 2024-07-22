@@ -142,7 +142,7 @@ export default function ChoiceVariationTypeBlock({
         <aside
           className={`${
             showChoiceMultipleModal ? "" : "hidden"
-          } absolute flex flex-col gap-[1rem] bg-primary-light-blue rounded-md shadow-md translate-y-[] w-full p-[.5rem]`}
+          } absolute z-10 flex flex-col gap-[1rem] bg-primary-light-blue rounded-md shadow-md translate-y-[] w-full p-[.5rem]`}
         >
           {allTopologyBlocks?.map((atb) => (
             <button

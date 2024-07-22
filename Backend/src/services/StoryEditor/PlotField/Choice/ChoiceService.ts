@@ -54,7 +54,6 @@ type UpdateChoiceTypes = {
   exitBlockId: string | undefined;
   characterId: string | undefined;
   characterEmotionId: string | undefined;
-  isAuthor: boolean | undefined;
 };
 
 export const updateChoiceService = async ({
@@ -62,7 +61,6 @@ export const updateChoiceService = async ({
   choiceType,
   timeLimit,
   exitBlockId,
-  isAuthor,
   characterId,
   characterEmotionId,
 }: UpdateChoiceTypes) => {
@@ -72,29 +70,20 @@ export const updateChoiceService = async ({
   if (!existingChoice) {
     throw createHttpError(400, "Choice with such id wasn't found");
   }
-  if (isAuthor === true) {
-    existingChoice.characterId = null;
-    existingChoice.characterEmotionId = null;
-    existingChoice.isAuthor = true;
-  } else {
-    existingChoice.isAuthor = false;
 
-    if (characterId?.trim().length) {
-      validateMongoId({ value: characterId, valueName: "Character" });
-      existingChoice.characterId = new Types.ObjectId(characterId);
-    }
-    if (characterEmotionId?.trim().length) {
-      validateMongoId({
-        value: characterEmotionId,
-        valueName: "CharacterEmotion",
-      });
-      existingChoice.characterEmotionId = new Types.ObjectId(
-        characterEmotionId
-      );
-    }
+  if (characterId?.trim().length) {
+    validateMongoId({ value: characterId, valueName: "Character" });
+    existingChoice.characterId = new Types.ObjectId(characterId);
+  }
+  if (characterEmotionId?.trim().length) {
+    validateMongoId({
+      value: characterEmotionId,
+      valueName: "CharacterEmotion",
+    });
+    existingChoice.characterEmotionId = new Types.ObjectId(characterEmotionId);
   }
 
-  if (choiceType) {
+  if (choiceType?.trim().length) {
     existingChoice.choiceType = choiceType.toLowerCase();
     if (choiceType.toLowerCase() === "timelimit") {
       existingChoice.timeLimit = timeLimit;
@@ -140,19 +129,15 @@ export const updateChoiceTypeService = async ({
   return await existingChoice.save();
 };
 
-type UpdateChoiceTextTypes = {
+type UpdateChoiceIsAuthorTypes = {
   choiceId: string;
   isAuthor: boolean | undefined;
-  characterId: string | undefined;
-  characterEmotionId: string | undefined;
 };
 
-export const updateChoiceTextService = async ({
+export const updateChoiceIsAuthorService = async ({
   choiceId,
-  characterEmotionId,
-  characterId,
   isAuthor,
-}: UpdateChoiceTextTypes) => {
+}: UpdateChoiceIsAuthorTypes) => {
   validateMongoId({ value: choiceId, valueName: "Choice" });
 
   const existingChoice = await Choice.findById(choiceId).exec();
@@ -160,24 +145,18 @@ export const updateChoiceTextService = async ({
     throw createHttpError(400, "Choice with such id wasn't found");
   }
 
-  if (isAuthor) {
-    existingChoice.characterId = null;
-    existingChoice.characterEmotionId = null;
-    existingChoice.isAuthor = true;
-  } else {
-    existingChoice.isAuthor = false;
-    if (characterId?.trim().length) {
-      validateMongoId({ value: characterId, valueName: "Character" });
-      existingChoice.characterId = new Types.ObjectId(characterId);
-    }
-    if (characterEmotionId?.trim().length) {
-      validateMongoId({
-        value: characterEmotionId,
-        valueName: "CharacterEmotion",
-      });
-      existingChoice.characterEmotionId = new Types.ObjectId(
-        characterEmotionId
-      );
+  if (isAuthor || !isAuthor) {
+    console.log("inside If IsAuthor: ", isAuthor);
+
+    if (isAuthor === true) {
+      console.log("inside If IsAuthor True: ", isAuthor);
+
+      existingChoice.characterId = null;
+      existingChoice.characterEmotionId = null;
+      existingChoice.isAuthor = true;
+    } else {
+      console.log("inside If IsAuthor False: ", isAuthor);
+      existingChoice.isAuthor = false;
     }
   }
 

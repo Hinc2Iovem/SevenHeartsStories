@@ -5,18 +5,33 @@ import Translation from "../../models/StoryData/Translation";
 import { checkCurrentLanguage } from "../../utils/checkCurrentLanguage";
 import { validateMongoId } from "../../utils/validateMongoId";
 
+type CharacterCharacteristicGetByIdTypes = {
+  characterCharacteristicId: string;
+};
+
+export const characterCharacteristicGetByIdService = async ({
+  characterCharacteristicId,
+}: CharacterCharacteristicGetByIdTypes) => {
+  validateMongoId({
+    value: characterCharacteristicId,
+    valueName: "CharacterCharacteristic",
+  });
+
+  const existingCharacteristics = await CharacterCharacteristic.findById(
+    characterCharacteristicId
+  ).lean();
+  if (!existingCharacteristics) {
+    return null;
+  }
+
+  return existingCharacteristics;
+};
 type CharacterCharacteristicGetByCharacterIdTypes = {
   characterId: string;
 };
 
-export const characterCharacteristicGetByCharacterIdService = async ({
-  characterId,
-}: CharacterCharacteristicGetByCharacterIdTypes) => {
-  validateMongoId({ value: characterId, valueName: "Character" });
-
-  const existingCharacteristics = await CharacterCharacteristic.find({
-    characterId,
-  }).lean();
+export const characterCharacteristicGetByCharacterIdService = async () => {
+  const existingCharacteristics = await CharacterCharacteristic.find().lean();
   if (!existingCharacteristics.length) {
     return [];
   }
@@ -25,17 +40,14 @@ export const characterCharacteristicGetByCharacterIdService = async ({
 };
 
 type CharacterCharacteristicCreateTypes = {
-  characterId: string;
   characteristicName: string | undefined;
   currentLanguage: string | undefined;
 };
 
 export const characterCharacteristicCreateService = async ({
-  characterId,
   characteristicName,
   currentLanguage,
 }: CharacterCharacteristicCreateTypes) => {
-  validateMongoId({ value: characterId, valueName: "Character" });
   if (!currentLanguage?.trim().length || !characteristicName?.trim().length) {
     throw createHttpError(
       400,
@@ -45,9 +57,7 @@ export const characterCharacteristicCreateService = async ({
 
   checkCurrentLanguage({ currentLanguage });
 
-  const newCharacteristic = await CharacterCharacteristic.create({
-    characterId,
-  });
+  const newCharacteristic = await CharacterCharacteristic.create({});
 
   await Translation.create({
     characterCharacteristicId: newCharacteristic._id,

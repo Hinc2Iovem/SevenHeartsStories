@@ -35,8 +35,9 @@ export type ChoiceTypes = {
 export type ChoiceOptionTypes = {
   _id: string;
   plotFieldCommandChoiceId: string;
-  topologyBlock: string;
+  topologyBlockId: string;
   sexualOrientationType: SexualOrientationTypes;
+  type: ChoiceOptionVariationsTypes;
 };
 
 export type OptionPremiumTypes = {

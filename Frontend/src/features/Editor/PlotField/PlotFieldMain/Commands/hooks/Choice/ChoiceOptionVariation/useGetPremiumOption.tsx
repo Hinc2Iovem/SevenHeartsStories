@@ -14,8 +14,9 @@ export default function useGetPremiumOption({
     queryFn: async () =>
       await axiosCustomized
         .get<OptionPremiumTypes>(
-          `/choice/options/${plotFieldCommandChoiceOptionId}/choiceOptionPremium`
+          `/plotFieldCommands/choice/options/${plotFieldCommandChoiceOptionId}/choiceOptionPremium`
         )
         .then((r) => r.data),
+    enabled: !!plotFieldCommandChoiceOptionId,
   });
 }

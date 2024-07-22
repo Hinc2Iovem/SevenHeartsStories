@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { ChoiceVariationsTypes } from "../../../../../../types/StoryEditor/PlotField/Choice/ChoiceTypes";
 import useGetCommandChoice from "../hooks/Choice/useGetCommandChoice";
+import useUpdateChoiceIsAuthor from "../hooks/Choice/useUpdateChoiceIsAuthor";
 import ChoiceQuestionField from "./ChoiceQuestionField";
 import ChoiceVariationTypeBlock from "./ChoiceVariationTypeBlock";
-import useUpdateChoiceText from "../hooks/Choice/useUpdateChoiceText";
 import ChoiceOptionBlocksList from "./Option/ChoiceOptionBlocksList";
 
 type CommandChoiceFieldTypes = {
@@ -40,23 +40,29 @@ export default function CommandChoiceField({
       if (commandChoice.exitBlockId) {
         setExitBlockId(commandChoice.exitBlockId);
       }
-      console.log("commandChoice.choiceType: ", commandChoice.choiceType);
       if (commandChoice.choiceType) {
         setChoiceVariationTypes(commandChoice.choiceType);
       }
       if (commandChoice.characterId) {
         setCharacterId(commandChoice.characterId);
       }
-      setIsAuthor(commandChoice.isAuthor || false);
+      setIsAuthor(commandChoice.isAuthor);
     }
   }, [commandChoice]);
 
-  const updateChoice = useUpdateChoiceText({ choiceId: commandChoiceId });
+  console.log("inside Component isAuthor: ", isAuthor);
+
+  const updateChoiceIsAuthor = useUpdateChoiceIsAuthor({
+    choiceId: commandChoiceId,
+  });
+
+  const [disabledBtn, setDisabledBtn] = useState(false);
 
   useEffect(() => {
-    updateChoice.mutate({ isAuthor });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isAuthor]);
+    if (updateChoiceIsAuthor.isSuccess) {
+      setDisabledBtn(false);
+    }
+  }, [updateChoiceIsAuthor]);
 
   return (
     <div className="flex gap-[1rem] w-full flex-wrap bg-primary-light-blue rounded-md p-[.5rem] sm:flex-row flex-col">
@@ -77,9 +83,16 @@ export default function CommandChoiceField({
       />
 
       <button
-        onClick={() => setIsAuthor((prev) => !prev)}
+        onClick={() => {
+          setIsAuthor((prev) => !prev);
+          setDisabledBtn(true);
+          updateChoiceIsAuthor.mutate({ isAuthor: !isAuthor });
+        }}
+        disabled={disabledBtn}
         className={`rounded-md ${
           isAuthor ? "text-white bg-green-300" : "bg-white text-gray-700"
+        } ${
+          disabledBtn ? "cursor-not-allowed" : ""
         } shadow-md text-[1.3rem] px-[1rem] py-[.5rem]`}
       >
         Автор

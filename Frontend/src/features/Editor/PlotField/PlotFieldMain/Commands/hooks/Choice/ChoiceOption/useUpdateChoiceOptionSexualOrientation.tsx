@@ -4,17 +4,21 @@ import { SexualOrientationTypes } from "../../../../../../../../types/StoryEdito
 
 type UpdateChoiceOptionSexualOrientationTypes = {
   choiceOptionId: string;
+};
+
+type UpdateChoiceOptionSexualOrientationOnMutationTypes = {
   sexualOrientationType: SexualOrientationTypes;
 };
 
 export default function useUpdateChoiceOptionSexualOrientation({
   choiceOptionId,
-  sexualOrientationType,
 }: UpdateChoiceOptionSexualOrientationTypes) {
   return useMutation({
-    mutationFn: async () =>
+    mutationFn: async ({
+      sexualOrientationType,
+    }: UpdateChoiceOptionSexualOrientationOnMutationTypes) =>
       await axiosCustomized.patch(
-        `/choices/options/${choiceOptionId}/sexualOrientation`,
+        `/plotFieldCommands/choices/options/${choiceOptionId}/sexualOrientation`,
         {
           sexualOrientationType,
         }

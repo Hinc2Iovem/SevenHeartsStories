@@ -4,7 +4,7 @@ import {
   deleteChoiceService,
   updateChoiceService,
   getChoiceByPlotFieldCommandIdService,
-  updateChoiceTextService,
+  updateChoiceIsAuthorService,
   updateChoiceTypeService,
 } from "../../../../services/StoryEditor/PlotField/Choice/ChoiceService";
 
@@ -71,7 +71,6 @@ type UpdateChoiceBody = {
   characterEmotionId: string | undefined;
   characterId: string | undefined;
   timeLimit: number | undefined;
-  isAuthor: boolean | undefined;
   choiceType: ChoiceType | undefined;
 };
 // @route PATCH http://localhost:3500/plotFieldCommands/choices/:choiceId
@@ -87,7 +86,6 @@ export const updateChoiceController: RequestHandler<
       choiceId: req.params.choiceId,
       timeLimit: req.body.timeLimit,
       choiceType: req.body.choiceType,
-      isAuthor: req.body.isAuthor,
       exitBlockId: req.body.exitBlockId,
       characterEmotionId: req.body.characterEmotionId,
       characterId: req.body.characterId,
@@ -138,23 +136,19 @@ type UpdateChoiceTextParams = {
 };
 
 type UpdateChoiceTextBody = {
-  characterId: string | undefined;
-  characterEmotionId: string | undefined;
   isAuthor: boolean | undefined;
 };
 
-// @route PATCH http://localhost:3500/plotFieldCommands/choices/:choiceId/text
+// @route PATCH http://localhost:3500/plotFieldCommands/choices/:choiceId/isAuthor
 // @access Private
-export const updateChoiceTextController: RequestHandler<
+export const updateChoiceIsAuthorController: RequestHandler<
   UpdateChoiceTextParams,
   unknown,
   UpdateChoiceTextBody,
   unknown
 > = async (req, res, next) => {
   try {
-    const choice = await updateChoiceTextService({
-      characterEmotionId: req.body.characterEmotionId,
-      characterId: req.body.characterId,
+    const choice = await updateChoiceIsAuthorService({
       isAuthor: req.body.isAuthor,
       choiceId: req.params.choiceId,
     });
