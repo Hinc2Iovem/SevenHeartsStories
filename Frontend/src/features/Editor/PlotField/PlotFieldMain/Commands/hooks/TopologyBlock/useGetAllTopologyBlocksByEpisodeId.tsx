@@ -6,7 +6,7 @@ type GetTopologyBlocksTypes = {
   episodeId: string;
 };
 
-export default function useGetAllTopologyBlocksByIdId({
+export default function useGetAllTopologyBlocksByEpisodeId({
   episodeId,
 }: GetTopologyBlocksTypes) {
   return useQuery({

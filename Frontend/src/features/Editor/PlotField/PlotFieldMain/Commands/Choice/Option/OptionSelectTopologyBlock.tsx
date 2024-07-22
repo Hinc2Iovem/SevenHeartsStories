@@ -2,8 +2,8 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import useEscapeOfModal from "../../../../../../../hooks/UI/useEscapeOfModal";
 import useUpdateChoiceOptionTopologyBlock from "../../hooks/Choice/ChoiceOption/useUpdateChoiceOptionTopologyBlock";
-import useGetAllTopologyBlocksByIdId from "../../hooks/TopologyBlock/useGetAllTopologyBlocksByEpisodeId";
 import useGetTopologyBlockById from "../../hooks/TopologyBlock/useGetTopologyBlockById";
+import useGetAllTopologyBlocksByEpisodeId from "../../hooks/TopologyBlock/useGetAllTopologyBlocksByEpisodeId";
 
 type OptionSelecteTopologyBlockTypes = {
   topologyBlockId: string;
@@ -25,7 +25,7 @@ export default function OptionSelectTopologyBlock({
     }
   }, [topologyBlock]);
 
-  const { data: allTopologyBlocks } = useGetAllTopologyBlocksByIdId({
+  const { data: allTopologyBlocks } = useGetAllTopologyBlocksByEpisodeId({
     episodeId: episodeId ?? "",
   });
   const updateOptionTopologyBlock = useUpdateChoiceOptionTopologyBlock({
@@ -43,7 +43,7 @@ export default function OptionSelectTopologyBlock({
         className="text-[1.3rem] outline-gray-300 text-gray-700 shadow-md rounded-md px-[1rem] py-[.5rem]"
         type="button"
       >
-        {currentTopologyBlockName ?? "Текущая Ветка"}
+        {currentTopologyBlockName || "Текущая Ветка"}
       </button>
       <aside
         className={`${

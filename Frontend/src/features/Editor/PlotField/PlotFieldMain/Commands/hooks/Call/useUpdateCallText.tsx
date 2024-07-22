@@ -13,9 +13,12 @@ export default function useUpdateCallText({
   targetBlockId,
 }: UpdateCallTextTypes) {
   return useMutation({
-    mutationFn: async () =>
+    mutationFn: async () => {
+      console.log("sending targetBlockId: ", targetBlockId);
+
       await axiosCustomized.patch(
         `/plotFieldCommands/calls/${callId}/targetBlocks/${targetBlockId}/sourceBlocks/${sourceBlockId}`
-      ),
+      );
+    },
   });
 }

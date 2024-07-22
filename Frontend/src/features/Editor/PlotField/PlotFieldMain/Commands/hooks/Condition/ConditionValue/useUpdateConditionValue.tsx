@@ -4,6 +4,9 @@ import { ConditionSignTypes } from "../../../../../../../../types/StoryEditor/Pl
 
 type UpdateConditionValueTypes = {
   conditionValueId: string;
+};
+
+type UpdateConditionValueOnMutationTypes = {
   name?: string;
   value?: number;
   sign?: ConditionSignTypes;
@@ -11,12 +14,13 @@ type UpdateConditionValueTypes = {
 
 export default function useUpdateConditionValue({
   conditionValueId,
-  name,
-  sign,
-  value,
 }: UpdateConditionValueTypes) {
   return useMutation({
-    mutationFn: async () =>
+    mutationFn: async ({
+      name,
+      sign,
+      value,
+    }: UpdateConditionValueOnMutationTypes) =>
       await axiosCustomized.patch(
         `/plotFieldCommands/conditionBlocks/conditionValues/${conditionValueId}`,
         {

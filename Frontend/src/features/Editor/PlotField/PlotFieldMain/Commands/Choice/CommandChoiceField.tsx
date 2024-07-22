@@ -50,8 +50,6 @@ export default function CommandChoiceField({
     }
   }, [commandChoice]);
 
-  console.log("inside Component isAuthor: ", isAuthor);
-
   const updateChoiceIsAuthor = useUpdateChoiceIsAuthor({
     choiceId: commandChoiceId,
   });

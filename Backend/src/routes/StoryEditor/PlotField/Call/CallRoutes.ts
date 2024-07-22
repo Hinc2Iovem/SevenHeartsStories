@@ -15,7 +15,9 @@ callRoute
   .post(createCallController);
 
 callRoute
-  .route("/calls/:callId/targetBlocks/:targetBlockId")
+  .route(
+    "/calls/:callId/targetBlocks/:targetBlockId/sourceBlocks/:sourceBlockId"
+  )
   .patch(updateCallController);
 
 callRoute.route("/calls/:callId").delete(deleteCallController);

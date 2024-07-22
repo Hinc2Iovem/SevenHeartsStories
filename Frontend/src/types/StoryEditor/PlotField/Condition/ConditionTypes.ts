@@ -11,7 +11,16 @@ export type ConditionBlockTypes = {
 
 export type ConditionSignTypes = ">" | "<" | "=" | ">=" | "<=";
 
+export const AllConditionSigns: ConditionSignTypes[] = [
+  "<",
+  "<=",
+  "=",
+  ">",
+  ">=",
+];
+
 export type ConditionValueTypes = {
+  _id: string;
   conditionBlockId: string;
   name: string;
   value: number;

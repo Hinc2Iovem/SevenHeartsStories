@@ -69,7 +69,7 @@ export default function CommandIfField({
           <img
             src={plus}
             alt="+"
-            className="w-[1.5rem] absolute translate-y-1/2 translate-x-1/2 right-[0rem] bottom-0"
+            className="w-[1.5rem] absolute translate-y-1/2 translate-x-1/2 right-[0rem] bottom-0 z-[2]"
           />
           <img src={commandImg} alt="Commands" className="w-[3rem]" />
         </ButtonHoverPromptModal>
@@ -86,7 +86,7 @@ export default function CommandIfField({
         <ButtonHoverPromptModal
           contentName="Создать строку"
           positionByAbscissa="left"
-          className="shadow-sm shadow-gray-400 active:scale-[.99] relative bg-neutral-magnolia"
+          className="shadow-sm shadow-gray-400 active:scale-[.99] relative bg-neutral-magnolia z-[2]"
           asideClasses="text-[1.3rem] translate-x-1/4 -translate-y-2/3"
           onClick={() => createCommandInsideElse.mutate()}
           variant="rectangle"

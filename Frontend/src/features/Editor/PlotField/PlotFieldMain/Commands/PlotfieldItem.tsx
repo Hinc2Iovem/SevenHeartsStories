@@ -3,7 +3,9 @@ import CommandAchievementField from "./Achievement/CommandAchievementField";
 import CommandAmbientField from "./Ambient/CommandAmbientField";
 import CommandBackgroundField from "./Background/CommandBackgroundField";
 import PlotfieldBlank from "./Blank/PlotfieldBlank";
+import CommandCallField from "./Call/CommandCallField";
 import CommandChoiceField from "./Choice/CommandChoiceField";
+import CommandConditionField from "./Condition/CommandConditionField";
 import CommandCutSceneField from "./CutScene/CommandCutSceneField";
 import CommandEffectField from "./Effect/CommandEffectField";
 import CommandGetItemField from "./GetItem/CommandGetItemField";
@@ -75,6 +77,18 @@ export default function PlotfieldItem({
         <CommandWardrobeField command={command} plotFieldCommandId={_id} />
       ) : command === "choice" ? (
         <CommandChoiceField
+          command={command}
+          topologyBlockId={topologyBlockId}
+          plotFieldCommandId={_id}
+        />
+      ) : command === "call" ? (
+        <CommandCallField
+          command={command}
+          topologyBlockId={topologyBlockId}
+          plotFieldCommandId={_id}
+        />
+      ) : command === "condition" ? (
+        <CommandConditionField
           command={command}
           topologyBlockId={topologyBlockId}
           plotFieldCommandId={_id}

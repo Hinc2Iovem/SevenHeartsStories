@@ -36,7 +36,7 @@ export default function OptionPremiumBlock({
   }, [priceAmethysts]);
 
   return (
-    <div className="self-end sm:w-fit w-full px-[.5rem]">
+    <div className="self-end flex-grow w-full px-[.5rem]">
       <input
         type="text"
         placeholder="Аметисты"
