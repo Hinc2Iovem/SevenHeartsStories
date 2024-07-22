@@ -7,14 +7,18 @@ import {
   plotFieldCommandControllerUpdateCommandName,
   plotFieldCommandControllerUpdateCommandOrder,
   plotFieldCommandCreateInsideIfBlockController,
+  getAllPlotFieldCommandsByIfIdInsideElseController,
 } from "../../../controllers/StoryEditor/PlotField/PlotFieldCommandController";
 
 // Default route === /plotField
 export const plotFieldCommandRoute = express.Router();
 
 plotFieldCommandRoute
-  .route("/commandIfs/:commandIfId")
+  .route("/commandIfs/:commandIfId/insideIf")
   .get(getAllPlotFieldCommandsByIfIdController);
+plotFieldCommandRoute
+  .route("/commandIfs/:commandIfId/insideElse")
+  .get(getAllPlotFieldCommandsByIfIdInsideElseController);
 
 plotFieldCommandRoute
   .route("/topologyBlocks/:topologyBlockId")

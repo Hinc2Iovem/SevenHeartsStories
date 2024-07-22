@@ -15,5 +15,6 @@ export default function useGetCommandAmbient({
       await axiosCustomized
         .get<AmbientTypes>(`/plotFieldCommands/${plotFieldCommandId}/ambients`)
         .then((r) => r.data),
+    enabled: !!plotFieldCommandId,
   });
 }

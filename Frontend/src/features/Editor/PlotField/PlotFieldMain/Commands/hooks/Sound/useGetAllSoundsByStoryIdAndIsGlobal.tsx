@@ -15,5 +15,6 @@ export default function useGetAllSoundByStoryIdAndIsGlobal({
       await axiosCustomized
         .get<SoundTypes[]>(`/stories/${storyId}/sounds/isGlobal`)
         .then((r) => r.data),
+    enabled: !!storyId,
   });
 }

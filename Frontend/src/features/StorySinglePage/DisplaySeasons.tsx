@@ -60,7 +60,6 @@ export default function DisplaySeasons({ _id, index }: DisplaySeasonsTypes) {
 
   const handleOnDragEnd = (result: DropResult) => {
     if (!result?.destination) return;
-    console.log(result);
 
     const orderedEpisodes = [...(episodes ?? [])];
     const [reorderedItem] = orderedEpisodes.splice(result.source.index, 1);

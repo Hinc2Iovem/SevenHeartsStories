@@ -13,6 +13,24 @@ export const getAllPlotFieldCommandsByIfIdService = async ({
 
   const existingCommands = await PlotFieldCommand.find({
     commandIfId,
+    isElse: false,
+  }).lean();
+
+  if (!existingCommands.length) {
+    return [];
+  }
+
+  return existingCommands;
+};
+
+export const getAllPlotFieldCommandsByIfIdInsideElseService = async ({
+  commandIfId,
+}: GetAllPlotFieldCommandsByIfIdTypes) => {
+  validateMongoId({ value: commandIfId, valueName: "CommandIf" });
+
+  const existingCommands = await PlotFieldCommand.find({
+    commandIfId,
+    isElse: true,
   }).lean();
 
   if (!existingCommands.length) {
@@ -57,11 +75,12 @@ export const plotFieldCommandCreateInsideIfBlockService = async ({
   validateMongoId({ value: topologyBlockId, valueName: "TopologyBlock" });
 
   const existingPlotFieldCommands = await PlotFieldCommand.find({
-    topologyBlockId,
-  }).lean();
+    commandIfId,
+    isElse: isElse ? isElse : false,
+  }).countDocuments();
 
-  const commandOrder = existingPlotFieldCommands.length
-    ? existingPlotFieldCommands.length
+  const commandOrder = existingPlotFieldCommands
+    ? existingPlotFieldCommands
     : 0;
 
   if (isElse) {
@@ -91,10 +110,11 @@ export const plotFieldCommandCreateService = async ({
 
   const existingPlotFieldCommands = await PlotFieldCommand.find({
     topologyBlockId,
-  }).lean();
+    commandIfId: { $exists: false },
+  }).countDocuments();
 
-  const commandOrder = existingPlotFieldCommands.length
-    ? existingPlotFieldCommands.length
+  const commandOrder = existingPlotFieldCommands
+    ? existingPlotFieldCommands
     : 0;
 
   return await PlotFieldCommand.create({ topologyBlockId, commandOrder });
@@ -149,23 +169,93 @@ export const plotFieldCommandUpdateCommandOrderService = async ({
 
   const topologyBlockId = existingPlotFieldCommand.topologyBlockId;
 
-  const commandOldOrder = existingPlotFieldCommand.commandOrder;
-  if (!commandOldOrder) {
-    throw createHttpError(400, "Command doesn't exist");
+  const oldOrder = existingPlotFieldCommand.commandOrder as number;
+
+  const difference = oldOrder - newOrder;
+
+  if (existingPlotFieldCommand?.commandIfId) {
+    throw createHttpError(
+      400,
+      "Transporting from if command inside main plot is not supported, and same for vice versa"
+    );
   }
 
-  for (let i = newOrder; i < commandOldOrder; i++) {
-    const plotFieldCommandIncreasedOrder = await PlotFieldCommand.findOne({
+  if (difference === 1 || difference === -1) {
+    const prevPlotfieldCommand = await PlotFieldCommand.findOne({
       topologyBlockId,
-      commandOrder: i,
+      commandOrder: newOrder,
     }).exec();
-    if (plotFieldCommandIncreasedOrder) {
-      plotFieldCommandIncreasedOrder.commandOrder = i;
-      await plotFieldCommandIncreasedOrder.save();
+    if (prevPlotfieldCommand?.commandIfId) {
+      throw createHttpError(
+        400,
+        "Transporting from if command inside main plot is not supported, and same for vice versa"
+      );
     }
+    if (prevPlotfieldCommand) {
+      prevPlotfieldCommand.commandOrder = oldOrder;
+      await prevPlotfieldCommand.save();
+    }
+    existingPlotFieldCommand.commandOrder = newOrder;
+  } else {
+    const allPlotFieldCommandIds = [];
+    if (oldOrder > newOrder) {
+      for (let i = newOrder; i < oldOrder; i++) {
+        const plotFieldCommand = await PlotFieldCommand.findOne({
+          topologyBlockId,
+          commandOrder: i,
+        }).exec();
+        if (plotFieldCommand?.commandIfId) {
+          throw createHttpError(
+            400,
+            "Transporting from if command inside main plot is not supported, and same for vice versa"
+          );
+        }
+        if (plotFieldCommand) {
+          allPlotFieldCommandIds.push(plotFieldCommand._id);
+        }
+      }
+      for (const plotFieldCommandId of allPlotFieldCommandIds) {
+        const plotFieldCommand = await PlotFieldCommand.findById(
+          plotFieldCommandId
+        ).exec();
+        if (plotFieldCommand) {
+          plotFieldCommand.commandOrder =
+            (plotFieldCommand.commandOrder as number) + 1;
+          await plotFieldCommand.save();
+        }
+      }
+    } else {
+      for (let i = oldOrder + 1; i <= newOrder; i++) {
+        const plotFieldCommand = await PlotFieldCommand.findOne({
+          topologyBlockId,
+          commandOrder: i,
+        }).exec();
+        if (plotFieldCommand?.commandIfId) {
+          throw createHttpError(
+            400,
+            "Transporting from if command inside main plot is not supported, and same for vice versa"
+          );
+        }
+        if (plotFieldCommand) {
+          allPlotFieldCommandIds.push(plotFieldCommand._id);
+        }
+      }
+
+      for (const plotFieldCommandId of allPlotFieldCommandIds) {
+        const plotFieldCommand = await PlotFieldCommand.findById(
+          plotFieldCommandId
+        ).exec();
+        if (plotFieldCommand) {
+          plotFieldCommand.commandOrder =
+            (plotFieldCommand.commandOrder as number) - 1;
+          await plotFieldCommand.save();
+        }
+      }
+    }
+
+    existingPlotFieldCommand.commandOrder = newOrder;
   }
 
-  existingPlotFieldCommand.commandOrder = newOrder;
   return await existingPlotFieldCommand.save();
 };
 

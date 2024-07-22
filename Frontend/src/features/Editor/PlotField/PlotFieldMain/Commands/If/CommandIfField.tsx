@@ -1,11 +1,20 @@
-import { useEffect, useMemo, useState } from "react";
-import useGetCommandIf from "../hooks/If/useGetCommandIf";
-import ButtonHoverPromptModal from "../../../../../shared/ButtonAsideHoverPromptModal/ButtonHoverPromptModal";
-import plus from "../../../../../../assets/images/shared/add.png";
+import {
+  DragDropContext,
+  Draggable,
+  Droppable,
+  DroppableProvided,
+  DropResult,
+} from "@hello-pangea/dnd";
+import { useEffect, useState } from "react";
 import commandImg from "../../../../../../assets/images/Editor/command.png";
+import plus from "../../../../../../assets/images/shared/add.png";
+import ButtonHoverPromptModal from "../../../../../shared/ButtonAsideHoverPromptModal/ButtonHoverPromptModal";
 import useCreateBlankCommandInsideIf from "../hooks/If/useCreateBlankCommandInsideIf";
-import useGetAllPlotFieldCommandsByIfId from "../hooks/useGetAllPlotFieldCommandsByIfId";
-import PlotfieldItem from "../PlotfieldItem";
+import useGetCommandIf from "../hooks/If/useGetCommandIf";
+import PlotfieldItemInsideIf from "../PlotfieldItemInsideIf";
+import useGetAllPlotFieldCommandsByIfIdInsideIf from "../hooks/useGetAllPlotFieldCommandsByIfIdInsideIf";
+import useGetAllPlotFieldCommandsByIfIdInsideElse from "../hooks/useGetAllPlotFieldCommandsByIfIdInsideIElse";
+import useUpdateOrderInsideCommandIf from "../hooks/If/useUpdateOrderInsideCommandIf";
 
 type CommandIfFieldTypes = {
   plotFieldCommandId: string;
@@ -34,23 +43,72 @@ export default function CommandIfField({
     isElse: true,
   });
 
-  const { data: commands } = useGetAllPlotFieldCommandsByIfId({ commandIfId });
+  const { data: commandsInsideIf } = useGetAllPlotFieldCommandsByIfIdInsideIf({
+    commandIfId,
+  });
+  const { data: commandsInsideElse } =
+    useGetAllPlotFieldCommandsByIfIdInsideElse({
+      commandIfId,
+    });
 
-  const allCommandsInsideIfMemozied = useMemo(() => {
-    const res = commands?.filter((c) => c.isElse === false) || [];
-    return res;
-  }, [commands]);
+  const [commandsIf, setCommandsIf] = useState(commandsInsideIf ?? []);
+  const [commandsElse, setCommandsElse] = useState(commandsInsideElse ?? []);
 
-  const allCommandsInsideElseMemozied = useMemo(() => {
-    const res = commands?.filter((c) => c.isElse === true) || [];
-    return res;
-  }, [commands]);
+  useEffect(() => {
+    if (commandsInsideIf) {
+      setCommandsIf(commandsInsideIf);
+    }
+  }, [commandsInsideIf]);
+
+  useEffect(() => {
+    if (commandsInsideElse) {
+      setCommandsElse(commandsInsideElse);
+    }
+  }, [commandsInsideElse]);
+
+  const updateCommandOrder = useUpdateOrderInsideCommandIf({ commandIfId });
 
   useEffect(() => {
     if (commandIf) {
       setCommandIfId(commandIf._id);
     }
   }, [commandIf]);
+
+  const handleOnDragEndInsideIf = (result: DropResult) => {
+    if (!result?.destination) return;
+
+    const orderedCommandsInsideIf = [...(commandsInsideIf ?? [])];
+    const [reorderedItem] = orderedCommandsInsideIf.splice(
+      result.source.index,
+      1
+    );
+    orderedCommandsInsideIf.splice(result.destination.index, 0, reorderedItem);
+    updateCommandOrder.mutate({
+      newOrder: result.destination.index,
+      plotFieldCommandId: result.draggableId,
+    });
+    setCommandsIf(orderedCommandsInsideIf);
+  };
+
+  const handleOnDragEndInsideElse = (result: DropResult) => {
+    if (!result?.destination) return;
+
+    const orderedCommandsInsideElse = [...(commandsInsideElse ?? [])];
+    const [reorderedItem] = orderedCommandsInsideElse.splice(
+      result.source.index,
+      1
+    );
+    orderedCommandsInsideElse.splice(
+      result.destination.index,
+      0,
+      reorderedItem
+    );
+    updateCommandOrder.mutate({
+      newOrder: result.destination.index,
+      plotFieldCommandId: result.draggableId,
+    });
+    setCommandsElse(orderedCommandsInsideElse);
+  };
 
   return (
     <div className="flex gap-[1rem] w-full bg-primary-light-blue rounded-md p-[.5rem] flex-col">
@@ -74,12 +132,29 @@ export default function CommandIfField({
           <img src={commandImg} alt="Commands" className="w-[3rem]" />
         </ButtonHoverPromptModal>
       </div>
-      <ul className="flex flex-col gap-[1rem] w-full bg-green-200 rounded-md">
-        {allCommandsInsideIfMemozied?.map((p) => (
-          <PlotfieldItem key={p._id} {...p} />
-        ))}
-      </ul>
-      <div className="min-w-[10rem] flex-grow w-full relative flex items-center gap-[1rem]">
+      <DragDropContext onDragEnd={handleOnDragEndInsideIf}>
+        <Droppable droppableId="commandIf">
+          {(provided: DroppableProvided) => (
+            <ul
+              {...provided.droppableProps}
+              ref={provided.innerRef}
+              className="flex flex-col gap-[1rem] w-full bg-green-200 rounded-md"
+            >
+              {commandsIf?.map((p, i) => {
+                return (
+                  <Draggable key={p._id} draggableId={p._id} index={i}>
+                    {(provided) => (
+                      <PlotfieldItemInsideIf provided={provided} {...p} />
+                    )}
+                  </Draggable>
+                );
+              })}
+              {provided.placeholder}
+            </ul>
+          )}
+        </Droppable>
+      </DragDropContext>
+      <div className="min-w-[10rem] flex-grow w-full relative flex items-center gap-[1rem] p-[.5rem]">
         <h3 className="text-[1.4rem] text-start outline-gray-300 w-full capitalize px-[1rem] py-[.5rem] rounded-md shadow-md bg-neutral-magnolia text-gray-700 cursor-default">
           Else
         </h3>
@@ -99,11 +174,28 @@ export default function CommandIfField({
           <img src={commandImg} alt="Commands" className="w-[3rem]" />
         </ButtonHoverPromptModal>
       </div>
-      <ul className="flex flex-col gap-[1rem] w-full bg-neutral-magnolia rounded-md">
-        {allCommandsInsideElseMemozied?.map((p) => (
-          <PlotfieldItem key={p._id} {...p} />
-        ))}
-      </ul>
+      <DragDropContext onDragEnd={handleOnDragEndInsideElse}>
+        <Droppable droppableId="commandIfElse">
+          {(provided: DroppableProvided) => (
+            <ul
+              {...provided.droppableProps}
+              ref={provided.innerRef}
+              className="flex flex-col gap-[1rem] w-full bg-neutral-magnolia rounded-md"
+            >
+              {commandsElse?.map((p, i) => {
+                return (
+                  <Draggable key={p._id} draggableId={p._id} index={i}>
+                    {(provided) => (
+                      <PlotfieldItemInsideIf provided={provided} {...p} />
+                    )}
+                  </Draggable>
+                );
+              })}
+              {provided.placeholder}
+            </ul>
+          )}
+        </Droppable>
+      </DragDropContext>
     </div>
   );
 }

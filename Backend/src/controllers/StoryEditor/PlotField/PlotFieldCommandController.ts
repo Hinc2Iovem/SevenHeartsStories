@@ -7,13 +7,14 @@ import {
   plotFieldCommandDeleteService,
   plotFieldCommandUpdateCommandNameService,
   plotFieldCommandUpdateCommandOrderService,
+  getAllPlotFieldCommandsByIfIdInsideElseService,
 } from "../../../services/StoryEditor/PlotField/PlotFieldCommandService";
 
 type GetAllPlotFieldCommandsByIfId = {
   commandIfId: string;
 };
 
-// @route GET http://localhost:3500/plotField/commandIfs/:commandIfId
+// @route GET http://localhost:3500/plotField/commandIfs/:commandIfId/insideIf
 // @access Private
 export const getAllPlotFieldCommandsByIfIdController: RequestHandler<
   GetAllPlotFieldCommandsByIfId,
@@ -34,6 +35,30 @@ export const getAllPlotFieldCommandsByIfIdController: RequestHandler<
     next(error);
   }
 };
+
+// @route GET http://localhost:3500/plotField/commandIfs/:commandIfId/insideElse
+// @access Private
+export const getAllPlotFieldCommandsByIfIdInsideElseController: RequestHandler<
+  GetAllPlotFieldCommandsByIfId,
+  unknown,
+  unknown,
+  unknown
+> = async (req, res, next) => {
+  try {
+    const plotFieldCommands =
+      await getAllPlotFieldCommandsByIfIdInsideElseService({
+        commandIfId: req.params.commandIfId,
+      });
+    if (plotFieldCommands) {
+      return res.status(201).json(plotFieldCommands);
+    } else {
+      return res.status(400).json({ message: "Something went wrong" });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
 type GetAllPlotFieldCommands = {
   topologyBlockId: string;
 };

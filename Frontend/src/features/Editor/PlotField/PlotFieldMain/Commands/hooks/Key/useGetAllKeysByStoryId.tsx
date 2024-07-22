@@ -13,5 +13,6 @@ export default function useGetCommandKey({ storyId }: GetCommandKeyTypes) {
       await axiosCustomized
         .get<KeyTypes[]>(`/plotFieldCommands/stories/${storyId}/keys`)
         .then((r) => r.data),
+    enabled: !!storyId,
   });
 }

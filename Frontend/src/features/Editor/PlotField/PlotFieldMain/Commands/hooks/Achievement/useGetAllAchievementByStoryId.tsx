@@ -15,5 +15,6 @@ export default function useGetAllAchievementByStoryId({
       await axiosCustomized
         .get<AchievementTypes[]>(`/stories/${storyId}/achievements`)
         .then((r) => r.data),
+    enabled: !!storyId,
   });
 }

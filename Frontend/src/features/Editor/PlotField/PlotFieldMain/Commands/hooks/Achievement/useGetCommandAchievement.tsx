@@ -17,5 +17,6 @@ export default function useGetCommandAchievement({
           `/stories/plotFieldCommands/${plotFieldCommandId}/achievements`
         )
         .then((r) => r.data),
+    enabled: !!plotFieldCommandId,
   });
 }

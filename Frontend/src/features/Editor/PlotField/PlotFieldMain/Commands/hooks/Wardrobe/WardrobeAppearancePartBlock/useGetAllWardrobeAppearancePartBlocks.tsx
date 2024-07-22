@@ -17,5 +17,6 @@ export default function useGetAllWardrobeAppearancePartBlocks({
           `/plotFieldCommands/wardrobes/${commandWardrobeId}`
         )
         .then((r) => r.data),
+    enabled: !!commandWardrobeId,
   });
 }

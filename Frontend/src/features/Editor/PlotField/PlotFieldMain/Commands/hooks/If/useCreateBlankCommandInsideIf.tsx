@@ -19,11 +19,19 @@ export default function useCreateBlankCommandInsideIf({
         { isElse }
       ),
     onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ["plotfield", "commandIf", commandIfId],
-        type: "active",
-        exact: true,
-      });
+      if (isElse) {
+        queryClient.invalidateQueries({
+          queryKey: ["plotfield", "commandIf", commandIfId, "insideElse"],
+          type: "active",
+          exact: true,
+        });
+      } else {
+        queryClient.invalidateQueries({
+          queryKey: ["plotfield", "commandIf", commandIfId, "insideIf"],
+          type: "active",
+          exact: true,
+        });
+      }
     },
   });
 }

@@ -25,7 +25,7 @@ type PlotFieldItemTypes = {
   provided: DraggableProvided;
 } & PlotFieldTypes;
 
-export default function PlotfieldItem({
+export default function PlotfieldItemInsideIf({
   _id,
   command,
   commandOrder,

@@ -17,5 +17,6 @@ export default function useGetConditionBlocksByCommandConditionId({
           `/commandConditions/${commandConditionId}/conditionBlocks`
         )
         .then((r) => r.data),
+    enabled: !!commandConditionId,
   });
 }

@@ -20,5 +20,6 @@ export default function useGetCommandWardrobeTranslation({
           `/translations/plotFieldCommands/wardrobes/${commandWardrobeId}?currentLanguage=${language}`
         )
         .then((r) => r.data),
+    enabled: !!commandWardrobeId,
   });
 }

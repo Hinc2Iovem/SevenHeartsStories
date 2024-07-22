@@ -15,5 +15,6 @@ export default function useGetCommandIf({
       await axiosCustomized
         .get<IfCommandTypes>(`/plotFieldCommands/${plotFieldCommandId}/ifs`)
         .then((r) => r.data),
+    enabled: !!plotFieldCommandId,
   });
 }

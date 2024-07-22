@@ -15,5 +15,6 @@ export default function useGetAllAppearancePartsByCharacterId({
           `/appearanceParts/characters/${characterId}`
         )
         .then((r) => r.data),
+    enabled: !!characterId,
   });
 }

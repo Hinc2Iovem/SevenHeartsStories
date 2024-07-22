@@ -1,8 +1,9 @@
 import express from "express";
 import {
-  createConditionController,
-  deleteConditionController,
-  getConditionByPlotFieldCommandIdController,
+  createCommandIfController,
+  deleteCommandIfController,
+  getCommandIfByPlotFieldCommandIdController,
+  updateCommandIfOrderController,
 } from "../../../../controllers/StoryEditor/PlotField/CommandIf/IfController";
 
 // Default route === /plotFieldCommands
@@ -10,12 +11,11 @@ export const ifRoute = express.Router();
 
 ifRoute
   .route("/:plotFieldCommandId/ifs")
-  .get(getConditionByPlotFieldCommandIdController);
+  .get(getCommandIfByPlotFieldCommandIdController);
 
-ifRoute.route("/:plotFieldCommandId/ifs").post(createConditionController);
+ifRoute.route("/:plotFieldCommandId/ifs").post(createCommandIfController);
+ifRoute
+  .route("/:plotFieldCommandId/ifs/:commandIfId/newOrder")
+  .patch(updateCommandIfOrderController);
 
-// ifRoute
-//   .route("/ifs/:commandIfId/addCondititon")
-//   .post(addAnotherBlockConditionController);
-
-ifRoute.route("/ifs/:ifId").delete(deleteConditionController);
+ifRoute.route("/ifs/:ifId").delete(deleteCommandIfController);

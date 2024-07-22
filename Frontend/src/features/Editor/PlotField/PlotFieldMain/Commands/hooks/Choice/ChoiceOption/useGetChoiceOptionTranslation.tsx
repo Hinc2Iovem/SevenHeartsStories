@@ -20,5 +20,6 @@ export default function useGetCommandChoiceOptionTranslation({
           `/translations/plotFieldCommands/choices/options/${choiceOptionId}?currentLanguage=${language}`
         )
         .then((r) => r.data),
+    enabled: !!choiceOptionId,
   });
 }

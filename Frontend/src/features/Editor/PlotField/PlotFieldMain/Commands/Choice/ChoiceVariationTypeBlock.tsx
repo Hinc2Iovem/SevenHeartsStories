@@ -91,6 +91,7 @@ export default function ChoiceVariationTypeBlock({
         >
           {ChoiceVariations.map((cv) => (
             <button
+              key={cv}
               className={`${
                 cv === choiceVariationTypes ? "hidden" : ""
               } w-full text-start outline-gray-400 text-[1.3rem] rounded-md shadow-md bg-white text-gray-700 px-[1rem] py-[.5rem]`}
@@ -146,6 +147,7 @@ export default function ChoiceVariationTypeBlock({
         >
           {allTopologyBlocks?.map((atb) => (
             <button
+              key={atb._id}
               className={`${
                 atb._id === exitBlockId ? "hidden" : ""
               } text-start outline-gray-400 text-[1.3rem] rounded-md shadow-md bg-white text-gray-700 px-[1rem] py-[.5rem]`}

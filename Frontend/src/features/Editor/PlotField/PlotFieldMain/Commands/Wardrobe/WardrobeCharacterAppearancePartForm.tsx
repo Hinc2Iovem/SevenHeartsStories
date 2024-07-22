@@ -150,6 +150,7 @@ export default function WardrobeCharacterAppearancePartForm({
         >
           {PossibleWardrobeAppearancePartVariations.map((p) => (
             <button
+              key={p}
               type="button"
               onClick={() => {
                 if (p === "Волосы") {

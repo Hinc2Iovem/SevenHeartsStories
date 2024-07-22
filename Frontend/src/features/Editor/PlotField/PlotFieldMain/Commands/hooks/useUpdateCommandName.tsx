@@ -31,7 +31,12 @@ export default function useUpdateCommandName({
       });
       if (commandIfId?.trim().length) {
         queryClient.invalidateQueries({
-          queryKey: ["plotfield", "commandIf", commandIfId],
+          queryKey: ["plotfield", "commandIf", commandIfId, "insideIf"],
+          exact: true,
+          type: "active",
+        });
+        queryClient.invalidateQueries({
+          queryKey: ["plotfield", "commandIf", commandIfId, "insideElse"],
           exact: true,
           type: "active",
         });

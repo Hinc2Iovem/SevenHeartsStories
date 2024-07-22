@@ -17,5 +17,6 @@ export default function useGetCommandChoice({
           `/plotFieldCommands/${plotFieldCommandId}/cutScenes`
         )
         .then((r) => r.data),
+    enabled: !!plotFieldCommandId,
   });
 }

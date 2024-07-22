@@ -20,5 +20,6 @@ export default function useGetTranslationCharacteristic({
           `/translations/characterCharacteristics/${characterCharacteristicId}?currentLanguage=${language}`
         )
         .then((r) => r.data),
+    enabled: !!characterCharacteristicId,
   });
 }
