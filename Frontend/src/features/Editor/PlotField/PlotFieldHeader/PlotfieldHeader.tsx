@@ -1,5 +1,7 @@
+import { useEffect } from "react";
 import command from "../../../../assets/images/Editor/command.png";
 import plus from "../../../../assets/images/shared/add.png";
+import useCheckKeysCombinationCreateBlankCommand from "../../../../hooks/helpers/useCheckKeysCombinationCreateBlankCommand";
 import ButtonHoverPromptModal from "../../../shared/ButtonAsideHoverPromptModal/ButtonHoverPromptModal";
 import useCreateBlankCommand from "../PlotFieldMain/Commands/hooks/useCreateBlankCommand";
 
@@ -12,6 +14,17 @@ export default function PlotfieldHeader({
 }: PlotFieldHeaderTypes) {
   const createCommand = useCreateBlankCommand({ topologyBlockId });
 
+  const commandCreatedByKeyCombinationBlankCommand =
+    useCheckKeysCombinationCreateBlankCommand();
+
+  useEffect(() => {
+    if (
+      commandCreatedByKeyCombinationBlankCommand === "blankPlotFieldCommand"
+    ) {
+      createCommand.mutate();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [commandCreatedByKeyCombinationBlankCommand]);
   return (
     <header className="flex gap-[1rem]">
       <ButtonHoverPromptModal

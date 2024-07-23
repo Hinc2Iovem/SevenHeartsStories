@@ -43,6 +43,7 @@ export default function PlotfieldBlank({
   commandIfId,
 }: PlotFieldBlankTypes) {
   const { storyId } = useParams();
+
   const [showCreateCharacterModal, setShowCreateCharacterModal] =
     useState(false);
 

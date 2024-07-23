@@ -1,13 +1,17 @@
 import { useQuery } from "@tanstack/react-query";
-import Flowchart from "./Flowchart/Flowchart";
-import PlotField from "./PlotField/PlotField";
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { axiosCustomized } from "../../api/axios";
+import useCheckKeysCombinationExpandPlotField from "../../hooks/helpers/useCheckKeysCombinationExpandPlotField";
 import { TopologyBlockTypes } from "../../types/TopologyBlock/TopologyBlockTypes";
-import { useEffect, useState } from "react";
+import Flowchart from "./Flowchart/Flowchart";
+import PlotField from "./PlotField/PlotField";
 
 export default function EditorMain() {
   const { episodeId } = useParams();
+  const commandCreatedByKeyCombinationExpand =
+    useCheckKeysCombinationExpandPlotField();
+
   const { data: firstTopologyBlock } = useQuery({
     queryKey: ["editor", "episode", episodeId, "firstTopologyBlock"],
     queryFn: async () =>
@@ -28,9 +32,22 @@ export default function EditorMain() {
   }, [firstTopologyBlock]);
 
   return (
-    <main className="flex w-full">
-      <PlotField topologyBlockId={currentTopologyBlockId} />
-      <Flowchart />
-    </main>
+    <>
+      {commandCreatedByKeyCombinationExpand ? (
+        <main className="flex w-full">
+          <PlotField
+            expandPlotField={
+              commandCreatedByKeyCombinationExpand === "expandPlotField"
+            }
+            topologyBlockId={currentTopologyBlockId}
+          />
+        </main>
+      ) : (
+        <main className="flex w-full">
+          <PlotField topologyBlockId={currentTopologyBlockId} />
+          <Flowchart />
+        </main>
+      )}
+    </>
   );
 }

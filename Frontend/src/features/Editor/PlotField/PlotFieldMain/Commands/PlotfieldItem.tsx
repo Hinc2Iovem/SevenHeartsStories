@@ -103,7 +103,6 @@ export default function PlotfieldItem({
           plotFieldCommandId={_id}
         />
       ) : null}
-      <p>CommandOrder: {commandOrder}</p>
     </li>
   );
 }

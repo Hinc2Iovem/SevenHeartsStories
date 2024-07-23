@@ -5,7 +5,7 @@ type UpdateCommandNameTypes = {
   plotFieldCommandId: string;
   value: string;
   topologyBlockId: string;
-  commandIfId: string;
+  commandIfId?: string;
 };
 
 export default function useUpdateCommandName({
