@@ -1,6 +1,7 @@
 export type PossibleCommandsCreatedByCombinationOfKeysTypes =
   | "blankPlotFieldCommand"
-  | "expandPlotField";
+  | "expandPlotField"
+  | "expandFlowchart";
 
 export const PossibleCommandsCreatedByCombinationOfKeys: PossibleCommandsCreatedByCombinationOfKeysTypes[] =
-  ["blankPlotFieldCommand", "expandPlotField"];
+  ["blankPlotFieldCommand", "expandPlotField", "expandFlowchart"];

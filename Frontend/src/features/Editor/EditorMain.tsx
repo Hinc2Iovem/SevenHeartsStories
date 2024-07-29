@@ -6,11 +6,20 @@ import useCheckKeysCombinationExpandPlotField from "../../hooks/helpers/useCheck
 import { TopologyBlockTypes } from "../../types/TopologyBlock/TopologyBlockTypes";
 import Flowchart from "./Flowchart/Flowchart";
 import PlotField from "./PlotField/PlotField";
+import useCheckKeysCombinationExpandFlowchart from "../../hooks/helpers/useCheckKeysCombinationExpandFlowchart";
 
 export default function EditorMain() {
   const { episodeId } = useParams();
   const [hasScrollbar, setHasScrollbar] = useState(false);
-  const keyCombinationToExpand = useCheckKeysCombinationExpandPlotField();
+  const keyCombinationToExpandPlotField =
+    useCheckKeysCombinationExpandPlotField();
+  const keyCombinationToExpandFlowChart =
+    useCheckKeysCombinationExpandFlowchart();
+
+  console.log(
+    "keyCombinationToExpandFlowChart: ",
+    keyCombinationToExpandFlowChart
+  );
 
   const { data: firstTopologyBlock } = useQuery({
     queryKey: ["editor", "episode", episodeId, "firstTopologyBlock"],
@@ -40,18 +49,33 @@ export default function EditorMain() {
 
   return (
     <>
-      {keyCombinationToExpand ? (
-        <main className="flex w-full">
+      {keyCombinationToExpandPlotField ? (
+        <main className={`flex w-full min-h-[calc(100vh-7rem)] justify-center`}>
           <PlotField
-            expandPlotField={keyCombinationToExpand === "expandPlotField"}
+            expandPlotField={
+              keyCombinationToExpandPlotField === "expandPlotField"
+            }
             topologyBlockId={currentTopologyBlockId}
           />
         </main>
+      ) : keyCombinationToExpandFlowChart ? (
+        <main
+          className={`flex w-full min-h-[calc(100vh-7rem)] shadow-md rounded-md justify-center`}
+        >
+          <Flowchart
+            expandPlotField={
+              keyCombinationToExpandFlowChart === "expandFlowchart"
+            }
+            hasScrollbar={hasScrollbar}
+          />
+        </main>
       ) : (
-        <main className="flex w-full">
+        <main className={`flex w-full min-h-[calc(100vh-7rem)] justify-center`}>
           <PlotField topologyBlockId={currentTopologyBlockId} />
           <Flowchart
-            expandPlotField={keyCombinationToExpand === "expandPlotField"}
+            expandPlotField={
+              keyCombinationToExpandPlotField === "expandPlotField"
+            }
             hasScrollbar={hasScrollbar}
           />
         </main>

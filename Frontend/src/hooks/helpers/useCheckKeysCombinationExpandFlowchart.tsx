@@ -1,42 +1,42 @@
 import { useEffect, useState } from "react";
 import { PossibleCommandsCreatedByCombinationOfKeysTypes } from "../../const/COMMANDS_CREATED_BY_KEY_COMBINATION";
 
-export default function useCheckKeysCombinationExpandPlotField() {
+export default function useCheckKeysCombinationExpandFlowchart() {
   const [command, setCommand] =
     useState<PossibleCommandsCreatedByCombinationOfKeysTypes>(
       "" as PossibleCommandsCreatedByCombinationOfKeysTypes
     );
 
   const [keys, setKeys] = useState({
-    ctrl: false,
-    alt: false,
+    shift: false,
+    c: false,
   });
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Control") {
-        setKeys((prevKeys) => ({ ...prevKeys, ctrl: true }));
+      if (event.key === "Shift") {
+        setKeys((prevKeys) => ({ ...prevKeys, shift: true }));
       }
-      if (event.key.toLowerCase() === "alt") {
-        if (command === "expandPlotField") {
+      if (event.key.toLowerCase() === "c") {
+        if (command === "expandFlowchart") {
           setCommand("" as PossibleCommandsCreatedByCombinationOfKeysTypes);
           return;
         } else {
-          setKeys((prevKeys) => ({ ...prevKeys, alt: true }));
+          setKeys((prevKeys) => ({ ...prevKeys, c: true }));
         }
       }
 
-      if (event.ctrlKey && event.key.toLowerCase() === "alt") {
-        setCommand("expandPlotField");
+      if (event.shiftKey && event.key.toLowerCase() === "c") {
+        setCommand("expandFlowchart");
       }
     };
 
     const handleKeyUp = (event: KeyboardEvent) => {
-      if (event.key === "Control") {
-        setKeys((prevKeys) => ({ ...prevKeys, ctrl: false }));
+      if (event.key === "Shift") {
+        setKeys((prevKeys) => ({ ...prevKeys, shift: false }));
       }
-      if (event.key.toLowerCase() === "alt") {
-        setKeys((prevKeys) => ({ ...prevKeys, alt: false }));
+      if (event.key.toLowerCase() === "c") {
+        setKeys((prevKeys) => ({ ...prevKeys, c: false }));
       }
     };
 

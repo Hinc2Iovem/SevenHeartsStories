@@ -36,7 +36,7 @@ const FlowchartTopologyBlock = forwardRef<
     coordinatesX: number;
     coordinatesY: number;
   } | null>(null);
-  const [blockWidth, setBlockWidth] = useState(0);
+  const [blockWidth, setBlockWidth] = useState(100);
 
   const recalculateCoordinates = () => {
     if (ref && "current" in ref && ref.current) {
