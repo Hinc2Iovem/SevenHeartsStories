@@ -13,6 +13,9 @@ export const conditionBlockSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
+  orderOfExecution: {
+    type: Number,
+  },
 });
 
 type ConditionBlock = InferSchemaType<typeof conditionBlockSchema>;

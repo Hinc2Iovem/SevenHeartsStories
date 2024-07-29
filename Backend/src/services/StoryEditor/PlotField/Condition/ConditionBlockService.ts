@@ -76,3 +76,43 @@ export const updateBlockConditionTopologyBlockService = async ({
   existingConditionBlock.targetBlockId = new Types.ObjectId(topologyBlockId);
   return await existingConditionBlock.save();
 };
+
+type UpdateConditionBlockOrderOfExecutionTypes = {
+  conditionBlockId: string;
+  orderOfExecution: number;
+};
+
+export const updateBlockConditionOrderOfExecutionService = async ({
+  conditionBlockId,
+  orderOfExecution,
+}: UpdateConditionBlockOrderOfExecutionTypes) => {
+  validateMongoId({ value: conditionBlockId, valueName: "PlotFieldCommand" });
+
+  const existingConditionBlock = await ConditionBlock.findById(
+    conditionBlockId
+  ).exec();
+  if (!existingConditionBlock) {
+    throw createHttpError(400, "ConditionBlock with such id wasn't found");
+  }
+
+  if (!orderOfExecution) {
+    throw createHttpError(400, "orderOfExecution is required");
+  }
+
+  if (existingConditionBlock.orderOfExecution === orderOfExecution) {
+    existingConditionBlock.orderOfExecution = null;
+  } else {
+    const allConditionBlocks = await ConditionBlock.find({
+      conditionId: existingConditionBlock.conditionId,
+    }).exec();
+    for (const c of allConditionBlocks) {
+      if (c.orderOfExecution === orderOfExecution) {
+        c.orderOfExecution = null;
+        console.log(c);
+        await c.save();
+      }
+    }
+    existingConditionBlock.orderOfExecution = orderOfExecution;
+  }
+  return await existingConditionBlock.save();
+};

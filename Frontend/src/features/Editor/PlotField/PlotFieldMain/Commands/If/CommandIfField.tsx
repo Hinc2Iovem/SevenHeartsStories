@@ -11,10 +11,11 @@ import plus from "../../../../../../assets/images/shared/add.png";
 import ButtonHoverPromptModal from "../../../../../shared/ButtonAsideHoverPromptModal/ButtonHoverPromptModal";
 import useCreateBlankCommandInsideIf from "../hooks/If/useCreateBlankCommandInsideIf";
 import useGetCommandIf from "../hooks/If/useGetCommandIf";
-import PlotfieldItemInsideIf from "../PlotfieldItemInsideIf";
-import useGetAllPlotFieldCommandsByIfIdInsideIf from "../hooks/useGetAllPlotFieldCommandsByIfIdInsideIf";
-import useGetAllPlotFieldCommandsByIfIdInsideElse from "../hooks/useGetAllPlotFieldCommandsByIfIdInsideIElse";
 import useUpdateOrderInsideCommandIf from "../hooks/If/useUpdateOrderInsideCommandIf";
+import useGetAllPlotFieldCommandsByIfIdInsideElse from "../hooks/useGetAllPlotFieldCommandsByIfIdInsideIElse";
+import useGetAllPlotFieldCommandsByIfIdInsideIf from "../hooks/useGetAllPlotFieldCommandsByIfIdInsideIf";
+import PlotfieldItemInsideIf from "../PlotfieldItemInsideIf";
+import CommandIfValues from "./CommandIfValues";
 
 type CommandIfFieldTypes = {
   plotFieldCommandId: string;
@@ -112,33 +113,36 @@ export default function CommandIfField({
 
   return (
     <div className="flex gap-[1rem] w-full bg-primary-light-blue rounded-md p-[.5rem] flex-col">
-      <div className="min-w-[10rem] flex-grow w-full relative flex items-center gap-[1rem]">
-        <h3 className="text-[1.4rem] text-start outline-gray-300 w-full capitalize px-[1rem] py-[.5rem] rounded-md shadow-md bg-green-200 text-gray-600 cursor-default">
-          {nameValue}
-        </h3>
-        <ButtonHoverPromptModal
-          contentName="Создать строку"
-          positionByAbscissa="left"
-          className="shadow-sm shadow-gray-400 active:scale-[.99] relative bg-green-200"
-          asideClasses="text-[1.3rem] translate-x-1/4 -translate-y-2/3"
-          onClick={() => createCommandinsideIf.mutate()}
-          variant="rectangle"
-        >
-          <img
-            src={plus}
-            alt="+"
-            className="w-[1.5rem] absolute translate-y-1/2 translate-x-1/2 right-[0rem] bottom-0 z-[2]"
-          />
-          <img src={commandImg} alt="Commands" className="w-[3rem]" />
-        </ButtonHoverPromptModal>
+      <div className="min-w-[10rem] w-full flex flex-col gap-[1rem]">
+        <div className="flex flex-grow w-full relative items-center gap-[1rem]">
+          <h3 className="text-[1.4rem] text-start outline-gray-300 w-full capitalize px-[1rem] py-[.5rem] rounded-md shadow-md bg-green-200 text-gray-600 cursor-default">
+            {nameValue}
+          </h3>
+          <ButtonHoverPromptModal
+            contentName="Создать строку"
+            positionByAbscissa="left"
+            className="shadow-sm shadow-gray-400 active:scale-[.99] relative bg-green-200"
+            asideClasses="text-[1.3rem] translate-x-1/4 -translate-y-2/3"
+            onClick={() => createCommandinsideIf.mutate()}
+            variant="rectangle"
+          >
+            <img
+              src={plus}
+              alt="+"
+              className="w-[1.5rem] absolute translate-y-1/2 translate-x-1/2 right-[0rem] bottom-0 z-[2]"
+            />
+            <img src={commandImg} alt="Commands" className="w-[3rem]" />
+          </ButtonHoverPromptModal>
+        </div>
       </div>
+      <CommandIfValues ifId={commandIfId} />
       <DragDropContext onDragEnd={handleOnDragEndInsideIf}>
         <Droppable droppableId="commandIf">
           {(provided: DroppableProvided) => (
             <ul
               {...provided.droppableProps}
               ref={provided.innerRef}
-              className="flex flex-col gap-[1rem] w-full bg-green-200 rounded-md"
+              className="flex flex-col gap-[1rem] py-[.5rem] w-full bg-green-200 rounded-md"
             >
               {commandsIf?.map((p, i) => {
                 return (
@@ -180,7 +184,7 @@ export default function CommandIfField({
             <ul
               {...provided.droppableProps}
               ref={provided.innerRef}
-              className="flex flex-col gap-[1rem] w-full bg-neutral-magnolia rounded-md"
+              className="flex flex-col gap-[1rem] py-[.5rem] w-full bg-neutral-magnolia rounded-md"
             >
               {commandsElse?.map((p, i) => {
                 return (

@@ -126,10 +126,15 @@ export const unrelatedTopologyBlockCreateService = async ({
     throw createHttpError(400, "Coordinates are required");
   }
 
+  const amountOfTopologyBlockInEpisode = await TopologyBlock.find({
+    episodeId,
+  }).countDocuments();
+
   const newTopologyBlock = await TopologyBlock.create({
     episodeId,
     coordinatesX,
     coordinatesY,
+    name: `Блок - ${amountOfTopologyBlockInEpisode}`,
   });
 
   await TopologyBlockInfo.create({
@@ -163,10 +168,10 @@ export const topologyBlockUpdateCoordinatesService = async ({
     throw createHttpError(400, "Such topologyBlock doesn't exist");
   }
 
-  if (coordinatesX) {
+  if (coordinatesX || coordinatesX === 0) {
     existingTopologyBlock.coordinatesX = coordinatesX;
   }
-  if (coordinatesY) {
+  if (coordinatesY || coordinatesY === 0) {
     existingTopologyBlock.coordinatesY = coordinatesY;
   }
 

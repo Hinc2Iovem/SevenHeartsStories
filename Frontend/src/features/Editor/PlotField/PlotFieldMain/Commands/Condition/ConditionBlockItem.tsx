@@ -7,13 +7,25 @@ import useGetConditionValueByConditionBlockId from "../hooks/Condition/Condition
 import useGetAllTopologyBlocksByEpisodeId from "../hooks/TopologyBlock/useGetAllTopologyBlocksByEpisodeId";
 import useGetTopologyBlockById from "../hooks/TopologyBlock/useGetTopologyBlockById";
 import ConditionValueItem from "./ConditionValueItem";
+import DisplayOrderOfIfsModal from "./DisplayOrderOfIfsModal";
+
+type ConditionBlockItemTypes = {
+  amountOfIfBlocks?: number;
+  allUsedOrderNumbers?: number[];
+} & ConditionBlockTypes;
 
 export default function ConditionBlockItem({
   _id,
   targetBlockId,
   isElse,
-}: ConditionBlockTypes) {
+  amountOfIfBlocks,
+  orderOfExecution,
+  conditionId,
+  allUsedOrderNumbers,
+}: ConditionBlockItemTypes) {
   const { episodeId } = useParams();
+  const [currentOrder, setCurrentOrder] = useState(orderOfExecution || null);
+
   const { data: topologyBlock } = useGetTopologyBlockById({
     topologyBlockId: targetBlockId,
   });
@@ -61,10 +73,18 @@ export default function ConditionBlockItem({
             <ConditionValueItem key={cv._id} {...cv} />
           ))}
 
-          <div className="relative self-end">
+          <div className="relative w-full flex justify-between flex-wrap gap-[1rem]">
+            <DisplayOrderOfIfsModal
+              conditionBlockId={_id}
+              allUsedOrderNumbers={allUsedOrderNumbers || []}
+              commandConditionId={conditionId}
+              setCurrentOrder={setCurrentOrder}
+              currentOrder={currentOrder}
+              amountOfIfBlocks={amountOfIfBlocks || 0}
+            />
             <button
               onClick={() => setShowAllTopologyBlocks((prev) => !prev)}
-              className="text-[1.4rem] outline-gray-300 text-gray-700 shadow-md rounded-md px-[1rem] py-[.5rem]"
+              className="flex-grow text-[1.4rem] outline-gray-300 text-gray-700 shadow-md rounded-md px-[1rem] py-[.5rem]"
               type="button"
             >
               {currentTopologyBlockName || "Текущая Ветка"}

@@ -9,8 +9,8 @@ import PlotField from "./PlotField/PlotField";
 
 export default function EditorMain() {
   const { episodeId } = useParams();
-  const commandCreatedByKeyCombinationExpand =
-    useCheckKeysCombinationExpandPlotField();
+  const [hasScrollbar, setHasScrollbar] = useState(false);
+  const keyCombinationToExpand = useCheckKeysCombinationExpandPlotField();
 
   const { data: firstTopologyBlock } = useQuery({
     queryKey: ["editor", "episode", episodeId, "firstTopologyBlock"],
@@ -25,27 +25,35 @@ export default function EditorMain() {
     firstTopologyBlock?._id ?? ""
   );
 
+  const checkScrollbarPresence = () => {
+    const hasScrollbar =
+      document.documentElement.scrollHeight > window.innerHeight;
+    setHasScrollbar(hasScrollbar);
+  };
+
   useEffect(() => {
     if (firstTopologyBlock) {
       setCurrentTopologyBlockId(firstTopologyBlock._id);
     }
+    checkScrollbarPresence();
   }, [firstTopologyBlock]);
 
   return (
     <>
-      {commandCreatedByKeyCombinationExpand ? (
+      {keyCombinationToExpand ? (
         <main className="flex w-full">
           <PlotField
-            expandPlotField={
-              commandCreatedByKeyCombinationExpand === "expandPlotField"
-            }
+            expandPlotField={keyCombinationToExpand === "expandPlotField"}
             topologyBlockId={currentTopologyBlockId}
           />
         </main>
       ) : (
         <main className="flex w-full">
           <PlotField topologyBlockId={currentTopologyBlockId} />
-          <Flowchart />
+          <Flowchart
+            expandPlotField={keyCombinationToExpand === "expandPlotField"}
+            hasScrollbar={hasScrollbar}
+          />
         </main>
       )}
     </>

@@ -42,6 +42,30 @@ export default function CommandConditionField({
     return res;
   }, [conditionBlocks]);
 
+  const [amountOfIfBlocks, setAmountOfIfBlocks] = useState(
+    memoizedConditionBlocksWithoutElse?.length || 0
+  );
+
+  useEffect(() => {
+    if (memoizedConditionBlocksWithoutElse) {
+      setAmountOfIfBlocks(memoizedConditionBlocksWithoutElse.length);
+    }
+  }, [memoizedConditionBlocksWithoutElse]);
+
+  const [allUsedOrderNumbers, setAllUsedOrderNumbers] = useState<number[]>([]);
+
+  useEffect(() => {
+    if (conditionBlocks) {
+      const ordersArr: number[] = [];
+      for (const c of conditionBlocks) {
+        if (c.orderOfExecution) {
+          ordersArr.push(c.orderOfExecution);
+        }
+      }
+      setAllUsedOrderNumbers(ordersArr);
+    }
+  }, [conditionBlocks]);
+
   return (
     <div className="flex gap-[1rem] w-full bg-primary-light-blue rounded-md p-[.5rem] flex-col">
       <div className="min-w-[10rem] flex-grow w-full relative flex items-center gap-[1rem]">
@@ -66,7 +90,12 @@ export default function CommandConditionField({
       </div>
       <div className="grid grid-cols-[repeat(auto-fill,minmax(20rem,1fr))] gap-[1rem] w-full bg-neutral-magnolia rounded-md">
         {memoizedConditionBlocksWithoutElse?.map((p) => (
-          <ConditionBlockItem key={p._id} {...p} />
+          <ConditionBlockItem
+            key={p._id}
+            allUsedOrderNumbers={allUsedOrderNumbers}
+            amountOfIfBlocks={amountOfIfBlocks}
+            {...p}
+          />
         ))}
       </div>
       <div className="min-w-[10rem] flex-grow w-full relative flex items-center gap-[1rem]">

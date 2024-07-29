@@ -40,6 +40,7 @@ topologyBlockRoute
 topologyBlockRoute
   .route("/:topologyBlockId/coordinates")
   .patch(topologyBlockControllerUpdateCoordinates);
+
 topologyBlockRoute
   .route(
     "/connection/sourceBlocks/:sourceBlockId/targetBlocks/:targetBlockId/newTargetBlock/:newTargetBlockId"

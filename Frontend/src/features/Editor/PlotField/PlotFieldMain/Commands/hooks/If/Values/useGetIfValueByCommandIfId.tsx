@@ -12,8 +12,8 @@ export default function useGetAllIfValuesByCommandIfId({
   return useQuery({
     queryKey: ["commandIf", ifId, "ifValue"],
     queryFn: async () =>
-      await axiosCustomized.get<IfValueTypes[]>(
-        `/plotFieldCommands/ifs/${ifId}/ifValues`
-      ),
+      await axiosCustomized
+        .get<IfValueTypes[]>(`/plotFieldCommands/ifs/${ifId}/ifValues`)
+        .then((r) => r.data),
   });
 }

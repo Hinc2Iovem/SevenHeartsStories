@@ -47,6 +47,7 @@ export default function ConditionValueItem({
   }, [currentSign]);
 
   useEscapeOfModal({ value: showSignModal, setValue: setShowSignModal });
+
   return (
     <form
       className="w-full flex-grow flex flex-col gap-[1rem] bg-neutral-alabaster rounded-md"
@@ -100,7 +101,7 @@ type PlotfieldSingsPromptTypes = {
   setCurrentSign: React.Dispatch<React.SetStateAction<ConditionSignTypes>>;
 };
 
-function PlotfieldSingsPrompt({
+export function PlotfieldSingsPrompt({
   setCurrentSign,
   setShowSignModal,
   signName,

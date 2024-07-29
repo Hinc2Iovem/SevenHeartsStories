@@ -7,6 +7,7 @@ export type ConditionBlockTypes = {
   conditionId: string;
   targetBlockId: string;
   isElse: boolean;
+  orderOfExecution: number;
 };
 
 export type ConditionSignTypes = ">" | "<" | "=" | ">=" | "<=";

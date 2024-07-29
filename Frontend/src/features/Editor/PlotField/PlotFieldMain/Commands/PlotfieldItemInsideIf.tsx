@@ -39,7 +39,7 @@ export default function PlotfieldItemInsideIf({
       {...provided.dragHandleProps}
       ref={provided.innerRef}
       className={`${
-        commandIfId ? "ml-[1rem] pr-[1rem]" : ""
+        commandIfId ? "ml-[1rem] pr-[2rem]" : ""
       } w-full flex gap-[1rem]`}
     >
       {!command ? (
@@ -103,7 +103,6 @@ export default function PlotfieldItemInsideIf({
           plotFieldCommandId={_id}
         />
       ) : null}
-      <p>CommandOrder: {commandOrder}</p>
     </li>
   );
 }

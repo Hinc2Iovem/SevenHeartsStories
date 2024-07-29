@@ -17,8 +17,6 @@ export default function useUpdateOrderInsideCommandIf({
       newOrder,
       plotFieldCommandId,
     }: GetCommandIfOnMutationTypes) => {
-      console.log("sending newOrder: ", newOrder);
-
       await axiosCustomized.patch(
         `/plotFieldCommands/${plotFieldCommandId}/ifs/${commandIfId}/newOrder`,
         {

@@ -2,6 +2,7 @@ import { RequestHandler } from "express";
 import {
   addAnotherBlockConditionService,
   getConditionBlocksByCommandConditionIdService,
+  updateBlockConditionOrderOfExecutionService,
   updateBlockConditionTopologyBlockService,
 } from "../../../../services/StoryEditor/PlotField/Condition/ConditionBlockService";
 
@@ -74,6 +75,36 @@ export const updateBlockConditionTopologyBlockController: RequestHandler<
     const condition = await updateBlockConditionTopologyBlockService({
       conditionBlockId: req.params.conditionBlockId,
       topologyBlockId: req.params.topologyBlockId,
+    });
+    if (condition) {
+      return res.status(201).json(condition);
+    } else {
+      return res.status(400).json({ message: "Something went wrong" });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
+type UpdateConditionBlockOrderOfExecutionTypes = {
+  conditionBlockId: string;
+};
+type UpdateConditionBlockOrderOfExecutionBody = {
+  orderOfExecution: number;
+};
+
+// @route POST http://localhost:3500/commandConditions/conditionBlocks/:conditionBlockId/orderOfExecution
+// @access Private
+export const updateBlockConditionOrderOfExecutionController: RequestHandler<
+  UpdateConditionBlockOrderOfExecutionTypes,
+  unknown,
+  UpdateConditionBlockOrderOfExecutionBody,
+  unknown
+> = async (req, res, next) => {
+  try {
+    const condition = await updateBlockConditionOrderOfExecutionService({
+      conditionBlockId: req.params.conditionBlockId,
+      orderOfExecution: req.body.orderOfExecution,
     });
     if (condition) {
       return res.status(201).json(condition);

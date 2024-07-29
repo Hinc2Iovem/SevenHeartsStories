@@ -2,6 +2,7 @@ import express from "express";
 import {
   addAnotherBlockConditionController,
   getConditionBlocksByCommandConditionIdController,
+  updateBlockConditionOrderOfExecutionController,
   updateBlockConditionTopologyBlockController,
 } from "../../../../controllers/StoryEditor/PlotField/Condition/ConditionBlockController";
 
@@ -19,3 +20,7 @@ conditionBlockRoute
 conditionBlockRoute
   .route("/conditionBlocks/:conditionBlockId/topologyBlocks/:topologyBlockId")
   .patch(updateBlockConditionTopologyBlockController);
+
+conditionBlockRoute
+  .route("/conditionBlocks/:conditionBlockId/orderOfExecution")
+  .patch(updateBlockConditionOrderOfExecutionController);
