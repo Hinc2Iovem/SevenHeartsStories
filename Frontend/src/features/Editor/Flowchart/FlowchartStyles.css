@@ -1,7 +1,7 @@
-.container {
+.containerScroll {
   -ms-overflow-style: none; /* Internet Explorer 10+ */
   scrollbar-width: none; /* Firefox */
 }
-.container::-webkit-scrollbar {
+.containerScroll::-webkit-scrollbar {
   display: none; /* Safari and Chrome */
 }

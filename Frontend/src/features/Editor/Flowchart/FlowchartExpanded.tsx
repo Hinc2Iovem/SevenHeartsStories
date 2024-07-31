@@ -14,7 +14,7 @@ type FlowChartTypes = {
 
 export const SCROLLBAR_WIDTH = 17;
 
-export default function Flowchart({
+export default function FlowchartExpanded({
   hasScrollbar,
   expandFlowchart,
   scale,
@@ -51,33 +51,23 @@ export default function Flowchart({
 
   return (
     <section
+      style={{
+        transform: `scale(${scale})`,
+        transformOrigin: "center center",
+      }}
       ref={boundsRef}
-      className={`${
-        scale >= 0.99 ? "" : "border-white border-[4px] border-dashed"
-      } w-1/2 overflow-auto rounded-md shadow-md relative bg-primary-light-blue | containerScroll`}
+      className={`w-full rounded-md min-w-[500rem] min-h-[500rem] border-white border-[4px] border-dashed shadow-md relative bg-primary-pastel-blue`}
     >
-      <div
-        style={{
-          transform: `scale(${scale})`,
-          transformOrigin: "center center",
-        }}
-        className="z-[2] border-white border-[4px] border-dashed w-full h-full rounded-md min-w-[500rem] min-h-[500rem] relative  bg-primary-pastel-blue"
-      >
-        {allTopologyBlocks
-          ? allTopologyBlocks.map((tb) => (
-              <FlowchartTopologyBlockRemake
-                key={tb._id}
-                expandFlowchart={expandFlowchart}
-                hasScrollbar={hasScrollbar}
-                {...tb}
-              />
-            ))
-          : null}
-      </div>
-      {/* <div className="absolute top-0 bottom-0 right-0 left-0 min-w-[500rem] min-h-[500rem] z-[1]">
-        <div className="absolute bg-white left-[calc(50%-.2rem)] h-full w-[.4rem]"></div>
-        <div className="absolute bg-white left-[calc(50%-.2rem)] h-full w-[.4rem] rotate-90"></div>
-      </div> */}
+      {allTopologyBlocks
+        ? allTopologyBlocks.map((tb) => (
+            <FlowchartTopologyBlockRemake
+              key={tb._id}
+              expandFlowchart={expandFlowchart}
+              hasScrollbar={hasScrollbar}
+              {...tb}
+            />
+          ))
+        : null}
     </section>
   );
 }

@@ -8,35 +8,35 @@ export default function useCheckKeysCombinationExpandPlotField() {
     );
 
   const [keys, setKeys] = useState({
-    ctrl: false,
+    v: false,
     alt: false,
   });
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Control") {
-        setKeys((prevKeys) => ({ ...prevKeys, ctrl: true }));
+      if (event.key === "Alt") {
+        setKeys((prevKeys) => ({ ...prevKeys, alt: true }));
       }
-      if (event.key.toLowerCase() === "alt") {
+      if (event.key.toLowerCase() === "v") {
         if (command === "expandPlotField") {
           setCommand("" as PossibleCommandsCreatedByCombinationOfKeysTypes);
           return;
         } else {
-          setKeys((prevKeys) => ({ ...prevKeys, alt: true }));
+          setKeys((prevKeys) => ({ ...prevKeys, v: true }));
         }
       }
 
-      if (event.ctrlKey && event.key.toLowerCase() === "alt") {
+      if (event.key.toLowerCase() === "v" && event.altKey) {
         setCommand("expandPlotField");
       }
     };
 
     const handleKeyUp = (event: KeyboardEvent) => {
-      if (event.key === "Control") {
-        setKeys((prevKeys) => ({ ...prevKeys, ctrl: false }));
-      }
-      if (event.key.toLowerCase() === "alt") {
+      if (event.key === "Alt") {
         setKeys((prevKeys) => ({ ...prevKeys, alt: false }));
+      }
+      if (event.key.toLowerCase() === "v") {
+        setKeys((prevKeys) => ({ ...prevKeys, v: false }));
       }
     };
 

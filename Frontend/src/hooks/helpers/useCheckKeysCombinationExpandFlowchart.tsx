@@ -8,14 +8,14 @@ export default function useCheckKeysCombinationExpandFlowchart() {
     );
 
   const [keys, setKeys] = useState({
-    shift: false,
+    alt: false,
     c: false,
   });
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Shift") {
-        setKeys((prevKeys) => ({ ...prevKeys, shift: true }));
+      if (event.key === "Alt") {
+        setKeys((prevKeys) => ({ ...prevKeys, alt: true }));
       }
       if (event.key.toLowerCase() === "c") {
         if (command === "expandFlowchart") {
@@ -26,14 +26,14 @@ export default function useCheckKeysCombinationExpandFlowchart() {
         }
       }
 
-      if (event.shiftKey && event.key.toLowerCase() === "c") {
+      if (event.altKey && event.key.toLowerCase() === "c") {
         setCommand("expandFlowchart");
       }
     };
 
     const handleKeyUp = (event: KeyboardEvent) => {
-      if (event.key === "Shift") {
-        setKeys((prevKeys) => ({ ...prevKeys, shift: false }));
+      if (event.key === "Alt") {
+        setKeys((prevKeys) => ({ ...prevKeys, alt: false }));
       }
       if (event.key.toLowerCase() === "c") {
         setKeys((prevKeys) => ({ ...prevKeys, c: false }));
