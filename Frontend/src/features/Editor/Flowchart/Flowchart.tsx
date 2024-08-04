@@ -1,8 +1,8 @@
 import { useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
 import useGetAllTopologyBlocksByEpisodeId from "../PlotField/PlotFieldMain/Commands/hooks/TopologyBlock/useGetAllTopologyBlocksByEpisodeId";
-import FlowchartTopologyBlockRemake from "./FlowchartTopologyBlockRemake";
 import "./FlowchartStyles.css";
+import FlowchartTopologyBlockRemake from "./FlowchartTopologyBlockRemake";
 
 type FlowChartTypes = {
   hasScrollbar: boolean;
@@ -74,10 +74,11 @@ export default function Flowchart({
             ))
           : null}
       </div>
-      {/* <div className="absolute top-0 bottom-0 right-0 left-0 min-w-[500rem] min-h-[500rem] z-[1]">
+
+      <div className="absolute top-0 bottom-0 right-0 left-0 min-w-[500rem] min-h-[500rem] z-[1]">
         <div className="absolute bg-white left-[calc(50%-.2rem)] h-full w-[.4rem]"></div>
         <div className="absolute bg-white left-[calc(50%-.2rem)] h-full w-[.4rem] rotate-90"></div>
-      </div> */}
+      </div>
     </section>
   );
 }

@@ -10,7 +10,88 @@ import {
   unrelatedTopologyBlockCreateService,
   topologyBlockCreateConnectionService,
   topologyBlockUpdateConnectionService,
+  getSourceBlocksByTargetBlockIdService,
+  getTargetBlocksBySourceBlockIdService,
+  getTopologyBlockConnectionByEpisodeIdService,
 } from "../../../services/StoryEditor/Topology/TopologyBlockService";
+
+type GetTopologyBlockConnectionsParams = {
+  episodeId: string;
+};
+
+// @route GET http://localhost:3500/topologyBlocks/episodes/:episodeId/connection
+// @access Private
+export const getTopologyBlockConnectionsByEpisodeIdController: RequestHandler<
+  GetTopologyBlockConnectionsParams,
+  unknown,
+  unknown,
+  unknown
+> = async (req, res, next) => {
+  try {
+    const topologyBlock = await getTopologyBlockConnectionByEpisodeIdService({
+      episodeId: req.params.episodeId,
+    });
+    if (topologyBlock) {
+      return res.status(201).json(topologyBlock);
+    } else {
+      return res.status(400).json({ message: "Something went wrong" });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
+type GetTargetBlockBySourceBlockIdParams = {
+  sourceBlockId: string;
+};
+
+// @route GET http://localhost:3500/topologyBlocks/sourceBlocks/:sourceBlockId/connection
+// @access Private
+export const getTargetBlocksBySourceBlockIdController: RequestHandler<
+  GetTargetBlockBySourceBlockIdParams,
+  unknown,
+  unknown,
+  unknown
+> = async (req, res, next) => {
+  try {
+    const topologyBlock = await getTargetBlocksBySourceBlockIdService({
+      sourceBlockId: req.params.sourceBlockId,
+    });
+    if (topologyBlock) {
+      return res.status(201).json(topologyBlock);
+    } else {
+      return res.status(400).json({ message: "Something went wrong" });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
+type GetSourceBlockByTargetBlockIdParams = {
+  targetBlockId: string;
+};
+
+// @route GET http://localhost:3500/topologyBlocks/targetBlocks/:targetBlockId/connection
+// @access Private
+export const getSourceBlocksByTargetBlockIdController: RequestHandler<
+  GetSourceBlockByTargetBlockIdParams,
+  unknown,
+  unknown,
+  unknown
+> = async (req, res, next) => {
+  try {
+    const topologyBlock = await getSourceBlocksByTargetBlockIdService({
+      targetBlockId: req.params.targetBlockId,
+    });
+    if (topologyBlock) {
+      return res.status(201).json(topologyBlock);
+    } else {
+      return res.status(400).json({ message: "Something went wrong" });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
 
 type GetTopologyBlockByIdParams = {
   topologyBlockId: string;
@@ -117,10 +198,11 @@ export const getFirstTopologyBlockController: RequestHandler<
 
 type TopologyBlockCreateConnectionParams = {
   sourceBlockId: string;
+  episodeId: string;
   targetBlockId: string;
 };
 
-// @route POST http://localhost:3500/topologyBlocks/connection/sourceBlocks/:sourceBlockId/targetBlocks/:targetBlockId
+// @route POST http://localhost:3500/topologyBlocks/episodes/:episodeId/sourceBlocks/:sourceBlockId/targetBlocks/:targetBlockId/connection
 // @access Private
 export const topologyBlockCreateConnectionController: RequestHandler<
   TopologyBlockCreateConnectionParams,
@@ -131,6 +213,7 @@ export const topologyBlockCreateConnectionController: RequestHandler<
   try {
     const topologyBlock = await topologyBlockCreateConnectionService({
       sourceBlockId: req.params.sourceBlockId,
+      episodeId: req.params.episodeId,
       targetBlockId: req.params.targetBlockId,
     });
     if (topologyBlock) {

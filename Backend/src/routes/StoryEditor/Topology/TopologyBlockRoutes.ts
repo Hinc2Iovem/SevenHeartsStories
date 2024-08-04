@@ -1,9 +1,12 @@
 import express from "express";
 import {
   getFirstTopologyBlockController,
+  getSourceBlocksByTargetBlockIdController,
+  getTargetBlocksBySourceBlockIdController,
   getTopologyBlockByConnectionController,
   getTopologyBlockByEpisodeIdController,
   getTopologyBlockByIdController,
+  getTopologyBlockConnectionsByEpisodeIdController,
   topologyBlockControllerDelete,
   topologyBlockControllerUpdateCoordinates,
   topologyBlockControllerUpdateName,
@@ -23,6 +26,16 @@ topologyBlockRoute
 topologyBlockRoute
   .route("/:sourceBlockId/connection")
   .get(getTopologyBlockByConnectionController);
+topologyBlockRoute
+  .route("/targetBlocks/:targetBlockId/connection")
+  .get(getSourceBlocksByTargetBlockIdController);
+
+topologyBlockRoute
+  .route("/sourceBlocks/:sourceBlockId/connection")
+  .get(getTargetBlocksBySourceBlockIdController);
+topologyBlockRoute
+  .route("/episodes/:episodeId/connection")
+  .get(getTopologyBlockConnectionsByEpisodeIdController);
 
 topologyBlockRoute
   .route("/episodes/:episodeId")
@@ -34,7 +47,9 @@ topologyBlockRoute
   .get(getFirstTopologyBlockController);
 
 topologyBlockRoute
-  .route("/connection/sourceBlocks/:sourceBlockId/targetBlocks/:targetBlockId")
+  .route(
+    "/episodes/:episodeId/sourceBlocks/:sourceBlockId/targetBlocks/:targetBlockId/connection"
+  )
   .post(topologyBlockCreateConnectionController);
 
 topologyBlockRoute

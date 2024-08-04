@@ -1,6 +1,10 @@
 import mongoose, { InferSchemaType, model } from "mongoose";
 
 export const topologyConnectionSchema = new mongoose.Schema({
+  episodeId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Episode",
+  },
   sourceBlockId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "TopologyBlock",

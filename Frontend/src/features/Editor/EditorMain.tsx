@@ -78,6 +78,7 @@ export default function EditorMain() {
           >
             {(scale * 100).toFixed(0)}%
           </div>
+
           <FlowchartExpanded
             scale={scale}
             setScale={setScale}
@@ -87,6 +88,7 @@ export default function EditorMain() {
             }
             hasScrollbar={hasScrollbar}
           />
+
           <button
             onClick={() => createTopologyBlock.mutate()}
             className="fixed active:scale-[0.98] text-[1.3rem] transition-all bg-white hover:bg-primary-light-blue hover:text-white text-gray-700 shadow-md px-[1rem] py-[.5rem] rounded-md bottom-[2rem] translate-x-[1rem]"
@@ -106,6 +108,7 @@ export default function EditorMain() {
           >
             {(scale * 100).toFixed(0)}%
           </div>
+
           <Flowchart
             scale={scale}
             setScale={setScale}

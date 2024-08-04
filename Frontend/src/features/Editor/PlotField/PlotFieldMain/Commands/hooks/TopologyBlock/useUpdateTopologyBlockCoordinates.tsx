@@ -3,7 +3,7 @@ import { axiosCustomized } from "../../../../../../../api/axios";
 
 type UpdateTopologyBlockCoordinatesTypes = {
   topologyBlockId: string;
-  episodeId: string;
+  sourceBlockId?: string;
 };
 type UpdateTopologyBlockCoordinatesOnMutationTypes = {
   coordinatesX: number;
@@ -12,7 +12,6 @@ type UpdateTopologyBlockCoordinatesOnMutationTypes = {
 
 export default function useUpdateTopologyBlockCoordinates({
   topologyBlockId,
-  episodeId,
 }: UpdateTopologyBlockCoordinatesTypes) {
   const queryClient = useQueryClient();
   return useMutation({
@@ -30,7 +29,7 @@ export default function useUpdateTopologyBlockCoordinates({
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["episode", episodeId, "topologyBlock", "first"],
+        queryKey: ["topologyBlock", topologyBlockId],
         exact: true,
         type: "active",
       });
