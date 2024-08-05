@@ -3,28 +3,24 @@ import { useParams } from "react-router-dom";
 import useGetAllTopologyBlocksByEpisodeId from "../PlotField/PlotFieldMain/Commands/hooks/TopologyBlock/useGetAllTopologyBlocksByEpisodeId";
 import "./FlowchartStyles.css";
 import FlowchartTopologyBlockRemake from "./FlowchartTopologyBlockRemake";
+import FlowchartArrowList from "./FlowchartArrowList";
+import useGetAllTopologyBlockConnectionsByEpisodeId from "../PlotField/PlotFieldMain/Commands/hooks/TopologyBlock/useGetAllTopologyBlockConnectionsByEpisodeId";
 
 type FlowChartTypes = {
-  hasScrollbar: boolean;
-  expandFlowchart: boolean;
   setScale: React.Dispatch<React.SetStateAction<number>>;
-  setShowScalePercentage: React.Dispatch<React.SetStateAction<boolean>>;
   scale: number;
 };
 
 export const SCROLLBAR_WIDTH = 17;
 
-export default function Flowchart({
-  hasScrollbar,
-  expandFlowchart,
-  scale,
-  setScale,
-  setShowScalePercentage,
-}: FlowChartTypes) {
+export default function Flowchart({ scale, setScale }: FlowChartTypes) {
   const { episodeId } = useParams();
   const { data: allTopologyBlocks } = useGetAllTopologyBlocksByEpisodeId({
     episodeId: episodeId ?? "",
   });
+  const { data: allConnections } = useGetAllTopologyBlockConnectionsByEpisodeId(
+    { episodeId: episodeId ?? "" }
+  );
 
   const boundsRef = useRef<HTMLDivElement>(null);
 
@@ -40,9 +36,7 @@ export default function Flowchart({
     const bounds = boundsRef.current;
     if (bounds) {
       bounds.addEventListener("wheel", handleZoom);
-      setShowScalePercentage(true);
       return () => {
-        setShowScalePercentage(false);
         bounds.removeEventListener("wheel", handleZoom);
       };
     }
@@ -65,13 +59,11 @@ export default function Flowchart({
       >
         {allTopologyBlocks
           ? allTopologyBlocks.map((tb) => (
-              <FlowchartTopologyBlockRemake
-                key={tb._id}
-                expandFlowchart={expandFlowchart}
-                hasScrollbar={hasScrollbar}
-                {...tb}
-              />
+              <FlowchartTopologyBlockRemake key={tb._id} {...tb} />
             ))
+          : null}
+        {allConnections
+          ? allConnections.map((c) => <FlowchartArrowList key={c._id} {...c} />)
           : null}
       </div>
 

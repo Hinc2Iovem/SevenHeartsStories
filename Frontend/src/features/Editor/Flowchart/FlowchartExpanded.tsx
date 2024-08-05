@@ -5,37 +5,30 @@ import {
   TopologyBlockTypes,
 } from "../../../types/TopologyBlock/TopologyBlockTypes";
 import useGetAllTopologyBlockConnections from "../PlotField/PlotFieldMain/Commands/hooks/TopologyBlock/useGetAllTopologyBlockConnections";
-import useGetAllTopologyBlockConnectionsByEpisodeId from "../PlotField/PlotFieldMain/Commands/hooks/TopologyBlock/useGetAllTopologyBlockConnectionsByEpisodeId";
 import useGetAllTopologyBlocksByEpisodeId from "../PlotField/PlotFieldMain/Commands/hooks/TopologyBlock/useGetAllTopologyBlocksByEpisodeId";
 import useGetTopologyBlockById from "../PlotField/PlotFieldMain/Commands/hooks/TopologyBlock/useGetTopologyBlockById";
-import "./FlowchartStyles.css";
 import FlowchartTopologyBlockRemake from "./FlowchartTopologyBlockRemake";
 import FlowchartArrowList from "./FlowchartArrowList";
+import useGetAllTopologyBlockConnectionsByEpisodeId from "../PlotField/PlotFieldMain/Commands/hooks/TopologyBlock/useGetAllTopologyBlockConnectionsByEpisodeId";
+import "./FlowchartStyles.css";
 
 type FlowChartTypes = {
-  hasScrollbar: boolean;
-  expandFlowchart: boolean;
   setScale: React.Dispatch<React.SetStateAction<number>>;
-  setShowScalePercentage: React.Dispatch<React.SetStateAction<boolean>>;
   scale: number;
 };
 
 export const SCROLLBAR_WIDTH = 17;
 
-export default function FlowchartExpanded({
-  hasScrollbar,
-  expandFlowchart,
-  scale,
-  setScale,
-  setShowScalePercentage,
-}: FlowChartTypes) {
+export default function FlowchartExpanded({ scale, setScale }: FlowChartTypes) {
   const { episodeId } = useParams();
-  const { data: allConnections } = useGetAllTopologyBlockConnectionsByEpisodeId(
-    { episodeId: episodeId ?? "" }
-  );
+
   const { data: allTopologyBlocks } = useGetAllTopologyBlocksByEpisodeId({
     episodeId: episodeId ?? "",
   });
+
+  const { data: allConnections } = useGetAllTopologyBlockConnectionsByEpisodeId(
+    { episodeId: episodeId ?? "" }
+  );
 
   const boundsRef = useRef<HTMLDivElement>(null);
 
@@ -51,9 +44,7 @@ export default function FlowchartExpanded({
     const bounds = boundsRef.current;
     if (bounds) {
       bounds.addEventListener("wheel", handleZoom);
-      setShowScalePercentage(true);
       return () => {
-        setShowScalePercentage(false);
         bounds.removeEventListener("wheel", handleZoom);
       };
     }
@@ -71,15 +62,10 @@ export default function FlowchartExpanded({
     >
       {allTopologyBlocks
         ? allTopologyBlocks.map((tb) => (
-            <FlowchartTopologyBlockRemake
-              key={tb._id}
-              expandFlowchart={expandFlowchart}
-              hasScrollbar={hasScrollbar}
-              {...tb}
-            />
+            <FlowchartTopologyBlockRemake key={tb._id} {...tb} />
           ))
         : null}
-      {allConnections?.length
+      {allConnections
         ? allConnections.map((c) => <FlowchartArrowList key={c._id} {...c} />)
         : null}
     </section>

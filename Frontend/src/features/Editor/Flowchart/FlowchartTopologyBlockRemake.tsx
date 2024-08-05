@@ -1,14 +1,10 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Draggable, { DraggableData, DraggableEvent } from "react-draggable";
 import { TopologyBlockTypes } from "../../../types/TopologyBlock/TopologyBlockTypes";
 import useUpdateTopologyBlockCoordinates from "../PlotField/PlotFieldMain/Commands/hooks/TopologyBlock/useUpdateTopologyBlockCoordinates";
-import FlowchartTopologyBlockDragg from "./FlowchartTopologyBlockDragg";
+import { useCoordinates } from "./Context/useCoordinates";
+import FlowchartTopologyBlockDrag from "./FlowchartTopologyBlockDrag";
 import "./FlowchartStyles.css";
-
-type FlowchartTopologyBlockTypes = {
-  hasScrollbar: boolean;
-  expandFlowchart: boolean;
-} & TopologyBlockTypes;
 
 export default function FlowchartTopologyBlock({
   _id,
@@ -16,7 +12,14 @@ export default function FlowchartTopologyBlock({
   coordinatesY,
   episodeId,
   name,
-}: FlowchartTopologyBlockTypes) {
+}: TopologyBlockTypes) {
+  const {
+    setCoordinates: setCoordinatesGlobal,
+    coordinatesX: currentCoordinatesX,
+    _id: currentId,
+    coordinatesY: currentCoordinatesY,
+  } = useCoordinates();
+
   const topologyBlockRef = useRef<HTMLDivElement>(null);
   const [coordinates, setCoordinates] = useState<{
     coordinatesX: number;
@@ -26,15 +29,30 @@ export default function FlowchartTopologyBlock({
     coordinatesY,
   });
 
+  useEffect(() => {
+    if (coordinatesX && coordinatesY) {
+      setCoordinates({
+        coordinatesX,
+        coordinatesY,
+      });
+    }
+  }, [coordinatesX, coordinatesY]);
+
+  useEffect(() => {
+    if (_id === currentId) {
+      setCoordinates({
+        coordinatesX: currentCoordinatesX,
+        coordinatesY: currentCoordinatesY,
+      });
+    }
+  }, [_id, currentId, currentCoordinatesX, currentCoordinatesY]);
+
   const updateCoordinates = useUpdateTopologyBlockCoordinates({
     topologyBlockId: _id,
   });
 
   const handleDragOnStop = (_e: DraggableEvent, ui: DraggableData) => {
-    setCoordinates({
-      coordinatesX: ui.x,
-      coordinatesY: ui.y,
-    });
+    setCoordinatesGlobal({ _id, coordinatesX: ui.x, coordinatesY: ui.y });
     updateCoordinates.mutate({
       coordinatesX: ui.x,
       coordinatesY: ui.y,
@@ -76,7 +94,7 @@ export default function FlowchartTopologyBlock({
             ref={topologyBlockRef}
             className={`z-[20] w-[10rem] text-[2rem] rounded-md shadow-md absolute bg-white px-[1rem] py-[.5rem] active:cursor-move cursor-default whitespace-nowrap min-w-fit`}
           >
-            <FlowchartTopologyBlockDragg
+            <FlowchartTopologyBlockDrag
               _id={_id}
               name={name}
               episodeId={episodeId}

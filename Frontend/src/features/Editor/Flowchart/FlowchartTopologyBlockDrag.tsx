@@ -11,7 +11,7 @@ type FlowchartTopologyBlockDraggProps = {
   showAllTopologyBlocks: boolean;
 };
 
-export default function FlowchartTopologyBlockDragg({
+export default function FlowchartTopologyBlockDrag({
   _id,
   episodeId,
   name,
@@ -35,6 +35,12 @@ export default function FlowchartTopologyBlockDragg({
     episodeId,
   });
 
+  const handleCreatingConnection = (id: string) => {
+    createConnectionTopologyBlocks.mutate({
+      targetBlockId: id,
+    });
+  };
+
   return (
     <>
       {name || "Forgot Name"}
@@ -49,9 +55,7 @@ export default function FlowchartTopologyBlockDragg({
               <button
                 onClick={() => {
                   setShowAllTopologyBlocks(false);
-                  createConnectionTopologyBlocks.mutate({
-                    targetBlockId: tb._id,
-                  });
+                  handleCreatingConnection(tb._id);
                 }}
                 className={`${
                   tb._id === _id ? "hidden" : ""

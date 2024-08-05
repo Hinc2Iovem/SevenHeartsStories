@@ -6,21 +6,19 @@ import useCheckKeysCombinationExpandFlowchart from "../../hooks/helpers/useCheck
 import useCheckKeysCombinationExpandPlotField from "../../hooks/helpers/useCheckKeysCombinationExpandPlotField";
 import { TopologyBlockTypes } from "../../types/TopologyBlock/TopologyBlockTypes";
 import Flowchart from "./Flowchart/Flowchart";
-import PlotField from "./PlotField/PlotField";
-import useCreateTopologyBlock from "./PlotField/PlotFieldMain/Commands/hooks/TopologyBlock/useCreateTopologyBlock";
 import FlowchartExpanded from "./Flowchart/FlowchartExpanded";
 import "./Flowchart/FlowchartStyles.css";
+import PlotField from "./PlotField/PlotField";
+import useCreateTopologyBlock from "./PlotField/PlotFieldMain/Commands/hooks/TopologyBlock/useCreateTopologyBlock";
 
 export default function EditorMain() {
   const { episodeId } = useParams();
-  const [hasScrollbar, setHasScrollbar] = useState(false);
   const keyCombinationToExpandPlotField =
     useCheckKeysCombinationExpandPlotField();
   const keyCombinationToExpandFlowChart =
     useCheckKeysCombinationExpandFlowchart();
 
   const [scale, setScale] = useState(1);
-  const [showScalePercentage, setShowScalePercentage] = useState(false);
 
   const { data: firstTopologyBlock } = useQuery({
     queryKey: ["editor", "episode", episodeId, "firstTopologyBlock"],
@@ -35,17 +33,16 @@ export default function EditorMain() {
     firstTopologyBlock?._id ?? ""
   );
 
-  const checkScrollbarPresence = () => {
-    const hasScrollbar =
-      document.documentElement.scrollHeight > window.innerHeight;
-    setHasScrollbar(hasScrollbar);
-  };
+  // const checkScrollbarPresence = () => {
+  //   const hasScrollbar =
+  //     document.documentElement.scrollHeight > window.innerHeight;
+  //   setHasScrollbar(hasScrollbar);
+  // };
 
   useEffect(() => {
     if (firstTopologyBlock) {
       setCurrentTopologyBlockId(firstTopologyBlock._id);
     }
-    checkScrollbarPresence();
   }, [firstTopologyBlock]);
 
   const createTopologyBlock = useCreateTopologyBlock({
@@ -72,22 +69,12 @@ export default function EditorMain() {
             <div className="absolute bg-white left-[calc(50%-.2rem)] w-[.4rem] min-h-[500rem] h-full rotate-90"></div>
           </div>
           <div
-            className={`${
-              showScalePercentage ? "" : "hidden"
-            } fixed z-[2] active:scale-[0.98] text-[1.3rem] transition-all bg-white hover:bg-primary-light-blue hover:text-white text-gray-700 shadow-md px-[1rem] py-[.5rem] rounded-md top-[6.8rem] translate-x-[.5rem]`}
+            className={`fixed z-[2] active:scale-[0.98] text-[1.3rem] transition-all bg-white hover:bg-primary-light-blue hover:text-white text-gray-700 shadow-md px-[1rem] py-[.5rem] rounded-md top-[6.8rem] translate-x-[.5rem]`}
           >
             {(scale * 100).toFixed(0)}%
           </div>
 
-          <FlowchartExpanded
-            scale={scale}
-            setScale={setScale}
-            setShowScalePercentage={setShowScalePercentage}
-            expandFlowchart={
-              keyCombinationToExpandFlowChart === "expandFlowchart"
-            }
-            hasScrollbar={hasScrollbar}
-          />
+          <FlowchartExpanded scale={scale} setScale={setScale} />
 
           <button
             onClick={() => createTopologyBlock.mutate()}
@@ -102,22 +89,12 @@ export default function EditorMain() {
         >
           <PlotField topologyBlockId={currentTopologyBlockId} />
           <div
-            className={`${
-              showScalePercentage ? "" : "hidden"
-            } fixed top-[1rem] active:scale-[0.98] text-[1.3rem] transition-all bg-white hover:bg-primary-light-blue hover:text-white text-gray-700 shadow-md px-[1rem] py-[.5rem] rounded-md translate-x-[calc(50%+1rem)] z-[10]`}
+            className={`fixed top-[1rem] active:scale-[0.98] text-[1.3rem] transition-all bg-white hover:bg-primary-light-blue hover:text-white text-gray-700 shadow-md px-[1rem] py-[.5rem] rounded-md translate-x-[calc(50%+1rem)] z-[10]`}
           >
             {(scale * 100).toFixed(0)}%
           </div>
 
-          <Flowchart
-            scale={scale}
-            setScale={setScale}
-            setShowScalePercentage={setShowScalePercentage}
-            expandFlowchart={
-              keyCombinationToExpandFlowChart === "expandFlowchart"
-            }
-            hasScrollbar={hasScrollbar}
-          />
+          <Flowchart scale={scale} setScale={setScale} />
 
           <button
             onClick={() => createTopologyBlock.mutate()}
