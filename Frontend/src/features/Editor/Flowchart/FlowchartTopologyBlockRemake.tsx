@@ -47,8 +47,6 @@ export default function FlowchartTopologyBlock({
     }
   }, [_id, currentId, currentCoordinatesX, currentCoordinatesY]);
 
-  console.log(name, coordinates?.coordinatesX, coordinates?.coordinatesY);
-
   const updateCoordinates = useUpdateTopologyBlockCoordinates({
     topologyBlockId: _id,
   });

@@ -72,33 +72,20 @@ export const calculateControlPointsWithoutBoundingBox = ({
   if (dx < 0) [leftTopX, rightBottomX] = [rightBottomX, leftTopX];
   if (dy < 0) [leftTopY, rightBottomY] = [rightBottomY, leftTopY];
 
-  const fixedLineInflectionConstant = calculateFixedLineInflectionConstant(
-    absDx,
-    absDy
-  );
-  const lowDyYShift = calculateLowDyControlPointShift(dx, dy);
-  const lowDyXShift = Math.abs(
-    calculateLowDyControlPointShift(dx, dy, MAX_X_CONTROL_POINT_SHIFT)
-  );
+  const controlPointShift = Math.max(absDx, absDy) * 0.2; // Adjust as needed
 
   const p1 = {
     x: leftTopX,
     y: leftTopY,
   };
   const p2 = {
-    x: leftTopX + fixedLineInflectionConstant + lowDyXShift,
-    y: leftTopY + lowDyYShift,
+    x: leftTopX + controlPointShift,
+    y: leftTopY + (dy < 0 ? -controlPointShift : controlPointShift),
   };
-
   const p3 = {
-    x: rightBottomX - fixedLineInflectionConstant - lowDyXShift,
-    y: rightBottomY - lowDyYShift,
+    x: rightBottomX - controlPointShift,
+    y: rightBottomY - (dy < 0 ? -controlPointShift : controlPointShift),
   };
-
-  if (dx < 0) {
-    p3.x = rightBottomX + fixedLineInflectionConstant + lowDyXShift;
-  }
-
   const p4 = {
     x: rightBottomX,
     y: rightBottomY,

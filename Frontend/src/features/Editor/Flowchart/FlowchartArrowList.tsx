@@ -85,11 +85,11 @@ export default function FlowchartArrowList({
             y: sourceCoordinates.coordinatesY,
           }}
           config={{
-            arrowColor: "black",
-            strokeWidth: 1.5,
-            dotEndingBackground: "white",
+            arrowColor: "white",
+            strokeWidth: 2,
+            dotEndingBackground: "black",
             dotEndingRadius: 3,
-            arrowHeadEndingSize: 6,
+            arrowHeadEndingSize: 10,
           }}
         />
       ) : null}
