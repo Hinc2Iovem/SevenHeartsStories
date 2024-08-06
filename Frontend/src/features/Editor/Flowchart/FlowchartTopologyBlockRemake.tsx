@@ -47,6 +47,8 @@ export default function FlowchartTopologyBlock({
     }
   }, [_id, currentId, currentCoordinatesX, currentCoordinatesY]);
 
+  console.log(name, coordinates?.coordinatesX, coordinates?.coordinatesY);
+
   const updateCoordinates = useUpdateTopologyBlockCoordinates({
     topologyBlockId: _id,
   });
@@ -92,7 +94,9 @@ export default function FlowchartTopologyBlock({
               }
             }}
             ref={topologyBlockRef}
-            className={`z-[20] w-[10rem] text-[2rem] rounded-md shadow-md absolute bg-white px-[1rem] py-[.5rem] active:cursor-move cursor-default whitespace-nowrap min-w-fit`}
+            className={`${
+              showAllTopologyBlocks ? "z-[2]" : "z-[1]"
+            } w-[10rem] text-[2rem] rounded-md shadow-md absolute bg-white px-[1rem] py-[.5rem] active:cursor-move cursor-default whitespace-nowrap min-w-fit`}
           >
             <FlowchartTopologyBlockDrag
               _id={_id}

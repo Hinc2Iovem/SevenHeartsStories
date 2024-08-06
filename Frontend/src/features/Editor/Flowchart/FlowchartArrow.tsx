@@ -81,6 +81,12 @@ const ControlPoints = ({
   );
 };
 
+const LENGTH_OF_TOPOLOGY_BLOCK = 50;
+const HEIGHT_OF_TOPOLOGY_BLOCK = 20;
+
+type PossibleVerticalSides = "top" | "bottom" | "middle";
+type PossibleHorizontalSides = "left" | "right";
+
 export const FlowchartArrow = ({
   startPoint,
   endPoint,
@@ -108,6 +114,67 @@ export const FlowchartArrow = ({
     ...config,
   };
 
+  const sourceBlockCenterHorizontally =
+    startPoint.x + LENGTH_OF_TOPOLOGY_BLOCK / 2;
+  const sourceBlockCenterVertically =
+    startPoint.y + HEIGHT_OF_TOPOLOGY_BLOCK / 2;
+
+  const targetBlockCenterHorizontally =
+    endPoint.x + LENGTH_OF_TOPOLOGY_BLOCK / 2;
+  const targetBlockCenterVertically = endPoint.y + HEIGHT_OF_TOPOLOGY_BLOCK / 2;
+
+  let sideVertically: PossibleVerticalSides = "" as PossibleVerticalSides;
+  if (targetBlockCenterVertically - sourceBlockCenterVertically > 20) {
+    sideVertically = "top";
+  } else if (sourceBlockCenterVertically - targetBlockCenterVertically > 20) {
+    sideVertically = "bottom";
+  } else if (
+    targetBlockCenterVertically - sourceBlockCenterVertically <= 20 ||
+    sourceBlockCenterVertically - targetBlockCenterVertically <= 20
+  ) {
+    sideVertically = "middle";
+  }
+
+  let sideHorizontally: PossibleHorizontalSides = "" as PossibleHorizontalSides;
+
+  if (sourceBlockCenterHorizontally > targetBlockCenterHorizontally) {
+    sideHorizontally = "left";
+  } else if (sourceBlockCenterHorizontally < targetBlockCenterHorizontally) {
+    sideHorizontally = "right";
+  }
+
+  console.log("startPoint: ", startPoint);
+
+  const startPointRegardingSides: PointTypes = startPoint;
+  const endPointRegardingSides: PointTypes = endPoint;
+
+  if (sideVertically === "top") {
+    startPointRegardingSides.y += HEIGHT_OF_TOPOLOGY_BLOCK;
+    startPointRegardingSides.x += LENGTH_OF_TOPOLOGY_BLOCK / 2;
+
+    endPointRegardingSides.x += LENGTH_OF_TOPOLOGY_BLOCK / 2;
+  } else if (sideVertically === "bottom") {
+    startPointRegardingSides.x += LENGTH_OF_TOPOLOGY_BLOCK / 2;
+
+    endPointRegardingSides.y += HEIGHT_OF_TOPOLOGY_BLOCK;
+    endPointRegardingSides.x += LENGTH_OF_TOPOLOGY_BLOCK / 2;
+  } else if (sideVertically === "middle") {
+    if (sideHorizontally === "left") {
+      startPointRegardingSides.y += HEIGHT_OF_TOPOLOGY_BLOCK / 2;
+
+      endPointRegardingSides.y += HEIGHT_OF_TOPOLOGY_BLOCK / 2;
+      endPointRegardingSides.x += LENGTH_OF_TOPOLOGY_BLOCK;
+    } else if (sideHorizontally === "right") {
+      startPointRegardingSides.y += HEIGHT_OF_TOPOLOGY_BLOCK / 2;
+      startPointRegardingSides.x += LENGTH_OF_TOPOLOGY_BLOCK;
+
+      endPointRegardingSides.y += HEIGHT_OF_TOPOLOGY_BLOCK / 2;
+    }
+  }
+
+  console.log(sideVertically);
+  console.log(sideHorizontally);
+
   const {
     arrowColor,
     arrowHighlightedColor,
@@ -126,7 +193,10 @@ export const FlowchartArrow = ({
     dotEndingRadius +
     CONTROL_POINTS_RADIUS / 2;
 
-  const { absDx, absDy, dx, dy } = calculateDeltas(startPoint, endPoint);
+  const { absDx, absDy, dx, dy } = calculateDeltas(
+    startPointRegardingSides,
+    endPointRegardingSides
+  );
   const { p1, p2, p3, p4, boundingBoxBuffer } = calculateControlPoints({
     boundingBoxElementsBuffer,
     dx,
@@ -136,9 +206,11 @@ export const FlowchartArrow = ({
   });
 
   const canvasXOffset =
-    Math.min(startPoint.x, endPoint.x) - boundingBoxBuffer.horizontal;
+    Math.min(startPointRegardingSides.x, endPointRegardingSides.x) -
+    boundingBoxBuffer.horizontal;
   const canvasYOffset =
-    Math.min(startPoint.y, endPoint.y) - boundingBoxBuffer.vertical;
+    Math.min(startPointRegardingSides.y, endPointRegardingSides.y) -
+    boundingBoxBuffer.vertical;
 
   const curvedLinePath = `
     M ${p1.x} ${p1.y}
@@ -155,12 +227,17 @@ export const FlowchartArrow = ({
 
   const strokeColor = getStrokeColor();
 
+  const centerX = (p4.x + p1.x) / 2;
+  const centerY = (p4.y + p1.y) / 2;
+
+  const angle = Math.atan2(p4.y - p1.y, p4.x - p1.x) * (180 / Math.PI);
+
   return (
     <>
       <svg
         width={5000}
         height={5000}
-        className={`absolute left-0 top-0 ${isHighlighted ? "z-2" : "z-1"} ${
+        className={`absolute left-0 top-0 ${isHighlighted ? "z-30" : "z-29"} ${
           showDebugGuideLines
             ? "border-dashed border-1 border-black"
             : "border-0"
@@ -174,7 +251,7 @@ export const FlowchartArrow = ({
           strokeWidth={strokeWidth}
           stroke={strokeColor}
           fill="none"
-          className="transition-stroke duration-300"
+          className="transition-stroke duration-300 z-[10]"
         />
         <path
           d={curvedLinePath}
@@ -185,7 +262,7 @@ export const FlowchartArrow = ({
           onMouseEnter={onMouseEnter}
           onMouseLeave={onMouseLeave}
           onClick={onClick}
-          className="cursor-default"
+          className="cursor-default z-[10]"
         >
           {tooltip && <title>{tooltip}</title>}
         </path>
@@ -206,7 +283,7 @@ export const FlowchartArrow = ({
           style={{
             transform: `translate(${p4.x - arrowHeadOffset * 2}px, ${
               p4.y - arrowHeadOffset
-            }px)`,
+            }px) `,
           }}
         >
           {tooltip && <title>{tooltip}</title>}
@@ -255,7 +332,7 @@ export const FlowchartArrow = ({
           style={{
             transform: `translate(${p4.x - arrowHeadOffset * 2}px, ${
               p4.y - arrowHeadOffset
-            }px)`,
+            }px) rotate(${angle}deg)`,
           }}
         />
         {showDebugGuideLines && (

@@ -39,25 +39,6 @@ export const calculateDeltas = (
   return { dx, dy, absDx, absDy };
 };
 
-// export const calculateCanvasDimensions = ({
-//   absDx,
-//   absDy,
-//   boundingBoxBuffer,
-// }: {
-//   absDx: number;
-//   absDy: number;
-//   boundingBoxBuffer: { vertical: number; horizontal: number };
-// }): {
-//   canvasWidth: number;
-//   canvasHeight: number;
-// } => {
-//   const canvasWidth = absDx + 2 * boundingBoxBuffer.horizontal;
-//   const canvasHeight = absDy + 2 * boundingBoxBuffer.vertical;
-
-//   return { canvasWidth, canvasHeight };
-// };
-
-// Curve flexure should remain on the same area no matter of absolute deltas, so we have to slightly shift X coordinates of our control points. It was created empirically, it's not based on a clear formula.
 export const calculateFixedLineInflectionConstant = (
   absDx: number,
   absDy: number
@@ -108,10 +89,16 @@ export const calculateControlPointsWithoutBoundingBox = ({
     x: leftTopX + fixedLineInflectionConstant + lowDyXShift,
     y: leftTopY + lowDyYShift,
   };
+
   const p3 = {
     x: rightBottomX - fixedLineInflectionConstant - lowDyXShift,
     y: rightBottomY - lowDyYShift,
   };
+
+  if (dx < 0) {
+    p3.x = rightBottomX + fixedLineInflectionConstant + lowDyXShift;
+  }
+
   const p4 = {
     x: rightBottomX,
     y: rightBottomY,
@@ -119,6 +106,7 @@ export const calculateControlPointsWithoutBoundingBox = ({
 
   return { p1, p2, p3, p4 };
 };
+
 export const calculateControlPoints = ({
   boundingBoxElementsBuffer,
   absDx,
