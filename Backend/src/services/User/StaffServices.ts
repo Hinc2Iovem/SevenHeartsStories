@@ -88,6 +88,12 @@ export const createStaffMemberService = async ({
       username,
     });
     newStaffMember.password = "";
+    if (role === "scriptwriter" || role === "headscriptwriter") {
+      await StaffInfo.create({
+        amountOfFinishedEpisodes: 0,
+        staffId: newStaffMember._id,
+      });
+    }
     return newStaffMember;
   } else {
     const newStaffMember = await Staff.create({
@@ -96,6 +102,10 @@ export const createStaffMemberService = async ({
     });
 
     newStaffMember.password = "";
+    await StaffInfo.create({
+      amountOfFinishedEpisodes: 0,
+      staffId: newStaffMember._id,
+    });
     return newStaffMember;
   }
 };

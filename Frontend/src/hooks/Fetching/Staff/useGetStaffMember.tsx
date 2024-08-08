@@ -9,5 +9,6 @@ export default function useGetStaffMember({ staffId }: { staffId: string }) {
       await axiosCustomized
         .get<StaffMemberTypes>(`/staff/${staffId}`)
         .then((r) => r.data),
+    enabled: !!staffId,
   });
 }

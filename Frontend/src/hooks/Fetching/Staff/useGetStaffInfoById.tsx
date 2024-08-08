@@ -9,5 +9,6 @@ export default function useGetStaffInfoById({ staffId }: { staffId: string }) {
       await axiosCustomized
         .get<StaffInfoTypes>(`/staff/${staffId}/staffInfo`)
         .then((r) => r.data),
+    enabled: !!staffId,
   });
 }

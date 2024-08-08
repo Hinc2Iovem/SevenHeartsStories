@@ -1,24 +1,31 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import useGetAssignedStories from "../../hooks/Fetching/Staff/useGetAssignedStories";
-import useGetSingleStory from "../../hooks/Fetching/Story/useGetSingleStory";
-import useGetTranslationStory from "../../hooks/Fetching/Translation/useGetTranslationStory";
-import useUpdateImg from "../../hooks/Patching/useUpdateImg";
-import { StoryInfoTypes } from "../../types/StoryData/Story/StoryTypes";
-import PreviewImage from "../shared/utilities/PreviewImage";
-import { StoryFilterTypes } from "../Story/Story";
+import useGetAssignedStories from "../../../hooks/Fetching/Staff/useGetAssignedStories";
+import useGetSingleStory from "../../../hooks/Fetching/Story/useGetSingleStory";
+import useGetStoryTranslationByTextFieldNameAndSearch from "../../../hooks/Fetching/Story/useGetStoryTranslationByTextFieldNameAndSearch";
+import useGetTranslationStory from "../../../hooks/Fetching/Translation/useGetTranslationStory";
+import useUpdateImg from "../../../hooks/Patching/useUpdateImg";
+import { EpisodeStatusTypes } from "../../../types/StoryData/Episode/EpisodeTypes";
+import PreviewImage from "../../shared/utilities/PreviewImage";
+import { StoryFilterTypes } from "../../Story/Story";
 
 type ProfileRightSideTypes = {
   storiesType: StoryFilterTypes;
+  debouncedStory: string;
 };
 
-export default function ProfileRightSide({
+export default function ProfileRightSideScriptWriter({
   storiesType,
+  debouncedStory,
 }: ProfileRightSideTypes) {
   const staffId = localStorage.getItem("staffId");
 
   const { data } = useGetAssignedStories({ staffId: staffId ?? "" });
-
+  const { data: translatedStories } =
+    useGetStoryTranslationByTextFieldNameAndSearch({
+      debouncedValue: debouncedStory,
+      language: "russian",
+    });
   const memoizedData = useMemo(() => {
     const allData = data;
     if (storiesType === "all") {
@@ -34,14 +41,43 @@ export default function ProfileRightSide({
 
   return (
     <div className="grid grid-cols-[repeat(auto-fill,minmax(20rem,1fr))] gap-[1rem] justify-items-center justify-center w-full">
-      {memoizedData?.map((st) => (
-        <ProfileRightSideItem key={st._id} {...st} />
-      ))}
+      {translatedStories ? (
+        <>
+          {translatedStories?.map((t) => (
+            <ProfileRightSideItem
+              key={t._id}
+              storiesType={storiesType}
+              storyId={t.storyId}
+            />
+          ))}
+        </>
+      ) : (
+        <>
+          {memoizedData?.map((st) => (
+            <ProfileRightSideItem
+              key={st._id}
+              storiesType={storiesType}
+              storyId={st.storyId}
+              storyStatus={st.storyStatus}
+            />
+          ))}
+        </>
+      )}
     </div>
   );
 }
 
-function ProfileRightSideItem({ storyId, storyStatus }: StoryInfoTypes) {
+type ProfileRightSideItemTypes = {
+  storiesType: StoryFilterTypes;
+  storyStatus?: EpisodeStatusTypes;
+  storyId: string;
+};
+
+function ProfileRightSideItem({
+  storyId,
+  storyStatus,
+  storiesType,
+}: ProfileRightSideItemTypes) {
   const { data: translationStory } = useGetTranslationStory({
     id: storyId,
     language: "russian",
@@ -91,7 +127,11 @@ function ProfileRightSideItem({ storyId, storyStatus }: StoryInfoTypes) {
           />
         )}
         <div className="absolute top-[.5rem] right-[.5rem] bg-white rounded-md shadow-md p-[.5rem]">
-          <p className="text-[1.5rem] self-end">
+          <p
+            className={`${
+              storyStatus && storiesType === "all" ? "" : "hidden"
+            } text-[1.5rem] self-end`}
+          >
             Статус:{" "}
             <span
               className={`text-[1.4rem] ${

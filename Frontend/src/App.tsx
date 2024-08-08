@@ -33,7 +33,7 @@ export default function App() {
         />
       </Route>
 
-      <Route element={<ProfileLayout />} path="profile">
+      <Route element={<ProfileLayout />} path="profile/:staffId">
         <Route index element={<Profile />} />
       </Route>
 

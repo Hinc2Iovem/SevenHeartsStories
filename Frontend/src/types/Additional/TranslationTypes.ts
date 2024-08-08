@@ -10,6 +10,16 @@ import {
   TranslationTextFieldNameStoryTypes,
 } from "./TRANSLATION_TEXT_FIELD_NAMES";
 
+export type AllTranslationTextFieldNamesTypes =
+  | TranslationTextFieldNameAppearancePartsTypes
+  | TranslationTextFieldNameCharacterCharacteristicTypes
+  | TranslationTextFieldNameCharacterTypes
+  | TranslationTextFieldNameChoiceOptionTypes
+  | TranslationTextFieldNameCommandTypes
+  | TranslationTextFieldNameEpisodeTypes
+  | TranslationTextFieldNameSeasonTypes
+  | TranslationTextFieldNameStoryTypes;
+
 export type GetTranslationTypes = {
   path: string;
   id: string;

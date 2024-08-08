@@ -21,23 +21,19 @@ import Say from "../../models/StoryEditor/PlotField/Say/Say";
 import CommandWardrobe from "../../models/StoryEditor/PlotField/Wardrobe/CommandWardrobe";
 // BY_TEXT_FIELD_NAME____________________________________________________________________
 
-type GetByTextFieldNameTypes = {
+type GetByTextFieldNameAndSearchTypes = {
   textFieldName: string | undefined;
   text: string | undefined;
   currentLanguage: string | undefined;
 };
 
-export const getTranslationTextFieldNameService = async ({
+export const getTranslationTextFieldNameAndSearchService = async ({
   currentLanguage,
   text,
   textFieldName,
-}: GetByTextFieldNameTypes) => {
-  if (
-    !currentLanguage?.trim().length ||
-    !text?.trim().length ||
-    !textFieldName?.trim().length
-  ) {
-    throw createHttpError(400, "Language, text and textFieldName are required");
+}: GetByTextFieldNameAndSearchTypes) => {
+  if (!currentLanguage?.trim().length || !textFieldName?.trim().length) {
+    throw createHttpError(400, "Language and textFieldName are required");
   }
 
   checkCurrentLanguage({ currentLanguage });
@@ -62,11 +58,14 @@ export const getTranslationTextFieldNameService = async ({
     return [];
   }
 
-  const filteredResults = existingTranslations.filter((et) =>
-    et.text.toLowerCase().includes(text.toLowerCase())
-  );
-
-  return filteredResults;
+  if (text?.trim().length) {
+    const filteredResults = existingTranslations.filter((et) =>
+      et.text.toLowerCase().includes(text.toLowerCase())
+    );
+    return filteredResults;
+  } else {
+    return existingTranslations;
+  }
 };
 
 // APPEARANCE_PART____________________________________________________________________

@@ -4,3 +4,11 @@ export type CurrentlyAvailableLanguagesTypes =
   | "kazakh"
   | "spanish"
   | "korean";
+
+export const ALL_LANGUAGES: CurrentlyAvailableLanguagesTypes[] = [
+  "english",
+  "kazakh",
+  "korean",
+  "russian",
+  "spanish",
+];

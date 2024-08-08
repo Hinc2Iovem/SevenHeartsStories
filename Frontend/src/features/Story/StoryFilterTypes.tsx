@@ -10,13 +10,15 @@ export default function StoryFilterTypesHeader({
   setStoriesType,
 }: StoryFilterTypesProps) {
   return (
-    <ul className="flex gap-[1rem]">
+    <ul className="flex flex-col gap-[1rem] bg-white rounded-md p-[1rem] shadow-sm">
       <li>
         <button
           onClick={() => setStoriesType("all")}
           className={`text-[1.4rem] ${
-            storiesType === "all" ? "border-b-[2px] border-gray-700" : ""
-          } hover:border-b-[2px] hover:border-gray-500 transition-all `}
+            storiesType === "all"
+              ? "rounded-md bg-primary-light-blue text-white w-full text-start px-[1rem] py-[.5rem]"
+              : ""
+          } hover:bg-primary-light-blue outline-gray-300 hover:text-white hover:w-full hover:px-[1rem] hover:py-[.5rem] hover:rounded-md text-start transition-all `}
         >
           Все
         </button>
@@ -25,8 +27,10 @@ export default function StoryFilterTypesHeader({
         <button
           onClick={() => setStoriesType("done")}
           className={`text-[1.4rem] ${
-            storiesType === "done" ? "border-b-[2px] border-gray-700" : ""
-          } hover:border-b-[2px] hover:border-gray-500 transition-all `}
+            storiesType === "done"
+              ? "rounded-md bg-primary-light-blue text-white w-full text-start px-[1rem] py-[.5rem]"
+              : ""
+          } hover:bg-primary-light-blue outline-gray-300 hover:text-white hover:w-full hover:px-[1rem] hover:py-[.5rem] hover:rounded-md text-start transition-all `}
         >
           Законченные
         </button>
@@ -35,8 +39,10 @@ export default function StoryFilterTypesHeader({
         <button
           onClick={() => setStoriesType("doing")}
           className={`text-[1.4rem] ${
-            storiesType === "doing" ? "border-b-[2px] border-gray-700" : ""
-          } hover:border-b-[2px] hover:border-gray-500 transition-all `}
+            storiesType === "doing"
+              ? "rounded-md bg-primary-light-blue text-white w-full text-start px-[1rem] py-[.5rem]"
+              : ""
+          } hover:bg-primary-light-blue outline-gray-300 hover:text-white hover:w-full hover:px-[1rem] hover:py-[.5rem] hover:rounded-md text-start transition-all `}
         >
           В Процессе
         </button>

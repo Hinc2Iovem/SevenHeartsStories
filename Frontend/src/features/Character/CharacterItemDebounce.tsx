@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import wardrobe from "../../assets/images/Story/wardrobe.png";
 import useGetCharacterById from "../../hooks/Fetching/Character/useGetCharacterById";
 import useGetTranslationCharacters from "../../hooks/Fetching/Translation/Characters/useGetTranslationCharacters";
@@ -107,6 +107,7 @@ function CharacterItemMinor({
   characterId,
   characterUnknownName,
 }: CharacterItemMinorTypes) {
+  const { storyId } = useParams();
   const [imagePreview, setPreview] = useState<string | ArrayBuffer | null>(
     null
   );
@@ -165,7 +166,7 @@ function CharacterItemMinor({
           </div>
 
           <div className="flex gap-[1rem] flex-wrap">
-            <Link className="ml-auto" to="/wardrobes">
+            <Link className="ml-auto" to={`/stories/${storyId}/wardrobes`}>
               <button className=" bg-white shadow-md p-[.5rem] rounded-md active:scale-[0.99] hover:scale-[1.01] ">
                 <img src={wardrobe} alt="Wardrobe" className="w-[3rem]" />
               </button>

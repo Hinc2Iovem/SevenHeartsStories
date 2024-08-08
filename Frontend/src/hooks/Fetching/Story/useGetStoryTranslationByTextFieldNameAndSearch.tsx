@@ -4,7 +4,7 @@ import { TranslationStoryTypes } from "../../../types/Additional/TranslationType
 import { CurrentlyAvailableLanguagesTypes } from "../../../types/Additional/CURRENTLY_AVAILABEL_LANGUAGES";
 
 type DebouncedTranslationsTypes = {
-  language?: CurrentlyAvailableLanguagesTypes;
+  language: CurrentlyAvailableLanguagesTypes;
   text: string;
   textFieldName: string;
 };
@@ -16,20 +16,32 @@ const getDebouncedStories = async ({
 }: DebouncedTranslationsTypes): Promise<TranslationStoryTypes[]> => {
   return await axiosCustomized
     .get(
-      `/translations/textFieldNames?currentLanguage=${language}&textFieldName=${textFieldName}&text=${text}`
+      `/translations/textFieldNames/search?currentLanguage=${language}&textFieldName=${textFieldName}&text=${text}`
     )
     .then((r) => r.data);
 };
 
-export default function useGetStoryTranslationByTextFieldName({
+export default function useGetStoryTranslationByTextFieldNameAndSearch({
   debouncedValue,
+  language,
 }: {
   debouncedValue: string;
+  language: CurrentlyAvailableLanguagesTypes;
 }) {
   return useQuery({
-    queryKey: ["translation", "textFieldName", "stories", debouncedValue],
+    queryKey: [
+      "translation",
+      "textFieldName",
+      "search",
+      "stories",
+      debouncedValue,
+    ],
     queryFn: () =>
-      getDebouncedStories({ text: debouncedValue, textFieldName: "storyName" }),
-    enabled: debouncedValue?.trim().length > 0,
+      getDebouncedStories({
+        text: debouncedValue,
+        textFieldName: "storyName",
+        language,
+      }),
+    enabled: !!language,
   });
 }

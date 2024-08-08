@@ -18,7 +18,7 @@ export default function useGetTranslationCharactersQueries({
   return useQueries({
     queries: (characters ?? []).map((c) => {
       return {
-        queryKey: ["translation", "character", c._id],
+        queryKey: ["translation", language, "character", c._id],
         queryFn: async () =>
           await axiosCustomized
             .get<TranslationCharacterTypes[]>(

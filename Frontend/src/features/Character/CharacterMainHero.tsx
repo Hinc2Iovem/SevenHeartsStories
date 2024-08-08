@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import add from "../../assets/images/shared/add.png";
 import characteristic from "../../assets/images/Story/characteristic.png";
 import wardrobe from "../../assets/images/Story/wardrobe.png";
@@ -22,6 +22,7 @@ export default function CharacterItemMainHero({
   characterName,
   img,
 }: CharacterItemMainHeroTypes) {
+  const { storyId } = useParams();
   const [newCharacteristic, setNewCharacteristic] = useState("");
   const [showCharacteristicModal, setShowCharacteristicModal] = useState(false);
   const characteristicRef = useRef<HTMLDivElement | null>(null);
@@ -139,7 +140,7 @@ export default function CharacterItemMainHero({
               asideClasses="text-[1.5rem]"
               className=" bg-white shadow-md p-[.5rem] rounded-md active:scale-[0.99] hover:scale-[1.01] "
             >
-              <Link className="ml-auto" to="/wardrobes">
+              <Link className="ml-auto" to={`/stories/${storyId}/wardrobes`}>
                 <img src={wardrobe} alt="Wardrobe" className="w-[3rem]" />
               </Link>
             </ButtonHoverPromptModal>

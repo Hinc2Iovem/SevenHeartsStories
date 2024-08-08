@@ -16,7 +16,7 @@ import {
   getTranslationSayService,
   getTranslationSeasonService,
   getTranslationStoryService,
-  getTranslationTextFieldNameService,
+  getTranslationTextFieldNameAndSearchService,
   seasonTranslationUpdateTitleService,
   storyTranslationUpdateService,
   updateAchievementTranslationService,
@@ -29,7 +29,7 @@ import {
 
 // BY_TEXT_FIELD_NAME__________________________________________________________
 
-type GetTextFieldNameQuery = {
+type GetTextFieldNameAndSearchQuery = {
   currentLanguage: string | undefined;
   textFieldName: string | undefined;
   text: string | undefined;
@@ -37,14 +37,14 @@ type GetTextFieldNameQuery = {
 
 // @route GET http://localhost:3500/translations/textFieldNames
 // @access Private
-export const getTranslationTextFieldNameController: RequestHandler<
+export const getTranslationTextFieldNameAndSearchController: RequestHandler<
   unknown,
   unknown,
   unknown,
-  GetTextFieldNameQuery
+  GetTextFieldNameAndSearchQuery
 > = async (req, res, next) => {
   try {
-    const textFieldName = await getTranslationTextFieldNameService({
+    const textFieldName = await getTranslationTextFieldNameAndSearchService({
       currentLanguage: req.query.currentLanguage,
       textFieldName: req.query.textFieldName,
       text: req.query.text,
