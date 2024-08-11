@@ -1,6 +1,5 @@
 import express from "express";
 import {
-  createStaffMemberController,
   deleteStaffMemberController,
   getAllStaffMembersController,
   getStaffInfoMemberByIdController,
@@ -8,17 +7,20 @@ import {
   updateStaffImgController,
   updateStaffRolesController,
 } from "../../controllers/User/StaffController";
+import { verifyEditor } from "../../middlewares/verifyEditor";
+import { verifyJWT } from "../../middlewares/verifyJWT";
 
 // Default route === /staff
 export const staffRoute = express.Router();
 
-staffRoute
-  .route("/")
-  .get(getAllStaffMembersController)
-  .post(createStaffMemberController);
+staffRoute.route("/").get(getAllStaffMembersController);
 
-staffRoute.route("/:staffId").get(getStaffMemberByIdController);
-staffRoute.route("/:staffId/staffInfo").get(getStaffInfoMemberByIdController);
-staffRoute.route("/:staffId").delete(deleteStaffMemberController);
-staffRoute.route("/:staffId/roles").patch(updateStaffRolesController);
-staffRoute.route("/:staffId/img").patch(updateStaffImgController);
+staffRoute.route("/:staffId").get(verifyJWT, getStaffMemberByIdController);
+staffRoute
+  .route("/:staffId/staffInfo")
+  .get(verifyJWT, getStaffInfoMemberByIdController);
+staffRoute.route("/:staffId").delete(verifyEditor, deleteStaffMemberController);
+staffRoute
+  .route("/:staffId/roles")
+  .patch(verifyEditor, updateStaffRolesController);
+staffRoute.route("/:staffId/img").patch(verifyJWT, updateStaffImgController);

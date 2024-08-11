@@ -12,32 +12,70 @@ import Wardrobe from "./features/Wardrobe/Wardrobe";
 import AuthLayout from "./layouts/AuthLayout";
 import ProfileLayout from "./layouts/ProfileLayout";
 import StoryLayout from "./layouts/StoryLayout";
+import AuthProvider from "./features/Auth/Context/AuthProvider";
+import Unauthorized from "./features/Auth/Unauthorized";
+import RequireAuth from "./features/Auth/RequireAuth";
+import PersistLogin from "./features/Auth/PersistAuth";
 
 export default function App() {
   return (
-    <Routes>
-      <Route element={<AuthLayout />} path="auth">
-        <Route path="register" element={<Register />} />
-        <Route path="login" element={<Login />} />
-      </Route>
+    <AuthProvider>
+      <Routes>
+        <Route element={<AuthLayout />} path="auth">
+          <Route path="register" element={<Register />} />
+          <Route path="login" element={<Login />} />
+        </Route>
 
-      <Route element={<StoryLayout />} path="stories">
-        <Route index element={<Story />} />
-        <Route path=":storyId" element={<StorySinglePage />} />
-        <Route path=":storyId/emotions" element={<Emotion />} />
-        <Route path=":storyId/wardrobes" element={<Wardrobe />} />
-        <Route path=":storyId/characters" element={<CharacterListPage />} />
-        <Route
-          path=":storyId/editor/episodes/:episodeId"
-          element={<EpisodeEditor />}
-        />
-      </Route>
+        <Route element={<PersistLogin />}>
+          <Route
+            element={
+              <RequireAuth
+                allowedRoles={[
+                  "scriptwriter",
+                  "editor",
+                  "headscriptwriter",
+                  "translator",
+                ]}
+              />
+            }
+          >
+            <Route element={<StoryLayout />} path="stories">
+              <Route index element={<Story />} />
+              <Route path=":storyId" element={<StorySinglePage />} />
+              <Route path=":storyId/emotions" element={<Emotion />} />
+              <Route path=":storyId/wardrobes" element={<Wardrobe />} />
+              <Route
+                path=":storyId/characters"
+                element={<CharacterListPage />}
+              />
+              <Route
+                path=":storyId/editor/episodes/:episodeId"
+                element={<EpisodeEditor />}
+              />
+            </Route>
+          </Route>
 
-      <Route element={<ProfileLayout />} path="profile/:staffId">
-        <Route index element={<Profile />} />
-      </Route>
+          <Route
+            element={
+              <RequireAuth
+                allowedRoles={[
+                  "translator",
+                  "editor",
+                  "headscriptwriter",
+                  "scriptwriter",
+                ]}
+              />
+            }
+          >
+            <Route element={<ProfileLayout />} path="profile/:staffId">
+              <Route index element={<Profile />} />
+            </Route>
+          </Route>
 
-      <Route path="*" element={<Missing />} />
-    </Routes>
+          <Route element={<Unauthorized />} path="unauthorized" />
+          <Route path="*" element={<Missing />} />
+        </Route>
+      </Routes>
+    </AuthProvider>
   );
 }

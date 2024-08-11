@@ -5,4 +5,6 @@ export default cleanEnv(process.env, {
   PORT: port(),
   DATABASE_URI: str(),
   REG_KEY: str(),
+  ACCESS_TOKEN_SECRET: str(),
+  REFRESH_TOKEN_SECRET: str(),
 });

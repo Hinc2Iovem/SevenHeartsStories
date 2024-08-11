@@ -8,6 +8,7 @@ import useUpdateImg from "../../../hooks/Patching/useUpdateImg";
 import { EpisodeStatusTypes } from "../../../types/StoryData/Episode/EpisodeTypes";
 import PreviewImage from "../../shared/utilities/PreviewImage";
 import { StoryFilterTypes } from "../../Story/Story";
+import useGetDecodedJWTValues from "../../../hooks/Auth/useGetDecodedJWTValues";
 
 type ProfileRightSideTypes = {
   storiesType: StoryFilterTypes;
@@ -18,7 +19,7 @@ export default function ProfileRightSideScriptWriter({
   storiesType,
   debouncedStory,
 }: ProfileRightSideTypes) {
-  const staffId = localStorage.getItem("staffId");
+  const { userId: staffId } = useGetDecodedJWTValues();
 
   const { data } = useGetAssignedStories({ staffId: staffId ?? "" });
   const { data: translatedStories } =

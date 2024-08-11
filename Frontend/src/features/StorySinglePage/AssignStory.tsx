@@ -7,10 +7,11 @@ import useGetSingleAssignedStory from "../../hooks/Fetching/Story/useGetSingleAs
 import useEscapeOfModal from "../../hooks/UI/useEscapeOfModal";
 import useMatchMedia from "../../hooks/UI/useMatchMedia";
 import LightBox from "../shared/utilities/LightBox";
+import useGetDecodedJWTValues from "../../hooks/Auth/useGetDecodedJWTValues";
 
 export default function AssignStory() {
   const { storyId } = useParams();
-  const staffId = localStorage.getItem("staffId");
+  const { userId: staffId } = useGetDecodedJWTValues();
 
   const isMobile = useMatchMedia(MATCHMEDIA.Mobile);
 

@@ -11,6 +11,7 @@ import ButtonHoverPromptModal from "../shared/ButtonAsideHoverPromptModal/Button
 import PreviewImage from "../shared/utilities/PreviewImage";
 import StoryFilterTypesHeader from "../Story/StoryFilterTypes";
 import { StoryFilterTypes } from "../Story/Story";
+import useGetDecodedJWTValues from "../../hooks/Auth/useGetDecodedJWTValues";
 
 type ProfileLeftSideTypes = {
   setStoriesType: React.Dispatch<React.SetStateAction<StoryFilterTypes>>;
@@ -27,7 +28,7 @@ export default function ProfileLeftSide({
   searchValue,
   expandedTranslationSide,
 }: ProfileLeftSideTypes) {
-  const staffId = localStorage.getItem("staffId");
+  const { userId: staffId } = useGetDecodedJWTValues();
   const { data: staff } = useGetStaffMember({ staffId: staffId ?? "" });
   const { data: staffInfo } = useGetStaffInfoById({ staffId: staffId ?? "" });
 

@@ -5,8 +5,10 @@ import RegisterFormSecondPage from "./RegisterFormSecondPage";
 import axios from "axios";
 import { useLocation, useNavigate } from "react-router-dom";
 import { axiosCustomized } from "../../../api/axios";
+import useAuth from "../../../hooks/Auth/useAuth";
 
 export default function Register() {
+  const { setToken } = useAuth();
   const [login, setLogin] = useState("");
   const [password, setPassword] = useState("");
   const [secretKey, setSecretKey] = useState("");
@@ -25,13 +27,17 @@ export default function Register() {
       return;
     }
     try {
-      const res = await axiosCustomized.post("/staff", {
-        username: login,
-        password,
-        key: secretKey,
-      });
-      localStorage.setItem("staffId", res.data?._id);
+      const res = await axiosCustomized
+        .post<{ accessToken: string }>("/auth/register", {
+          username: login,
+          password,
+          key: secretKey,
+          roles: role,
+        })
+        .then((r) => r.data);
       navigate(from, { replace: true });
+      console.log("res:", res);
+      setToken({ accessToken: res.accessToken });
     } catch (error: unknown) {
       if (axios.isAxiosError(error)) {
         if (!error.response) {
@@ -46,7 +52,6 @@ export default function Register() {
       }
     }
   };
-  // for disabled
   return (
     <section className="md:h-screen w-screen flex md:items-center justify-center">
       <main className="w-full max-w-[80rem] md:max-w-[70rem] md:mx-[1rem] md:bg-white flex md:flex-row flex-col overflow-x-hidden shadow-sm md:rounded-md">

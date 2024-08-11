@@ -1,19 +1,62 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import Sidebar from "../Sidebar";
 import visibility from "../../../assets/images/Auth/eyeOn.png";
 import visibilityOff from "../../../assets/images/Auth/eyeOff.png";
+import { axiosCustomized } from "../../../api/axios";
+import useAuth from "../../../hooks/Auth/useAuth";
+import axios from "axios";
 
 export default function Login() {
+  const { setToken } = useAuth();
   const [login, setLogin] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
+  const location = useLocation();
+  const navigate = useNavigate();
+  const from = location.state?.pathname || "/stories";
+
+  const canSubmit = [login, password].every(Boolean);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!canSubmit) {
+      console.log("Can't submit now");
+      return;
+    }
+    try {
+      const res = await axiosCustomized
+        .post<{ accessToken: string }>("/auth", {
+          username: login,
+          password,
+        })
+        .then((r) => r.data);
+      navigate(from, { replace: true });
+      console.log("res:", res);
+      setToken({ accessToken: res.accessToken });
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error)) {
+        if (!error.response) {
+          console.log("No Serve Response");
+        } else if (error.response?.status === 400) {
+          console.log("Username or Password is missing");
+        } else if (error.response?.status === 401) {
+          console.log("Wrong Username or Password");
+        } else {
+          console.log("Something Went Wrong");
+        }
+      }
+    }
+  };
   return (
     <section className="md:h-screen w-screen flex md:items-center justify-center">
       <main className="w-full max-w-[80rem] md:max-w-[65rem] md:mx-[1rem] md:bg-white flex md:flex-row flex-col md:h-[30rem] overflow-x-hidden shadow-sm md:rounded-md">
         <Sidebar />
-        <form className="md:h-full p-[1rem] w-3/4 mx-auto md:bg-transparent bg-white md:rounded-none rounded-md md:relative absolute md:top-0 md:left-auto md:translate-x-0 top-[5rem] left-1/2 -translate-x-1/2">
+        <form
+          onSubmit={handleSubmit}
+          className="md:h-full p-[1rem] w-3/4 mx-auto md:bg-transparent bg-white md:rounded-none rounded-md md:relative absolute md:top-0 md:left-auto md:translate-x-0 top-[5rem] left-1/2 -translate-x-1/2"
+        >
           <div className={`mx-auto flex flex-col gap-[2rem]  mb-[2rem]`}>
             <div className="w-full flex flex-col text-center">
               <h2 className="text-accent-marine-blue font-medium text-[3rem]">
@@ -77,7 +120,7 @@ export default function Login() {
               type="submit"
               className="w-fit self-end px-[1rem] text-[1.3rem] py-[.5rem] rounded-md shadow-md bg-primary-pastel-blue text-white hover:bg-accent-purplish-blue active:scale-[0.98] transition-all"
             >
-              Завершить
+              Войти
             </button>
           </div>
         </form>

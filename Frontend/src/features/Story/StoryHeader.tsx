@@ -8,6 +8,7 @@ import ButtonHoverPromptModal from "../shared/ButtonAsideHoverPromptModal/Button
 import LightBox from "../shared/utilities/LightBox";
 import { StoryTypes } from "../../types/StoryData/Story/StoryTypes";
 import { CurrentlyAvailableLanguagesTypes } from "../../types/Additional/CURRENTLY_AVAILABEL_LANGUAGES";
+import useGetDecodedJWTValues from "../../hooks/Auth/useGetDecodedJWTValues";
 
 type StoryHeaderTypes = {
   setSearchValue: React.Dispatch<React.SetStateAction<string>>;
@@ -41,6 +42,7 @@ export default function StoryHeader({
   setSearchValue,
   searchValue,
 }: StoryHeaderTypes) {
+  const { userId } = useGetDecodedJWTValues();
   const [showCreatingModal, setShowCreatingModal] = useState(false);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -103,7 +105,7 @@ export default function StoryHeader({
             positionByAbscissa="right"
             asideClasses="text-[1.5rem]"
           >
-            <Link to={"/profile"}>
+            <Link to={`/profile/${userId}`}>
               <img src={profile} alt="Profile" className="w-[3.5rem]" />
             </Link>
           </ButtonHoverPromptModal>

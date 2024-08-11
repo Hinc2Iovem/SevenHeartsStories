@@ -1,5 +1,7 @@
 export * from "./Additional/TranslationRoutes";
 
+export * from "./Auth/AuthRoutes";
+
 export * from "./StoryData/AppearancePartRoutes";
 export * from "./StoryData/CharacterEmotionRoutes";
 export * from "./StoryData/CharacterRoutes";

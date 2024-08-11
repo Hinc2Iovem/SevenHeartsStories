@@ -46,7 +46,9 @@ import {
   soundCommandRoute,
   soundRoute,
   conditionBlockRoute,
+  authRoute,
 } from "./routes/index";
+import { verifyJWT } from "./middlewares/verifyJWT";
 
 dotenv.config();
 
@@ -65,47 +67,49 @@ app.use(cors(corsOptions));
 app.use(express.json());
 app.use(cookieParser());
 
-app.use("/translations", translationRoute);
+app.use("/auth", authRoute);
 
-app.use("/appearanceParts", appearancePartRoute);
-app.use("/characterCharacteristics", characterCharacteristicRoute);
-app.use("/characters", characterRoute);
-app.use("/characterEmotions", characterEmotionRoute);
-app.use("/commandLibraries", commandLibraryRoute);
-app.use("/episodes", episodeRoute);
-app.use("/episodeInfo", episodeInfoRoute);
-app.use("/stories", seasonRoute);
-app.use("/stories", storyRoute);
-app.use("/stories", musicRoute);
-app.use("/stories", achievementRoute);
-app.use("/stories", soundRoute);
+app.use("/translations", verifyJWT, translationRoute);
 
-app.use("/plotFieldCommands", ambientRoute);
-app.use("/plotFieldCommands", backgroundRoute);
-app.use("/plotFieldCommands", callRoute);
-app.use("/plotFieldCommands", choiceOptionRoute);
-app.use("/plotFieldCommands", choiceRoute);
-app.use("/plotFieldCommands", choiceOptionVariationsRoute);
-app.use("/plotFieldCommands", ifRoute);
-app.use("/plotFieldCommands", ifValuesRoute);
-app.use("/plotFieldCommands", conditionRoute);
-app.use("/commandConditions", conditionBlockRoute);
-app.use("/plotFieldCommands", conditionValuesRoute);
-app.use("/plotFieldCommands", cutScenesRoute);
-app.use("/plotFieldCommands", effectsRoute);
-app.use("/plotFieldCommands", getItemsRoute);
-app.use("/plotFieldCommands", keyRoute);
-app.use("/plotFieldCommands", movesRoute);
-app.use("/plotFieldCommands", commandMusicRoute);
-app.use("/plotFieldCommands", commandNameRoute);
-app.use("/plotFieldCommands", sayRoute);
-app.use("/plotFieldCommands", soundCommandRoute);
-app.use("/plotFieldCommands", suitRoute);
-app.use("/plotFieldCommands", waitRoute);
-app.use("/plotFieldCommands", wardrobeRoute);
+app.use("/appearanceParts", verifyJWT, appearancePartRoute);
+app.use("/characterCharacteristics", verifyJWT, characterCharacteristicRoute);
+app.use("/characters", verifyJWT, characterRoute);
+app.use("/characterEmotions", verifyJWT, characterEmotionRoute);
+app.use("/commandLibraries", verifyJWT, commandLibraryRoute);
+app.use("/episodes", verifyJWT, episodeRoute);
+app.use("/episodeInfo", verifyJWT, episodeInfoRoute);
+app.use("/stories", verifyJWT, seasonRoute);
+app.use("/stories", verifyJWT, storyRoute);
+app.use("/stories", verifyJWT, musicRoute);
+app.use("/stories", verifyJWT, achievementRoute);
+app.use("/stories", verifyJWT, soundRoute);
 
-app.use("/topologyBlocks", topologyBlockRoute);
-app.use("/plotField", plotFieldCommandRoute);
+app.use("/plotFieldCommands", verifyJWT, ambientRoute);
+app.use("/plotFieldCommands", verifyJWT, backgroundRoute);
+app.use("/plotFieldCommands", verifyJWT, callRoute);
+app.use("/plotFieldCommands", verifyJWT, choiceOptionRoute);
+app.use("/plotFieldCommands", verifyJWT, choiceRoute);
+app.use("/plotFieldCommands", verifyJWT, choiceOptionVariationsRoute);
+app.use("/plotFieldCommands", verifyJWT, ifRoute);
+app.use("/plotFieldCommands", verifyJWT, ifValuesRoute);
+app.use("/plotFieldCommands", verifyJWT, conditionRoute);
+app.use("/commandConditions", verifyJWT, conditionBlockRoute);
+app.use("/plotFieldCommands", verifyJWT, conditionValuesRoute);
+app.use("/plotFieldCommands", verifyJWT, cutScenesRoute);
+app.use("/plotFieldCommands", verifyJWT, effectsRoute);
+app.use("/plotFieldCommands", verifyJWT, getItemsRoute);
+app.use("/plotFieldCommands", verifyJWT, keyRoute);
+app.use("/plotFieldCommands", verifyJWT, movesRoute);
+app.use("/plotFieldCommands", verifyJWT, commandMusicRoute);
+app.use("/plotFieldCommands", verifyJWT, commandNameRoute);
+app.use("/plotFieldCommands", verifyJWT, sayRoute);
+app.use("/plotFieldCommands", verifyJWT, soundCommandRoute);
+app.use("/plotFieldCommands", verifyJWT, suitRoute);
+app.use("/plotFieldCommands", verifyJWT, waitRoute);
+app.use("/plotFieldCommands", verifyJWT, wardrobeRoute);
+
+app.use("/topologyBlocks", verifyJWT, topologyBlockRoute);
+app.use("/plotField", verifyJWT, plotFieldCommandRoute);
 
 app.use("/staff", staffRoute);
 
