@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import useOutOfModal from "../../../../../hooks/UI/useOutOfModal";
+import useOutOfModal from "../../../../../../hooks/UI/useOutOfModal";
 
 const CHARACTER_TYPES = [
   "Обычный Персонаж",

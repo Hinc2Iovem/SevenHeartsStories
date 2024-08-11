@@ -4,8 +4,8 @@ export type TranslationTextFieldNameAppearancePartsTypes =
   | "skin"
   | "hair"
   | "dress"
-  | "accessory"
-  | "emotion";
+  | "accessory";
+// | "emotion";
 
 export type TranslationTextFieldNameCharacterTypes =
   | "characterName"

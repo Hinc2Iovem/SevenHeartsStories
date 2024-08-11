@@ -14,7 +14,7 @@ export default function useGetTranslationCharacterEnabled({
   language?: CurrentlyAvailableLanguagesTypes;
 }) {
   return useQuery({
-    queryKey: ["translation", "character", characterId],
+    queryKey: ["translation", language, "character", characterId],
     queryFn: async () =>
       await axiosCustomized
         .get<TranslationCharacterTypes[]>(

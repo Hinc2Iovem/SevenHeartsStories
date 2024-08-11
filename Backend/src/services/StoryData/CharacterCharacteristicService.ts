@@ -26,11 +26,23 @@ export const characterCharacteristicGetByIdService = async ({
 
   return existingCharacteristics;
 };
-type CharacterCharacteristicGetByCharacterIdTypes = {
-  characterId: string;
+type CharacterCharacteristicGetByStoryIdTypes = {
+  storyId: string;
 };
 
-export const characterCharacteristicGetByCharacterIdService = async () => {
+export const getAllCharacterCharacteristicsByStoryIdService = async ({
+  storyId,
+}: CharacterCharacteristicGetByStoryIdTypes) => {
+  const existingCharacteristics = await CharacterCharacteristic.find({
+    storyId,
+  }).lean();
+  if (!existingCharacteristics.length) {
+    return [];
+  }
+
+  return existingCharacteristics;
+};
+export const getAllCharacterCharacteristicsService = async () => {
   const existingCharacteristics = await CharacterCharacteristic.find().lean();
   if (!existingCharacteristics.length) {
     return [];

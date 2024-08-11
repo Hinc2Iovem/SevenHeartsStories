@@ -40,17 +40,28 @@ export default function ProfileRightSideTranslatorHeader({
 }: ProfileRightSideTranslatorHeaderTypes) {
   return (
     <header className="flex flex-col gap-[1rem] p-[.5rem] bg-neutral-alabaster rounded-md shadow-sm">
-      <div className="flex gap-[1rem] sm:flex-nowrap flex-wrap z-[3] w-full">
-        {CATEGORIES.map((c) => (
+      <div className="flex gap-[1rem] flex-col z-[3] w-full">
+        <div className="flex gap-[1rem] sm:flex-nowrap flex-wrap z-[3] w-full">
           <ProfileRightSideTranslatorCategory
-            key={c}
-            name={c}
+            name={"Недавние"}
             category={category}
             subCategory={subCategory}
             setCategory={setCategory}
             setSubCategory={setSubCategory}
           />
-        ))}
+        </div>
+        <div className="flex gap-[1rem] sm:flex-nowrap flex-wrap z-[3] w-full">
+          {CATEGORIES.map((c) => (
+            <ProfileRightSideTranslatorCategory
+              key={c}
+              name={c}
+              category={category}
+              subCategory={subCategory}
+              setCategory={setCategory}
+              setSubCategory={setSubCategory}
+            />
+          ))}
+        </div>
       </div>
       <div className="flex w-full justify-between">
         <ProfileTranslatorHeaderLanguageModal
@@ -74,7 +85,6 @@ export default function ProfileRightSideTranslatorHeader({
 
 const SUB_CATEGORIES_FOR_CHARACTER = [
   "Персонажи",
-  "Эмоции",
   "Внешний Вид",
   "Характеристики",
 ];
@@ -105,6 +115,8 @@ function ProfileRightSideTranslatorCategory({
       ? "everythingCharacter"
       : name === "Касаемое Истории"
       ? "everythingStory"
+      : name === "Недавние"
+      ? "recent"
       : "everythingPlot";
 
   useOutOfModal({ modalRef, setShowModal, showModal });
@@ -113,7 +125,7 @@ function ProfileRightSideTranslatorCategory({
     <div className="flex-grow sm:max-w-full max-w-fit w-full rounded-md shadow-md relative whitespace-nowrap">
       <button
         onClick={(e) => {
-          if (nameToEng !== "everythingPlot") {
+          if (nameToEng !== "everythingPlot" && nameToEng !== "recent") {
             e.stopPropagation();
             setShowModal((prev) => !prev);
           } else {
@@ -138,45 +150,74 @@ function ProfileRightSideTranslatorCategory({
         {nameToEng === "everythingCharacter" ? (
           <>
             {SUB_CATEGORIES_FOR_CHARACTER.map((c) => (
-              <button
-                onClick={() => {
-                  setCategory(nameToEng);
-                  setSubCategory(c as AllPossibleSubCategoryTypes);
-                  setShowModal(false);
-                }}
-                className={`${
-                  c === subCategory
-                    ? "bg-primary-pastel-blue text-white px-[1rem] py-[.5rem] rounded-md shadow-sm w-full"
-                    : "text-gray-700 bg-white"
-                } text-[1.5rem] hover:bg-primary-pastel-blue hover:text-white transition-all px-[1rem] py-[.5rem] rounded-md outline-gray-400`}
+              <ProfileRightSideTranslatorHeaderDisplaySubCategories
                 key={c}
-              >
-                {c}
-              </button>
+                subCategory={subCategory}
+                setSubCategory={setSubCategory}
+                nameToEng={nameToEng}
+                setCategory={setCategory}
+                setShowModal={setShowModal}
+                c={c}
+              />
             ))}
           </>
         ) : nameToEng === "everythingStory" ? (
           <>
             {SUB_CATEGORIES_FOR_STORY.map((c) => (
-              <button
-                onClick={() => {
-                  setCategory(nameToEng);
-                  setSubCategory(c as AllPossibleSubCategoryTypes);
-                  setShowModal(false);
-                }}
-                className={`${
-                  c === subCategory
-                    ? "bg-primary-pastel-blue text-white px-[1rem] py-[.5rem] rounded-md shadow-sm w-full"
-                    : "text-gray-700 bg-white"
-                } text-[1.5rem] hover:bg-primary-pastel-blue hover:text-white transition-all px-[1rem] py-[.5rem] rounded-md outline-gray-400`}
+              <ProfileRightSideTranslatorHeaderDisplaySubCategories
                 key={c}
-              >
-                {c}
-              </button>
+                subCategory={subCategory}
+                setSubCategory={setSubCategory}
+                nameToEng={nameToEng}
+                setCategory={setCategory}
+                setShowModal={setShowModal}
+                c={c}
+              />
             ))}
           </>
         ) : null}
       </aside>
     </div>
+  );
+}
+
+type ProfileRightSideTranslatorHeaderDisplaySubCategoriesTypes = {
+  nameToEng: PossibleCategoryVariationTypes;
+  setCategory: React.Dispatch<
+    React.SetStateAction<PossibleCategoryVariationTypes>
+  >;
+  setSubCategory: React.Dispatch<
+    React.SetStateAction<AllPossibleSubCategoryTypes>
+  >;
+  setShowModal: React.Dispatch<React.SetStateAction<boolean>>;
+  subCategory: AllPossibleSubCategoryTypes;
+  c: string;
+};
+
+function ProfileRightSideTranslatorHeaderDisplaySubCategories({
+  nameToEng,
+  setCategory,
+  setSubCategory,
+  setShowModal,
+  subCategory,
+  c,
+}: ProfileRightSideTranslatorHeaderDisplaySubCategoriesTypes) {
+  return (
+    <button
+      onClick={(e) => {
+        e.stopPropagation();
+        setShowModal(false);
+        setCategory(nameToEng);
+        setSubCategory(c as AllPossibleSubCategoryTypes);
+      }}
+      className={`${
+        c === subCategory
+          ? "bg-primary-pastel-blue text-white px-[1rem] py-[.5rem] rounded-md shadow-sm w-full"
+          : "text-gray-700 bg-white"
+      } text-[1.5rem] hover:bg-primary-pastel-blue hover:text-white transition-all px-[1rem] py-[.5rem] rounded-md outline-gray-400`}
+      key={c}
+    >
+      {c}
+    </button>
   );
 }

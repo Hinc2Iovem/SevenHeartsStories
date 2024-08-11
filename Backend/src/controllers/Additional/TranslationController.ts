@@ -4,19 +4,27 @@ import {
   characterCharacteristicTranslationUpdateService,
   characterTranslationUpdateService,
   episodeTranslationUpdateService,
+  getSingleTranslationChoiceOptionService,
+  getTranslationAchievementByPlotFieldCommandIdService,
   getTranslationAchievementService,
   getTranslationAppearancePartService,
+  getTranslationByCommandIdService,
   getTranslationCharacterCharacteristicService,
   getTranslationCharacterService,
+  getTranslationChoiceByPlotFieldCommandIdService,
   getTranslationChoiceOptionService,
   getTranslationChoiceService,
+  getTranslationCommandWardrobeByPlotFieldCommandIdService,
   getTranslationCommandWardrobeService,
   getTranslationEpisodeService,
+  getTranslationGetItemByPlotFieldCommandIdService,
   getTranslationGetItemService,
+  getTranslationSayByPlotFieldCommandIdService,
   getTranslationSayService,
   getTranslationSeasonService,
   getTranslationStoryService,
   getTranslationTextFieldNameAndSearchService,
+  getTranslationUpdatedAtAndLanguageService,
   seasonTranslationUpdateTitleService,
   storyTranslationUpdateService,
   updateAchievementTranslationService,
@@ -26,6 +34,68 @@ import {
   updateGetItemTranslationService,
   updateSayTranslationTextService,
 } from "../../services/Additional/TranslationService";
+
+// BY_COMMAND_ID__________________________________________________________
+
+type GetByCommandIdParams = {
+  commandId: string;
+};
+type GetByCommandIdQuery = {
+  currentLanguage: string | undefined;
+};
+
+// @route GET http://localhost:3500/translations/plotFieldCommands/:commandId
+// @access Private
+export const getTranslationByCommandIdController: RequestHandler<
+  GetByCommandIdParams,
+  unknown,
+  unknown,
+  GetByCommandIdQuery
+> = async (req, res, next) => {
+  try {
+    const textFieldName = await getTranslationByCommandIdService({
+      currentLanguage: req.query.currentLanguage,
+      commandId: req.params.commandId,
+    });
+    if (textFieldName) {
+      return res.status(201).json(textFieldName);
+    } else {
+      return res.status(400).json({ message: "Something went wrong" });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
+// BY_UPDATE_AT_AND_LANGUAGE__________________________________________________________
+
+type GetUpdatedAtAndLanguageQuery = {
+  currentLanguage: string | undefined;
+  updatedAt: string | undefined;
+};
+
+// @route GET http://localhost:3500/translations/recent
+// @access Private
+export const getTranslationUpdatedAtAndLanguageController: RequestHandler<
+  unknown,
+  unknown,
+  unknown,
+  GetUpdatedAtAndLanguageQuery
+> = async (req, res, next) => {
+  try {
+    const textFieldName = await getTranslationUpdatedAtAndLanguageService({
+      currentLanguage: req.query.currentLanguage,
+      updatedAt: req.query.updatedAt,
+    });
+    if (textFieldName) {
+      return res.status(201).json(textFieldName);
+    } else {
+      return res.status(400).json({ message: "Something went wrong" });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
 
 // BY_TEXT_FIELD_NAME__________________________________________________________
 
@@ -531,6 +601,30 @@ export const getTranslationAchievementController: RequestHandler<
     next(error);
   }
 };
+
+// @route GET http://localhost:3500/translations/plotFieldCommands/:plotFieldCommandId/achievements
+// @access Private
+export const getTranslationAchievementByPlotFieldCommandIdController: RequestHandler<
+  GetAchievementParams,
+  unknown,
+  unknown,
+  GetAchievementQuery
+> = async (req, res, next) => {
+  try {
+    const achievement =
+      await getTranslationAchievementByPlotFieldCommandIdService({
+        currentLanguage: req.query.currentLanguage,
+        achievementId: req.params.achievementId,
+      });
+    if (achievement) {
+      return res.status(201).json(achievement);
+    } else {
+      return res.status(400).json({ message: "Something went wrong" });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
 // CHOICE_________________________________________________________________
 
 type UpdateChoiceTranslationParams = {
@@ -584,6 +678,29 @@ export const getTranslationChoiceController: RequestHandler<
 > = async (req, res, next) => {
   try {
     const choice = await getTranslationChoiceService({
+      currentLanguage: req.query.currentLanguage,
+      choiceId: req.params.choiceId,
+    });
+    if (choice) {
+      return res.status(201).json(choice);
+    } else {
+      return res.status(400).json({ message: "Something went wrong" });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
+// @route GET http://localhost:3500/translations/plotFieldCommands/:plotFieldCommandId/choices
+// @access Private
+export const getTranslationChoiceByPlotFieldCommandIdController: RequestHandler<
+  GetChoiceParams,
+  unknown,
+  unknown,
+  GetChoiceQuery
+> = async (req, res, next) => {
+  try {
+    const choice = await getTranslationChoiceByPlotFieldCommandIdService({
       currentLanguage: req.query.currentLanguage,
       choiceId: req.params.choiceId,
     });
@@ -663,6 +780,29 @@ export const getTranslationChoiceOptionController: RequestHandler<
   }
 };
 
+// @route GET http://localhost:3500/translations/plotFieldCommands/choices/option/:choiceOptionId
+// @access Private
+export const getSingleTranslationChoiceOptionController: RequestHandler<
+  GetChoiceOptionParams,
+  unknown,
+  unknown,
+  GetChoiceOptionQuery
+> = async (req, res, next) => {
+  try {
+    const choiceOption = await getSingleTranslationChoiceOptionService({
+      currentLanguage: req.query.currentLanguage,
+      choiceOptionId: req.params.choiceOptionId,
+    });
+    if (choiceOption) {
+      return res.status(201).json(choiceOption);
+    } else {
+      return res.status(400).json({ message: "Something went wrong" });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
 // GET_ITEM______________________________________________________________
 
 type UpdateGetItemTranslationParams = {
@@ -709,7 +849,7 @@ type GetGetItemQuery = {
   currentLanguage: string | undefined;
 };
 
-// @route GET http://localhost:3500/translations/plotFieldCommands/getItem/:getItemId
+// @route GET http://localhost:3500/translations/plotFieldCommands/getItems/:getItemId
 // @access Private
 export const getTranslationGetItemController: RequestHandler<
   GetGetItemParams,
@@ -719,6 +859,29 @@ export const getTranslationGetItemController: RequestHandler<
 > = async (req, res, next) => {
   try {
     const getItem = await getTranslationGetItemService({
+      currentLanguage: req.query.currentLanguage,
+      getItemId: req.params.getItemId,
+    });
+    if (getItem) {
+      return res.status(201).json(getItem);
+    } else {
+      return res.status(400).json({ message: "Something went wrong" });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
+// @route GET http://localhost:3500/translations/plotFieldCommands/:getItem/getItems
+// @access Private
+export const getTranslationGetItemByPlotFieldCommandIdController: RequestHandler<
+  GetGetItemParams,
+  unknown,
+  unknown,
+  GetGetItemQuery
+> = async (req, res, next) => {
+  try {
+    const getItem = await getTranslationGetItemByPlotFieldCommandIdService({
       currentLanguage: req.query.currentLanguage,
       getItemId: req.params.getItemId,
     });
@@ -798,6 +961,29 @@ export const getTranslationSayController: RequestHandler<
   }
 };
 
+// @route GET http://localhost:3500/translations/plotFieldCommands/:plotFieldCommandId/say
+// @access Private
+export const getTranslationSayByPlotFieldCommandIdController: RequestHandler<
+  GetSayParams,
+  unknown,
+  unknown,
+  GetSayQuery
+> = async (req, res, next) => {
+  try {
+    const say = await getTranslationSayByPlotFieldCommandIdService({
+      currentLanguage: req.query.currentLanguage,
+      sayId: req.params.sayId,
+    });
+    if (say) {
+      return res.status(201).json(say);
+    } else {
+      return res.status(400).json({ message: "Something went wrong" });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
 // COMMAND_WARDROBE_________________________________________________________
 
 type UpdateCommandWardrobeTranslationParams = {
@@ -854,6 +1040,30 @@ export const getTranslationCommandWardrobeController: RequestHandler<
       currentLanguage: req.query.currentLanguage,
       commandWardrobeId: req.params.commandWardrobeId,
     });
+    if (commandWardrobe) {
+      return res.status(201).json(commandWardrobe);
+    } else {
+      return res.status(400).json({ message: "Something went wrong" });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
+// @route GET http://localhost:3500/translations/plotFieldCommands/:plotFieldCommandId/commandWardrobe
+// @access Private
+export const getTranslationCommandWardrobeByPlotFieldCommandIdController: RequestHandler<
+  GetCommandWardrobeParams,
+  unknown,
+  unknown,
+  GetCommandWardrobeQuery
+> = async (req, res, next) => {
+  try {
+    const commandWardrobe =
+      await getTranslationCommandWardrobeByPlotFieldCommandIdService({
+        currentLanguage: req.query.currentLanguage,
+        commandWardrobeId: req.params.commandWardrobeId,
+      });
     if (commandWardrobe) {
       return res.status(201).json(commandWardrobe);
     } else {

@@ -15,5 +15,6 @@ export default function useGetSeasonsByStoryId({
       await axiosCustomized
         .get<SeasonTypes[]>(`/stories/${storyId}/seasons`)
         .then((r) => r.data),
+    enabled: !!storyId,
   });
 }

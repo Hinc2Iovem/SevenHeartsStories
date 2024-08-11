@@ -45,6 +45,7 @@ export const appearancePartGetByCharacterIdService = async ({
   const appearanceParts = await AppearancePart.find({
     characterId,
   }).lean();
+
   if (!appearanceParts.length) {
     return [];
   }

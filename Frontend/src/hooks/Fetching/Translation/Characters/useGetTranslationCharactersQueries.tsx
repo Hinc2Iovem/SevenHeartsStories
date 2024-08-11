@@ -1,8 +1,8 @@
 import { useQueries } from "@tanstack/react-query";
 import { axiosCustomized } from "../../../../api/axios";
+import { CurrentlyAvailableLanguagesTypes } from "../../../../types/Additional/CURRENTLY_AVAILABEL_LANGUAGES";
 import { TranslationCharacterTypes } from "../../../../types/Additional/TranslationTypes";
 import useGetAllCharactersByStoryId from "../../Character/useGetAllCharactersByStoryId";
-import { CurrentlyAvailableLanguagesTypes } from "../../../../types/Additional/CURRENTLY_AVAILABEL_LANGUAGES";
 
 export default function useGetTranslationCharactersQueries({
   storyId,
@@ -11,9 +11,15 @@ export default function useGetTranslationCharactersQueries({
   storyId: string;
   language?: CurrentlyAvailableLanguagesTypes;
 }) {
+  // const queryClient = useQueryClient();
   const { data: characters } = useGetAllCharactersByStoryId({
     storyId: storyId ?? "",
   });
+  // useEffect(() => {
+  //   queryClient.invalidateQueries({
+  //     queryKey: ["translation", language, "character"],
+  //   });
+  // }, [language, queryClient]);
 
   return useQueries({
     queries: (characters ?? []).map((c) => {

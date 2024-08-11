@@ -97,3 +97,22 @@ export type TranslationCharacteCharacteristicTypes = {
   amountOfWords: number;
   textFieldName: TranslationTextFieldNameCharacterCharacteristicTypes;
 };
+
+export type RecentTranslationTypes = {
+  _id: string;
+  commandId?: string;
+  appearancePartId?: string;
+  characterId?: string;
+  commandLibraryId?: string;
+  episodeId?: string;
+  seasonId?: string;
+  storyId?: string;
+  choiceOptionId?: string;
+  characterCharacteristicId?: string;
+  language: CurrentlyAvailableLanguagesTypes;
+  textFieldName: AllTranslationTextFieldNamesTypes;
+  text: string;
+  amountOfWords: number;
+  updatedAt: Date;
+  createdAt: Date;
+};

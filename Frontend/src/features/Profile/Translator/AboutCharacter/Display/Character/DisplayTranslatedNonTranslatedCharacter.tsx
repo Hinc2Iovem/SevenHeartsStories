@@ -1,11 +1,15 @@
 import { useEffect, useState } from "react";
-import { CombinedTranslatedAndNonTranslatedCharacterTypes } from "../../ProfileRightSideTranslator";
-import useGetCharacterById from "../../../../../hooks/Fetching/Character/useGetCharacterById";
-import { CharacterTypes } from "../../../../../types/StoryData/Character/CharacterTypes";
+import useGetCharacterById from "../../../../../../hooks/Fetching/Character/useGetCharacterById";
+import { CharacterTypes } from "../../../../../../types/StoryData/Character/CharacterTypes";
+import useDebounce from "../../../../../../hooks/utilities/useDebounce";
+import useUpdateCharacterTranslation from "../../../../../../hooks/Patching/Translation/useUpdateCharacterTranslation";
+import { CurrentlyAvailableLanguagesTypes } from "../../../../../../types/Additional/CURRENTLY_AVAILABEL_LANGUAGES";
+import { CombinedTranslatedAndNonTranslatedCharacterTypes } from "../../Filters/FiltersEverythingCharacterForCharacter";
 
 type DisplayTranslatedNonTranslatedCharacterTypes = {
   characterTypeFilter: string;
   characterIdFilter: string;
+  languageToTranslate: CurrentlyAvailableLanguagesTypes;
 } & CombinedTranslatedAndNonTranslatedCharacterTypes;
 
 export default function DisplayTranslatedNonTranslatedCharacter({
@@ -13,6 +17,7 @@ export default function DisplayTranslatedNonTranslatedCharacter({
   translated,
   characterTypeFilter,
   characterIdFilter,
+  languageToTranslate,
 }: DisplayTranslatedNonTranslatedCharacterTypes) {
   const [translatedCharacterName, setTranslatedCharacterName] = useState("");
   const [translatedUnknownName, setTranslatedUnknownName] = useState("");
@@ -77,8 +82,40 @@ export default function DisplayTranslatedNonTranslatedCharacter({
           setUnknownName(nt.text);
         }
       });
+    } else {
+      setCharacterName("");
+      setDescription("");
+      setUnknownName("");
     }
-  }, [nonTranslated]);
+  }, [nonTranslated, languageToTranslate]);
+
+  const debouncedName = useDebounce({ value: characterName, delay: 500 });
+  const debouncedUnknownName = useDebounce({ value: unknownName, delay: 500 });
+  const debouncedDescription = useDebounce({ value: description, delay: 500 });
+
+  const updateCharacterTranslation = useUpdateCharacterTranslation({
+    language: languageToTranslate,
+    characterId,
+  });
+
+  useEffect(() => {
+    if (debouncedName?.trim().length) {
+      updateCharacterTranslation.mutate({ characterName: debouncedName });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [debouncedName]);
+  useEffect(() => {
+    if (debouncedUnknownName?.trim().length) {
+      updateCharacterTranslation.mutate({ unknownName: debouncedUnknownName });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [debouncedUnknownName]);
+  useEffect(() => {
+    if (debouncedDescription?.trim().length) {
+      updateCharacterTranslation.mutate({ description: debouncedDescription });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [debouncedDescription]);
 
   const isCharacterIdMatched =
     characterIdFilter?.trim().length && characterIdFilter === characterId;

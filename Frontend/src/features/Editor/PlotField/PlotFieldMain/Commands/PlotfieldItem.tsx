@@ -28,7 +28,6 @@ type PlotFieldItemTypes = {
 export default function PlotfieldItem({
   _id,
   command,
-  commandOrder,
   topologyBlockId,
   commandIfId,
   provided,

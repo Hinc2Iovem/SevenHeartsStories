@@ -38,15 +38,15 @@ export default function Profile() {
       />
       <ProfileRightSideTranslator />
       {/* <div className="w-full flex flex-col gap-[1rem]">
-            <ProfileRightSideScriptWriter
-              storiesType={storiesType}
-              debouncedStory={debouncedStory}
-            />
-          </div> */}
+        <ProfileRightSideScriptWriter
+          storiesType={storiesType}
+          debouncedStory={debouncedStory}
+        />
+      </div> */}
     </section>
   );
 }
-
+// /stories/6688f3748d53bb51df96603b
 {
   /* <Link to={"/stories"} className="absolute top-[1rem] left-[1rem]">
         <img src={back} alt="Back" className="w-[3rem]" />

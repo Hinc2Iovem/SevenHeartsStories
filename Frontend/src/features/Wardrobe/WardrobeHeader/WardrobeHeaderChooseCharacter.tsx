@@ -100,8 +100,6 @@ function WardrobeHeaderChooseCharacterItem({
     }
   }, [translationCharacter]);
 
-  console.log("currentCharacterName: ", currentCharacterName);
-
   return (
     <>
       {img ? (

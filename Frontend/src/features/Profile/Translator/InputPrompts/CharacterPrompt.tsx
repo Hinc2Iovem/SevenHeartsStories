@@ -31,13 +31,13 @@ export default function CharacterPrompt({
   useEffect(() => {
     if (debouncedValue?.trim().length) {
       setCharacterId(
-        charactersSearch?.find((cs) => cs.text === debouncedValue)?._id || ""
+        charactersSearch?.find((cs) => cs.text === debouncedValue)
+          ?.characterId || ""
       );
-    } else {
-      setCharacterId("");
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [debouncedValue, charactersSearch]);
+
   return (
     <form
       className="bg-white rounded-md shadow-md relative"
@@ -70,9 +70,9 @@ export default function CharacterPrompt({
               key={s._id}
               type="button"
               onClick={() => {
+                setCharacterId(s.characterId);
                 setCharacterValue(s.text);
                 setShowCharacters(false);
-                setCharacterId(s._id);
               }}
               className="text-[1.4rem] outline-gray-300 text-gray-600 text-start hover:bg-primary-pastel-blue hover:text-white rounded-md px-[1rem] py-[.5rem] hover:shadow-md"
             >

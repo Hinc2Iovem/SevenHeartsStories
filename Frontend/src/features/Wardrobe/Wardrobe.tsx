@@ -16,6 +16,8 @@ export default function Wardrobe() {
       appearanceType: bodyType,
     });
 
+  console.log(characterId);
+
   return (
     <section className="max-w-[146rem] p-[1rem] mx-auto">
       <WardrobeHeader

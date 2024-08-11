@@ -16,5 +16,6 @@ export default function useGetEpisodesBySeasonId({
         .get<EpisodeTypes[]>(`/episodes/seasons/${seasonId}`)
         .then((r) => r.data),
     select: (data) => data.sort((a, b) => a.episodeOrder - b.episodeOrder),
+    enabled: !!seasonId,
   });
 }

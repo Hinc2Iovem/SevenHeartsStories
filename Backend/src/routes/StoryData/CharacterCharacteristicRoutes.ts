@@ -2,7 +2,8 @@ import express from "express";
 import {
   characterCharacteristicCreateController,
   characterCharacteristicDeleteController,
-  characterCharacteristicGetByCharacterIdController,
+  getAllCharacterCharacteristicsByStoryIdController,
+  getAllCharacterCharacteristicController,
   characterCharacteristicGetByIdController,
 } from "../../controllers/StoryData/CharacterCharacteristicController";
 
@@ -16,5 +17,9 @@ characterCharacteristicRoute
 
 characterCharacteristicRoute
   .route("/")
-  .get(characterCharacteristicGetByCharacterIdController)
+  .get(getAllCharacterCharacteristicController)
   .post(characterCharacteristicCreateController);
+
+characterCharacteristicRoute
+  .route("/stories/:storyId")
+  .get(getAllCharacterCharacteristicsByStoryIdController);

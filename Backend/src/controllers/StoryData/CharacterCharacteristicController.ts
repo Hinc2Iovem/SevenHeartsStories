@@ -1,9 +1,10 @@
 import { RequestHandler } from "express";
 import {
-  characterCharacteristicDeleteService,
   characterCharacteristicCreateService,
-  characterCharacteristicGetByCharacterIdService,
+  characterCharacteristicDeleteService,
   characterCharacteristicGetByIdService,
+  getAllCharacterCharacteristicsByStoryIdService,
+  getAllCharacterCharacteristicsService,
 } from "../../services/StoryData/CharacterCharacteristicService";
 
 type CharacterCharacteristicGetByIdParams = {
@@ -34,22 +35,51 @@ export const characterCharacteristicGetByIdController: RequestHandler<
   }
 };
 
+type CharacterCharacteristicsGetByStoryIdParams = {
+  storyId: string;
+};
+// @route GET http://localhost:3500/characterCharacteristics/stories/:storyId
+// @access Private
+export const getAllCharacterCharacteristicsByStoryIdController: RequestHandler<
+  CharacterCharacteristicsGetByStoryIdParams,
+  unknown,
+  unknown,
+  unknown
+> = async (req, res, next) => {
+  try {
+    const characterCharacteristic =
+      await getAllCharacterCharacteristicsByStoryIdService({
+        storyId: req.params.storyId,
+      });
+    if (characterCharacteristic) {
+      return res.status(201).json(characterCharacteristic);
+    } else {
+      return res.status(400).json({ message: "Something went wrong" });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
 // @route GET http://localhost:3500/characterCharacteristics
 // @access Private
-export const characterCharacteristicGetByCharacterIdController: RequestHandler =
-  async (req, res, next) => {
-    try {
-      const characterCharacteristic =
-        await characterCharacteristicGetByCharacterIdService();
-      if (characterCharacteristic) {
-        return res.status(201).json(characterCharacteristic);
-      } else {
-        return res.status(400).json({ message: "Something went wrong" });
-      }
-    } catch (error) {
-      next(error);
+export const getAllCharacterCharacteristicController: RequestHandler = async (
+  req,
+  res,
+  next
+) => {
+  try {
+    const characterCharacteristic =
+      await getAllCharacterCharacteristicsService();
+    if (characterCharacteristic) {
+      return res.status(201).json(characterCharacteristic);
+    } else {
+      return res.status(400).json({ message: "Something went wrong" });
     }
-  };
+  } catch (error) {
+    next(error);
+  }
+};
 
 type CharacterCharacteristicCreateBody = {
   characteristicName: string | undefined;

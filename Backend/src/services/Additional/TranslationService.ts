@@ -3,7 +3,6 @@ import { validateMongoId } from "../../utils/validateMongoId";
 import { checkCurrentLanguage } from "../../utils/checkCurrentLanguage";
 import Translation from "../../models/StoryData/Translation";
 import AppearancePart from "../../models/StoryData/AppearancePart";
-import { CharacterTypeAlias } from "../../controllers/StoryData/CharacterController";
 import Character from "../../models/StoryData/Character";
 import {
   AvailableTextFieldNames,
@@ -19,6 +18,94 @@ import Choice from "../../models/StoryEditor/PlotField/Choice/Choice";
 import GetItem from "../../models/StoryEditor/PlotField/GetItem/GetItem";
 import Say from "../../models/StoryEditor/PlotField/Say/Say";
 import CommandWardrobe from "../../models/StoryEditor/PlotField/Wardrobe/CommandWardrobe";
+import { subDays, subHours, subMinutes } from "date-fns";
+
+// BY_COMMAND_ID____________________________________________________________________
+
+type GetByCommandIdTypes = {
+  commandId: string;
+  currentLanguage: string | undefined;
+};
+
+export const getTranslationByCommandIdService = async ({
+  currentLanguage,
+  commandId,
+}: GetByCommandIdTypes) => {
+  if (!currentLanguage?.trim().length) {
+    throw createHttpError(400, "Language is required");
+  }
+
+  checkCurrentLanguage({ currentLanguage });
+
+  const existingTranslation = await Translation.find({
+    commandId,
+    language: currentLanguage,
+  })
+    .lean()
+    .exec();
+
+  if (!existingTranslation.length) {
+    return [];
+  }
+
+  return existingTranslation;
+};
+
+// BY_UPDATED_AT_AND_LANGUAGE____________________________________________________________________
+
+type GetByUpdatedAtAndLanguageTypes = {
+  currentLanguage: string | undefined;
+  updatedAt: string | undefined;
+};
+
+export const getTranslationUpdatedAtAndLanguageService = async ({
+  currentLanguage,
+  updatedAt,
+}: GetByUpdatedAtAndLanguageTypes) => {
+  if (!currentLanguage?.trim().length) {
+    throw createHttpError(400, "Language is required");
+  }
+
+  checkCurrentLanguage({ currentLanguage });
+
+  let startDate: Date | undefined;
+  let endDate = new Date();
+
+  switch (updatedAt) {
+    case "30min":
+      startDate = subMinutes(endDate, 30);
+      break;
+    case "1hr":
+      startDate = subHours(endDate, 1);
+      break;
+    case "5hr":
+      startDate = subHours(endDate, 5);
+      break;
+    case "1d":
+      startDate = subDays(endDate, 1);
+      break;
+    case "3d":
+      startDate = subDays(endDate, 3);
+      break;
+    case "7d":
+      startDate = subDays(endDate, 7);
+      break;
+    default:
+      throw createHttpError(400, "Invalid updatedAt value");
+  }
+
+  const existingTranslations = await Translation.find({
+    updatedAt: { $gte: startDate, $lt: endDate },
+    language: currentLanguage,
+  })
+    .lean()
+    .exec();
+
+  if (!existingTranslations.length) {
+    return [];
+  }
+  return existingTranslations;
+};
 // BY_TEXT_FIELD_NAME____________________________________________________________________
 
 type GetByTextFieldNameAndSearchTypes = {
@@ -60,7 +147,7 @@ export const getTranslationTextFieldNameAndSearchService = async ({
 
   if (text?.trim().length) {
     const filteredResults = existingTranslations.filter((et) =>
-      et.text.toLowerCase().includes(text.toLowerCase())
+      (et.text || "").toLowerCase().includes(text.toLowerCase())
     );
     return filteredResults;
   } else {
@@ -326,6 +413,13 @@ export const episodeTranslationUpdateService = async ({
     if (existingTranslation) {
       existingTranslation.text = title;
       await existingTranslation.save();
+    } else {
+      await Translation.create({
+        episodeId: episodeId,
+        language: currentLanguage,
+        textFieldName: TranslationTextFieldName.EpisodeName,
+        text: title,
+      });
     }
   }
   if (description?.trim().length) {
@@ -337,6 +431,13 @@ export const episodeTranslationUpdateService = async ({
     if (existingTranslation) {
       existingTranslation.text = description;
       await existingTranslation.save();
+    } else {
+      await Translation.create({
+        episodeId: episodeId,
+        language: currentLanguage,
+        textFieldName: TranslationTextFieldName.EpisodeDescription,
+        text: description,
+      });
     }
   }
 
@@ -407,13 +508,20 @@ export const seasonTranslationUpdateTitleService = async ({
     language: currentLanguage,
   }).exec();
 
-  if (!existingTranslation) {
-    throw createHttpError(400, "Such Translation doesn't exist");
-  }
-
-  if (title?.trim().length) {
-    existingTranslation.text = title;
-    await existingTranslation.save();
+  if (existingTranslation) {
+    if (title?.trim().length) {
+      existingTranslation.text = title;
+      await existingTranslation.save();
+    }
+  } else {
+    if (title?.trim().length) {
+      await Translation.create({
+        seasonId,
+        language: currentLanguage,
+        text: title,
+        textFieldName: TranslationTextFieldName.SeasonName,
+      });
+    }
   }
 
   return existingTranslation;
@@ -490,12 +598,16 @@ export const storyTranslationUpdateService = async ({
       language: currentLanguage,
       textFieldName: TranslationTextFieldName.StoryName,
     }).exec();
-    if (!existingTranslation) {
-      throw createHttpError(400, "Translation wasn't found");
-    }
-    if (title?.trim().length) {
+    if (existingTranslation) {
       existingTranslation.text = title;
       await existingTranslation.save();
+    } else {
+      await Translation.create({
+        storyId: existingStory.id,
+        language: currentLanguage,
+        textFieldName: TranslationTextFieldName.StoryName,
+        text: title,
+      });
     }
   }
 
@@ -505,12 +617,16 @@ export const storyTranslationUpdateService = async ({
       language: currentLanguage,
       textFieldName: TranslationTextFieldName.StoryDescription,
     }).exec();
-    if (!existingTranslation) {
-      throw createHttpError(400, "Translation wasn't found");
-    }
-    if (description?.trim().length) {
+    if (existingTranslation) {
       existingTranslation.text = description;
       await existingTranslation.save();
+    } else {
+      await Translation.create({
+        storyId: existingStory.id,
+        language: currentLanguage,
+        textFieldName: TranslationTextFieldName.StoryDescription,
+        text: description,
+      });
     }
   }
 
@@ -520,12 +636,16 @@ export const storyTranslationUpdateService = async ({
       language: currentLanguage,
       textFieldName: TranslationTextFieldName.StoryGenre,
     }).exec();
-    if (!existingTranslation) {
-      throw createHttpError(400, "Translation wasn't found");
-    }
-    if (genre?.trim().length) {
+    if (existingTranslation) {
       existingTranslation.text = genre;
       await existingTranslation.save();
+    } else {
+      await Translation.create({
+        storyId: existingStory.id,
+        language: currentLanguage,
+        textFieldName: TranslationTextFieldName.StoryGenre,
+        text: genre,
+      });
     }
   }
 
@@ -730,6 +850,39 @@ export const getTranslationAchievementService = async ({
 
   return existingTranslation;
 };
+export const getTranslationAchievementByPlotFieldCommandIdService = async ({
+  achievementId,
+  currentLanguage,
+}: GetTranslationAchievementTypes) => {
+  validateMongoId({
+    value: achievementId,
+    valueName: "achievement",
+  });
+
+  const existingAchievement = await Achievement.findOne({
+    plotFieldCommandId: achievementId,
+  }).exec();
+  if (!existingAchievement) {
+    throw createHttpError(400, "Such achievement doesn't exist");
+  }
+
+  if (!currentLanguage?.trim().length) {
+    throw createHttpError(400, "Language is required");
+  }
+
+  checkCurrentLanguage({ currentLanguage });
+
+  const existingTranslation = await Translation.find({
+    commandId: existingAchievement._id,
+    language: currentLanguage,
+  }).exec();
+
+  if (!existingTranslation.length) {
+    return [];
+  }
+
+  return existingTranslation;
+};
 // CHOICE_OPTION__________________________________________________________
 type UpdateChoiceTranslationTypes = {
   choiceQuestion: string | undefined;
@@ -791,6 +944,39 @@ export const getTranslationChoiceService = async ({
   });
 
   const existingChoice = await Choice.findById(choiceId).exec();
+  if (!existingChoice) {
+    throw createHttpError(400, "Such choice doesn't exist");
+  }
+
+  if (!currentLanguage?.trim().length) {
+    throw createHttpError(400, "Language is required");
+  }
+
+  checkCurrentLanguage({ currentLanguage });
+
+  const existingTranslation = await Translation.find({
+    commandId: existingChoice._id,
+    language: currentLanguage,
+  }).exec();
+
+  if (!existingTranslation.length) {
+    return [];
+  }
+
+  return existingTranslation;
+};
+export const getTranslationChoiceByPlotFieldCommandIdService = async ({
+  choiceId,
+  currentLanguage,
+}: GetTranslationChoiceTypes) => {
+  validateMongoId({
+    value: choiceId,
+    valueName: "choice",
+  });
+
+  const existingChoice = await Choice.findOne({
+    plotFieldCommandId: choiceId,
+  }).exec();
   if (!existingChoice) {
     throw createHttpError(400, "Such choice doesn't exist");
   }
@@ -898,8 +1084,44 @@ export const getTranslationChoiceOptionService = async ({
     language: currentLanguage,
   }).exec();
 
+  console.log(existingTranslation);
+
   if (!existingTranslation.length) {
     return [];
+  }
+
+  return existingTranslation;
+};
+
+export const getSingleTranslationChoiceOptionService = async ({
+  choiceOptionId,
+  currentLanguage,
+}: GetTranslationChoiceOptionTypes) => {
+  validateMongoId({
+    value: choiceOptionId,
+    valueName: "choiceOption",
+  });
+
+  const existingChoiceOption = await ChoiceOption.findById(
+    choiceOptionId
+  ).exec();
+  if (!existingChoiceOption) {
+    throw createHttpError(400, "Such choiceOption doesn't exist");
+  }
+
+  if (!currentLanguage?.trim().length) {
+    throw createHttpError(400, "Language is required");
+  }
+
+  checkCurrentLanguage({ currentLanguage });
+
+  const existingTranslation = await Translation.findOne({
+    choiceOptionId: existingChoiceOption._id,
+    language: currentLanguage,
+  }).exec();
+
+  if (!existingTranslation) {
+    return null;
   }
 
   return existingTranslation;
@@ -1031,6 +1253,39 @@ export const getTranslationGetItemService = async ({
 
   return existingTranslation;
 };
+export const getTranslationGetItemByPlotFieldCommandIdService = async ({
+  getItemId,
+  currentLanguage,
+}: GetTranslationGetItemTypes) => {
+  validateMongoId({
+    value: getItemId,
+    valueName: "getItem",
+  });
+
+  const existingGetItem = await GetItem.findOne({
+    plotFieldCommandId: getItemId,
+  }).exec();
+  if (!existingGetItem) {
+    throw createHttpError(400, "Such getItem doesn't exist");
+  }
+
+  if (!currentLanguage?.trim().length) {
+    throw createHttpError(400, "Language is required");
+  }
+
+  checkCurrentLanguage({ currentLanguage });
+
+  const existingTranslation = await Translation.find({
+    commandId: existingGetItem._id,
+    language: currentLanguage,
+  }).exec();
+
+  if (!existingTranslation.length) {
+    return [];
+  }
+
+  return existingTranslation;
+};
 
 // SAY___________________________________________________________________
 
@@ -1052,8 +1307,8 @@ export const updateSayTranslationTextService = async ({
     throw createHttpError(400, "Say with such id wasn't found");
   }
 
-  if (!text?.trim().length || !currentLanguage?.trim().length) {
-    throw createHttpError(400, "Text and currentLanguage are required");
+  if (!currentLanguage?.trim().length) {
+    throw createHttpError(400, "currentLanguage are required");
   }
 
   checkCurrentLanguage({ currentLanguage });
@@ -1065,7 +1320,7 @@ export const updateSayTranslationTextService = async ({
   }).exec();
 
   if (existingTranslation) {
-    existingTranslation.text = text;
+    existingTranslation.text = text || "";
     await existingTranslation.save();
   } else {
     await Translation.create({
@@ -1092,8 +1347,38 @@ export const getTranslationSayService = async ({
     value: sayId,
     valueName: "say",
   });
-
   const existingSay = await Say.findById(sayId).exec();
+  if (!existingSay) {
+    throw createHttpError(400, "Such say doesn't exist");
+  }
+
+  if (!currentLanguage?.trim().length) {
+    throw createHttpError(400, "Language is required");
+  }
+
+  checkCurrentLanguage({ currentLanguage });
+
+  const existingTranslation = await Translation.find({
+    commandId: existingSay._id,
+    language: currentLanguage,
+  }).exec();
+
+  if (!existingTranslation.length) {
+    return [];
+  }
+
+  return existingTranslation;
+};
+
+export const getTranslationSayByPlotFieldCommandIdService = async ({
+  sayId,
+  currentLanguage,
+}: GetTranslationSayTypes) => {
+  validateMongoId({
+    value: sayId,
+    valueName: "say",
+  });
+  const existingSay = await Say.findOne({ plotFieldCommandId: sayId }).exec();
   if (!existingSay) {
     throw createHttpError(400, "Such say doesn't exist");
   }
@@ -1184,6 +1469,40 @@ export const getTranslationCommandWardrobeService = async ({
   const existingCommandWardrobe = await CommandWardrobe.findById(
     commandWardrobeId
   ).exec();
+  if (!existingCommandWardrobe) {
+    throw createHttpError(400, "Such commandWardrobe doesn't exist");
+  }
+
+  if (!currentLanguage?.trim().length) {
+    throw createHttpError(400, "Language is required");
+  }
+
+  checkCurrentLanguage({ currentLanguage });
+
+  const existingTranslation = await Translation.find({
+    commandId: existingCommandWardrobe._id,
+    language: currentLanguage,
+  }).exec();
+
+  if (!existingTranslation.length) {
+    return [];
+  }
+
+  return existingTranslation;
+};
+
+export const getTranslationCommandWardrobeByPlotFieldCommandIdService = async ({
+  commandWardrobeId,
+  currentLanguage,
+}: GetTranslationCommandWardrobeTypes) => {
+  validateMongoId({
+    value: commandWardrobeId,
+    valueName: "commandWardrobe",
+  });
+
+  const existingCommandWardrobe = await CommandWardrobe.findOne({
+    plotFieldCommandId: commandWardrobeId,
+  }).exec();
   if (!existingCommandWardrobe) {
     throw createHttpError(400, "Such commandWardrobe doesn't exist");
   }
