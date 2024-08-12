@@ -1,6 +1,7 @@
 import express from "express";
 import {
   deleteStaffMemberController,
+  getAllScriptWritersController,
   getAllStaffMembersController,
   getStaffInfoMemberByIdController,
   getStaffMemberByIdController,
@@ -13,7 +14,11 @@ import { verifyJWT } from "../../middlewares/verifyJWT";
 // Default route === /staff
 export const staffRoute = express.Router();
 
-staffRoute.route("/").get(getAllStaffMembersController);
+staffRoute.route("/").get(verifyJWT, getAllStaffMembersController);
+
+staffRoute
+  .route("/scriptwriters")
+  .get(verifyJWT, getAllScriptWritersController);
 
 staffRoute.route("/:staffId").get(verifyJWT, getStaffMemberByIdController);
 staffRoute

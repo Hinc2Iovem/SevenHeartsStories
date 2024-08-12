@@ -86,16 +86,21 @@ type CharacterCharacteristicCreateBody = {
   currentLanguage: string | undefined;
 };
 
-// @route POST http://localhost:3500/characterCharacteristics
+type CharacterCharacteristicCreateParams = {
+  storyId: string;
+};
+
+// @route POST http://localhost:3500/characterCharacteristics/stories/:storyId
 // @access Private
 export const characterCharacteristicCreateController: RequestHandler<
-  unknown,
+  CharacterCharacteristicCreateParams,
   unknown,
   CharacterCharacteristicCreateBody,
   unknown
 > = async (req, res, next) => {
   try {
     const characterCharacteristic = await characterCharacteristicCreateService({
+      storyId: req.params.storyId,
       characteristicName: req.body.characteristicName,
       currentLanguage: req.body.currentLanguage,
     });

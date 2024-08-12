@@ -17,9 +17,9 @@ characterCharacteristicRoute
 
 characterCharacteristicRoute
   .route("/")
-  .get(getAllCharacterCharacteristicController)
-  .post(characterCharacteristicCreateController);
+  .get(getAllCharacterCharacteristicController);
 
 characterCharacteristicRoute
   .route("/stories/:storyId")
-  .get(getAllCharacterCharacteristicsByStoryIdController);
+  .get(getAllCharacterCharacteristicsByStoryIdController)
+  .post(characterCharacteristicCreateController);

@@ -13,6 +13,9 @@ import {
 } from "../../controllers/StoryData/StoryController";
 import paginatedQuery from "../../middlewares/paginatedQuery";
 import Story from "../../models/StoryData/Story";
+import { verifyJWT } from "../../middlewares/verifyJWT";
+import { verifyEditor } from "../../middlewares/verifyEditor";
+import { verifyHeadScriptwriter } from "../../middlewares/verifyHeadScriptwriter";
 
 // Default route === /stories
 export const storyRoute = express.Router();
@@ -25,22 +28,26 @@ storyRoute.route("/status").get(paginatedQuery(Story), (req, res) => {
 
 storyRoute
   .route("/:storyId")
-  .get(storyGetByIdController)
-  .delete(storyDeleteController);
+  .get(verifyJWT, storyGetByIdController)
+  .delete(verifyEditor, storyDeleteController);
 
-storyRoute.route("/:storyId/img").patch(storyUpdateImgUrlController);
+storyRoute
+  .route("/:storyId/img")
+  .patch(verifyHeadScriptwriter, storyUpdateImgUrlController);
 
 storyRoute
   .route("/:storyId/assignWorkers")
-  .get(getAllStoryAssignWorkersController);
+  .get(verifyJWT, getAllStoryAssignWorkersController);
 
 storyRoute
   .route("/:storyId/staff/:staffId/assignWorkers")
-  .patch(storyAssignWorkersController)
-  .get(getStoryAssignWorkerController);
+  .patch(verifyHeadScriptwriter, storyAssignWorkersController)
+  .get(verifyJWT, getStoryAssignWorkerController);
 
 storyRoute
   .route("/staff/:staffId/assignWorkers")
-  .get(getAllAssignedStoriesByStaffIdController);
+  .get(verifyJWT, getAllAssignedStoriesByStaffIdController);
 
-storyRoute.route("/:storyId/status").patch(storyUpdateStatusController);
+storyRoute
+  .route("/:storyId/status")
+  .patch(verifyJWT, storyUpdateStatusController);

@@ -1,14 +1,18 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
+import useGetDecodedJWTValues from "../../../hooks/Auth/useGetDecodedJWTValues";
 import useGetAssignedStories from "../../../hooks/Fetching/Staff/useGetAssignedStories";
+import useGetAllStoriesEnabledByFilterType from "../../../hooks/Fetching/Story/useGetAllStoriesEnabledByFilterType";
 import useGetSingleStory from "../../../hooks/Fetching/Story/useGetSingleStory";
 import useGetStoryTranslationByTextFieldNameAndSearch from "../../../hooks/Fetching/Story/useGetStoryTranslationByTextFieldNameAndSearch";
+import useGetStoryTranslationByTextFieldNameAndSearchAssigned from "../../../hooks/Fetching/Story/useGetStoryTranslationByTextFieldNameAndSearchAssigned";
 import useGetTranslationStory from "../../../hooks/Fetching/Translation/useGetTranslationStory";
 import useUpdateImg from "../../../hooks/Patching/useUpdateImg";
 import { EpisodeStatusTypes } from "../../../types/StoryData/Episode/EpisodeTypes";
 import PreviewImage from "../../shared/utilities/PreviewImage";
 import { StoryFilterTypes } from "../../Story/Story";
-import useGetDecodedJWTValues from "../../../hooks/Auth/useGetDecodedJWTValues";
+import AssignScriptwriterModal from "./AssignScriptwriterModal";
+import { StaffRoles } from "../../../types/Staff/StaffTypes";
 
 type ProfileRightSideTypes = {
   storiesType: StoryFilterTypes;
@@ -19,17 +23,35 @@ export default function ProfileRightSideScriptWriter({
   storiesType,
   debouncedStory,
 }: ProfileRightSideTypes) {
-  const { userId: staffId } = useGetDecodedJWTValues();
+  const [openedStoryId, setOpenedStoryId] = useState("");
+  const [characterIds, setCharacterIds] = useState<string[]>([]);
+  const { userId: staffId, roles } = useGetDecodedJWTValues();
 
-  const { data } = useGetAssignedStories({ staffId: staffId ?? "" });
-  const { data: translatedStories } =
+  const { data: allStories } = useGetAllStoriesEnabledByFilterType({
+    storyFilter: storiesType,
+  });
+
+  const { data: allTranslatedStories } =
     useGetStoryTranslationByTextFieldNameAndSearch({
       debouncedValue: debouncedStory,
       language: "russian",
+      storiesType,
     });
+
+  const { data: assignedStories } = useGetAssignedStories({
+    staffId: staffId ?? "",
+  });
+
+  const { data: translatedStories } =
+    useGetStoryTranslationByTextFieldNameAndSearchAssigned({
+      debouncedValue: debouncedStory,
+      language: "russian",
+      staffId: staffId || "",
+    });
+
   const memoizedData = useMemo(() => {
-    const allData = data;
-    if (storiesType === "all") {
+    const allData = assignedStories;
+    if (storiesType === "allAssigned") {
       return allData;
     } else if (storiesType === "doing") {
       return allData?.filter((i) => i.storyStatus === "doing");
@@ -38,30 +60,76 @@ export default function ProfileRightSideScriptWriter({
     } else {
       return allData;
     }
-  }, [data, storiesType]);
+  }, [assignedStories, storiesType]);
 
   return (
     <div className="grid grid-cols-[repeat(auto-fill,minmax(20rem,1fr))] gap-[1rem] justify-items-center justify-center w-full">
-      {translatedStories ? (
+      {(storiesType === "all" && allTranslatedStories?.length) ||
+      (storiesType === "all" && allStories?.length) ? (
         <>
-          {translatedStories?.map((t) => (
-            <ProfileRightSideItem
-              key={t._id}
-              storiesType={storiesType}
-              storyId={t.storyId}
-            />
-          ))}
+          {allTranslatedStories?.length ? (
+            allTranslatedStories.map((ts) => (
+              <ProfileRightSideItem
+                key={ts._id}
+                setOpenedStoryId={setOpenedStoryId}
+                openedStoryId={openedStoryId}
+                storiesType={storiesType}
+                storyId={ts.storyId}
+                roles={roles || []}
+                characterIds={characterIds}
+                setCharacterIds={setCharacterIds}
+              />
+            ))
+          ) : (
+            <>
+              {allStories?.map((st) => (
+                <ProfileRightSideItem
+                  key={st._id}
+                  setOpenedStoryId={setOpenedStoryId}
+                  openedStoryId={openedStoryId}
+                  storiesType={storiesType}
+                  storyId={st._id}
+                  storyStatus={st.storyStatus}
+                  roles={roles || []}
+                  characterIds={characterIds}
+                  setCharacterIds={setCharacterIds}
+                />
+              ))}
+            </>
+          )}
         </>
       ) : (
         <>
-          {memoizedData?.map((st) => (
-            <ProfileRightSideItem
-              key={st._id}
-              storiesType={storiesType}
-              storyId={st.storyId}
-              storyStatus={st.storyStatus}
-            />
-          ))}
+          {translatedStories?.length ? (
+            translatedStories.map((ts) => (
+              <ProfileRightSideItem
+                key={ts._id}
+                setOpenedStoryId={setOpenedStoryId}
+                openedStoryId={openedStoryId}
+                storiesType={storiesType}
+                storyId={ts.storyId}
+                roles={roles || []}
+                characterIds={characterIds}
+                setCharacterIds={setCharacterIds}
+              />
+            ))
+          ) : (
+            <>
+              {memoizedData?.map((st) => (
+                <ProfileRightSideItem
+                  key={st._id}
+                  setOpenedStoryId={setOpenedStoryId}
+                  openedStoryId={openedStoryId}
+                  storiesType={storiesType}
+                  storyId={st.storyId}
+                  storyStatus={st.storyStatus}
+                  roles={roles || []}
+                  characterIds={characterIds}
+                  setCharacterIds={setCharacterIds}
+                />
+              ))}
+            </>
+          )}
         </>
       )}
     </div>
@@ -72,21 +140,33 @@ type ProfileRightSideItemTypes = {
   storiesType: StoryFilterTypes;
   storyStatus?: EpisodeStatusTypes;
   storyId: string;
+  setOpenedStoryId: React.Dispatch<React.SetStateAction<string>>;
+  openedStoryId: string;
+  roles: StaffRoles[];
+  setCharacterIds: React.Dispatch<React.SetStateAction<string[]>>;
+  characterIds: string[];
 };
 
 function ProfileRightSideItem({
   storyId,
   storyStatus,
   storiesType,
+  openedStoryId,
+  setOpenedStoryId,
+  roles,
+  characterIds,
+  setCharacterIds,
 }: ProfileRightSideItemTypes) {
   const { data: translationStory } = useGetTranslationStory({
     id: storyId,
     language: "russian",
   });
+
   const { data: story } = useGetSingleStory({ storyId });
   const [imagePreview, setPreview] = useState<string | ArrayBuffer | null>(
     null
   );
+
   const [title, setTitle] = useState("");
   const uploadImgMutation = useUpdateImg({
     id: storyId,
@@ -112,7 +192,7 @@ function ProfileRightSideItem({
   }, [translationStory]);
 
   return (
-    <article className="w-full h-[24rem] rounded-md shadow-md shadow-gray-400">
+    <article className="w-full h-[24rem] rounded-md shadow-md shadow-gray-400 relative">
       <div className="relative border-[3px] w-full h-[20rem] border-white bg-white">
         {story?.imgUrl ? (
           <img
@@ -127,12 +207,15 @@ function ProfileRightSideItem({
             setPreview={setPreview}
           />
         )}
-        <div className="absolute top-[.5rem] right-[.5rem] bg-white rounded-md shadow-md p-[.5rem]">
-          <p
-            className={`${
-              storyStatus && storiesType === "all" ? "" : "hidden"
-            } text-[1.5rem] self-end`}
-          >
+        <div
+          className={`${
+            (storyStatus && storiesType === "all") ||
+            storiesType === "allAssigned"
+              ? ""
+              : "hidden"
+          } absolute top-[.5rem] right-[.5rem] bg-white rounded-md shadow-md p-[.5rem]`}
+        >
+          <p className={`text-[1.5rem] self-end`}>
             Статус:{" "}
             <span
               className={`text-[1.4rem] ${
@@ -144,6 +227,16 @@ function ProfileRightSideItem({
           </p>
         </div>
       </div>
+      {roles.includes("editor") || roles.includes("headscriptwriter") ? (
+        <AssignScriptwriterModal
+          openedStoryId={openedStoryId}
+          setOpenedStoryId={setOpenedStoryId}
+          storyTitle={title}
+          storyId={storyId}
+          setCharacterIds={setCharacterIds}
+          characterIds={characterIds}
+        />
+      ) : null}
       <div className="bg-white w-full p-[1rem] rounded-b-md shadow-md shadow-gray-400">
         <Link
           to={`/stories/${storyId}`}

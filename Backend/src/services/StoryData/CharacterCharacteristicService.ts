@@ -52,14 +52,17 @@ export const getAllCharacterCharacteristicsService = async () => {
 };
 
 type CharacterCharacteristicCreateTypes = {
+  storyId: string;
   characteristicName: string | undefined;
   currentLanguage: string | undefined;
 };
 
 export const characterCharacteristicCreateService = async ({
+  storyId,
   characteristicName,
   currentLanguage,
 }: CharacterCharacteristicCreateTypes) => {
+  validateMongoId({ value: storyId, valueName: "Story" });
   if (!currentLanguage?.trim().length || !characteristicName?.trim().length) {
     throw createHttpError(
       400,
@@ -69,7 +72,7 @@ export const characterCharacteristicCreateService = async ({
 
   checkCurrentLanguage({ currentLanguage });
 
-  const newCharacteristic = await CharacterCharacteristic.create({});
+  const newCharacteristic = await CharacterCharacteristic.create({ storyId });
 
   await Translation.create({
     characterCharacteristicId: newCharacteristic._id,

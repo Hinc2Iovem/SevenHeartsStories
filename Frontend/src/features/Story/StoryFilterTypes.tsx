@@ -13,12 +13,12 @@ export default function StoryFilterTypesHeader({
     <ul className="flex flex-col gap-[1rem] bg-white rounded-md p-[1rem] shadow-sm">
       <li>
         <button
-          onClick={() => setStoriesType("all")}
+          onClick={() => setStoriesType("allAssigned")}
           className={`text-[1.4rem] ${
-            storiesType === "all"
+            storiesType === "allAssigned"
               ? "rounded-md bg-primary-light-blue text-white w-full text-start px-[1rem] py-[.5rem]"
               : ""
-          } hover:bg-primary-light-blue outline-gray-300 hover:text-white hover:w-full hover:px-[1rem] hover:py-[.5rem] hover:rounded-md text-start transition-all `}
+          } w-full hover:bg-primary-light-blue outline-gray-300 hover:text-white hover:w-full hover:px-[1rem] hover:py-[.5rem] hover:rounded-md text-start transition-all `}
         >
           Все
         </button>
@@ -30,7 +30,7 @@ export default function StoryFilterTypesHeader({
             storiesType === "done"
               ? "rounded-md bg-primary-light-blue text-white w-full text-start px-[1rem] py-[.5rem]"
               : ""
-          } hover:bg-primary-light-blue outline-gray-300 hover:text-white hover:w-full hover:px-[1rem] hover:py-[.5rem] hover:rounded-md text-start transition-all `}
+          } w-full hover:bg-primary-light-blue outline-gray-300 hover:text-white hover:w-full hover:px-[1rem] hover:py-[.5rem] hover:rounded-md text-start transition-all `}
         >
           Законченные
         </button>
@@ -42,7 +42,7 @@ export default function StoryFilterTypesHeader({
             storiesType === "doing"
               ? "rounded-md bg-primary-light-blue text-white w-full text-start px-[1rem] py-[.5rem]"
               : ""
-          } hover:bg-primary-light-blue outline-gray-300 hover:text-white hover:w-full hover:px-[1rem] hover:py-[.5rem] hover:rounded-md text-start transition-all `}
+          } w-full hover:bg-primary-light-blue outline-gray-300 hover:text-white hover:w-full hover:px-[1rem] hover:py-[.5rem] hover:rounded-md text-start transition-all `}
         >
           В Процессе
         </button>

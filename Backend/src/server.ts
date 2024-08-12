@@ -79,7 +79,7 @@ app.use("/commandLibraries", verifyJWT, commandLibraryRoute);
 app.use("/episodes", verifyJWT, episodeRoute);
 app.use("/episodeInfo", verifyJWT, episodeInfoRoute);
 app.use("/stories", verifyJWT, seasonRoute);
-app.use("/stories", verifyJWT, storyRoute);
+app.use("/stories", storyRoute);
 app.use("/stories", verifyJWT, musicRoute);
 app.use("/stories", verifyJWT, achievementRoute);
 app.use("/stories", verifyJWT, soundRoute);

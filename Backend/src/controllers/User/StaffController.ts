@@ -2,12 +2,32 @@ import { RequestHandler } from "express";
 import {
   createStaffMemberService,
   deleteStaffMemberService,
+  getAllScriptWritersService,
   getAllStaffMembersService,
   getStaffInfoMemberByIdService,
   getStaffMemberByIdService,
   updateStaffImgService,
   updateStaffRolesService,
 } from "../../services/User/StaffServices";
+
+// @route GET http://localhost:3500/staff/scriptwriters
+// @access Private
+export const getAllScriptWritersController: RequestHandler = async (
+  req,
+  res,
+  next
+) => {
+  try {
+    const staff = await getAllScriptWritersService();
+    if (staff) {
+      return res.status(201).json(staff);
+    } else {
+      return res.status(400).json({ message: "Something went wrong" });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
 
 // @route GET http://localhost:3500/staff
 // @access Private

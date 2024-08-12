@@ -4,7 +4,7 @@ import { twMerge } from "tailwind-merge";
 import AsideHoverPromptModal from "./AsideHoverPromptModal";
 
 const ButtonHoverPromptModalStyles = cva(
-  ["z-[999] transition-all hover:translate-x-[1%] outline-none w-fit"],
+  ["z-[999] transition-all outline-none w-fit"],
   {
     variants: {
       variant: {

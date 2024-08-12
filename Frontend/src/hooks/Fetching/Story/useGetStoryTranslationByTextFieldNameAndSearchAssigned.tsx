@@ -2,49 +2,50 @@ import { useQuery } from "@tanstack/react-query";
 import { axiosCustomized } from "../../../api/axios";
 import { TranslationStoryTypes } from "../../../types/Additional/TranslationTypes";
 import { CurrentlyAvailableLanguagesTypes } from "../../../types/Additional/CURRENTLY_AVAILABEL_LANGUAGES";
-import { StoryFilterTypes } from "../../../features/Story/Story";
 
 type DebouncedTranslationsTypes = {
   language: CurrentlyAvailableLanguagesTypes;
   text: string;
-  textFieldName: string;
+  staffId: string;
 };
 
 const getDebouncedStories = async ({
   language = "russian",
   text,
-  textFieldName,
+  staffId,
 }: DebouncedTranslationsTypes): Promise<TranslationStoryTypes[]> => {
   return await axiosCustomized
     .get(
-      `/translations/textFieldNames/search?currentLanguage=${language}&textFieldName=${textFieldName}&text=${text}`
+      `/translations/textFieldNames/stories/staff/${staffId}/search?currentLanguage=${language}&text=${text}`
     )
     .then((r) => r.data);
 };
 
-export default function useGetStoryTranslationByTextFieldNameAndSearch({
+export default function useGetStoryTranslationByTextFieldNameAndSearchAssigned({
   debouncedValue,
   language,
-  storiesType,
+  staffId,
 }: {
   debouncedValue: string;
+  staffId: string;
   language: CurrentlyAvailableLanguagesTypes;
-  storiesType: StoryFilterTypes;
 }) {
   return useQuery({
     queryKey: [
       "translation",
       "textFieldName",
       "search",
+      "assigned",
+      staffId,
       "stories",
       debouncedValue,
     ],
     queryFn: () =>
       getDebouncedStories({
         text: debouncedValue,
-        textFieldName: "storyName",
+        staffId,
         language,
       }),
-    enabled: !!language && !!debouncedValue && storiesType === "all",
+    enabled: !!language && !!debouncedValue && !!staffId,
   });
 }

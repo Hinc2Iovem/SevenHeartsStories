@@ -23,6 +23,7 @@ import {
   getTranslationSayController,
   getTranslationSeasonController,
   getTranslationStoryController,
+  getTranslationTextFieldNameAndSearchAssignedStoriesController,
   getTranslationTextFieldNameAndSearchController,
   getTranslationUpdatedAtAndLanguageController,
   seasonTranslationUpdateTitleController,
@@ -49,6 +50,9 @@ translationRoute
 translationRoute
   .route("/textFieldNames/search")
   .get(getTranslationTextFieldNameAndSearchController);
+translationRoute
+  .route("/textFieldNames/stories/staff/:staffId/search")
+  .get(getTranslationTextFieldNameAndSearchAssignedStoriesController);
 
 translationRoute
   .route("/appearanceParts/:appearancePartId")

@@ -3,21 +3,21 @@ import scriptwriter from "../../assets/images/Auth/scriptwriter.png";
 import translator from "../../assets/images/Auth/translator.png";
 import crown from "../../assets/images/Profile/crown.png";
 import editor from "../../assets/images/Profile/editor.png";
+import useGetDecodedJWTValues from "../../hooks/Auth/useGetDecodedJWTValues";
 import useGetStaffInfoById from "../../hooks/Fetching/Staff/useGetStaffInfoById";
 import useGetStaffMember from "../../hooks/Fetching/Staff/useGetStaffMember";
 import useUpdateImg from "../../hooks/Patching/useUpdateImg";
 import { StaffRoles } from "../../types/Staff/StaffTypes";
 import ButtonHoverPromptModal from "../shared/ButtonAsideHoverPromptModal/ButtonHoverPromptModal";
 import PreviewImage from "../shared/utilities/PreviewImage";
-import StoryFilterTypesHeader from "../Story/StoryFilterTypes";
 import { StoryFilterTypes } from "../Story/Story";
-import useGetDecodedJWTValues from "../../hooks/Auth/useGetDecodedJWTValues";
+import AmountOfFinishedEpisodesModal from "./LeftSide/Scriptwriter/AmountOfFinishedEpisodesModal";
+import ProfileLeftSideScriptwriter from "./LeftSide/Scriptwriter/ProfileLeftSideScriptwriter";
 
 type ProfileLeftSideTypes = {
   setStoriesType: React.Dispatch<React.SetStateAction<StoryFilterTypes>>;
   setSearchValue: React.Dispatch<React.SetStateAction<string>>;
   expandedTranslationSide: boolean;
-  searchValue: string;
   storiesType: StoryFilterTypes;
 };
 
@@ -25,7 +25,6 @@ export default function ProfileLeftSide({
   setStoriesType,
   setSearchValue,
   storiesType,
-  searchValue,
   expandedTranslationSide,
 }: ProfileLeftSideTypes) {
   const { userId: staffId } = useGetDecodedJWTValues();
@@ -70,7 +69,7 @@ export default function ProfileLeftSide({
           />
         )}
       </div>
-      <div className="flex gap-[1rem] flex-col flex-grow min-w-[20rem] sm:bg-none bg-neutral-alabaster p-[1rem] justify-center shadow-sm">
+      <div className="flex gap-[1rem] flex-col flex-grow sm:bg-none bg-neutral-alabaster p-[1rem] justify-center shadow-sm">
         <div className="w-full p-[1rem] bg-white rounded-md shadow-sm">
           <h3 className="text-[1.5rem] text-center">{staff?.username}</h3>
         </div>
@@ -80,46 +79,18 @@ export default function ProfileLeftSide({
             <RenderStaffRoles key={r} role={r} />
           ))}
         </div>
-        <div
-          className={`${
-            staff?.roles.includes("scriptwriter" || "headscriptwriter")
-              ? ""
-              : "hidden"
-          } w-full p-[1rem] bg-white rounded-md shadow-sm`}
-        >
-          <h3 className="text-[1.5rem] text-center">
-            Количество законченных эпизодов:{" "}
-            {staffInfo?.amountOfFinishedEpisodes ?? 0}
-          </h3>
-        </div>
+        {staff?.roles.includes("scriptwriter" || "headscriptwriter") ? (
+          <AmountOfFinishedEpisodesModal
+            amountOfFinishedEpisodes={staffInfo?.amountOfFinishedEpisodes || 0}
+          />
+        ) : null}
       </div>
 
-      <div
-        className={`${
-          staff?.roles.includes("scriptwriter" || "headscriptwriter")
-            ? "hidden"
-            : ""
-        } bg-neutral-alabaster w-full min-w-[20rem] flex-grow flex flex-col gap-[1rem] py-[1rem] p-[.5rem] rounded-md shadow-md`}
-      >
-        <form
-          className="w-full bg-white rounded-md shadow-sm"
-          onSubmit={(e) => e.preventDefault()}
-        >
-          <input
-            type="text"
-            name="StorySearch"
-            id="storySearch"
-            className="w-full text-[1.5rem] text-gray-700 px-[1rem] py-[.5rem] outline-none  rounded-md"
-            placeholder="Название Истории"
-            value={searchValue}
-            onChange={(e) => setSearchValue(e.target.value)}
-          />
-        </form>
-        <StoryFilterTypesHeader
-          setStoriesType={setStoriesType}
-          storiesType={storiesType}
-        />
-      </div>
+      <ProfileLeftSideScriptwriter
+        setSearchValue={setSearchValue}
+        setStoriesType={setStoriesType}
+        storiesType={storiesType}
+      />
     </div>
   );
 }

@@ -7,10 +7,11 @@ import StoryFilterTypesHeader from "./StoryFilterTypes";
 import StoryHeader from "./StoryHeader";
 import StoryList from "./StoryList";
 
-export type StoryFilterTypes = "all" | "done" | "doing";
+export type StoryFilterTypes = "all" | "allAssigned" | "done" | "doing";
 
 export default function Story() {
-  const [storiesType, setStoriesType] = useState<StoryFilterTypes>("all");
+  const [storiesType, setStoriesType] =
+    useState<StoryFilterTypes>("allAssigned");
   const [searchValue, setSearchValue] = useState("");
 
   const debouncedValue = useDebounce({ value: searchValue, delay: 500 });

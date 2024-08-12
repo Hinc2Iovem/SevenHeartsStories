@@ -19,6 +19,8 @@ import GetItem from "../../models/StoryEditor/PlotField/GetItem/GetItem";
 import Say from "../../models/StoryEditor/PlotField/Say/Say";
 import CommandWardrobe from "../../models/StoryEditor/PlotField/Wardrobe/CommandWardrobe";
 import { subDays, subHours, subMinutes } from "date-fns";
+import Staff from "../../models/User/Staff";
+import StoryInfo from "../../models/StoryData/StoryInfo";
 
 // BY_COMMAND_ID____________________________________________________________________
 
@@ -106,6 +108,65 @@ export const getTranslationUpdatedAtAndLanguageService = async ({
   }
   return existingTranslations;
 };
+// BY_TEXT_FIELD_NAME_ASSIGNED_STORIES____________________________________________________________________
+
+type GetByTextFieldNameAndSearchAssignedStoriesTypes = {
+  staffId: string;
+  text: string | undefined;
+  currentLanguage: string | undefined;
+};
+
+export const getTranslationTextFieldNameAndSearchAssignedStoriesService =
+  async ({
+    staffId,
+    currentLanguage,
+    text,
+  }: GetByTextFieldNameAndSearchAssignedStoriesTypes) => {
+    validateMongoId({ value: staffId, valueName: "Staff" });
+    if (!currentLanguage?.trim().length) {
+      throw createHttpError(400, "Language ia required");
+    }
+
+    checkCurrentLanguage({ currentLanguage });
+
+    const existingStaff = await Staff.findById(staffId).lean();
+
+    if (!existingStaff) {
+      throw createHttpError(400, `User with such id wasn't found`);
+    }
+
+    const existingTranslations = await Translation.find({
+      textFieldName: "storyName",
+      language: currentLanguage,
+    })
+      .lean()
+      .exec();
+
+    const allAssignedStoriesByStaffId = await StoryInfo.find({
+      staffId,
+    }).lean();
+    const allAssignedStoriesIds: string[] = [];
+    for (const s of allAssignedStoriesByStaffId) {
+      if (s) {
+        allAssignedStoriesIds.push((s.storyId || "")?.toString());
+      }
+    }
+
+    if (!existingTranslations.length) {
+      return [];
+    }
+
+    if (text?.trim().length) {
+      const filteredResults = existingTranslations.filter(
+        (et) =>
+          (et.text || "").toLowerCase().includes(text.toLowerCase()) &&
+          allAssignedStoriesIds.includes((et.storyId || "")?.toString())
+      );
+
+      return filteredResults;
+    }
+    return [];
+  };
 // BY_TEXT_FIELD_NAME____________________________________________________________________
 
 type GetByTextFieldNameAndSearchTypes = {

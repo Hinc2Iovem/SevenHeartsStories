@@ -3,19 +3,23 @@ import { Link, useParams } from "react-router-dom";
 import characters from "../../assets/images/Story/characters.png";
 import emotion from "../../assets/images/Story/emotion.png";
 import wardrobe from "../../assets/images/Story/wardrobe.png";
-import info from "../../assets/images/shared/info.png";
+import characteristics from "../../assets/images/Story/characteristic.png";
 import arrowBack from "../../assets/images/shared/prev.png";
 import { MATCHMEDIA } from "../../const/MATCHMEDIA";
+import useGetDecodedJWTValues from "../../hooks/Auth/useGetDecodedJWTValues";
+import useGetTranslationStory from "../../hooks/Fetching/Translation/useGetTranslationStory";
 import useMatchMedia from "../../hooks/UI/useMatchMedia";
+import { TranslationStoryTypes } from "../../types/Additional/TranslationTypes";
 import ButtonHoverPromptModal from "../shared/ButtonAsideHoverPromptModal/ButtonHoverPromptModal";
 import LightBox from "../shared/utilities/LightBox";
-import AssignStory from "./AssignStory";
 import StoryInfoModal from "./StoryInfoModal";
-import useGetTranslationStory from "../../hooks/Fetching/Translation/useGetTranslationStory";
-import { TranslationStoryTypes } from "../../types/Additional/TranslationTypes";
+import StorySinglePageHeaderCharacteristicModal from "./StorySinglePageHeaderCharacteristicModal";
 
 export default function StorySinglePageHeader() {
   const isMobile = useMatchMedia(MATCHMEDIA.Mobile);
+  const [showCharacteristicsModal, setShowCharacteristicsModal] =
+    useState(false);
+  const { userId } = useGetDecodedJWTValues();
   const { storyId } = useParams();
   const [infoModal, setInfoModal] = useState(false);
   const translationStory = useGetTranslationStory({
@@ -38,7 +42,7 @@ export default function StorySinglePageHeader() {
     <>
       <header className="flex flex-col gap-[2rem]">
         <div className="flex justify-between flex-wrap">
-          <Link to={"/stories"} className="w-fit outline-none">
+          <Link to={`/profile/${userId}`} className="w-fit outline-none">
             <img
               src={arrowBack}
               alt="GoBack"
@@ -46,32 +50,6 @@ export default function StorySinglePageHeader() {
             />
           </Link>
           <div className="flex gap-[.5rem]">
-            <div className="relative">
-              <ButtonHoverPromptModal
-                className=""
-                contentName="Информация по истории"
-                positionByAbscissa="right"
-                asideClasses="text-[1.3rem] top-[4.5rem] bottom-[-3.2rem]"
-                variant="rectangle"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setInfoModal(true);
-                }}
-              >
-                <img
-                  src={info}
-                  className="w-[4rem] bg-white rounded-md shadow-sm shadow-gray-400 active:scale-[0.98]"
-                  alt="Info"
-                />
-              </ButtonHoverPromptModal>
-              {infoModal && !isMobile ? (
-                <StoryInfoModal
-                  infoModal={infoModal}
-                  setInfoModal={setInfoModal}
-                  className="w-[30rem] min-h-[30rem] right-[0rem] absolute"
-                />
-              ) : null}
-            </div>
             <ButtonHoverPromptModal
               contentName="Эмоции"
               positionByAbscissa="right"
@@ -86,6 +64,7 @@ export default function StorySinglePageHeader() {
                 />
               </Link>
             </ButtonHoverPromptModal>
+
             <ButtonHoverPromptModal
               contentName="Гардероб"
               positionByAbscissa="right"
@@ -100,6 +79,29 @@ export default function StorySinglePageHeader() {
                 />
               </Link>
             </ButtonHoverPromptModal>
+            <div className="relative">
+              <ButtonHoverPromptModal
+                contentName="Характеристики"
+                positionByAbscissa="right"
+                asideClasses="text-[1.3rem] top-[4.5rem] bottom-[-3.2rem]"
+                variant="rectangle"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setShowCharacteristicsModal((prev) => !prev);
+                }}
+              >
+                <img
+                  src={characteristics}
+                  className="w-[4rem] p-[.3rem] bg-white rounded-md shadow-sm shadow-gray-400"
+                  alt="Characteristics"
+                />
+              </ButtonHoverPromptModal>
+              <StorySinglePageHeaderCharacteristicModal
+                showCharacteristicsModal={showCharacteristicsModal}
+                setShowCharacteristicsModal={setShowCharacteristicsModal}
+              />
+            </div>
+
             <ButtonHoverPromptModal
               contentName="Персонажи"
               positionByAbscissa="right"
@@ -116,11 +118,29 @@ export default function StorySinglePageHeader() {
             </ButtonHoverPromptModal>
           </div>
         </div>
-        <AssignStory />
 
-        <h1 className="text-[3.5rem] bg-white text-gray-700 rounded-md shadow-md w-fit px-[1rem]">
-          {storyName?.text}
-        </h1>
+        <div className="flex w-full justify-between flex-wrap items-center">
+          <h1 className="text-[3.5rem] bg-white text-gray-700 rounded-md shadow-md w-fit px-[1rem]">
+            {storyName?.text}
+          </h1>
+          <div className="relative">
+            <button
+              onClick={() => {
+                setInfoModal((prev) => !prev);
+              }}
+              className="text-[2rem] bg-white text-gray-700 rounded-md shadow-md w-fit px-[1rem] py-[.5rem]"
+            >
+              Информация по истории
+            </button>
+            {infoModal && !isMobile ? (
+              <StoryInfoModal
+                infoModal={infoModal}
+                setInfoModal={setInfoModal}
+                className="w-[30rem] min-h-[30rem] right-[0rem] absolute"
+              />
+            ) : null}
+          </div>
+        </div>
       </header>
 
       {infoModal && isMobile ? (

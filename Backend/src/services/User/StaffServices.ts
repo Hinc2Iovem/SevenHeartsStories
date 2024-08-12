@@ -1,11 +1,19 @@
-import createHttpError from "http-errors";
-import { CreateStaffMemberTypes } from "../../controllers/User/StaffController";
-import { StaffRoles } from "../../consts/STAFF_ROLES";
-import { validateMongoId } from "../../utils/validateMongoId";
-import Staff from "../../models/User/Staff";
 import brcypt from "bcrypt";
-import env from "../../utils/validateEnv";
+import createHttpError from "http-errors";
+import { StaffRoles } from "../../consts/STAFF_ROLES";
+import { CreateStaffMemberTypes } from "../../controllers/User/StaffController";
+import Staff from "../../models/User/Staff";
 import StaffInfo from "../../models/User/StaffInfo";
+import env from "../../utils/validateEnv";
+import { validateMongoId } from "../../utils/validateMongoId";
+
+export const getAllScriptWritersService = async () => {
+  const allScriptwriters = await Staff.find({ roles: "scriptwriter" }).lean();
+  if (!allScriptwriters.length) {
+    return [];
+  }
+  return allScriptwriters;
+};
 
 export const getAllStaffMembersService = async () => {
   const existingStaffMembers = await Staff.find().lean();

@@ -23,6 +23,7 @@ import {
   getTranslationSayService,
   getTranslationSeasonService,
   getTranslationStoryService,
+  getTranslationTextFieldNameAndSearchAssignedStoriesService,
   getTranslationTextFieldNameAndSearchService,
   getTranslationUpdatedAtAndLanguageService,
   seasonTranslationUpdateTitleService,
@@ -87,6 +88,41 @@ export const getTranslationUpdatedAtAndLanguageController: RequestHandler<
       currentLanguage: req.query.currentLanguage,
       updatedAt: req.query.updatedAt,
     });
+    if (textFieldName) {
+      return res.status(201).json(textFieldName);
+    } else {
+      return res.status(400).json({ message: "Something went wrong" });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+// BY_TEXT_FIELD_NAME_AssignedStories__________________________________________________________
+
+type GetTextFieldNameAndSearchAssignedStoriesParams = {
+  staffId: string;
+};
+
+type GetTextFieldNameAndSearchAssignedStoriesQuery = {
+  currentLanguage: string | undefined;
+  text: string | undefined;
+};
+
+// @route GET http://localhost:3500/translations/textFieldNames
+// @access Private
+export const getTranslationTextFieldNameAndSearchAssignedStoriesController: RequestHandler<
+  GetTextFieldNameAndSearchAssignedStoriesParams,
+  unknown,
+  unknown,
+  GetTextFieldNameAndSearchAssignedStoriesQuery
+> = async (req, res, next) => {
+  try {
+    const textFieldName =
+      await getTranslationTextFieldNameAndSearchAssignedStoriesService({
+        staffId: req.params.staffId,
+        currentLanguage: req.query.currentLanguage,
+        text: req.query.text,
+      });
     if (textFieldName) {
       return res.status(201).json(textFieldName);
     } else {
