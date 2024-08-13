@@ -1,9 +1,14 @@
 import mongoose, { InferSchemaType, Document, model } from "mongoose";
 
+type StoryStaffInfoTypes = {
+  staffId: string;
+  storyStatus: string;
+};
 export interface StoryDocument extends Document {
   amountOfEpisodes: number;
   storyStatus: string;
   imgUrl?: string | null;
+  storyStaffInfo: StoryStaffInfoTypes[];
 }
 
 // Translation "storyName" "storyGenre"
@@ -21,6 +26,18 @@ export const storySchema = new mongoose.Schema<StoryDocument>({
     type: String,
     default: null,
   },
+  storyStaffInfo: [
+    {
+      stafffId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Staff",
+      },
+      storyStatus: {
+        type: String,
+        default: "doing",
+      },
+    },
+  ],
 });
 
 type Story = InferSchemaType<typeof storySchema>;

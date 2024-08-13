@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState } from "react";
-import useGetStoryTranslationByTextFieldNameAndSearch from "../../../../hooks/Fetching/Story/useGetStoryTranslationByTextFieldNameAndSearch";
+import { useMemo, useRef, useState } from "react";
+import useGetTranslationStoriesQueries from "../../../../hooks/Fetching/Translation/Story/useGetTranslationStoriesQueries";
 import useOutOfModal from "../../../../hooks/UI/useOutOfModal";
 import useDebounce from "../../../../hooks/utilities/useDebounce";
 
@@ -20,24 +20,24 @@ export default function StoryPrompt({ setStoryId }: StoryPromptTypes) {
 
   const debouncedValue = useDebounce({ value: storyValue, delay: 500 });
 
-  const { data: storiesSearch, isLoading } =
-    useGetStoryTranslationByTextFieldNameAndSearch({
-      debouncedValue,
-      language: "russian",
-    });
+  const allStories = useGetTranslationStoriesQueries({
+    language: "russian",
+  });
 
-  useEffect(() => {
-    if (debouncedValue?.trim().length) {
-      setStoryId(
-        storiesSearch?.find(
-          (s) => s.text.toLowerCase() === debouncedValue.toLowerCase()
-        )?.storyId || ""
-      );
-    } else {
-      setStoryId("");
+  const memoizedStories = useMemo(() => {
+    if (debouncedValue) {
+      return allStories.map((queryResult) => ({
+        data: queryResult.data?.filter((story) => {
+          if (story.textFieldName === "storyName") {
+            story.text.toLowerCase().includes(debouncedValue.toLowerCase());
+          }
+        }),
+      }));
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [debouncedValue, storiesSearch]);
+    return allStories;
+  }, [allStories, debouncedValue]);
+
+  console.log(memoizedStories);
 
   return (
     <form
@@ -61,25 +61,23 @@ export default function StoryPrompt({ setStoryId }: StoryPromptTypes) {
           showStories ? "" : "hidden"
         } max-h-[15rem] overflow-auto flex flex-col gap-[.5rem] min-w-fit w-full absolute bg-white rounded-md shadow-md translate-y-[.5rem] p-[1rem] | containerScroll`}
       >
-        {isLoading ? (
-          <div className="text-[1.4rem] text-gray-600 text-center py-[.5rem]">
-            Загрузка...
-          </div>
-        ) : storiesSearch && storiesSearch.length > 0 ? (
-          storiesSearch.map((s) => (
-            <button
-              key={s._id}
-              type="button"
-              onClick={() => {
-                setStoryId(s.storyId);
-                setStoryValue(s.text);
-                setShowStories(false);
-              }}
-              className="text-[1.4rem] outline-gray-300 text-gray-600 text-start hover:bg-primary-pastel-blue hover:text-white rounded-md px-[1rem] py-[.5rem] hover:shadow-md"
-            >
-              {s.text}
-            </button>
-          ))
+        {memoizedStories.length > 0 ? (
+          memoizedStories.map((s) =>
+            s.data?.map((sd) => (
+              <button
+                key={sd._id}
+                type="button"
+                onClick={() => {
+                  setStoryId(sd.storyId);
+                  setStoryValue(sd.text);
+                  setShowStories(false);
+                }}
+                className="text-[1.4rem] outline-gray-300 text-gray-600 text-start hover:bg-primary-pastel-blue hover:text-white rounded-md px-[1rem] py-[.5rem] hover:shadow-md"
+              >
+                {sd.text}
+              </button>
+            ))
+          )
         ) : (
           <button
             type="button"

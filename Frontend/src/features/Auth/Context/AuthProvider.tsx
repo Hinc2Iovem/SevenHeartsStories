@@ -18,8 +18,6 @@ type AuthProviderTypes = {
 export default function AuthProvider({ children }: AuthProviderTypes) {
   const [token, setToken] = useState({ accessToken: "" });
 
-  console.log(token);
-
   useLayoutEffect(() => {
     const authInterceptor = axiosCustomized.interceptors.request.use(
       (config) => {

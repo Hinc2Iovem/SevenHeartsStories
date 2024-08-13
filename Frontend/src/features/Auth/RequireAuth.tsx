@@ -23,8 +23,6 @@ export default function RequireAuth({ allowedRoles }: RequireAuthTypes) {
     : undefined;
   const roles: StaffRoles[] = decoded?.StaffInfo?.roles || [];
 
-  console.log(decoded);
-
   return roles?.find((role) => allowedRoles?.includes(role)) ? (
     <Outlet />
   ) : token?.accessToken ? (
