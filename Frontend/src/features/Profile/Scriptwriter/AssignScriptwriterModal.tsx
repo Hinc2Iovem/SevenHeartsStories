@@ -1,11 +1,12 @@
 import { useEffect, useRef, useState } from "react";
 import assignBlack from "../../../assets/images/Profile/assignBlack.svg";
 import useGetAllScriptwriters from "../../../hooks/Fetching/Staff/useGetAllScriptwriters";
-import useGetStoryAssignedWorkersEnabledModalOpen from "../../../hooks/Fetching/Story/useGetStoryAssignedWorkersEnabledModalOpen";
+import useAssignWorker from "../../../hooks/Patching/Story/useAssignWorker";
 import useOutOfModal from "../../../hooks/UI/useOutOfModal";
+import { EpisodeStatusTypes } from "../../../types/StoryData/Episode/EpisodeTypes";
 import "../../Editor/Flowchart/FlowchartStyles.css";
 import ButtonHoverPromptModal from "../../shared/ButtonAsideHoverPromptModal/ButtonHoverPromptModal";
-import useAssignWorker from "../../../hooks/Patching/Story/useAssignWorker";
+import useGetDecodedJWTValues from "../../../hooks/Auth/useGetDecodedJWTValues";
 
 type AssignScriptwriterModalTypes = {
   setCharacterIds: React.Dispatch<React.SetStateAction<string[]>>;
@@ -14,6 +15,12 @@ type AssignScriptwriterModalTypes = {
   openedStoryId: string;
   storyTitle: string;
   storyId: string;
+  assignedWorkers?:
+    | {
+        staffId: string;
+        storyStatus: EpisodeStatusTypes;
+      }[]
+    | undefined;
 };
 
 export default function AssignScriptwriterModal({
@@ -23,25 +30,22 @@ export default function AssignScriptwriterModal({
   setOpenedStoryId,
   setCharacterIds,
   characterIds,
+  assignedWorkers,
 }: AssignScriptwriterModalTypes) {
+  const { userId } = useGetDecodedJWTValues();
   const [showScriptwriters, setShowScriptwriters] = useState(false);
   const modalRef = useRef<HTMLDivElement>(null);
 
-  const { data: assignedWorkes } = useGetStoryAssignedWorkersEnabledModalOpen({
-    storyId,
-    showModal: showScriptwriters,
-  });
-
   useEffect(() => {
-    if (showScriptwriters && assignedWorkes) {
+    if (showScriptwriters && assignedWorkers) {
       const allAssignedWorkersIds: string[] = [];
-      assignedWorkes.map((aw) => {
+      assignedWorkers.map((aw) => {
         allAssignedWorkersIds.push(aw.staffId);
       });
       setCharacterIds(allAssignedWorkersIds);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [showScriptwriters, assignedWorkes]);
+  }, [showScriptwriters, assignedWorkers]);
 
   useOutOfModal({
     modalRef,
@@ -61,7 +65,10 @@ export default function AssignScriptwriterModal({
     }
   }, [storyId, openedStoryId]);
 
-  const assignWorker = useAssignWorker({ storyId });
+  const assignWorker = useAssignWorker({
+    storyId,
+    currentUserId: userId || "",
+  });
 
   const handleSubmit = () => {
     if (characterIds) {

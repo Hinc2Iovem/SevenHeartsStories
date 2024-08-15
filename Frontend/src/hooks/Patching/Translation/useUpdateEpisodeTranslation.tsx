@@ -1,4 +1,4 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { axiosCustomized } from "../../../api/axios";
 import { CurrentlyAvailableLanguagesTypes } from "../../../types/Additional/CURRENTLY_AVAILABEL_LANGUAGES";
 
@@ -16,6 +16,7 @@ export default function useUpdateEpisodeTranslation({
   episodeId,
   language,
 }: UpdateEpisodeTranslationTypes) {
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async ({
       episodeName,
@@ -26,5 +27,12 @@ export default function useUpdateEpisodeTranslation({
         title: episodeName,
         description,
       }),
+    onSettled: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["translation", language, "episode", episodeId],
+        type: "active",
+        exact: true,
+      });
+    },
   });
 }

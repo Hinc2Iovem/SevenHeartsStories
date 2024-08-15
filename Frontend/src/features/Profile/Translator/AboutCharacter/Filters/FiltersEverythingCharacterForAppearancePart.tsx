@@ -88,8 +88,6 @@ export default function FiltersEverythingCharacterForAppearancePart({
     return [];
   }, [translatedAppearancePart, nonTranslatedAppearancePart]);
 
-  console.log(memoizedCombinedTranslations);
-
   return (
     <>
       <div className="flex w-full gap-[1rem] bg-neutral-alabaster px-[.5rem] py-[.5rem] rounded-md shadow-sm">
@@ -102,14 +100,20 @@ export default function FiltersEverythingCharacterForAppearancePart({
       <main
         className={`grid grid-cols-[repeat(auto-fill,minmax(25rem,1fr))] gap-[1rem] w-full`}
       >
-        {memoizedCombinedTranslations.map((ct, i) => (
-          <DisplayTranslatedNonTranslatedAppearancePart
-            key={(ct.translated[i]?._id || i) + "-ctAppearancePart"}
-            filteredAppearanceType={appearanceType}
-            languageToTranslate={translateToLanguage}
-            {...ct}
-          />
-        ))}
+        {memoizedCombinedTranslations.map((ct) => {
+          {
+            return ct.translated.map((ctt, i) => (
+              <DisplayTranslatedNonTranslatedAppearancePart
+                key={(ctt._id || i) + "-ctAppearancePart"}
+                filteredAppearanceType={appearanceType}
+                languageToTranslate={translateToLanguage}
+                translateFromLanguage={translateFromLanguage}
+                translated={ctt}
+                nonTranslated={(ct.nonTranslated || [])[i]}
+              />
+            ));
+          }
+        })}
       </main>
     </>
   );

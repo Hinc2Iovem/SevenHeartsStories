@@ -1,17 +1,21 @@
 import { useEffect, useState } from "react";
+import useUpdateCharacteristicTranslation from "../../../../../../hooks/Patching/Translation/useUpdateCharacteristicTranslation";
 import useDebounce from "../../../../../../hooks/utilities/useDebounce";
 import { CurrentlyAvailableLanguagesTypes } from "../../../../../../types/Additional/CURRENTLY_AVAILABEL_LANGUAGES";
-import { CombinedTranslatedAndNonTranslatedCharacteristicTypes } from "../../Filters/FiltersEverythingCharacterForCharacteristic";
-import useUpdateCharacteristicTranslation from "../../../../../../hooks/Patching/Translation/useUpdateCharacteristicTranslation";
+import { TranslationCharacterCharacteristicTypes } from "../../../../../../types/Additional/TranslationTypes";
 
 type DisplayTranslatedNonTranslatedCharacteristicTypes = {
   languageToTranslate: CurrentlyAvailableLanguagesTypes;
-} & CombinedTranslatedAndNonTranslatedCharacteristicTypes;
+  translateFromLanguage: CurrentlyAvailableLanguagesTypes;
+  translated: TranslationCharacterCharacteristicTypes;
+  nonTranslated: TranslationCharacterCharacteristicTypes;
+};
 
 export default function DisplayTranslatedNonTranslatedCharacteristic({
   nonTranslated,
   translated,
   languageToTranslate,
+  translateFromLanguage,
 }: DisplayTranslatedNonTranslatedCharacteristicTypes) {
   const [
     translatedCharacterCharacteristic,
@@ -24,26 +28,42 @@ export default function DisplayTranslatedNonTranslatedCharacteristic({
 
   useEffect(() => {
     if (translated) {
-      translated.map((t) => {
-        if (t.textFieldName === "characterCharacteristic") {
-          setTranslatedCharacterCharacteristic(t.text);
-          setCharacterCharacteristicId(t.characteCharacteristicId);
-        }
-      });
+      if (translated.textFieldName === "characterCharacteristic") {
+        setTranslatedCharacterCharacteristic(translated.text);
+        setCharacterCharacteristicId(translated.characterCharacteristicId);
+      }
     }
   }, [translated]);
 
   useEffect(() => {
     if (nonTranslated) {
-      nonTranslated.map((nt) => {
-        if (nt.textFieldName === "characterCharacteristic") {
-          setCharacterCharacteristic(nt.text);
-        }
-      });
+      if (nonTranslated.textFieldName === "characterCharacteristic") {
+        setCharacterCharacteristic(nonTranslated.text);
+      }
     } else {
       setCharacterCharacteristic("");
     }
   }, [nonTranslated, languageToTranslate]);
+
+  const debouncedTranslatedName = useDebounce({
+    value: characterCharacteristic,
+    delay: 500,
+  });
+
+  const updateCharacterTranslationTranslated =
+    useUpdateCharacteristicTranslation({
+      language: translateFromLanguage,
+      characterCharacteristicId,
+    });
+
+  useEffect(() => {
+    if (debouncedTranslatedName?.trim().length) {
+      updateCharacterTranslationTranslated.mutate({
+        characteristicName: debouncedTranslatedName,
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [debouncedTranslatedName]);
 
   const debouncedName = useDebounce({
     value: characterCharacteristic,
@@ -95,7 +115,7 @@ export default function DisplayTranslatedNonTranslatedCharacteristic({
           <input
             type="text"
             value={characterCharacteristic}
-            placeholder="Имя персонажа"
+            placeholder="Характеристика"
             className="w-full border-dotted border-gray-600 border-[2px] text-[1.6rem] font-medium text-gray-700 outline-none rounded-md px-[1rem] py-[.5rem] bg-white"
             onChange={(e) => setCharacterCharacteristic(e.target.value)}
           />

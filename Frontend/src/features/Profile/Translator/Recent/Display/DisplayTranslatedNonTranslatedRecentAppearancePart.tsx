@@ -9,11 +9,13 @@ import useGetTranslationAppearancePart from "../../../../../hooks/Fetching/Trans
 type DisplayTranslatedNonTranslatedRecentAppearancePartTypes = {
   languageToTranslate: CurrentlyAvailableLanguagesTypes;
   translated: TranslationAppearancePartTypes;
+  translateFromLanguage: CurrentlyAvailableLanguagesTypes;
 };
 
 export default function DisplayTranslatedNonTranslatedRecentAppearancePart({
   translated,
   languageToTranslate,
+  translateFromLanguage,
 }: DisplayTranslatedNonTranslatedRecentAppearancePartTypes) {
   const [translatedAppearancePart, setTranslatedAppearancePart] = useState("");
   const [appearancePartType, setAppearancePartType] =
@@ -71,8 +73,31 @@ export default function DisplayTranslatedNonTranslatedRecentAppearancePart({
   useEffect(() => {
     if (nonTranslatedAppearancePart) {
       setAppearancePart(nonTranslatedAppearancePart.text);
+    } else {
+      setAppearancePart("");
     }
-  }, [nonTranslatedAppearancePart]);
+  }, [nonTranslatedAppearancePart, languageToTranslate]);
+
+  const debouncedNameTranslated = useDebounce({
+    value: translatedAppearancePart,
+    delay: 500,
+  });
+
+  const updateCharacterTranslationTranslated =
+    useUpdateAppearancePartTranslation({
+      language: translateFromLanguage,
+      appearancePartId,
+    });
+
+  useEffect(() => {
+    if (debouncedNameTranslated?.trim().length) {
+      updateCharacterTranslationTranslated.mutate({
+        appearancePartName: debouncedNameTranslated,
+        appearancePartType,
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [debouncedNameTranslated]);
 
   const debouncedName = useDebounce({
     value: appearancePart,

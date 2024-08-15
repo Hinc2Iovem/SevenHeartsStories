@@ -4,7 +4,6 @@ import translator from "../../assets/images/Auth/translator.png";
 import crown from "../../assets/images/Profile/crown.png";
 import editor from "../../assets/images/Profile/editor.png";
 import useGetDecodedJWTValues from "../../hooks/Auth/useGetDecodedJWTValues";
-import useGetStaffInfoById from "../../hooks/Fetching/Staff/useGetStaffInfoById";
 import useGetStaffMember from "../../hooks/Fetching/Staff/useGetStaffMember";
 import useUpdateImg from "../../hooks/Patching/useUpdateImg";
 import { StaffRoles } from "../../types/Staff/StaffTypes";
@@ -29,7 +28,6 @@ export default function ProfileLeftSide({
 }: ProfileLeftSideTypes) {
   const { userId: staffId } = useGetDecodedJWTValues();
   const { data: staff } = useGetStaffMember({ staffId: staffId ?? "" });
-  const { data: staffInfo } = useGetStaffInfoById({ staffId: staffId ?? "" });
 
   const [imagePreview, setPreview] = useState<string | ArrayBuffer | null>(
     null
@@ -81,7 +79,7 @@ export default function ProfileLeftSide({
         </div>
         {staff?.roles.includes("scriptwriter" || "headscriptwriter") ? (
           <AmountOfFinishedEpisodesModal
-            amountOfFinishedEpisodes={staffInfo?.amountOfFinishedEpisodes || 0}
+            amountOfFinishedEpisodes={staff?.amountOfFinishedEpisodes || 0}
           />
         ) : null}
       </div>

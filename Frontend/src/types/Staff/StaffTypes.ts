@@ -3,6 +3,7 @@ export type StaffMemberTypes = {
   roles: StaffRoles[];
   _id: string;
   imgUrl?: string;
+  amountOfFinishedEpisodes?: number;
 };
 
 export type StaffInfoTypes = {

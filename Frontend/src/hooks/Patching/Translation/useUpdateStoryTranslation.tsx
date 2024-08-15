@@ -1,4 +1,4 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { axiosCustomized } from "../../../api/axios";
 import { CurrentlyAvailableLanguagesTypes } from "../../../types/Additional/CURRENTLY_AVAILABEL_LANGUAGES";
 
@@ -17,6 +17,7 @@ export default function useUpdateStoryTranslation({
   storyId,
   language,
 }: UpdateStoryTranslationTypes) {
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async ({
       storyName,
@@ -29,5 +30,12 @@ export default function useUpdateStoryTranslation({
         description: storyDescription,
         genre: storyGenre,
       }),
+    onSettled: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["translation", language, "story", storyId],
+        exact: true,
+        type: "active",
+      });
+    },
   });
 }

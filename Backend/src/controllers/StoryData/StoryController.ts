@@ -1,6 +1,8 @@
 import { RequestHandler } from "express";
 import {
   getAllAssignedStoriesByStaffIdService,
+  getAllAssignedStoriesTranslationByStaffIdService,
+  getAllStoriesByLanguageService,
   getAllStoryAssignWorkersService,
   getStoryAssignWorkerService,
   storyAssignWorkerService,
@@ -9,8 +11,34 @@ import {
   storyGetAllService,
   storyGetByIdService,
   storyUpdateImgService,
-  storyUpdateStatusService,
+  storyUpdateStatusForWorkerService,
 } from "../../services/StoryData/StoryService";
+
+type GetAllStoriesByLanguageQuery = {
+  currentLanguage: string;
+};
+
+// @route GET http://localhost:3500/stories/language
+// @access Private
+export const getAllStoriesByLanguageController: RequestHandler<
+  unknown,
+  unknown,
+  unknown,
+  GetAllStoriesByLanguageQuery
+> = async (req, res, next) => {
+  try {
+    const story = await getAllStoriesByLanguageService({
+      currentLanguage: req.query.currentLanguage,
+    });
+    if (story) {
+      return res.status(201).json(story);
+    } else {
+      return res.status(400).json({ message: "Something went wrong" });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
 
 // @route GET http://localhost:3500/stories
 // @access Private
@@ -45,6 +73,35 @@ export const storyGetByIdController: RequestHandler<
     });
     if (story) {
       return res.status(201).json(story);
+    } else {
+      return res.status(400).json({ message: "Something went wrong" });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
+type GetAllAssignedStoriesTranslationTypes = {
+  staffId: string;
+};
+type GetAllAssignedStoriesTranslationQuery = {
+  currentLanguage?: string;
+};
+// @route GET http://localhost:3500/stories/translations/staff/:staffId/assignWorkers
+// @access Private
+export const getAllAssignedStoriesTranslationByStaffIdController: RequestHandler<
+  GetAllAssignedStoriesTranslationTypes,
+  unknown,
+  unknown,
+  GetAllAssignedStoriesTranslationQuery
+> = async (req, res, next) => {
+  try {
+    const storyInfo = await getAllAssignedStoriesTranslationByStaffIdService({
+      staffId: req.params.staffId,
+      currentLanguage: req.query.currentLanguage,
+    });
+    if (storyInfo) {
+      return res.status(201).json(storyInfo);
     } else {
       return res.status(400).json({ message: "Something went wrong" });
     }
@@ -246,15 +303,43 @@ type StoryUpdateStatusBody = {
 
 // @route PATCH http://localhost:3500/stories/:storyId/status
 // @access Private
-export const storyUpdateStatusController: RequestHandler<
-  StoryUpdateStatusParams,
+// export const storyUpdateStatusController: RequestHandler<
+//   StoryUpdateStatusParams,
+//   unknown,
+//   StoryUpdateStatusBody,
+//   unknown
+// > = async (req, res, next) => {
+//   try {
+//     const story = await storyUpdateStatusService({
+//       storyId: req.params.storyId,
+//       storyStatus: req.body.storyStatus,
+//     });
+//     if (story) {
+//       return res.status(201).json(story);
+//     } else {
+//       return res.status(400).json({ message: "Something went wrong" });
+//     }
+//   } catch (error) {
+//     next(error);
+//   }
+// };
+type StoryUpdateStatusWorkerParams = {
+  storyId: string;
+  staffId: string;
+};
+
+// @route PATCH http://localhost:3500/stories/:storyId/staff/:staffId/status
+// @access Private
+export const storyUpdateStatusForWorkerController: RequestHandler<
+  StoryUpdateStatusWorkerParams,
   unknown,
   StoryUpdateStatusBody,
   unknown
 > = async (req, res, next) => {
   try {
-    const story = await storyUpdateStatusService({
+    const story = await storyUpdateStatusForWorkerService({
       storyId: req.params.storyId,
+      staffId: req.params.staffId,
       storyStatus: req.body.storyStatus,
     });
     if (story) {

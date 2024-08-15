@@ -2,10 +2,10 @@ import { useMemo, useState } from "react";
 import useGetTranslationCharactersQueries from "../../../../../hooks/Fetching/Translation/Characters/useGetTranslationCharactersQueries";
 import { CurrentlyAvailableLanguagesTypes } from "../../../../../types/Additional/CURRENTLY_AVAILABEL_LANGUAGES";
 import { TranslationCharacterTypes } from "../../../../../types/Additional/TranslationTypes";
-import CharacterTypesDropDown from "../Display/Character/CharacterTypesDropDown";
-import DisplayTranslatedNonTranslatedCharacter from "../Display/Character/DisplayTranslatedNonTranslatedCharacter";
 import CharacterPrompt from "../../InputPrompts/CharacterPrompt";
 import StoryPrompt from "../../InputPrompts/StoryPrompt";
+import CharacterTypesDropDown from "../Display/Character/CharacterTypesDropDown";
+import DisplayTranslatedNonTranslatedCharacter from "../Display/Character/DisplayTranslatedNonTranslatedCharacter";
 
 type FiltersEverythingCharacterForCharacterTypes = {
   translateFromLanguage: CurrentlyAvailableLanguagesTypes;
@@ -25,6 +25,7 @@ export default function FiltersEverythingCharacterForCharacter({
   const [characterId, setCharacterId] = useState("");
 
   const [characterType, setCharacterType] = useState("");
+
   const translatedCharacters = useGetTranslationCharactersQueries({
     storyId,
     language: translateFromLanguage,
@@ -105,6 +106,7 @@ export default function FiltersEverythingCharacterForCharacter({
             key={(ct?.translated[i]?._id || i) + "-ct"}
             characterTypeFilter={characterType}
             characterIdFilter={characterId}
+            translateFromLanguage={translateFromLanguage}
             languageToTranslate={translateToLanguage}
             {...ct}
           />

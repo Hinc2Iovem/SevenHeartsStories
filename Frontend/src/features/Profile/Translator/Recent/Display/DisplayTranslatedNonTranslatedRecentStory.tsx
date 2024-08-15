@@ -9,11 +9,13 @@ import useUpdateStoryTranslation from "../../../../../hooks/Patching/Translation
 type DisplayTranslatedNonTranslatedRecentStoryTypes = {
   languageToTranslate: CurrentlyAvailableLanguagesTypes;
   translated: TranslationStoryTypes[];
+  translateFromLanguage: CurrentlyAvailableLanguagesTypes;
 };
 
 export default function DisplayTranslatedNonTranslatedRecentStory({
   translated,
   languageToTranslate,
+  translateFromLanguage,
 }: DisplayTranslatedNonTranslatedRecentStoryTypes) {
   const [translatedStoryName, setTranslatedStoryName] = useState("");
   const [translatedStoryDescription, setTranslatedStoryDescription] =
@@ -56,8 +58,57 @@ export default function DisplayTranslatedNonTranslatedRecentStory({
           setStoryGenre(nt.text);
         }
       });
+    } else {
+      setStoryName("");
+      setStoryDescription("");
+      setStoryGenre("");
     }
-  }, [nonTranslatedStory]);
+  }, [nonTranslatedStory, languageToTranslate]);
+
+  const debouncedNameTranslated = useDebounce({
+    value: translatedStoryName,
+    delay: 500,
+  });
+
+  const debouncedDescriptionTranslated = useDebounce({
+    value: translatedStoryDescription,
+    delay: 500,
+  });
+  const debouncedGenreTranslated = useDebounce({
+    value: translatedStoryGenre,
+    delay: 500,
+  });
+
+  const updateCharacterTranslationTranslated = useUpdateStoryTranslation({
+    language: translateFromLanguage,
+    storyId,
+  });
+
+  useEffect(() => {
+    if (debouncedNameTranslated?.trim().length) {
+      updateCharacterTranslationTranslated.mutate({
+        storyName: debouncedNameTranslated,
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [debouncedNameTranslated]);
+  useEffect(() => {
+    if (debouncedGenreTranslated?.trim().length) {
+      updateCharacterTranslationTranslated.mutate({
+        storyGenre: debouncedGenreTranslated,
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [debouncedGenreTranslated]);
+
+  useEffect(() => {
+    if (debouncedDescriptionTranslated?.trim().length) {
+      updateCharacterTranslationTranslated.mutate({
+        storyDescription: debouncedDescriptionTranslated,
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [debouncedDescriptionTranslated]);
 
   const debouncedName = useDebounce({
     value: storyName,

@@ -86,13 +86,19 @@ export default function FiltersEverythingStoryForSeason({
       <main
         className={`grid grid-cols-[repeat(auto-fill,minmax(30rem,1fr))] gap-[1rem] w-full`}
       >
-        {memoizedCombinedTranslations.map((ct, i) => (
-          <DisplayTranslatedNonTranslatedSeason
-            key={(ct.translated[i]?._id || i) + "-ctSeason"}
-            languageToTranslate={translateToLanguage}
-            {...ct}
-          />
-        ))}
+        {memoizedCombinedTranslations.map((ct) => {
+          {
+            return ct.translated.map((ctt, i) => (
+              <DisplayTranslatedNonTranslatedSeason
+                key={(ctt?._id || i) + "-ctSeason"}
+                languageToTranslate={translateToLanguage}
+                translateFromLanguage={translateFromLanguage}
+                translated={ctt}
+                nonTranslated={(ct.nonTranslated || [])[i]}
+              />
+            ));
+          }
+        })}
       </main>
     </>
   );

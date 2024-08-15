@@ -9,6 +9,24 @@ import { validateMongoId } from "../../utils/validateMongoId";
 import StoryInfo from "../../models/StoryData/StoryInfo";
 import Staff from "../../models/User/Staff";
 
+type GetAllStoriesByLanguageTypes = {
+  currentLanguage: string;
+};
+
+export const getAllStoriesByLanguageService = async ({
+  currentLanguage,
+}: GetAllStoriesByLanguageTypes) => {
+  const existingStories = await Story.find({
+    "translations.language": currentLanguage,
+  }).lean();
+
+  if (!existingStories.length) {
+    return [];
+  }
+
+  return existingStories;
+};
+
 export const storyGetAllService = async () => {
   const existingStories = await Story.find().lean();
 
@@ -34,6 +52,37 @@ export const storyGetByIdService = async ({ storyId }: GetStoryByIdTypes) => {
   return existingStory;
 };
 
+type GetAllAssignedStoriesTranslationTypes = {
+  staffId: string;
+  currentLanguage?: string;
+};
+
+export const getAllAssignedStoriesTranslationByStaffIdService = async ({
+  staffId,
+  currentLanguage,
+}: GetAllAssignedStoriesTranslationTypes) => {
+  validateMongoId({ value: staffId, valueName: "Staff" });
+  if (!currentLanguage?.trim().length) {
+    throw createHttpError(400, "Language is required");
+  }
+
+  checkCurrentLanguage({ currentLanguage });
+
+  const existingStaff = await Staff.findById(staffId).lean();
+  if (!existingStaff) {
+    throw createHttpError(400, `No staff with id: ${staffId} was found`);
+  }
+
+  const assignedWorkers = await Story.find({
+    "storyStaffInfo.staffId": staffId,
+  }).lean();
+  if (!assignedWorkers.length) {
+    return [];
+  }
+
+  return assignedWorkers;
+};
+
 type GetAllAssignedStoriesTypes = {
   staffId: string;
 };
@@ -48,12 +97,24 @@ export const getAllAssignedStoriesByStaffIdService = async ({
     throw createHttpError(400, `No staff with id: ${staffId} was found`);
   }
 
-  const assignedWorkers = await StoryInfo.find({ staffId }).lean();
-  if (!assignedWorkers.length) {
+  const assignedWorkerStories = await Story.find({
+    "storyStaffInfo.staffId": staffId,
+  }).lean();
+
+  if (!assignedWorkerStories.length) {
     return [];
   }
 
-  return assignedWorkers;
+  const allStories = [];
+  for (const s of assignedWorkerStories) {
+    const newTranslation = await Translation.findOne({
+      textFieldName: TranslationTextFieldName.StoryName,
+      storyId: s._id,
+    });
+    allStories.push(newTranslation);
+  }
+
+  return allStories;
 };
 
 type GetAllStoryAssignWorkersTypes = {
@@ -70,12 +131,7 @@ export const getAllStoryAssignWorkersService = async ({
     throw createHttpError(400, `No story with id: ${storyId} was found`);
   }
 
-  const assignedWorkers = await StoryInfo.find({ storyId }).lean();
-  if (!assignedWorkers.length) {
-    return [];
-  }
-
-  return assignedWorkers;
+  return existingStory.storyStaffInfo;
 };
 
 type GetStoryAssignWorkerTypes = {
@@ -119,7 +175,7 @@ export const storyAssignWorkerService = async ({
   validateMongoId({ value: staffId, valueName: "Staff" });
   validateMongoId({ value: storyId, valueName: "Story" });
 
-  const existingStory = await Story.findById(storyId).lean();
+  const existingStory = await Story.findById(storyId).exec();
   if (!existingStory) {
     throw createHttpError(400, `No story with id: ${storyId} was found`);
   }
@@ -128,12 +184,19 @@ export const storyAssignWorkerService = async ({
     throw createHttpError(400, `No staff with id: ${staffId} was found`);
   }
 
-  const alreadyAssigned = await StoryInfo.findOne({ staffId, storyId });
+  const alreadyAssigned = existingStory.storyStaffInfo.some(
+    (s) => s.staffId.toString() === staffId
+  );
 
   if (alreadyAssigned) {
     throw createHttpError(400, "You are already assigned to this story");
   } else {
-    return await StoryInfo.create({ storyId, staffId });
+    existingStory.storyStaffInfo.push({
+      staffId,
+      storyStatus: "doing",
+    });
+    existingStory.storyStatus = "doing";
+    return await existingStory.save();
   }
 };
 
@@ -177,6 +240,60 @@ export const storyAssignWorkerService = async ({
 //   } else {
 //     return filteredResults;
 //   }
+// };
+
+// type StoryCreateTypes = {
+//   title: string | undefined;
+//   description: string | undefined;
+//   imgUrl: string | undefined;
+//   currentLanguage: string | undefined;
+//   genres: string | undefined;
+// };
+
+// export const storyCreateService = async ({
+//   genres,
+//   imgUrl,
+//   currentLanguage,
+//   description,
+//   title,
+// }: StoryCreateTypes) => {
+//   if (
+//     !title?.trim().length ||
+//     !description?.trim().length ||
+//     !genres?.trim().length ||
+//     !currentLanguage?.trim().length
+//   ) {
+//     throw createHttpError(
+//       400,
+//       "Title, description, genres and currentLanguage is required"
+//     );
+//   }
+
+//   checkCurrentLanguage({ currentLanguage });
+//   const translations = [
+//     {
+//       language: currentLanguage,
+//       text: title,
+//       textFieldName: TranslationTextFieldName.StoryName,
+//     },
+//     {
+//       language: currentLanguage,
+//       text: description,
+//       textFieldName: TranslationTextFieldName.StoryDescription,
+//     },
+//     {
+//       language: currentLanguage,
+//       text: genres,
+//       textFieldName: TranslationTextFieldName.StoryGenre,
+//     },
+//   ];
+//   const newStory = await Story.create({
+//     amountOfEpisodes: 0,
+//     imgUrl,
+//     translations,
+//   });
+
+//   return newStory;
 // };
 
 type StoryCreateTypes = {
@@ -276,24 +393,54 @@ export const storyUpdateImgService = async ({
 
 type StoryUpdateStatusTypes = {
   storyId: string;
+  staffId: string;
   storyStatus: StoryStatusTypes | undefined;
 };
 
-export const storyUpdateStatusService = async ({
+export const storyUpdateStatusForWorkerService = async ({
   storyId,
   storyStatus,
+  staffId,
 }: StoryUpdateStatusTypes) => {
   validateMongoId({ value: storyId, valueName: "Story" });
+  validateMongoId({ value: staffId, valueName: "Staff" });
 
   const existingStory = await Story.findById(storyId).exec();
-
   if (!existingStory) {
     throw createHttpError(400, "Story with such id doesn't exist");
   }
+  const existingStaff = await Staff.findById(staffId).exec();
+  if (!existingStaff) {
+    throw createHttpError(400, "Staff with such id doesn't exist");
+  }
 
   if (storyStatus?.trim().length) {
-    if (storyStatus?.trim() === "doing" || storyStatus?.trim() === "done") {
+    if (storyStatus?.trim() === "doing") {
       existingStory.storyStatus = storyStatus;
+      const currentWorker = existingStory.storyStaffInfo.find(
+        (s) => (s.staffId || "")?.toString() === staffId
+      );
+      if (currentWorker) {
+        currentWorker.storyStatus = storyStatus;
+      }
+      return await existingStory.save();
+    } else if (storyStatus?.trim() === "done") {
+      const allWorkersWithoutCurrent = existingStory.storyStaffInfo.filter(
+        (s) => s.staffId.toString() !== staffId
+      );
+      const areAllWorkersFinished = allWorkersWithoutCurrent.every(
+        (s) => s.storyStatus === "done"
+      );
+      const currentWorker = existingStory.storyStaffInfo.find(
+        (s) => (s.staffId || "")?.toString() === staffId
+      );
+      if (currentWorker) {
+        currentWorker.storyStatus = storyStatus;
+      }
+      if (areAllWorkersFinished || allWorkersWithoutCurrent.length === 0) {
+        existingStory.storyStatus = storyStatus;
+      }
+      return await existingStory.save();
     } else {
       throw createHttpError(
         400,

@@ -12,11 +12,13 @@ import "../../../../Editor/Flowchart/FlowchartStyles.css";
 type DisplayTranslatedNonTranslatedRecentOneLinersTypes = {
   languageToTranslate: CurrentlyAvailableLanguagesTypes;
   translated: TranslationCommandTypes;
+  translateFromLanguage: CurrentlyAvailableLanguagesTypes;
 };
 
 export default function DisplayTranslatedNonTranslatedRecentOneLiners({
   translated,
   languageToTranslate,
+  translateFromLanguage,
 }: DisplayTranslatedNonTranslatedRecentOneLinersTypes) {
   const [translatedCommandName, setTranslatedCommandName] = useState("");
   const [commandTypeToRus, setCommandTypeToRus] = useState("");
@@ -61,8 +63,29 @@ export default function DisplayTranslatedNonTranslatedRecentOneLiners({
       nonTranslatedCommand.map((nt) => {
         setCommandName(nt.text);
       });
+    } else {
+      setCommandName("");
     }
-  }, [nonTranslatedCommand]);
+  }, [nonTranslatedCommand, languageToTranslate]);
+
+  const debouncedNameTranslated = useDebounce({
+    value: translatedCommandName,
+    delay: 500,
+  });
+
+  const updateCharacterTranslationTranslated = useUpdateCommandTranslation({
+    language: translateFromLanguage,
+    commandId,
+    commandEndPoint: dynamicCommandEndPoint,
+    dynamicCommandName,
+  });
+
+  useEffect(() => {
+    updateCharacterTranslationTranslated.mutate({
+      commandText: debouncedNameTranslated,
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [debouncedNameTranslated]);
 
   const debouncedName = useDebounce({
     value: commandName,

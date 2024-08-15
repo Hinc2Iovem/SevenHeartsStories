@@ -2,18 +2,23 @@ import { StoryFilterTypes } from "./Story";
 
 type StoryFilterTypesProps = {
   setStoriesType: React.Dispatch<React.SetStateAction<StoryFilterTypes>>;
+  setLocalSearchValue: React.Dispatch<React.SetStateAction<string>>;
   storiesType: StoryFilterTypes;
 };
 
 export default function StoryFilterTypesHeader({
   storiesType,
   setStoriesType,
+  setLocalSearchValue,
 }: StoryFilterTypesProps) {
   return (
     <ul className="flex flex-col gap-[1rem] bg-white rounded-md p-[1rem] shadow-sm">
       <li>
         <button
-          onClick={() => setStoriesType("allAssigned")}
+          onClick={() => {
+            setLocalSearchValue("");
+            setStoriesType("allAssigned");
+          }}
           className={`text-[1.4rem] ${
             storiesType === "allAssigned"
               ? "rounded-md bg-primary-light-blue text-white w-full text-start px-[1rem] py-[.5rem]"
@@ -25,7 +30,10 @@ export default function StoryFilterTypesHeader({
       </li>
       <li>
         <button
-          onClick={() => setStoriesType("done")}
+          onClick={() => {
+            setLocalSearchValue("");
+            setStoriesType("done");
+          }}
           className={`text-[1.4rem] ${
             storiesType === "done"
               ? "rounded-md bg-primary-light-blue text-white w-full text-start px-[1rem] py-[.5rem]"
@@ -37,7 +45,10 @@ export default function StoryFilterTypesHeader({
       </li>
       <li>
         <button
-          onClick={() => setStoriesType("doing")}
+          onClick={() => {
+            setLocalSearchValue("");
+            setStoriesType("doing");
+          }}
           className={`text-[1.4rem] ${
             storiesType === "doing"
               ? "rounded-md bg-primary-light-blue text-white w-full text-start px-[1rem] py-[.5rem]"

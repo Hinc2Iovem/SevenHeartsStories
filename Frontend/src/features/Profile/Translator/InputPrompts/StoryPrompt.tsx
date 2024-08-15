@@ -22,6 +22,7 @@ export default function StoryPrompt({ setStoryId }: StoryPromptTypes) {
 
   const allStories = useGetTranslationStoriesQueries({
     language: "russian",
+    showQueries: showStories,
   });
 
   const memoizedStories = useMemo(() => {
@@ -36,8 +37,6 @@ export default function StoryPrompt({ setStoryId }: StoryPromptTypes) {
     }
     return allStories;
   }, [allStories, debouncedValue]);
-
-  console.log(memoizedStories);
 
   return (
     <form

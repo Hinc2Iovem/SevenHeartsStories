@@ -4,7 +4,7 @@ import { CurrentlyAvailableLanguagesTypes } from "../../../../../types/Additiona
 import useGetRecentTranslations from "../../../../../hooks/Fetching/Translation/Recent/useGetRecentTranslations";
 import {
   TranslationAppearancePartTypes,
-  TranslationCharacteCharacteristicTypes,
+  TranslationCharacterCharacteristicTypes,
   TranslationCharacterTypes,
   TranslationCommandTypes,
   TranslationEpisodeTypes,
@@ -40,7 +40,7 @@ type CombinedMultipleCommandsTranslatedAndNonTranslatedRecentTypes = {
     translated: TranslationCommandTypes[];
   };
   characteristic: {
-    translated: TranslationCharacteCharacteristicTypes[];
+    translated: TranslationCharacterCharacteristicTypes[];
   };
   getItem: {
     translated: { getItemGrouped: TranslationCommandTypes[] }[];
@@ -143,7 +143,7 @@ export default function useMemoizeRefinedTranslations({
             break;
           case "characterCharacteristic":
             combinedTranslations.characteristic.translated.push(
-              tc as unknown as TranslationCharacteCharacteristicTypes
+              tc as unknown as TranslationCharacterCharacteristicTypes
             );
             break;
           case "buttonText":

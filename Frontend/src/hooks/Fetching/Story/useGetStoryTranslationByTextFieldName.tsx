@@ -6,49 +6,34 @@ import { StoryFilterTypes } from "../../../features/Story/Story";
 
 type DebouncedTranslationsTypes = {
   language: CurrentlyAvailableLanguagesTypes;
-  text: string;
-  staffId: string;
+  textFieldName: string;
 };
 
 const getDebouncedStories = async ({
   language = "russian",
-  text,
-  staffId,
+  textFieldName,
 }: DebouncedTranslationsTypes): Promise<TranslationStoryTypes[]> => {
   return await axiosCustomized
     .get(
-      `/translations/textFieldNames/stories/staff/${staffId}/search?currentLanguage=${language}&text=${text}`
+      `/translations/textFieldNames?currentLanguage=${language}&textFieldName=${textFieldName}`
     )
     .then((r) => r.data);
 };
 
-export default function useGetStoryTranslationByTextFieldNameAndSearchAssigned({
-  debouncedValue,
+export default function useGetStoryTranslationByTextFieldName({
   language,
-  staffId,
   storiesType,
 }: {
-  debouncedValue: string;
-  staffId: string;
   language: CurrentlyAvailableLanguagesTypes;
   storiesType: StoryFilterTypes;
 }) {
   return useQuery({
-    queryKey: [
-      "translation",
-      "textFieldName",
-      "search",
-      "assigned",
-      staffId,
-      "stories",
-      debouncedValue,
-    ],
+    queryKey: ["translation", "textFieldName", "stories"],
     queryFn: () =>
       getDebouncedStories({
-        text: debouncedValue,
-        staffId,
+        textFieldName: "storyName",
         language,
       }),
-    enabled: !!language && storiesType === "allAssigned" && !!staffId,
+    enabled: !!language && storiesType === "all",
   });
 }

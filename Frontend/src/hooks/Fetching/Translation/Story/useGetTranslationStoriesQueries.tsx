@@ -6,10 +6,12 @@ import useGetAllStories from "../../Story/useGetAllStories";
 
 export default function useGetTranslationStoriesQueries({
   language = "russian",
+  showQueries
 }: {
   language?: CurrentlyAvailableLanguagesTypes;
+  showQueries: boolean
 }) {
-  const { data: stories } = useGetAllStories();
+  const { data: stories } = useGetAllStories({showQueries});
   return useQueries({
     queries: (stories ?? []).map((c) => {
       return {

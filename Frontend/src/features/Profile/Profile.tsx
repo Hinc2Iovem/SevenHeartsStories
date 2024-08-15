@@ -30,7 +30,8 @@ export default function Profile() {
       />
       {roles?.includes("translator" || "editor") ? (
         <ProfileRightSideTranslator />
-      ) : roles?.includes("headscriptwriter" || "editor" || "scriptwriter") ? (
+      ) : roles?.includes("headscriptwriter" || "editor" || "scriptwriter") &&
+        storiesType ? (
         <div className="w-full flex flex-col gap-[1rem]">
           <ProfileRightSideScriptWriter
             storiesType={storiesType}

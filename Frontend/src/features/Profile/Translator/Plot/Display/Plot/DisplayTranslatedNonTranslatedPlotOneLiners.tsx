@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import useUpdateCommandTranslation, {
   CommandDynamicBodyNameVariationsTypes,
   CommandEndPointVariationsTypes,
@@ -10,12 +10,14 @@ import "../../../../../Editor/Flowchart/FlowchartStyles.css";
 
 type DisplayTranslatedNonTranslatedPlotOneLinersTypes = {
   languageToTranslate: CurrentlyAvailableLanguagesTypes;
+  translateFromLanguage: CurrentlyAvailableLanguagesTypes;
 } & CombinedTranslatedAndNonTranslatedPlotTypes;
 
 export default function DisplayTranslatedNonTranslatedPlotOneLiners({
   nonTranslated,
   translated,
   languageToTranslate,
+  translateFromLanguage,
 }: DisplayTranslatedNonTranslatedPlotOneLinersTypes) {
   const [translatedCommandName, setTranslatedCommandName] = useState("");
   const [commandTypeToRus, setCommandTypeToRus] = useState("");
@@ -29,6 +31,7 @@ export default function DisplayTranslatedNonTranslatedPlotOneLiners({
     useState<CommandEndPointVariationsTypes>(
       "" as CommandEndPointVariationsTypes
     );
+  const hasMounted = useRef(false);
 
   useEffect(() => {
     if (translated) {
@@ -55,8 +58,33 @@ export default function DisplayTranslatedNonTranslatedPlotOneLiners({
   useEffect(() => {
     if (nonTranslated) {
       setCommandName(nonTranslated.text);
+    } else {
+      setCommandName("");
     }
   }, [nonTranslated, languageToTranslate]);
+
+  const translatedDebouncedName = useDebounce({
+    value: translatedCommandName,
+    delay: 500,
+  });
+
+  const updateCharacterTranslationTranslated = useUpdateCommandTranslation({
+    language: translateFromLanguage,
+    commandId,
+    commandEndPoint: dynamicCommandEndPoint,
+    dynamicCommandName,
+  });
+
+  useEffect(() => {
+    if (hasMounted.current && translatedDebouncedName.trim().length) {
+      updateCharacterTranslationTranslated.mutate({
+        commandText: translatedDebouncedName,
+      });
+    } else {
+      hasMounted.current = true;
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [translatedDebouncedName]);
 
   const debouncedName = useDebounce({
     value: commandName,
@@ -71,9 +99,13 @@ export default function DisplayTranslatedNonTranslatedPlotOneLiners({
   });
 
   useEffect(() => {
-    updateCharacterTranslation.mutate({
-      commandText: debouncedName,
-    });
+    if (hasMounted.current && debouncedName.trim().length) {
+      updateCharacterTranslation.mutate({
+        commandText: debouncedName,
+      });
+    } else {
+      hasMounted.current = true;
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [debouncedName]);
 

@@ -1,5 +1,8 @@
 import express from "express";
 import {
+  getAllAssignedStoriesByStaffIdController,
+  getAllAssignedStoriesTranslationByStaffIdController,
+  getAllStoriesByLanguageController,
   getAllStoryAssignWorkersController,
   getStoryAssignWorkerController,
   storyAssignWorkersController,
@@ -8,28 +11,31 @@ import {
   storyGetAllController,
   storyGetByIdController,
   storyUpdateImgUrlController,
-  storyUpdateStatusController,
-  getAllAssignedStoriesByStaffIdController,
+  storyUpdateStatusForWorkerController,
 } from "../../controllers/StoryData/StoryController";
 import paginatedQuery from "../../middlewares/paginatedQuery";
 import Story from "../../models/StoryData/Story";
-import { verifyJWT } from "../../middlewares/verifyJWT";
-import { verifyEditor } from "../../middlewares/verifyEditor";
 import { verifyHeadScriptwriter } from "../../middlewares/verifyHeadScriptwriter";
+import { verifyJWT } from "../../middlewares/verifyJWT";
 
 // Default route === /stories
 export const storyRoute = express.Router();
 
-storyRoute.route("/").get(storyGetAllController).post(storyCreateController);
+storyRoute.route("/").post(verifyHeadScriptwriter, storyCreateController);
+// storyRoute.route("/language").get(verifyJWT, getAllStoriesByLanguageController);
 
-storyRoute.route("/status").get(paginatedQuery(Story), (req, res) => {
-  res.json(res.locals.paginatedResults);
-});
+storyRoute.route("/").get(storyGetAllController);
+
+storyRoute
+  .route("/status")
+  .get(verifyJWT, paginatedQuery(Story), (req, res) => {
+    res.json(res.locals.paginatedResults);
+  });
 
 storyRoute
   .route("/:storyId")
   .get(verifyJWT, storyGetByIdController)
-  .delete(verifyEditor, storyDeleteController);
+  .delete(verifyHeadScriptwriter, storyDeleteController);
 
 storyRoute
   .route("/:storyId/img")
@@ -38,6 +44,10 @@ storyRoute
 storyRoute
   .route("/:storyId/assignWorkers")
   .get(verifyJWT, getAllStoryAssignWorkersController);
+
+storyRoute
+  .route("/translations/staff/:staffId/assignWorkers")
+  .get(verifyJWT, getAllAssignedStoriesTranslationByStaffIdController);
 
 storyRoute
   .route("/:storyId/staff/:staffId/assignWorkers")
@@ -49,5 +59,5 @@ storyRoute
   .get(verifyJWT, getAllAssignedStoriesByStaffIdController);
 
 storyRoute
-  .route("/:storyId/status")
-  .patch(verifyJWT, storyUpdateStatusController);
+  .route("/:storyId/staff/:staffId/status")
+  .patch(verifyJWT, storyUpdateStatusForWorkerController);

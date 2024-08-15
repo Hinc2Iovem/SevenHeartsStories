@@ -8,12 +8,14 @@ import "../../../../Editor/Flowchart/FlowchartStyles.css";
 
 type DisplayTranslatedNonTranslatedSeasonTypes = {
   languageToTranslate: CurrentlyAvailableLanguagesTypes;
+  translateFromLanguage: CurrentlyAvailableLanguagesTypes;
   translated: TranslationSeasonTypes;
 };
 
 export default function DisplayTranslatedNonTranslatedRecentSeason({
   translated,
   languageToTranslate,
+  translateFromLanguage,
 }: DisplayTranslatedNonTranslatedSeasonTypes) {
   const [translatedSeasonName, setTranslatedSeasonName] = useState("");
   const [seasonName, setSeasonName] = useState("");
@@ -40,8 +42,29 @@ export default function DisplayTranslatedNonTranslatedRecentSeason({
       if (nonTranslatedSeason.textFieldName === "seasonName") {
         setSeasonName(nonTranslatedSeason.text);
       }
+    } else {
+      setSeasonName("");
     }
-  }, [nonTranslatedSeason]);
+  }, [nonTranslatedSeason, languageToTranslate]);
+
+  const debouncedNameTranslated = useDebounce({
+    value: translatedSeasonName,
+    delay: 500,
+  });
+
+  const updateCharacterTranslationTranslated = useUpdateSeasonTranslation({
+    language: translateFromLanguage,
+    seasonId,
+  });
+
+  useEffect(() => {
+    if (debouncedNameTranslated?.trim().length) {
+      updateCharacterTranslationTranslated.mutate({
+        seasonName: debouncedNameTranslated,
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [debouncedNameTranslated]);
 
   const debouncedName = useDebounce({
     value: seasonName,

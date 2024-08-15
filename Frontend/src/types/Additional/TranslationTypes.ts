@@ -89,9 +89,9 @@ export type TranslationChoiceOptionTypes = {
   textFieldName: TranslationTextFieldNameChoiceOptionTypes;
 };
 
-export type TranslationCharacteCharacteristicTypes = {
+export type TranslationCharacterCharacteristicTypes = {
   _id: string;
-  characteCharacteristicId: string;
+  characterCharacteristicId: string;
   language: CurrentlyAvailableLanguagesTypes;
   text: string;
   amountOfWords: number;

@@ -1,4 +1,4 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { axiosCustomized } from "../../../api/axios";
 import { CurrentlyAvailableLanguagesTypes } from "../../../types/Additional/CURRENTLY_AVAILABEL_LANGUAGES";
 
@@ -17,6 +17,7 @@ export default function useUpdateGetItemTranslation({
   getItemId,
   language,
 }: UpdateGetItemTranslationTypes) {
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async ({
       buttonText,
@@ -32,5 +33,10 @@ export default function useUpdateGetItemTranslation({
           buttonText,
         }
       ),
+    onSettled: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["translation", language, "plotFieldCommand", getItemId],
+      });
+    },
   });
 }

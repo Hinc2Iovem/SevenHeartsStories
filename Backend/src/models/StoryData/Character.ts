@@ -23,6 +23,19 @@ export const characterSchema = new mongoose.Schema({
     type: String,
     default: "emptycharacter",
   },
+  emotions: {
+    type: [
+      {
+        emotionName: {
+          type: String,
+        },
+        imgUrl: {
+          type: String,
+        },
+      },
+    ],
+    default: [],
+  },
   isMainCharacter: {
     type: Boolean,
     default: false,

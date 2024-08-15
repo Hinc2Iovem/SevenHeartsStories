@@ -93,6 +93,7 @@ export default function FiltersEverythingStoryForEpisode({
           <DisplayTranslatedNonTranslatedEpisode
             key={(ct.translated[i]?._id || i) + "-ctEpisode"}
             languageToTranslate={translateToLanguage}
+            translateFromLanguage={translateFromLanguage}
             {...ct}
           />
         ))}

@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { axiosCustomized } from "../../../api/axios";
-import { StoryInfoTypes } from "../../../types/StoryData/Story/StoryTypes";
+import { StoryTypes } from "../../../types/StoryData/Story/StoryTypes";
 
 export default function useGetAssignedStories({
   staffId,
@@ -11,7 +11,7 @@ export default function useGetAssignedStories({
     queryKey: ["assignedStories", "staff", staffId],
     queryFn: async () =>
       await axiosCustomized
-        .get<StoryInfoTypes[]>(`/stories/staff/${staffId}/assignWorkers`)
+        .get<StoryTypes[]>(`/stories/staff/${staffId}/assignWorkers`)
         .then((r) => r.data),
   });
 }

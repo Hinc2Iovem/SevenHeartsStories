@@ -7,12 +7,14 @@ import "../../../../../Editor/Flowchart/FlowchartStyles.css";
 
 type DisplayTranslatedNonTranslatedEpisodeTypes = {
   languageToTranslate: CurrentlyAvailableLanguagesTypes;
+  translateFromLanguage: CurrentlyAvailableLanguagesTypes;
 } & CombinedTranslatedAndNonTranslatedEpisodeTypes;
 
 export default function DisplayTranslatedNonTranslatedEpisode({
   nonTranslated,
   translated,
   languageToTranslate,
+  translateFromLanguage,
 }: DisplayTranslatedNonTranslatedEpisodeTypes) {
   const [translatedEpisodeName, setTranslatedEpisodeName] = useState("");
   const [translatedEpisodeDescription, setTranslatedEpisodeDescription] =
@@ -44,8 +46,44 @@ export default function DisplayTranslatedNonTranslatedEpisode({
           setEpisodeDescription(nt.text);
         }
       });
+    } else {
+      setEpisodeName("");
+      setEpisodeDescription("");
     }
   }, [nonTranslated, languageToTranslate]);
+
+  const debouncedNameTranslated = useDebounce({
+    value: translatedEpisodeName,
+    delay: 500,
+  });
+
+  const debouncedDescriptionTranslated = useDebounce({
+    value: translatedEpisodeDescription,
+    delay: 500,
+  });
+
+  const updateCharacterTranslationTranslated = useUpdateEpisodeTranslation({
+    language: translateFromLanguage,
+    episodeId,
+  });
+
+  useEffect(() => {
+    if (debouncedNameTranslated?.trim().length) {
+      updateCharacterTranslationTranslated.mutate({
+        episodeName: debouncedNameTranslated,
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [debouncedNameTranslated]);
+
+  useEffect(() => {
+    if (debouncedDescriptionTranslated?.trim().length) {
+      updateCharacterTranslationTranslated.mutate({
+        description: debouncedDescriptionTranslated,
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [debouncedDescriptionTranslated]);
 
   const debouncedName = useDebounce({
     value: episodeName,

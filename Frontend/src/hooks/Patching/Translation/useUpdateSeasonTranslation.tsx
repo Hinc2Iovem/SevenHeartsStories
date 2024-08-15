@@ -1,4 +1,4 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { axiosCustomized } from "../../../api/axios";
 import { CurrentlyAvailableLanguagesTypes } from "../../../types/Additional/CURRENTLY_AVAILABEL_LANGUAGES";
 
@@ -15,6 +15,7 @@ export default function useUpdateSeasonTranslation({
   seasonId,
   language,
 }: UpdateSeasonTranslationTypes) {
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async ({
       seasonName,
@@ -23,5 +24,12 @@ export default function useUpdateSeasonTranslation({
         currentLanguage: language,
         title: seasonName,
       }),
+    onSettled: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["translation", language, "season", seasonId],
+        exact: true,
+        type: "active",
+      });
+    },
   });
 }

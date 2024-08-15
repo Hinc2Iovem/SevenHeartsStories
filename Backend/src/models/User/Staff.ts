@@ -17,6 +17,9 @@ export const staffSchema = new mongoose.Schema({
   imgUrl: {
     type: String,
   },
+  amountOfFinishedEpisodes: {
+    type: Number,
+  },
 });
 
 type Staff = InferSchemaType<typeof staffSchema>;

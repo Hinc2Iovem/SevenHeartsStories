@@ -20,7 +20,7 @@ export default function useUpdateCharacteristicTranslation({
       characteristicName,
     }: UpdateCharacterTranslationOnMutationTypes) =>
       await axiosCustomized.patch(
-        `/translations/charactersCharacteristics/${characterCharacteristicId}`,
+        `/translations/characterCharacteristics/${characterCharacteristicId}`,
         {
           currentLanguage: language,
           characteristicName,

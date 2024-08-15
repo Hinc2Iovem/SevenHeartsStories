@@ -11,12 +11,14 @@ type DisplayTranslatedNonTranslatedCharacterTypes = {
   characterTypeFilter: string;
   languageToTranslate: CurrentlyAvailableLanguagesTypes;
   translated: TranslationCharacterTypes[];
+  translateFromLanguage: CurrentlyAvailableLanguagesTypes;
 };
 
 export default function DisplayTranslatedNonTranslatedRecentCharacter({
   translated,
   characterTypeFilter,
   languageToTranslate,
+  translateFromLanguage,
 }: DisplayTranslatedNonTranslatedCharacterTypes) {
   const [translatedCharacterName, setTranslatedCharacterName] = useState("");
   const [translatedUnknownName, setTranslatedUnknownName] = useState("");
@@ -68,7 +70,7 @@ export default function DisplayTranslatedNonTranslatedRecentCharacter({
         }
       });
     }
-  }, [translated]);
+  }, [translated, languageToTranslate]);
 
   const { data: nonTranslatedCharacter } = useGetTranslationCharacterEnabled({
     characterId,
@@ -93,6 +95,49 @@ export default function DisplayTranslatedNonTranslatedRecentCharacter({
       setUnknownName("");
     }
   }, [nonTranslatedCharacter]);
+
+  const debouncedNameTranslated = useDebounce({
+    value: translatedCharacterName,
+    delay: 500,
+  });
+  const debouncedUnknownNameTranslated = useDebounce({
+    value: translatedUnknownName,
+    delay: 500,
+  });
+  const debouncedDescriptionTranslated = useDebounce({
+    value: translatedDescription,
+    delay: 500,
+  });
+
+  const updateCharacterTranslationTranslated = useUpdateCharacterTranslation({
+    language: translateFromLanguage,
+    characterId,
+  });
+
+  useEffect(() => {
+    if (debouncedNameTranslated?.trim().length) {
+      updateCharacterTranslationTranslated.mutate({
+        characterName: debouncedNameTranslated,
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [debouncedNameTranslated]);
+  useEffect(() => {
+    if (debouncedUnknownNameTranslated?.trim().length) {
+      updateCharacterTranslationTranslated.mutate({
+        unknownName: debouncedUnknownNameTranslated,
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [debouncedUnknownNameTranslated]);
+  useEffect(() => {
+    if (debouncedDescriptionTranslated?.trim().length) {
+      updateCharacterTranslationTranslated.mutate({
+        description: debouncedDescriptionTranslated,
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [debouncedDescriptionTranslated]);
 
   const debouncedName = useDebounce({ value: characterName, delay: 500 });
   const debouncedUnknownName = useDebounce({ value: unknownName, delay: 500 });

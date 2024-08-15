@@ -1,17 +1,21 @@
 import { useEffect, useState } from "react";
+import useUpdateSeasonTranslation from "../../../../../../hooks/Patching/Translation/useUpdateSeasonTranslation";
 import useDebounce from "../../../../../../hooks/utilities/useDebounce";
 import { CurrentlyAvailableLanguagesTypes } from "../../../../../../types/Additional/CURRENTLY_AVAILABEL_LANGUAGES";
-import { CombinedTranslatedAndNonTranslatedSeasonTypes } from "../../Filters/FiltersEverythingStoryForSeason";
-import useUpdateSeasonTranslation from "../../../../../../hooks/Patching/Translation/useUpdateSeasonTranslation";
+import { TranslationSeasonTypes } from "../../../../../../types/Additional/TranslationTypes";
 
 type DisplayTranslatedNonTranslatedSeasonTypes = {
   languageToTranslate: CurrentlyAvailableLanguagesTypes;
-} & CombinedTranslatedAndNonTranslatedSeasonTypes;
+  translated: TranslationSeasonTypes;
+  translateFromLanguage: CurrentlyAvailableLanguagesTypes;
+  nonTranslated: TranslationSeasonTypes | null;
+};
 
 export default function DisplayTranslatedNonTranslatedSeason({
   nonTranslated,
   translated,
   languageToTranslate,
+  translateFromLanguage,
 }: DisplayTranslatedNonTranslatedSeasonTypes) {
   const [translatedSeasonName, setTranslatedSeasonName] = useState("");
   const [seasonName, setSeasonName] = useState("");
@@ -19,24 +23,41 @@ export default function DisplayTranslatedNonTranslatedSeason({
 
   useEffect(() => {
     if (translated) {
-      translated.map((t) => {
-        setSeasonId(t.seasonId);
-        if (t.textFieldName === "seasonName") {
-          setTranslatedSeasonName(t.text);
-        }
-      });
+      setSeasonId(translated.seasonId);
+      if (translated.textFieldName === "seasonName") {
+        setTranslatedSeasonName(translated.text);
+      }
     }
   }, [translated]);
 
   useEffect(() => {
     if (nonTranslated) {
-      nonTranslated.map((nt) => {
-        if (nt.textFieldName === "seasonName") {
-          setSeasonName(nt.text);
-        }
-      });
+      if (nonTranslated.textFieldName === "seasonName") {
+        setSeasonName(nonTranslated.text);
+      }
+    } else {
+      setSeasonName("");
     }
   }, [nonTranslated, languageToTranslate]);
+
+  const debouncedTranslatedName = useDebounce({
+    value: translatedSeasonName,
+    delay: 500,
+  });
+
+  const updateCharacterTranslationTranslated = useUpdateSeasonTranslation({
+    language: translateFromLanguage,
+    seasonId,
+  });
+
+  useEffect(() => {
+    if (debouncedTranslatedName?.trim().length) {
+      updateCharacterTranslationTranslated.mutate({
+        seasonName: debouncedTranslatedName,
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [debouncedTranslatedName]);
 
   const debouncedName = useDebounce({
     value: seasonName,

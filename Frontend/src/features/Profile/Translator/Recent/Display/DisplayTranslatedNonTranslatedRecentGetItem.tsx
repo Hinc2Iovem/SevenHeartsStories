@@ -12,12 +12,13 @@ type CombinedTranslatedAndNonTranslatedRecentTypes = {
 
 type DisplayTranslatedNonTranslatedRecentGetItemTypes = {
   languageToTranslate: CurrentlyAvailableLanguagesTypes;
-  translatedLanguage: CurrentlyAvailableLanguagesTypes;
+  translateFromLanguage: CurrentlyAvailableLanguagesTypes;
 } & CombinedTranslatedAndNonTranslatedRecentTypes;
 
 export default function DisplayTranslatedNonTranslatedRecentGetItem({
   translated,
   languageToTranslate,
+  translateFromLanguage,
 }: DisplayTranslatedNonTranslatedRecentGetItemTypes) {
   const [itemId, setItemId] = useState("");
 
@@ -61,8 +62,57 @@ export default function DisplayTranslatedNonTranslatedRecentGetItem({
           setButtonText(nt.text);
         }
       });
+    } else {
+      setItemName("");
+      setItemDescription("");
+      setButtonText("");
     }
-  }, [nonTranslatedCommand]);
+  }, [nonTranslatedCommand, languageToTranslate]);
+
+  const debouncedNameTranslated = useDebounce({
+    value: translatedItemName,
+    delay: 500,
+  });
+  const debouncedDescriptionTranslated = useDebounce({
+    value: translatedItemDescription,
+    delay: 500,
+  });
+  const debouncedButtonTextTranslated = useDebounce({
+    value: translatedButtonText,
+    delay: 500,
+  });
+
+  const updateCharacterTranslationTranslated = useUpdateGetItemTranslation({
+    language: translateFromLanguage,
+    getItemId: itemId,
+  });
+
+  useEffect(() => {
+    if (debouncedNameTranslated?.trim().length) {
+      updateCharacterTranslationTranslated.mutate({
+        itemName: debouncedNameTranslated,
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [debouncedNameTranslated]);
+
+  useEffect(() => {
+    if (debouncedDescriptionTranslated?.trim().length) {
+      updateCharacterTranslationTranslated.mutate({
+        itemDescription: debouncedDescriptionTranslated,
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [debouncedDescriptionTranslated]);
+
+  useEffect(() => {
+    if (debouncedButtonTextTranslated?.trim().length) {
+      updateCharacterTranslationTranslated.mutate({
+        buttonText: debouncedButtonTextTranslated,
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [debouncedButtonTextTranslated]);
 
   const debouncedName = useDebounce({
     value: itemName,
@@ -92,7 +142,7 @@ export default function DisplayTranslatedNonTranslatedRecentGetItem({
   }, [debouncedName]);
 
   useEffect(() => {
-    if (itemDescription?.trim().length) {
+    if (debouncedDescription?.trim().length) {
       updateCharacterTranslation.mutate({
         itemDescription: debouncedDescription,
       });
@@ -101,7 +151,7 @@ export default function DisplayTranslatedNonTranslatedRecentGetItem({
   }, [debouncedDescription]);
 
   useEffect(() => {
-    if (buttonText?.trim().length) {
+    if (debouncedButtonText?.trim().length) {
       updateCharacterTranslation.mutate({
         buttonText: debouncedButtonText,
       });

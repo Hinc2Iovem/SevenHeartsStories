@@ -19,5 +19,6 @@ export default function useGetRecentTranslations({
           `/translations/recent?currentLanguage=${language}&updatedAt=${updateAt}`
         )
         .then((r) => r.data),
+    enabled: !!language && !!updateAt,
   });
 }

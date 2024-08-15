@@ -8,8 +8,8 @@ import {
   updateStaffImgController,
   updateStaffRolesController,
 } from "../../controllers/User/StaffController";
-import { verifyEditor } from "../../middlewares/verifyEditor";
 import { verifyJWT } from "../../middlewares/verifyJWT";
+import { verifyEditor } from "../../middlewares/verifyEditor";
 
 // Default route === /staff
 export const staffRoute = express.Router();

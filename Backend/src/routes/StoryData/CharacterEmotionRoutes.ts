@@ -17,11 +17,11 @@ characterEmotionRoute
   .post(characterEmotionCreateController);
 
 characterEmotionRoute
-  .route("/:characterEmotionId")
+  .route("/characters/:characterId")
   .get(characterEmotionGetByIdController)
   .patch(characterEmotionUpdateController)
   .delete(characterEmotionDeleteController);
 
 characterEmotionRoute
-  .route("/:characterEmotionId/img")
+  .route("/characters/:characterId/img")
   .patch(characterEmotionUpdateImgUrlController);

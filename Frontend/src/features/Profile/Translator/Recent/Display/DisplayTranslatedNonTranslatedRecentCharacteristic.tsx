@@ -1,18 +1,20 @@
 import { useEffect, useState } from "react";
 import { CurrentlyAvailableLanguagesTypes } from "../../../../../types/Additional/CURRENTLY_AVAILABEL_LANGUAGES";
-import { TranslationCharacteCharacteristicTypes } from "../../../../../types/Additional/TranslationTypes";
+import { TranslationCharacterCharacteristicTypes } from "../../../../../types/Additional/TranslationTypes";
 import useDebounce from "../../../../../hooks/utilities/useDebounce";
 import useUpdateCharacteristicTranslation from "../../../../../hooks/Patching/Translation/useUpdateCharacteristicTranslation";
 import useGetTranslationCharacteristic from "../../../../../hooks/Fetching/Translation/useGetTranslationCharacteristic";
 
 type DisplayTranslatedNonTranslatedCharacteristicTypes = {
   languageToTranslate: CurrentlyAvailableLanguagesTypes;
-  translated: TranslationCharacteCharacteristicTypes;
+  translated: TranslationCharacterCharacteristicTypes;
+  translateFromLanguage: CurrentlyAvailableLanguagesTypes;
 };
 
 export default function DisplayTranslatedNonTranslatedRecentCharacteristic({
   translated,
   languageToTranslate,
+  translateFromLanguage,
 }: DisplayTranslatedNonTranslatedCharacteristicTypes) {
   const [
     translatedCharacterCharacteristic,
@@ -27,7 +29,7 @@ export default function DisplayTranslatedNonTranslatedRecentCharacteristic({
     if (translated) {
       if (translated.textFieldName === "characterCharacteristic") {
         setTranslatedCharacterCharacteristic(translated.text);
-        setCharacterCharacteristicId(translated.characteCharacteristicId);
+        setCharacterCharacteristicId(translated.characterCharacteristicId);
       }
     }
   }, [translated]);
@@ -44,7 +46,27 @@ export default function DisplayTranslatedNonTranslatedRecentCharacteristic({
     } else {
       setCharacterCharacteristic("");
     }
-  }, [nonTranslatedCharacteristic]);
+  }, [nonTranslatedCharacteristic, languageToTranslate]);
+
+  const debouncedNameTranslated = useDebounce({
+    value: translatedCharacterCharacteristic,
+    delay: 500,
+  });
+
+  const updateCharacterTranslationTranslated =
+    useUpdateCharacteristicTranslation({
+      language: translateFromLanguage,
+      characterCharacteristicId,
+    });
+
+  useEffect(() => {
+    if (debouncedNameTranslated?.trim().length) {
+      updateCharacterTranslationTranslated.mutate({
+        characteristicName: debouncedNameTranslated,
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [debouncedNameTranslated]);
 
   const debouncedName = useDebounce({
     value: characterCharacteristic,

@@ -18,6 +18,21 @@ export const episodeSchema = new mongoose.Schema({
     type: String,
     default: "doing",
   },
+  episodeStaffInfo: {
+    type: [
+      {
+        staffId: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Staff",
+        },
+        episodeStatus: {
+          type: String,
+          default: "doing",
+        },
+      },
+    ],
+    default: [],
+  },
 });
 
 type Episode = InferSchemaType<typeof episodeSchema>;

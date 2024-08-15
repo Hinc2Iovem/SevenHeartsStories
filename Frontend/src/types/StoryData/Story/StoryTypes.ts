@@ -5,6 +5,10 @@ export type StoryTypes = {
   amountOfEpisodes: number;
   storyStatus: EpisodeStatusTypes;
   imgUrl?: string;
+  storyStaffInfo?: {
+    staffId: string;
+    storyStatus: EpisodeStatusTypes;
+  }[];
 };
 
 export type StoryInfoTypes = {

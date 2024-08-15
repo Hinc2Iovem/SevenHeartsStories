@@ -1,20 +1,24 @@
 import { useEffect, useState } from "react";
+import useUpdateAppearancePartTranslation from "../../../../../../hooks/Patching/Translation/useUpdateAppearancePartTranslation";
 import useDebounce from "../../../../../../hooks/utilities/useDebounce";
 import { CurrentlyAvailableLanguagesTypes } from "../../../../../../types/Additional/CURRENTLY_AVAILABEL_LANGUAGES";
-import { CombinedTranslatedAndNonTranslatedAppearancePartTypes } from "../../Filters/FiltersEverythingCharacterForAppearancePart";
-import useUpdateAppearancePartTranslation from "../../../../../../hooks/Patching/Translation/useUpdateAppearancePartTranslation";
 import { TranslationTextFieldNameAppearancePartsTypes } from "../../../../../../types/Additional/TRANSLATION_TEXT_FIELD_NAMES";
+import { TranslationAppearancePartTypes } from "../../../../../../types/Additional/TranslationTypes";
 
 type DisplayTranslatedNonTranslatedAppearancePartTypes = {
   languageToTranslate: CurrentlyAvailableLanguagesTypes;
   filteredAppearanceType: TranslationTextFieldNameAppearancePartsTypes;
-} & CombinedTranslatedAndNonTranslatedAppearancePartTypes;
+  translated: TranslationAppearancePartTypes;
+  nonTranslated: TranslationAppearancePartTypes | null;
+  translateFromLanguage: CurrentlyAvailableLanguagesTypes;
+};
 
 export default function DisplayTranslatedNonTranslatedAppearancePart({
   nonTranslated,
   translated,
   languageToTranslate,
   filteredAppearanceType,
+  translateFromLanguage,
 }: DisplayTranslatedNonTranslatedAppearancePartTypes) {
   const [translatedAppearancePart, setTranslatedAppearancePart] = useState("");
   const [appearancePartType, setAppearancePartType] =
@@ -27,30 +31,30 @@ export default function DisplayTranslatedNonTranslatedAppearancePart({
 
   const [appearancePartId, setAppearancePartId] = useState("");
 
+  console.log(appearancePart);
+
   useEffect(() => {
     if (translated) {
-      translated.map((t) => {
-        setAppearancePartId(t.appearancePartId);
-        if (t.textFieldName === "accessory") {
-          setAppearancePartType("accessory");
-          setTranslatedAppearancePart(t.text);
-        } else if (t.textFieldName === "art") {
-          setAppearancePartType("art");
-          setTranslatedAppearancePart(t.text);
-        } else if (t.textFieldName === "body") {
-          setAppearancePartType("body");
-          setTranslatedAppearancePart(t.text);
-        } else if (t.textFieldName === "dress") {
-          setAppearancePartType("dress");
-          setTranslatedAppearancePart(t.text);
-        } else if (t.textFieldName === "hair") {
-          setAppearancePartType("hair");
-          setTranslatedAppearancePart(t.text);
-        } else if (t.textFieldName === "skin") {
-          setAppearancePartType("skin");
-          setTranslatedAppearancePart(t.text);
-        }
-      });
+      setAppearancePartId(translated.appearancePartId);
+      if (translated.textFieldName === "accessory") {
+        setAppearancePartType("accessory");
+        setTranslatedAppearancePart(translated.text);
+      } else if (translated.textFieldName === "art") {
+        setAppearancePartType("art");
+        setTranslatedAppearancePart(translated.text);
+      } else if (translated.textFieldName === "body") {
+        setAppearancePartType("body");
+        setTranslatedAppearancePart(translated.text);
+      } else if (translated.textFieldName === "dress") {
+        setAppearancePartType("dress");
+        setTranslatedAppearancePart(translated.text);
+      } else if (translated.textFieldName === "hair") {
+        setAppearancePartType("hair");
+        setTranslatedAppearancePart(translated.text);
+      } else if (translated.textFieldName === "skin") {
+        setAppearancePartType("skin");
+        setTranslatedAppearancePart(translated.text);
+      }
     }
   }, [translated]);
 
@@ -74,11 +78,32 @@ export default function DisplayTranslatedNonTranslatedAppearancePart({
 
   useEffect(() => {
     if (nonTranslated) {
-      nonTranslated.map((nt) => {
-        setAppearancePart(nt.text);
-      });
+      setAppearancePart(nonTranslated.text);
+    } else {
+      setAppearancePart("");
     }
   }, [nonTranslated, languageToTranslate]);
+
+  const debouncedTranslatedName = useDebounce({
+    value: translatedAppearancePart,
+    delay: 500,
+  });
+
+  const updateCharacterTranslationTranslated =
+    useUpdateAppearancePartTranslation({
+      language: translateFromLanguage,
+      appearancePartId,
+    });
+
+  useEffect(() => {
+    if (debouncedTranslatedName?.trim().length) {
+      updateCharacterTranslationTranslated.mutate({
+        appearancePartName: debouncedTranslatedName,
+        appearancePartType,
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [debouncedTranslatedName]);
 
   const debouncedName = useDebounce({
     value: appearancePart,

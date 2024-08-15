@@ -14,14 +14,14 @@ import "../../../../Editor/Flowchart/FlowchartStyles.css";
 
 type DisplayTranslatedNonTranslatedCommandTypes = {
   languageToTranslate: CurrentlyAvailableLanguagesTypes;
-  translatedLanguage: CurrentlyAvailableLanguagesTypes;
+  translateFromLanguage: CurrentlyAvailableLanguagesTypes;
   translated: TranslationCommandTypes;
 };
 
 export default function DisplayTranslatedNonTranslatedRecentChoice({
   translated,
   languageToTranslate,
-  translatedLanguage,
+  translateFromLanguage,
 }: DisplayTranslatedNonTranslatedCommandTypes) {
   const [translatedCommandName, setTranslatedCommandName] = useState("");
   const [commandType, setCommandType] =
@@ -58,8 +58,31 @@ export default function DisplayTranslatedNonTranslatedRecentChoice({
       nonTranslatedCommand.map((nt) => {
         setCommandName(nt.text);
       });
+    } else {
+      setCommandName("");
     }
-  }, [nonTranslatedCommand]);
+  }, [nonTranslatedCommand, languageToTranslate]);
+
+  const debouncedNameTranslated = useDebounce({
+    value: translatedCommandName,
+    delay: 500,
+  });
+
+  const updateCharacterTranslationTranslated = useUpdateCommandTranslation({
+    language: translateFromLanguage,
+    commandId,
+    commandEndPoint: dynamicCommandEndPoint,
+    dynamicCommandName,
+  });
+
+  useEffect(() => {
+    if (debouncedNameTranslated?.trim().length) {
+      updateCharacterTranslationTranslated.mutate({
+        commandText: debouncedNameTranslated,
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [debouncedNameTranslated]);
 
   const debouncedName = useDebounce({
     value: commandName,
@@ -106,8 +129,8 @@ export default function DisplayTranslatedNonTranslatedRecentChoice({
           <div className="flex gap-[1rem] w-full flex-wrap">
             {allOptions?.map((o) => (
               <DisplayTranslatedNonTranslatedChoiceOption
-                key={o._id + `-${translatedLanguage}`}
-                language={translatedLanguage}
+                key={o._id + `-${translateFromLanguage}`}
+                language={translateFromLanguage}
                 {...o}
               />
             ))}

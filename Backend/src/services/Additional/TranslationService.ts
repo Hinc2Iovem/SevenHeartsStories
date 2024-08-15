@@ -1,26 +1,25 @@
+import { subDays, subHours, subMinutes } from "date-fns";
 import createHttpError from "http-errors";
-import { validateMongoId } from "../../utils/validateMongoId";
-import { checkCurrentLanguage } from "../../utils/checkCurrentLanguage";
-import Translation from "../../models/StoryData/Translation";
-import AppearancePart from "../../models/StoryData/AppearancePart";
-import Character from "../../models/StoryData/Character";
 import {
   AvailableTextFieldNames,
   TranslationTextFieldName,
 } from "../../consts/TRANSLATION_TEXT_FIELD_NAMES";
+import AppearancePart from "../../models/StoryData/AppearancePart";
+import Character from "../../models/StoryData/Character";
+import CharacterCharacteristic from "../../models/StoryData/CharacterCharacteristic";
 import Episode from "../../models/StoryData/Episode";
 import Season from "../../models/StoryData/Season";
 import Story from "../../models/StoryData/Story";
-import CharacterCharacteristic from "../../models/StoryData/CharacterCharacteristic";
+import Translation from "../../models/StoryData/Translation";
 import Achievement from "../../models/StoryEditor/PlotField/Achievement/Achievement";
-import ChoiceOption from "../../models/StoryEditor/PlotField/Choice/ChoiceOption";
 import Choice from "../../models/StoryEditor/PlotField/Choice/Choice";
+import ChoiceOption from "../../models/StoryEditor/PlotField/Choice/ChoiceOption";
 import GetItem from "../../models/StoryEditor/PlotField/GetItem/GetItem";
 import Say from "../../models/StoryEditor/PlotField/Say/Say";
 import CommandWardrobe from "../../models/StoryEditor/PlotField/Wardrobe/CommandWardrobe";
-import { subDays, subHours, subMinutes } from "date-fns";
 import Staff from "../../models/User/Staff";
-import StoryInfo from "../../models/StoryData/StoryInfo";
+import { checkCurrentLanguage } from "../../utils/checkCurrentLanguage";
+import { validateMongoId } from "../../utils/validateMongoId";
 
 // BY_COMMAND_ID____________________________________________________________________
 
@@ -108,23 +107,25 @@ export const getTranslationUpdatedAtAndLanguageService = async ({
   }
   return existingTranslations;
 };
-// BY_TEXT_FIELD_NAME_ASSIGNED_STORIES____________________________________________________________________
+// BY_TEXT_FIELD_NAME_AND_WORKER-STORY_STATUS_ASSIGNED_STORIES____________________________________________________________________
 
-type GetByTextFieldNameAndSearchAssignedStoriesTypes = {
+type GetByTextFieldNameAndSearchAssignedWorkerStoryStatusStoriesTypes = {
   staffId: string;
   text: string | undefined;
   currentLanguage: string | undefined;
+  storyStatus: string | undefined;
 };
 
-export const getTranslationTextFieldNameAndSearchAssignedStoriesService =
+export const getTranslationTextFieldNameAndSearchAssignedWorkerStoryStatusStoriesService =
   async ({
     staffId,
     currentLanguage,
     text,
-  }: GetByTextFieldNameAndSearchAssignedStoriesTypes) => {
+    storyStatus,
+  }: GetByTextFieldNameAndSearchAssignedWorkerStoryStatusStoriesTypes) => {
     validateMongoId({ value: staffId, valueName: "Staff" });
-    if (!currentLanguage?.trim().length) {
-      throw createHttpError(400, "Language ia required");
+    if (!currentLanguage?.trim().length || !storyStatus?.trim().length) {
+      throw createHttpError(400, "Language and storyStatus are required");
     }
 
     checkCurrentLanguage({ currentLanguage });
@@ -142,13 +143,14 @@ export const getTranslationTextFieldNameAndSearchAssignedStoriesService =
       .lean()
       .exec();
 
-    const allAssignedStoriesByStaffId = await StoryInfo.find({
-      staffId,
+    const allAssignedStoriesByStaffId = await Story.find({
+      "storyStaffInfo.staffId": staffId,
+      "storyStaffInfo.storyStatus": storyStatus,
     }).lean();
     const allAssignedStoriesIds: string[] = [];
     for (const s of allAssignedStoriesByStaffId) {
       if (s) {
-        allAssignedStoriesIds.push((s.storyId || "")?.toString());
+        allAssignedStoriesIds.push((s._id || "")?.toString());
       }
     }
 
@@ -164,10 +166,118 @@ export const getTranslationTextFieldNameAndSearchAssignedStoriesService =
       );
 
       return filteredResults;
+    } else {
+      const filteredResults = existingTranslations.filter((et) =>
+        allAssignedStoriesIds.includes((et.storyId || "")?.toString())
+      );
+
+      return filteredResults;
     }
-    return [];
   };
-// BY_TEXT_FIELD_NAME____________________________________________________________________
+// BY_TEXT_FIELD_NAME_ASSIGNED_STORIES____________________________________________________________________
+
+type GetByTextFieldNameAndSearchAssignedStoriesTypes = {
+  staffId: string;
+  text: string | undefined;
+  currentLanguage: string | undefined;
+};
+
+export const getTranslationTextFieldNameAndSearchAssignedStoriesService =
+  async ({
+    staffId,
+    currentLanguage,
+    text,
+  }: GetByTextFieldNameAndSearchAssignedStoriesTypes) => {
+    validateMongoId({ value: staffId, valueName: "Staff" });
+    if (!currentLanguage?.trim().length) {
+      throw createHttpError(400, "Language is required");
+    }
+
+    checkCurrentLanguage({ currentLanguage });
+
+    const existingStaff = await Staff.findById(staffId).lean();
+
+    if (!existingStaff) {
+      throw createHttpError(400, `User with such id wasn't found`);
+    }
+
+    const existingTranslations = await Translation.find({
+      textFieldName: "storyName",
+      language: currentLanguage,
+    })
+      .lean()
+      .exec();
+
+    const allAssignedStoriesByStaffId = await Story.find({
+      "storyStaffInfo.staffId": staffId,
+    }).lean();
+    const allAssignedStoriesIds: string[] = [];
+    for (const s of allAssignedStoriesByStaffId) {
+      if (s) {
+        allAssignedStoriesIds.push((s._id || "")?.toString());
+      }
+    }
+
+    if (!existingTranslations.length) {
+      return [];
+    }
+
+    if (text?.trim().length) {
+      const filteredResults = existingTranslations.filter(
+        (et) =>
+          (et.text || "").toLowerCase().includes(text.toLowerCase()) &&
+          allAssignedStoriesIds.includes((et.storyId || "")?.toString())
+      );
+
+      return filteredResults;
+    } else {
+      const filteredResults = existingTranslations.filter((et) =>
+        allAssignedStoriesIds.includes((et.storyId || "")?.toString())
+      );
+
+      return filteredResults;
+    }
+  };
+// BY_TEXT_FIELD_NAME___________________________________________________________________________
+
+type GetByTextFieldNameTypes = {
+  textFieldName: string | undefined;
+  currentLanguage: string | undefined;
+};
+
+export const getTranslationTextFieldNameService = async ({
+  currentLanguage,
+  textFieldName,
+}: GetByTextFieldNameTypes) => {
+  if (!currentLanguage?.trim().length || !textFieldName?.trim().length) {
+    throw createHttpError(400, "Language and textFieldName are required");
+  }
+
+  checkCurrentLanguage({ currentLanguage });
+
+  if (!AvailableTextFieldNames.includes(textFieldName)) {
+    throw createHttpError(
+      400,
+      `Such textFieldName as ${textFieldName} isn't supported, here are some available textFieldNames: ${AvailableTextFieldNames.map(
+        (tfn) => tfn
+      )}`
+    );
+  }
+
+  const existingTranslations = await Translation.find({
+    textFieldName,
+    language: currentLanguage,
+  })
+    .lean()
+    .exec();
+
+  if (!existingTranslations.length) {
+    return [];
+  }
+
+  return existingTranslations;
+};
+// BY_TEXT_FIELD_NAME_AND_SEARCH____________________________________________________________________
 
 type GetByTextFieldNameAndSearchTypes = {
   textFieldName: string | undefined;
@@ -376,7 +486,7 @@ export const characterTranslationUpdateService = async ({
         characterId,
         text: description,
         language: currentLanguage,
-        textFieldDescription: TranslationTextFieldName.CharacterDescription,
+        textFieldName: TranslationTextFieldName.CharacterDescription,
       });
     }
   }
@@ -396,7 +506,8 @@ export const characterTranslationUpdateService = async ({
         characterId,
         text: unknownName,
         language: currentLanguage,
-        textFieldUnknownName: TranslationTextFieldName.CharacterUnknownName,
+        textFieldName: TranslationTextFieldName.CharacterUnknownName,
+        
       });
     }
   }
@@ -751,18 +862,18 @@ export const getTranslationStoryService = async ({
 type UpdateCharacterCharacteristicTypes = {
   characteristicName: string | undefined;
   currentLanguage: string | undefined;
-  characteristicId: string;
+  characterCharacteristicId: string;
 };
 
 export const characterCharacteristicTranslationUpdateService = async ({
   currentLanguage,
-  characteristicId,
+  characterCharacteristicId,
   characteristicName,
 }: UpdateCharacterCharacteristicTypes) => {
-  validateMongoId({ value: characteristicId, valueName: "Characteristic" });
+  console.log(characterCharacteristicId);
 
   const existingCharacteristic = await CharacterCharacteristic.findById(
-    characteristicId
+    characterCharacteristicId
   ).exec();
   if (!existingCharacteristic) {
     throw createHttpError(400, "Characteristic with such id doesn't exist");
@@ -770,7 +881,7 @@ export const characterCharacteristicTranslationUpdateService = async ({
 
   if (characteristicName?.trim().length) {
     const existingTranslation = await Translation.findOne({
-      characterCharacteristicId: characteristicId,
+      characterCharacteristicId: characterCharacteristicId,
       language: currentLanguage,
       textFieldName: TranslationTextFieldName.CharacterCharacteristic,
     }).exec();
@@ -780,7 +891,7 @@ export const characterCharacteristicTranslationUpdateService = async ({
       await existingTranslation.save();
     } else {
       await Translation.create({
-        characterCharacteristicId: characteristicId,
+        characterCharacteristicId: characterCharacteristicId,
         text: characteristicName,
         language: currentLanguage,
         textFieldName: TranslationTextFieldName.CharacterCharacteristic,

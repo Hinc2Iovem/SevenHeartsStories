@@ -35,7 +35,7 @@ export default function CharacterTypesDropDown({
         ref={modalRef}
         className={`${
           showModal ? "" : "hidden"
-        } overflow-auto flex flex-col gap-[.5rem] min-w-fit w-full absolute bg-white rounded-md shadow-md translate-y-[.5rem] p-[1rem]`}
+        } overflow-auto flex flex-col gap-[.5rem] min-w-fit w-full absolute bg-white rounded-md shadow-md translate-y-[.5rem] p-[1rem] right-0`}
       >
         {CHARACTER_TYPES.map((ct) => (
           <button
@@ -55,7 +55,11 @@ export default function CharacterTypesDropDown({
                 : " text-gray-600 bg-white"
             } text-[1.4rem] outline-gray-300 text-start hover:bg-primary-pastel-blue hover:text-white rounded-md px-[1rem] py-[.5rem] hover:shadow-md`}
           >
-            {ct}
+            {ct === "Главный Персонаж"
+              ? ct
+              : ct === "Обычный Персонаж"
+              ? "Обычные Персонажи"
+              : "Второстепенные Персонажи"}
           </button>
         ))}
       </aside>

@@ -20,10 +20,12 @@ export default function FiltersEverythingStoryForStory({
 }: FiltersEverythingCharacterForStoryTypes) {
   const translatedStory = useGetTranslationStoriesQueries({
     language: translateFromLanguage,
+    showQueries: !!translateFromLanguage && !!translateToLanguage,
   });
 
   const nonTranslatedStory = useGetTranslationStoriesQueries({
     language: translateToLanguage,
+    showQueries: !!translateFromLanguage && !!translateToLanguage,
   });
 
   const memoizedCombinedTranslations = useMemo(() => {
@@ -79,6 +81,7 @@ export default function FiltersEverythingStoryForStory({
           <DisplayTranslatedNonTranslatedStory
             key={(ct.translated[i]?._id || i) + "-ctStory"}
             languageToTranslate={translateToLanguage}
+            translateFromLanguage={translateFromLanguage}
             {...ct}
           />
         ))}

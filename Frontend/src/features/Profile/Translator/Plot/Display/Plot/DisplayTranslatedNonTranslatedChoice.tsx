@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import useUpdateCommandTranslation, {
   CommandDynamicBodyNameVariationsTypes,
   CommandEndPointVariationsTypes,
@@ -13,14 +13,14 @@ import "../../../../../Editor/Flowchart/FlowchartStyles.css";
 
 type DisplayTranslatedNonTranslatedCommandTypes = {
   languageToTranslate: CurrentlyAvailableLanguagesTypes;
-  translatedLanguage: CurrentlyAvailableLanguagesTypes;
+  translateFromLanguage: CurrentlyAvailableLanguagesTypes;
 } & CombinedTranslatedAndNonTranslatedPlotTypes;
 
 export default function DisplayTranslatedNonTranslatedChoice({
   nonTranslated,
   translated,
   languageToTranslate,
-  translatedLanguage,
+  translateFromLanguage,
 }: DisplayTranslatedNonTranslatedCommandTypes) {
   const [translatedCommandName, setTranslatedCommandName] = useState("");
   const [commandType, setCommandType] =
@@ -37,6 +37,9 @@ export default function DisplayTranslatedNonTranslatedChoice({
     useState<CommandEndPointVariationsTypes>(
       "" as CommandEndPointVariationsTypes
     );
+
+  const hasMounted = useRef(false);
+
   useEffect(() => {
     if (translated) {
       setCommandId(translated.commandId);
@@ -50,8 +53,33 @@ export default function DisplayTranslatedNonTranslatedChoice({
   useEffect(() => {
     if (nonTranslated) {
       setCommandName(nonTranslated.text);
+    } else {
+      setCommandName("");
     }
   }, [nonTranslated, languageToTranslate]);
+
+  const translatedDebouncedName = useDebounce({
+    value: translatedCommandName,
+    delay: 500,
+  });
+
+  const updateCharacterTranslationTranslated = useUpdateCommandTranslation({
+    language: translateFromLanguage,
+    commandId,
+    commandEndPoint: dynamicCommandEndPoint,
+    dynamicCommandName,
+  });
+
+  useEffect(() => {
+    if (hasMounted.current && translatedDebouncedName?.trim().length) {
+      updateCharacterTranslationTranslated.mutate({
+        commandText: translatedDebouncedName,
+      });
+    } else {
+      hasMounted.current = true;
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [translatedDebouncedName]);
 
   const debouncedName = useDebounce({
     value: commandName,
@@ -66,10 +94,12 @@ export default function DisplayTranslatedNonTranslatedChoice({
   });
 
   useEffect(() => {
-    if (debouncedName?.trim().length) {
+    if (hasMounted.current && debouncedName?.trim().length) {
       updateCharacterTranslation.mutate({
         commandText: debouncedName,
       });
+    } else {
+      hasMounted.current = true;
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [debouncedName]);
@@ -98,8 +128,8 @@ export default function DisplayTranslatedNonTranslatedChoice({
           <div className="flex gap-[1rem] w-full flex-wrap">
             {allOptions?.map((o) => (
               <DisplayTranslatedNonTranslatedChoiceOption
-                key={o._id + `-${translatedLanguage}`}
-                language={translatedLanguage}
+                key={o._id + `-${translateFromLanguage}`}
+                language={translateFromLanguage}
                 {...o}
               />
             ))}

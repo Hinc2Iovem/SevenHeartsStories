@@ -91,13 +91,13 @@ export const characterEmotionCreateController: RequestHandler<
 };
 
 type CharacterEmotionUpdateParams = {
-  characterEmotionId: string;
+  characterId: string;
 };
 type CharacterEmotionUpdateBody = {
   emotionName: string | undefined;
 };
 
-// @route PATCH http://localhost:3500/characterEmotions/:characterEmotionId
+// @route PATCH http://localhost:3500/characterEmotions/characters/:characterId
 // @access Private
 export const characterEmotionUpdateController: RequestHandler<
   CharacterEmotionUpdateParams,
@@ -107,7 +107,7 @@ export const characterEmotionUpdateController: RequestHandler<
 > = async (req, res, next) => {
   try {
     const character = await characterEmotionUpdateService({
-      characterEmotionId: req.params.characterEmotionId,
+      characterId: req.params.characterId,
       emotionName: req.body.emotionName,
     });
     if (character) {
@@ -121,13 +121,14 @@ export const characterEmotionUpdateController: RequestHandler<
 };
 
 type CharacterEmotionUpdateImgUrlParams = {
-  characterEmotionId: string;
+  characterId: string;
 };
 type CharacterEmotionUpdateImgUrlBody = {
   imgUrl: string | undefined;
+  emotionName: string | undefined;
 };
 
-// @route PATCH http://localhost:3500/characterEmotions/:characterEmotionId/img
+// @route PATCH http://localhost:3500/characterEmotions/characters/:characterId/img
 // @access Private
 export const characterEmotionUpdateImgUrlController: RequestHandler<
   CharacterEmotionUpdateImgUrlParams,
@@ -137,8 +138,9 @@ export const characterEmotionUpdateImgUrlController: RequestHandler<
 > = async (req, res, next) => {
   try {
     const characterEmotion = await characterEmotionUpdateImgService({
-      characterEmotionId: req.params.characterEmotionId,
+      characterId: req.params.characterId,
       imgUrl: req.body.imgUrl,
+      emotionName: req.body.emotionName,
     });
     if (characterEmotion) {
       return res.status(201).json(characterEmotion);

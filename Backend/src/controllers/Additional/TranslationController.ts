@@ -24,7 +24,9 @@ import {
   getTranslationSeasonService,
   getTranslationStoryService,
   getTranslationTextFieldNameAndSearchAssignedStoriesService,
+  getTranslationTextFieldNameAndSearchAssignedWorkerStoryStatusStoriesService,
   getTranslationTextFieldNameAndSearchService,
+  getTranslationTextFieldNameService,
   getTranslationUpdatedAtAndLanguageService,
   seasonTranslationUpdateTitleService,
   storyTranslationUpdateService,
@@ -97,6 +99,45 @@ export const getTranslationUpdatedAtAndLanguageController: RequestHandler<
     next(error);
   }
 };
+// BY_TEXT_FIELD_NAME_AND_WORKER-STORY_STATUS_AssignedStories__________________________________________________________
+
+type GetTextFieldNameAndSearchAssignedWorkerStoryStatusStoriesParams = {
+  staffId: string;
+};
+
+type GetTextFieldNameAndSearchAssignedWorkerStoryStatusStoriesQuery = {
+  currentLanguage: string | undefined;
+  text: string | undefined;
+  storyStatus: string | undefined;
+};
+
+// @route GET http://localhost:3500/translations/stories/staff/:staffId/textFieldNames/status/search
+// @access Private
+export const getTranslationTextFieldNameAndSearchAssignedWorkerStoryStatusStoriesController: RequestHandler<
+  GetTextFieldNameAndSearchAssignedWorkerStoryStatusStoriesParams,
+  unknown,
+  unknown,
+  GetTextFieldNameAndSearchAssignedWorkerStoryStatusStoriesQuery
+> = async (req, res, next) => {
+  try {
+    const textFieldName =
+      await getTranslationTextFieldNameAndSearchAssignedWorkerStoryStatusStoriesService(
+        {
+          staffId: req.params.staffId,
+          currentLanguage: req.query.currentLanguage,
+          text: req.query.text,
+          storyStatus: req.query.storyStatus,
+        }
+      );
+    if (textFieldName) {
+      return res.status(201).json(textFieldName);
+    } else {
+      return res.status(400).json({ message: "Something went wrong" });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
 // BY_TEXT_FIELD_NAME_AssignedStories__________________________________________________________
 
 type GetTextFieldNameAndSearchAssignedStoriesParams = {
@@ -135,13 +176,42 @@ export const getTranslationTextFieldNameAndSearchAssignedStoriesController: Requ
 
 // BY_TEXT_FIELD_NAME__________________________________________________________
 
+type GetTextFieldNameQuery = {
+  currentLanguage: string | undefined;
+  textFieldName: string | undefined;
+};
+
+// @route GET http://localhost:3500/translations/textFieldNames
+// @access Private
+export const getTranslationTextFieldNameController: RequestHandler<
+  unknown,
+  unknown,
+  unknown,
+  GetTextFieldNameQuery
+> = async (req, res, next) => {
+  try {
+    const textFieldName = await getTranslationTextFieldNameService({
+      currentLanguage: req.query.currentLanguage,
+      textFieldName: req.query.textFieldName,
+    });
+    if (textFieldName) {
+      return res.status(201).json(textFieldName);
+    } else {
+      return res.status(400).json({ message: "Something went wrong" });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+// BY_TEXT_FIELD_NAME__AND_SEARCH__________________________________________________________
+
 type GetTextFieldNameAndSearchQuery = {
   currentLanguage: string | undefined;
   textFieldName: string | undefined;
   text: string | undefined;
 };
 
-// @route GET http://localhost:3500/translations/textFieldNames
+// @route GET http://localhost:3500/translations/textFieldNames/search
 // @access Private
 export const getTranslationTextFieldNameAndSearchController: RequestHandler<
   unknown,
@@ -508,7 +578,7 @@ export const getTranslationStoryController: RequestHandler<
 // CHARACTER_CHARACTERISTIC________________________________________________
 
 type CharacterCharacteristicTranslationUpdateParams = {
-  characteristicId: string;
+  characterCharacteristicId: string;
 };
 
 type CharacterCharacteristicTranslationUpdateBody = {
@@ -528,7 +598,7 @@ export const characterCharacteristicTranslationUpdateController: RequestHandler<
     const characterCharacteristic =
       await characterCharacteristicTranslationUpdateService({
         characteristicName: req.body.characteristicName,
-        characteristicId: req.params.characteristicId,
+        characterCharacteristicId: req.params.characterCharacteristicId,
         currentLanguage: req.body.currentLanguage,
       });
     if (characterCharacteristic) {

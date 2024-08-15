@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import useGetTranslationCharacteristicsQueries from "../../../../../hooks/Fetching/Translation/Characteristic/useGetTranslationCharacteristicsQueries";
 import { CurrentlyAvailableLanguagesTypes } from "../../../../../types/Additional/CURRENTLY_AVAILABEL_LANGUAGES";
-import { TranslationCharacteCharacteristicTypes } from "../../../../../types/Additional/TranslationTypes";
+import { TranslationCharacterCharacteristicTypes } from "../../../../../types/Additional/TranslationTypes";
 import DisplayTranslatedNonTranslatedCharacteristic from "../Display/Characteristic/DisplayTranslatedNonTranslatedCharacteristic";
 import StoryPrompt from "../../InputPrompts/StoryPrompt";
 
@@ -11,8 +11,8 @@ type FiltersEverythingCharacterForCharacteristicTypes = {
 };
 
 export type CombinedTranslatedAndNonTranslatedCharacteristicTypes = {
-  translated: TranslationCharacteCharacteristicTypes[];
-  nonTranslated: TranslationCharacteCharacteristicTypes[] | null;
+  translated: TranslationCharacterCharacteristicTypes[];
+  nonTranslated: TranslationCharacterCharacteristicTypes[] | null;
 };
 
 export default function FiltersEverythingCharacterForCharacteristic({
@@ -45,7 +45,7 @@ export default function FiltersEverythingCharacterForCharacteristic({
 
       translatedCharacteristic.forEach((tc) => {
         tc.data?.forEach((tcd) => {
-          const characterCharacteristicId = tcd.characteCharacteristicId;
+          const characterCharacteristicId = tcd.characterCharacteristicId;
           if (!groupedCharacteristic[characterCharacteristicId]) {
             groupedCharacteristic[characterCharacteristicId] = {
               translated: [],
@@ -58,7 +58,7 @@ export default function FiltersEverythingCharacterForCharacteristic({
 
       nonTranslatedCharacteristic.forEach((ntc) => {
         ntc.data?.forEach((ntcd) => {
-          const characterCharacteristicId = ntcd.characteCharacteristicId;
+          const characterCharacteristicId = ntcd.characterCharacteristicId;
           if (!groupedCharacteristic[characterCharacteristicId]) {
             groupedCharacteristic[characterCharacteristicId] = {
               translated: [],
@@ -93,13 +93,17 @@ export default function FiltersEverythingCharacterForCharacteristic({
       <main
         className={`grid grid-cols-[repeat(auto-fill,minmax(25rem,1fr))] gap-[1rem] w-full`}
       >
-        {memoizedCombinedTranslations.map((ct, i) => (
-          <DisplayTranslatedNonTranslatedCharacteristic
-            key={(ct?.translated[i]?._id || i) + "-ctCharacteristic"}
-            languageToTranslate={translateToLanguage}
-            {...ct}
-          />
-        ))}
+        {memoizedCombinedTranslations.map((ct) => {
+          return ct.translated.map((ctt, i) => (
+            <DisplayTranslatedNonTranslatedCharacteristic
+              key={(ctt._id || i) + "-ctCharacteristic"}
+              languageToTranslate={translateToLanguage}
+              translated={ctt}
+              nonTranslated={(ct?.nonTranslated || [])[i]}
+              translateFromLanguage={translateFromLanguage}
+            />
+          ));
+        })}
       </main>
     </>
   );

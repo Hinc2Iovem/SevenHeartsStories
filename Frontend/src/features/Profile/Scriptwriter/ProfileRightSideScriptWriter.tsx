@@ -1,18 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
-import { Link } from "react-router-dom";
 import useGetDecodedJWTValues from "../../../hooks/Auth/useGetDecodedJWTValues";
-import useGetAssignedStories from "../../../hooks/Fetching/Staff/useGetAssignedStories";
-import useGetAllStoriesEnabledByFilterType from "../../../hooks/Fetching/Story/useGetAllStoriesEnabledByFilterType";
-import useGetSingleStory from "../../../hooks/Fetching/Story/useGetSingleStory";
-import useGetStoryTranslationByTextFieldNameAndSearch from "../../../hooks/Fetching/Story/useGetStoryTranslationByTextFieldNameAndSearch";
+import useGetAssignedStoriesByStatus from "../../../hooks/Fetching/Staff/useGetAssignedStoriesByStatus";
+import useGetStoryTranslationByTextFieldName from "../../../hooks/Fetching/Story/useGetStoryTranslationByTextFieldName";
 import useGetStoryTranslationByTextFieldNameAndSearchAssigned from "../../../hooks/Fetching/Story/useGetStoryTranslationByTextFieldNameAndSearchAssigned";
-import useGetTranslationStory from "../../../hooks/Fetching/Translation/useGetTranslationStory";
-import useUpdateImg from "../../../hooks/Patching/useUpdateImg";
-import { EpisodeStatusTypes } from "../../../types/StoryData/Episode/EpisodeTypes";
-import PreviewImage from "../../shared/utilities/PreviewImage";
 import { StoryFilterTypes } from "../../Story/Story";
-import AssignScriptwriterModal from "./AssignScriptwriterModal";
-import { StaffRoles } from "../../../types/Staff/StaffTypes";
+import ProfileRightSideBySearchItem from "./ProfileRightSideBySearchItem";
 
 type ProfileRightSideTypes = {
   storiesType: StoryFilterTypes;
@@ -25,226 +17,86 @@ export default function ProfileRightSideScriptWriter({
 }: ProfileRightSideTypes) {
   const [openedStoryId, setOpenedStoryId] = useState("");
   const [characterIds, setCharacterIds] = useState<string[]>([]);
-  const { userId: staffId, roles } = useGetDecodedJWTValues();
+  const { userId: staffId } = useGetDecodedJWTValues();
 
-  const { data: allStories } = useGetAllStoriesEnabledByFilterType({
-    storyFilter: storiesType,
+  useEffect(() => {
+    setOpenedStoryId("");
+  }, [storiesType]);
+
+  const { data: allTranslatedStories } = useGetStoryTranslationByTextFieldName({
+    language: "russian",
+    storiesType,
   });
 
-  const { data: allTranslatedStories } =
-    useGetStoryTranslationByTextFieldNameAndSearch({
-      debouncedValue: debouncedStory,
-      language: "russian",
-      storiesType,
-    });
+  const translatedMemoizedData = useMemo(() => {
+    let allData = allTranslatedStories;
 
-  const { data: assignedStories } = useGetAssignedStories({
-    staffId: staffId ?? "",
-  });
+    if (debouncedStory) {
+      allData = allData?.filter((t) =>
+        t.text.toLowerCase().includes(debouncedStory.toLowerCase())
+      );
+    }
+
+    return allData;
+  }, [allTranslatedStories, debouncedStory]);
 
   const { data: translatedStories } =
     useGetStoryTranslationByTextFieldNameAndSearchAssigned({
       debouncedValue: debouncedStory,
       language: "russian",
       staffId: staffId || "",
+      storiesType,
     });
 
-  const memoizedData = useMemo(() => {
-    const allData = assignedStories;
-    if (storiesType === "allAssigned") {
-      return allData;
-    } else if (storiesType === "doing") {
-      return allData?.filter((i) => i.storyStatus === "doing");
-    } else if (storiesType === "done") {
-      return allData?.filter((i) => i.storyStatus === "done");
-    } else {
-      return allData;
-    }
-  }, [assignedStories, storiesType]);
+  console.log(debouncedStory);
+
+  const { data: assignedStories } = useGetAssignedStoriesByStatus({
+    staffId: staffId ?? "",
+    language: "russian",
+    storyStatus: storiesType,
+    text: debouncedStory,
+  });
 
   return (
     <div className="grid grid-cols-[repeat(auto-fill,minmax(20rem,1fr))] gap-[1rem] justify-items-center justify-center w-full">
-      {(storiesType === "all" && allTranslatedStories?.length) ||
-      (storiesType === "all" && allStories?.length) ? (
-        <>
-          {allTranslatedStories?.length ? (
-            allTranslatedStories.map((ts) => (
-              <ProfileRightSideItem
-                key={ts._id}
-                setOpenedStoryId={setOpenedStoryId}
-                openedStoryId={openedStoryId}
-                storiesType={storiesType}
-                storyId={ts.storyId}
-                roles={roles || []}
-                characterIds={characterIds}
-                setCharacterIds={setCharacterIds}
-              />
-            ))
-          ) : (
-            <>
-              {allStories?.map((st) => (
-                <ProfileRightSideItem
-                  key={st._id}
-                  setOpenedStoryId={setOpenedStoryId}
-                  openedStoryId={openedStoryId}
-                  storiesType={storiesType}
-                  storyId={st._id}
-                  storyStatus={st.storyStatus}
-                  roles={roles || []}
-                  characterIds={characterIds}
-                  setCharacterIds={setCharacterIds}
-                />
-              ))}
-            </>
-          )}
-        </>
-      ) : (
-        <>
-          {translatedStories?.length ? (
-            translatedStories.map((ts) => (
-              <ProfileRightSideItem
-                key={ts._id}
-                setOpenedStoryId={setOpenedStoryId}
-                openedStoryId={openedStoryId}
-                storiesType={storiesType}
-                storyId={ts.storyId}
-                roles={roles || []}
-                characterIds={characterIds}
-                setCharacterIds={setCharacterIds}
-              />
-            ))
-          ) : (
-            <>
-              {memoizedData?.map((st) => (
-                <ProfileRightSideItem
-                  key={st._id}
-                  setOpenedStoryId={setOpenedStoryId}
-                  openedStoryId={openedStoryId}
-                  storiesType={storiesType}
-                  storyId={st.storyId}
-                  storyStatus={st.storyStatus}
-                  roles={roles || []}
-                  characterIds={characterIds}
-                  setCharacterIds={setCharacterIds}
-                />
-              ))}
-            </>
-          )}
-        </>
-      )}
+      {storiesType === "all" && translatedMemoizedData?.length
+        ? translatedMemoizedData.map((ts) => (
+            <ProfileRightSideBySearchItem
+              key={ts._id}
+              setOpenedStoryId={setOpenedStoryId}
+              openedStoryId={openedStoryId}
+              storiesType={storiesType}
+              storyId={ts.storyId}
+              characterIds={characterIds}
+              setCharacterIds={setCharacterIds}
+              title={ts.textFieldName === "storyName" ? ts.text : ""}
+            />
+          ))
+        : translatedStories?.length && storiesType === "allAssigned"
+        ? translatedStories.map((ts) => (
+            <ProfileRightSideBySearchItem
+              key={ts._id}
+              setOpenedStoryId={setOpenedStoryId}
+              openedStoryId={openedStoryId}
+              storiesType={storiesType}
+              storyId={ts.storyId}
+              characterIds={characterIds}
+              setCharacterIds={setCharacterIds}
+              title={ts.textFieldName === "storyName" ? ts.text : ""}
+            />
+          ))
+        : assignedStories?.map((st) => (
+            <ProfileRightSideBySearchItem
+              key={st._id}
+              setOpenedStoryId={setOpenedStoryId}
+              openedStoryId={openedStoryId}
+              storiesType={storiesType}
+              storyId={st.storyId}
+              characterIds={characterIds}
+              setCharacterIds={setCharacterIds}
+              title={st.textFieldName === "storyName" ? st.text : ""}
+            />
+          ))}
     </div>
-  );
-}
-
-type ProfileRightSideItemTypes = {
-  storiesType: StoryFilterTypes;
-  storyStatus?: EpisodeStatusTypes;
-  storyId: string;
-  setOpenedStoryId: React.Dispatch<React.SetStateAction<string>>;
-  openedStoryId: string;
-  roles: StaffRoles[];
-  setCharacterIds: React.Dispatch<React.SetStateAction<string[]>>;
-  characterIds: string[];
-};
-
-function ProfileRightSideItem({
-  storyId,
-  storyStatus,
-  storiesType,
-  openedStoryId,
-  setOpenedStoryId,
-  roles,
-  characterIds,
-  setCharacterIds,
-}: ProfileRightSideItemTypes) {
-  const { data: translationStory } = useGetTranslationStory({
-    id: storyId,
-    language: "russian",
-  });
-
-  const { data: story } = useGetSingleStory({ storyId });
-  const [imagePreview, setPreview] = useState<string | ArrayBuffer | null>(
-    null
-  );
-
-  const [title, setTitle] = useState("");
-  const uploadImgMutation = useUpdateImg({
-    id: storyId,
-    path: "/stories",
-    preview: imagePreview,
-  });
-
-  useEffect(() => {
-    if (imagePreview) {
-      uploadImgMutation.mutate();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [imagePreview]);
-
-  useEffect(() => {
-    if (translationStory) {
-      translationStory.map((d) => {
-        if (d.textFieldName === "storyName") {
-          setTitle(d.text);
-        }
-      });
-    }
-  }, [translationStory]);
-
-  return (
-    <article className="w-full h-[24rem] rounded-md shadow-md shadow-gray-400 relative">
-      <div className="relative border-[3px] w-full h-[20rem] border-white bg-white">
-        {story?.imgUrl ? (
-          <img
-            src={story.imgUrl}
-            alt="StoryBg"
-            className="w-full h-full object-cover absolute rounded-md"
-          />
-        ) : (
-          <PreviewImage
-            imgClasses="w-full h-full object-cover rounded-md absolute top-0 bottom-0 left-0 right-0 border-[2px] border-white"
-            imagePreview={imagePreview}
-            setPreview={setPreview}
-          />
-        )}
-        <div
-          className={`${
-            (storyStatus && storiesType === "all") ||
-            storiesType === "allAssigned"
-              ? ""
-              : "hidden"
-          } absolute top-[.5rem] right-[.5rem] bg-white rounded-md shadow-md p-[.5rem]`}
-        >
-          <p className={`text-[1.5rem] self-end`}>
-            Статус:{" "}
-            <span
-              className={`text-[1.4rem] ${
-                storyStatus === "doing" ? "text-orange-400" : "text-green-400"
-              }`}
-            >
-              {storyStatus === "doing" ? "В процессе" : "Завершена"}
-            </span>
-          </p>
-        </div>
-      </div>
-      {roles.includes("editor") || roles.includes("headscriptwriter") ? (
-        <AssignScriptwriterModal
-          openedStoryId={openedStoryId}
-          setOpenedStoryId={setOpenedStoryId}
-          storyTitle={title}
-          storyId={storyId}
-          setCharacterIds={setCharacterIds}
-          characterIds={characterIds}
-        />
-      ) : null}
-      <div className="bg-white w-full p-[1rem] rounded-b-md shadow-md shadow-gray-400">
-        <Link
-          to={`/stories/${storyId}`}
-          className="text-[1.5rem] hover:text-gray-600 transition-all"
-        >
-          {title.length > 25 ? title.substring(0, 25) + "..." : title}
-        </Link>
-      </div>
-    </article>
   );
 }

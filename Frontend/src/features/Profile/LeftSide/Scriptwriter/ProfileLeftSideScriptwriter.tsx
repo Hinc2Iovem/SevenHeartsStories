@@ -1,8 +1,7 @@
-import { useEffect, useState } from "react";
-import { StaffRoles } from "../../../../types/Staff/StaffTypes";
-import StoryFilterTypesHeader from "../../../Story/StoryFilterTypes";
+import { useState } from "react";
 import useGetDecodedJWTValues from "../../../../hooks/Auth/useGetDecodedJWTValues";
 import { StoryFilterTypes } from "../../../Story/Story";
+import StoryFilterTypesHeader from "../../../Story/StoryFilterTypes";
 
 type ProfileLeftSideScriptwriterTypes = {
   setSearchValue: React.Dispatch<React.SetStateAction<string>>;
@@ -18,23 +17,6 @@ export default function ProfileLeftSideScriptwriter({
   const { roles } = useGetDecodedJWTValues();
   const [localSearchValue, setLocalSearchValue] = useState("");
   const [localAssignedSearchValue, setLocalAssignedSearchValue] = useState("");
-  const [role, setRole] = useState<StaffRoles>("" as StaffRoles);
-
-  useEffect(() => {
-    if (roles) {
-      roles.map((r) => {
-        if (r === "editor") {
-          setRole("editor");
-          return;
-        } else if (r === "headscriptwriter") {
-          setRole("headscriptwriter");
-          return;
-        } else {
-          setRole("scriptwriter");
-        }
-      });
-    }
-  }, [roles]);
   return (
     <div
       className={`${
@@ -71,7 +53,10 @@ export default function ProfileLeftSideScriptwriter({
         <ul className="flex flex-col gap-[1rem] bg-white rounded-md p-[1rem] shadow-sm">
           <li>
             <button
-              onClick={() => setStoriesType("all")}
+              onClick={() => {
+                setStoriesType("all");
+                setLocalAssignedSearchValue("");
+              }}
               className={`text-[1.4rem] ${
                 storiesType === "all"
                   ? "rounded-md bg-primary-light-blue text-white w-full text-start px-[1rem] py-[.5rem]"
@@ -105,12 +90,12 @@ export default function ProfileLeftSideScriptwriter({
               setSearchValue(e.target.value);
               if (storiesType !== "allAssigned") {
                 setLocalSearchValue("");
-                setStoriesType("allAssigned");
               }
             }}
           />
         </form>
         <StoryFilterTypesHeader
+          setLocalSearchValue={setLocalSearchValue}
           setStoriesType={setStoriesType}
           storiesType={storiesType}
         />

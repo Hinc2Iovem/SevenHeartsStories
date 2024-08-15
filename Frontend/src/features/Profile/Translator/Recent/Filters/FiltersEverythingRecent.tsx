@@ -62,6 +62,7 @@ export default function FiltersEverythingRecent({
                   key={t._id}
                   translated={t}
                   languageToTranslate={translateToLanguage}
+                  translateFromLanguage={translateFromLanguage}
                 />
               )
             )}
@@ -78,7 +79,7 @@ export default function FiltersEverythingRecent({
                   key={t._id}
                   translated={t}
                   languageToTranslate={translateToLanguage}
-                  translatedLanguage={translateFromLanguage}
+                  translateFromLanguage={translateFromLanguage}
                 />
               )
             )}
@@ -95,7 +96,7 @@ export default function FiltersEverythingRecent({
                   key={t?.getItemGrouped[i]?._id}
                   translated={t.getItemGrouped}
                   languageToTranslate={translateToLanguage}
-                  translatedLanguage={translateFromLanguage}
+                  translateFromLanguage={translateFromLanguage}
                 />
               )
             )}
@@ -111,6 +112,7 @@ export default function FiltersEverythingRecent({
                 <DisplayTranslatedNonTranslatedRecentCharacteristic
                   key={t._id + "-ctCharacteristic"}
                   languageToTranslate={translateToLanguage}
+                  translateFromLanguage={translateFromLanguage}
                   translated={t}
                 />
               )
@@ -127,6 +129,7 @@ export default function FiltersEverythingRecent({
                 <DisplayTranslatedNonTranslatedRecentStory
                   key={(ct.storyGrouped[i]?._id || i) + "-ctStory"}
                   languageToTranslate={translateToLanguage}
+                  translateFromLanguage={translateFromLanguage}
                   translated={ct.storyGrouped}
                 />
               )
@@ -144,6 +147,7 @@ export default function FiltersEverythingRecent({
                   key={(ct.episodeGrouped[i]?._id || i) + "-ctEpisode"}
                   languageToTranslate={translateToLanguage}
                   translated={ct.episodeGrouped}
+                  translateFromLanguage={translateFromLanguage}
                 />
               )
             )}
@@ -160,6 +164,7 @@ export default function FiltersEverythingRecent({
                   key={(ct._id || i) + "-ctSeason"}
                   languageToTranslate={translateToLanguage}
                   translated={ct}
+                  translateFromLanguage={translateFromLanguage}
                 />
               )
             )}
@@ -176,6 +181,7 @@ export default function FiltersEverythingRecent({
                 <DisplayTranslatedNonTranslatedRecentAppearancePart
                   key={(ct._id || i) + "-ctAppearancePart"}
                   languageToTranslate={translateToLanguage}
+                  translateFromLanguage={translateFromLanguage}
                   translated={ct}
                 />
               )
@@ -193,6 +199,7 @@ export default function FiltersEverythingRecent({
                   key={(ct?.characterGrouped[i]?._id || i) + "-ct"}
                   languageToTranslate={translateToLanguage}
                   translated={ct.characterGrouped}
+                  translateFromLanguage={translateFromLanguage}
                   characterTypeFilter=""
                 />
               )

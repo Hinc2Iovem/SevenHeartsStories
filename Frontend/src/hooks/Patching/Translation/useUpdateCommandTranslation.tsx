@@ -1,4 +1,4 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { axiosCustomized } from "../../../api/axios";
 import { CurrentlyAvailableLanguagesTypes } from "../../../types/Additional/CURRENTLY_AVAILABEL_LANGUAGES";
 
@@ -35,6 +35,7 @@ export default function useUpdateCommandTranslation({
   commandEndPoint,
   dynamicCommandName,
 }: UpdateCommandTranslationTypes) {
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async ({
       commandText,
@@ -46,5 +47,12 @@ export default function useUpdateCommandTranslation({
           [dynamicCommandName]: commandText,
         }
       ),
+    onSettled: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["translation", language, "plotFieldCommand", commandId],
+        exact: true,
+        type: "active",
+      });
+    },
   });
 }

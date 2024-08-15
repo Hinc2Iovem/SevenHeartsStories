@@ -51,7 +51,7 @@ export const characterEmotionCreateService = async ({
 }: CreateCharacterEmotionTypes) => {
   validateMongoId({ value: characterId, valueName: "Character" });
 
-  const existingCharacter = await Character.findById(characterId).lean();
+  const existingCharacter = await Character.findById(characterId).exec();
   if (!existingCharacter) {
     throw createHttpError(400, "Character with such id wasn't found");
   }
@@ -60,66 +60,76 @@ export const characterEmotionCreateService = async ({
     throw createHttpError(400, "Emotion is required");
   }
 
-  const newEmotion = await CharacterEmotion.create({
-    characterId,
+  existingCharacter.emotions.push({
     emotionName,
   });
 
-  return newEmotion;
+  return await existingCharacter.save();
 };
 
 type UpdateCharacterEmotionTypes = {
   emotionName: string | undefined;
-  characterEmotionId: string;
+  characterId: string;
 };
 
 export const characterEmotionUpdateService = async ({
-  characterEmotionId,
+  characterId,
   emotionName,
 }: UpdateCharacterEmotionTypes) => {
-  validateMongoId({ value: characterEmotionId, valueName: "CharacterEmotion" });
+  validateMongoId({ value: characterId, valueName: "Character" });
 
-  const existingCharacterEmotion = await CharacterEmotion.findById(
-    characterEmotionId
-  ).exec();
-  if (!existingCharacterEmotion) {
-    throw createHttpError(400, "CharacterEmotion with such id wasn't found");
+  const existingCharacter = await Character.findById(characterId).exec();
+  if (!existingCharacter) {
+    throw createHttpError(400, "Character with such id wasn't found");
   }
 
   if (!emotionName?.trim().length) {
     throw createHttpError(400, "Emotion is required");
   }
 
-  existingCharacterEmotion.emotionName = emotionName;
+  const currentEmotion = existingCharacter.emotions.find(
+    (e) => (e.emotionName || "").toLowerCase() === emotionName.toLowerCase()
+  );
 
-  return await existingCharacterEmotion.save();
+  if (currentEmotion) {
+    currentEmotion.emotionName = emotionName;
+  }
+
+  return await existingCharacter.save();
 };
 
 type UpdateCharacterEmotionImgTypes = {
   imgUrl: string | undefined;
-  characterEmotionId: string;
+  characterId: string;
+  emotionName: string | undefined;
 };
 
 export const characterEmotionUpdateImgService = async ({
-  characterEmotionId,
+  characterId,
   imgUrl,
+  emotionName,
 }: UpdateCharacterEmotionImgTypes) => {
-  validateMongoId({ value: characterEmotionId, valueName: "CharacterEmotion" });
+  validateMongoId({ value: characterId, valueName: "Character" });
 
-  const existingCharacterEmotion = await CharacterEmotion.findById(
-    characterEmotionId
-  ).exec();
-  if (!existingCharacterEmotion) {
-    throw createHttpError(400, "CharacterEmotion with such id wasn't found");
+  const existingCharacter = await Character.findById(characterId).exec();
+  if (!existingCharacter) {
+    throw createHttpError(400, "Character with such id wasn't found");
   }
 
   if (!imgUrl?.trim().length) {
     throw createHttpError(400, "imgUrl is required");
   }
 
-  existingCharacterEmotion.imgUrl = imgUrl;
+  const currentEmotion = existingCharacter.emotions.find(
+    (e) =>
+      (e.emotionName || "").toLowerCase() === (emotionName || "").toLowerCase()
+  );
 
-  return await existingCharacterEmotion.save();
+  if (currentEmotion) {
+    currentEmotion.imgUrl = imgUrl;
+  }
+
+  return await existingCharacter.save();
 };
 
 type DeleteCharacterEmotionTypes = {

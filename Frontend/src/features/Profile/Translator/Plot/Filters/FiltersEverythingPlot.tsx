@@ -6,9 +6,9 @@ import EpisodePrompt from "../../InputPrompts/EpisodePrompt";
 import SeasonPrompt from "../../InputPrompts/SeasonPrompt";
 import StoryPrompt from "../../InputPrompts/StoryPrompt";
 import TopologyBlockPrompt from "../../InputPrompts/TopologyBlockPrompt";
-import DisplayTranslatedNonTranslatedPlotOneLiners from "../Display/Plot/DisplayTranslatedNonTranslatedPlotOneLiners";
 import DisplayTranslatedNonTranslatedChoice from "../Display/Plot/DisplayTranslatedNonTranslatedChoice";
 import DisplayTranslatedNonTranslatedPlotGetItem from "../Display/Plot/DisplayTranslatedNonTranslatedPlotGetItem";
+import DisplayTranslatedNonTranslatedPlotOneLiners from "../Display/Plot/DisplayTranslatedNonTranslatedPlotOneLiners";
 
 type FiltersEverythingCharacterForPlotTypes = {
   translateFromLanguage: CurrentlyAvailableLanguagesTypes;
@@ -203,6 +203,7 @@ export default function FiltersEverythingPlot({
                       : null
                   }
                   languageToTranslate={translateToLanguage}
+                  translateFromLanguage={translateFromLanguage}
                 />
               )
             )}
@@ -228,7 +229,7 @@ export default function FiltersEverythingPlot({
                       : null
                   }
                   languageToTranslate={translateToLanguage}
-                  translatedLanguage={translateFromLanguage}
+                  translateFromLanguage={translateFromLanguage}
                 />
               )
             )}
@@ -242,7 +243,7 @@ export default function FiltersEverythingPlot({
             {memoizedCombinedMultipleCommandsTranslations.getItem.translated.map(
               (t, i) => (
                 <DisplayTranslatedNonTranslatedPlotGetItem
-                  key={t.getItemGrouped[i]._id}
+                  key={t.getItemGrouped[i]?._id || i + "-getItem"}
                   translated={t.getItemGrouped}
                   nonTranslated={
                     memoizedCombinedMultipleCommandsTranslations.getItem
@@ -254,7 +255,7 @@ export default function FiltersEverythingPlot({
                       : null
                   }
                   languageToTranslate={translateToLanguage}
-                  translatedLanguage={translateFromLanguage}
+                  translateFromLanguage={translateFromLanguage}
                 />
               )
             )}
