@@ -1,7 +1,7 @@
 import { useQueries } from "@tanstack/react-query";
 import { axiosCustomized } from "../../../../api/axios";
 import { CurrentlyAvailableLanguagesTypes } from "../../../../types/Additional/CURRENTLY_AVAILABEL_LANGUAGES";
-import { TranslationCharacteCharacteristicTypes } from "../../../../types/Additional/TranslationTypes";
+import { TranslationCharacterCharacteristicTypes } from "../../../../types/Additional/TranslationTypes";
 import useGetAllCharacteristicsByStoryId from "../../CharacterCharacteristic/useGetAllCharacteristicsByStoryId";
 
 export default function useGetTranslationCharacteristicsQueries({
@@ -20,7 +20,7 @@ export default function useGetTranslationCharacteristicsQueries({
         queryKey: ["translation", language, "characteristic", c._id],
         queryFn: async () =>
           await axiosCustomized
-            .get<TranslationCharacteCharacteristicTypes[]>(
+            .get<TranslationCharacterCharacteristicTypes[]>(
               `/translations/characterCharacteristics/${c._id}?currentLanguage=${language}`
             )
             .then((r) => r.data),

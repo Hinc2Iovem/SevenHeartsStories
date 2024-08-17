@@ -1,17 +1,17 @@
 import createHttpError from "http-errors";
 import { Types } from "mongoose";
-import { TranslationTextFieldName } from "../../consts/TRANSLATION_TEXT_FIELD_NAMES";
-import Episode from "../../models/StoryData/Episode";
-import EpisodeInfo from "../../models/StoryData/EpisodeInfo";
-import Season from "../../models/StoryData/Season";
-import Story from "../../models/StoryData/Story";
-import Translation from "../../models/StoryData/Translation";
-import PlotFieldCommand from "../../models/StoryEditor/PlotField/PlotFieldCommand";
-import TopologyBlock from "../../models/StoryEditor/Topology/TopologyBlock";
-import TopologyBlockInfo from "../../models/StoryEditor/Topology/TopologyBlockInfo";
-import { validateMongoId } from "../../utils/validateMongoId";
-import { checkCurrentLanguage } from "../../utils/checkCurrentLanguage";
-import { EpisodeStatuses } from "../../consts/EPISODE_STATUSES";
+import Episode from "../../../models/StoryData/Episode";
+import { validateMongoId } from "../../../utils/validateMongoId";
+import { checkCurrentLanguage } from "../../../utils/checkCurrentLanguage";
+import { TranslationTextFieldName } from "../../../consts/TRANSLATION_TEXT_FIELD_NAMES";
+import Translation from "../../../models/StoryData/Translation/Translation";
+import { EpisodeStatuses } from "../../../consts/EPISODE_STATUSES";
+import EpisodeInfo from "../../../models/StoryData/EpisodeInfo";
+import TopologyBlockInfo from "../../../models/StoryEditor/Topology/TopologyBlockInfo";
+import TopologyBlock from "../../../models/StoryEditor/Topology/TopologyBlock";
+import Story from "../../../models/StoryData/Story";
+import Season from "../../../models/StoryData/Season";
+import PlotFieldCommand from "../../../models/StoryEditor/PlotField/PlotFieldCommand";
 
 type GetEpisodesBySeasonId = {
   seasonId: string;
@@ -45,86 +45,6 @@ export const episodeGetByEpisodeIdService = async ({
   }
 
   return existingEpisode;
-};
-
-type EpisodeCreateTypes = {
-  title: string | undefined;
-  description: string | undefined;
-  currentLanguage: string | undefined;
-  seasonId: string;
-};
-
-export const episodeCreateService = async ({
-  seasonId,
-  title,
-  description,
-  currentLanguage,
-}: EpisodeCreateTypes) => {
-  validateMongoId({ value: seasonId, valueName: "Season" });
-
-  if (!title?.trim().length || !currentLanguage?.trim().length) {
-    throw createHttpError(400, "Title and language are required");
-  }
-
-  checkCurrentLanguage({ currentLanguage });
-
-  const allEpisodesBySeasonId = await Episode.find({
-    seasonId,
-  }).countDocuments();
-
-  const episodeOrder = allEpisodesBySeasonId ? allEpisodesBySeasonId : 0;
-  const newEpisode = await Episode.create({
-    episodeOrder,
-    seasonId,
-  });
-
-  await Translation.create({
-    text: title,
-    textFieldName: TranslationTextFieldName.EpisodeName,
-    language: currentLanguage,
-    episodeId: newEpisode._id,
-  });
-  if (description?.trim().length) {
-    await Translation.create({
-      text: description,
-      textFieldName: TranslationTextFieldName.EpisodeDescription,
-      language: currentLanguage,
-      episodeId: newEpisode._id,
-    });
-  }
-  const currentSeason = await Season.findById(seasonId);
-  if (!currentSeason) {
-    throw createHttpError(400, "Season should have a story, firstly");
-  }
-  const currentStory = await Story.findById(currentSeason?.storyId).exec();
-  if (currentStory) {
-    currentStory.amountOfEpisodes += 1;
-    await currentStory.save();
-  }
-
-  const firstTopologyBlock = await TopologyBlock.create({
-    coordinatesX: 50,
-    coordinatesY: 50,
-    episodeId: newEpisode._id,
-    name: "First",
-    isStartingTopologyBlock: true,
-  });
-
-  await TopologyBlockInfo.create({
-    amountOfAchievements: 0,
-    amountOfAmethysts: 0,
-    amountOfAuthorWords: 0,
-    amountOfCharacterWords: 0,
-    amountOfWords: 0,
-    topologyBlockId: firstTopologyBlock._id,
-  });
-
-  await PlotFieldCommand.create({
-    commandOrder: 0,
-    topologyBlockId: firstTopologyBlock._id,
-  });
-
-  return newEpisode;
 };
 
 type EpisodeResetStatusTypes = {

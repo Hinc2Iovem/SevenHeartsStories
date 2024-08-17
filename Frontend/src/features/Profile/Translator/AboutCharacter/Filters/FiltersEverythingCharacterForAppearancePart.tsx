@@ -1,15 +1,18 @@
 import { useMemo, useState } from "react";
+import useGetTranslationAppearancePartsQueries from "../../../../../hooks/Fetching/Translation/AppearancePart/useGetTranslationAppearancePartsQueries";
 import { CurrentlyAvailableLanguagesTypes } from "../../../../../types/Additional/CURRENTLY_AVAILABEL_LANGUAGES";
+import { TranslationTextFieldNameAppearancePartsTypes } from "../../../../../types/Additional/TRANSLATION_TEXT_FIELD_NAMES";
 import { TranslationAppearancePartTypes } from "../../../../../types/Additional/TranslationTypes";
 import CharacterPrompt from "../../InputPrompts/CharacterPrompt";
-import useGetTranslationAppearancePartsQueries from "../../../../../hooks/Fetching/Translation/AppearancePart/useGetTranslationAppearancePartsQueries";
-import DisplayTranslatedNonTranslatedAppearancePart from "../Display/AppearancePart/DisplayTranslatedNonTranslatedAppearancePart";
 import AppearanceTypeDropDown from "../Display/AppearancePart/AppearanceTypeDropDown";
-import { TranslationTextFieldNameAppearancePartsTypes } from "../../../../../types/Additional/TRANSLATION_TEXT_FIELD_NAMES";
+import DisplayTranslatedNonTranslatedAppearancePart from "../Display/AppearancePart/DisplayTranslatedNonTranslatedAppearancePart";
+import useInvalidateTranslatorQueries from "../../../../../hooks/helpers/Profile/Translator/useInvalidateTranslatorQueries";
 
 type FiltersEverythingCharacterForAppearancePartTypes = {
   translateFromLanguage: CurrentlyAvailableLanguagesTypes;
   translateToLanguage: CurrentlyAvailableLanguagesTypes;
+  prevTranslateFromLanguage: CurrentlyAvailableLanguagesTypes;
+  prevTranslateToLanguage: CurrentlyAvailableLanguagesTypes;
 };
 
 export type CombinedTranslatedAndNonTranslatedAppearancePartTypes = {
@@ -20,7 +23,16 @@ export type CombinedTranslatedAndNonTranslatedAppearancePartTypes = {
 export default function FiltersEverythingCharacterForAppearancePart({
   translateFromLanguage,
   translateToLanguage,
+  prevTranslateFromLanguage,
+  prevTranslateToLanguage,
 }: FiltersEverythingCharacterForAppearancePartTypes) {
+  useInvalidateTranslatorQueries({
+    prevTranslateFromLanguage,
+    prevTranslateToLanguage,
+    queryKey: "appearancePart",
+    translateToLanguage,
+  });
+
   const [characterId, setCharacterId] = useState("");
   const [appearanceType, setAppearanceType] = useState(
     "" as TranslationTextFieldNameAppearancePartsTypes
@@ -92,10 +104,7 @@ export default function FiltersEverythingCharacterForAppearancePart({
     <>
       <div className="flex w-full gap-[1rem] bg-neutral-alabaster px-[.5rem] py-[.5rem] rounded-md shadow-sm">
         <CharacterPrompt setCharacterId={setCharacterId} />
-        <AppearanceTypeDropDown
-          appearanceType={appearanceType}
-          setAppearanceType={setAppearanceType}
-        />
+        <AppearanceTypeDropDown setAppearanceType={setAppearanceType} />
       </div>
       <main
         className={`grid grid-cols-[repeat(auto-fill,minmax(25rem,1fr))] gap-[1rem] w-full`}

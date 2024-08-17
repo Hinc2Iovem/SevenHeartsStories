@@ -7,17 +7,17 @@ export default function useDebounce({
   value: string;
   delay: number;
 }) {
-  const [delayedValue, setDelayedValue] = useState(value);
+  const [debouncedValue, setDebouncedValue] = useState(value);
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setDelayedValue(value);
+    const handler = setTimeout(() => {
+      setDebouncedValue(value);
     }, delay);
 
     return () => {
-      clearTimeout(timer);
+      clearTimeout(handler);
     };
-  }, [delay, value]);
+  }, [value, delay]);
 
-  return delayedValue;
+  return debouncedValue;
 }

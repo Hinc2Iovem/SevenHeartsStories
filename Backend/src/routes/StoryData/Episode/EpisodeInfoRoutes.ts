@@ -4,7 +4,7 @@ import {
   episodeGetByEpisodeIdAndStaffIdController,
   episodeGetByEpisodeIdController,
   episodeInfoUpdateStatusController,
-} from "../../controllers/StoryData/EpisodeInfoController";
+} from "../../../controllers/StoryData/Episode/EpisodeInfoController";
 
 // Default route === /episodeInfo
 export const episodeInfoRoute = express.Router();

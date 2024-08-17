@@ -5,14 +5,17 @@ import useDebounce from "../../../../hooks/utilities/useDebounce";
 
 type CharacterPromptTypes = {
   setCharacterId: React.Dispatch<React.SetStateAction<string>>;
+  storyId?: string;
 };
 
 export default function CharacterPrompt({
   setCharacterId,
+  storyId,
 }: CharacterPromptTypes) {
   const [showCharacters, setShowCharacters] = useState(false);
   const modalCharactersRef = useRef<HTMLDivElement>(null);
   const [characterValue, setCharacterValue] = useState("");
+  const [characterBackupValue, setCharacterBackupValue] = useState("");
 
   useOutOfModal({
     modalRef: modalCharactersRef,
@@ -26,17 +29,26 @@ export default function CharacterPrompt({
     useGetCharacterTranslationByTextFieldNameAndSearch({
       debouncedValue,
       language: "russian",
+      storyId: storyId || "",
+      showCharacters,
     });
 
   useEffect(() => {
     if (debouncedValue?.trim().length) {
       setCharacterId(
-        charactersSearch?.find((cs) => cs.text === debouncedValue)
-          ?.characterId || ""
+        charactersSearch?.find(
+          (cs) => (cs?.translations || [])[0]?.text === debouncedValue
+        )?.characterId || ""
       );
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [debouncedValue, charactersSearch]);
+
+  useEffect(() => {
+    if (!showCharacters && !characterValue && characterBackupValue) {
+      setCharacterValue(characterBackupValue);
+    }
+  }, [showCharacters, characterValue, characterBackupValue]);
 
   return (
     <form
@@ -49,6 +61,8 @@ export default function CharacterPrompt({
         placeholder="Имя Персонажа"
         onClick={(e) => {
           e.stopPropagation();
+          setCharacterBackupValue(characterValue);
+          setCharacterValue("");
           setShowCharacters(true);
         }}
         value={characterValue}
@@ -71,12 +85,12 @@ export default function CharacterPrompt({
               type="button"
               onClick={() => {
                 setCharacterId(s.characterId);
-                setCharacterValue(s.text);
+                setCharacterValue((s?.translations || [])[0]?.text || "");
                 setShowCharacters(false);
               }}
               className="text-[1.4rem] outline-gray-300 text-gray-600 text-start hover:bg-primary-pastel-blue hover:text-white rounded-md px-[1rem] py-[.5rem] hover:shadow-md"
             >
-              {s.text}
+              {(s?.translations || [])[0]?.text || ""}
             </button>
           ))
         ) : (

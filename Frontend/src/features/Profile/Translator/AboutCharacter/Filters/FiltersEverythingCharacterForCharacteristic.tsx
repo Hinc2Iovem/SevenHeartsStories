@@ -4,10 +4,13 @@ import { CurrentlyAvailableLanguagesTypes } from "../../../../../types/Additiona
 import { TranslationCharacterCharacteristicTypes } from "../../../../../types/Additional/TranslationTypes";
 import DisplayTranslatedNonTranslatedCharacteristic from "../Display/Characteristic/DisplayTranslatedNonTranslatedCharacteristic";
 import StoryPrompt from "../../InputPrompts/StoryPrompt";
+import useInvalidateTranslatorQueries from "../../../../../hooks/helpers/Profile/Translator/useInvalidateTranslatorQueries";
 
 type FiltersEverythingCharacterForCharacteristicTypes = {
   translateFromLanguage: CurrentlyAvailableLanguagesTypes;
   translateToLanguage: CurrentlyAvailableLanguagesTypes;
+  prevTranslateFromLanguage: CurrentlyAvailableLanguagesTypes;
+  prevTranslateToLanguage: CurrentlyAvailableLanguagesTypes;
 };
 
 export type CombinedTranslatedAndNonTranslatedCharacteristicTypes = {
@@ -18,7 +21,15 @@ export type CombinedTranslatedAndNonTranslatedCharacteristicTypes = {
 export default function FiltersEverythingCharacterForCharacteristic({
   translateFromLanguage,
   translateToLanguage,
+  prevTranslateFromLanguage,
+  prevTranslateToLanguage,
 }: FiltersEverythingCharacterForCharacteristicTypes) {
+  useInvalidateTranslatorQueries({
+    prevTranslateFromLanguage,
+    prevTranslateToLanguage,
+    queryKey: "characteristic",
+    translateToLanguage,
+  });
   const [storyId, setStoryId] = useState("");
 
   const translatedCharacteristic = useGetTranslationCharacteristicsQueries({

@@ -4,7 +4,7 @@ import {
   episodeGetByEpisodeIdAndStaffIdService,
   episodeGetByEpisodeIdService,
   episodeUpdateStatusService,
-} from "../../services/StoryData/EpisodeInfoService";
+} from "../../../services/StoryData/Episode/EpisodeInfoService";
 
 type EpisodeInfoGetByEpisodeIdAndStaffIdParams = {
   episodeId: string;

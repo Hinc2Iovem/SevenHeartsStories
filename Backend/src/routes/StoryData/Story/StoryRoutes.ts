@@ -12,11 +12,11 @@ import {
   storyGetByIdController,
   storyUpdateImgUrlController,
   storyUpdateStatusForWorkerController,
-} from "../../controllers/StoryData/StoryController";
-import paginatedQuery from "../../middlewares/paginatedQuery";
-import Story from "../../models/StoryData/Story";
-import { verifyHeadScriptwriter } from "../../middlewares/verifyHeadScriptwriter";
-import { verifyJWT } from "../../middlewares/verifyJWT";
+} from "../../../controllers/StoryData/Story/StoryController";
+import paginatedQuery from "../../../middlewares/paginatedQuery";
+import Story from "../../../models/StoryData/Story";
+import { verifyHeadScriptwriter } from "../../../middlewares/verifyHeadScriptwriter";
+import { verifyJWT } from "../../../middlewares/verifyJWT";
 
 // Default route === /stories
 export const storyRoute = express.Router();

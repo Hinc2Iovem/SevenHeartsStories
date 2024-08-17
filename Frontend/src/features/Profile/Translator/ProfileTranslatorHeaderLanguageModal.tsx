@@ -10,6 +10,9 @@ type ProfileTranslatorHeaderLanguageModalTypes = {
   setValue: React.Dispatch<
     React.SetStateAction<CurrentlyAvailableLanguagesTypes>
   >;
+  setPrevValue: React.Dispatch<
+    React.SetStateAction<CurrentlyAvailableLanguagesTypes>
+  >;
   value: CurrentlyAvailableLanguagesTypes;
   takenValue: CurrentlyAvailableLanguagesTypes;
   text: string;
@@ -18,6 +21,7 @@ type ProfileTranslatorHeaderLanguageModalTypes = {
 export default function ProfileTranslatorHeaderLanguageModal({
   value,
   setValue,
+  setPrevValue,
   text,
   takenValue,
 }: ProfileTranslatorHeaderLanguageModalTypes) {
@@ -46,6 +50,9 @@ export default function ProfileTranslatorHeaderLanguageModal({
           <button
             key={l}
             onClick={() => {
+              if (value) {
+                setPrevValue(value);
+              }
               setValue(l);
               setShowModal(false);
             }}

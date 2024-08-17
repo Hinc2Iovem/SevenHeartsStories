@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
-import useGetTranslationCharactersQueries from "../../../../../hooks/Fetching/Translation/Characters/useGetTranslationCharactersQueries";
+import useGetTranslationCharacters from "../../../../../hooks/Fetching/Translation/Characters/useGetTranslationCharacters";
+import useInvalidateTranslatorCharacterQueries from "../../../../../hooks/helpers/Profile/Translator/useInvalidateTranslatorCharacterQueries";
 import { CurrentlyAvailableLanguagesTypes } from "../../../../../types/Additional/CURRENTLY_AVAILABEL_LANGUAGES";
 import { TranslationCharacterTypes } from "../../../../../types/Additional/TranslationTypes";
 import CharacterPrompt from "../../InputPrompts/CharacterPrompt";
@@ -10,84 +11,85 @@ import DisplayTranslatedNonTranslatedCharacter from "../Display/Character/Displa
 type FiltersEverythingCharacterForCharacterTypes = {
   translateFromLanguage: CurrentlyAvailableLanguagesTypes;
   translateToLanguage: CurrentlyAvailableLanguagesTypes;
+  prevTranslateFromLanguage: CurrentlyAvailableLanguagesTypes;
+  prevTranslateToLanguage: CurrentlyAvailableLanguagesTypes;
 };
 
 export type CombinedTranslatedAndNonTranslatedCharacterTypes = {
-  translated: TranslationCharacterTypes[];
-  nonTranslated: TranslationCharacterTypes[] | null;
+  translated: TranslationCharacterTypes | null;
+  nonTranslated: TranslationCharacterTypes | null;
 };
 
 export default function FiltersEverythingCharacterForCharacter({
   translateFromLanguage,
   translateToLanguage,
+  prevTranslateFromLanguage,
+  prevTranslateToLanguage,
 }: FiltersEverythingCharacterForCharacterTypes) {
   const [storyId, setStoryId] = useState("");
   const [characterId, setCharacterId] = useState("");
-
   const [characterType, setCharacterType] = useState("");
 
-  const translatedCharacters = useGetTranslationCharactersQueries({
+  useInvalidateTranslatorCharacterQueries({
+    prevTranslateFromLanguage,
+    prevTranslateToLanguage,
+    storyId,
+    translateToLanguage,
+  });
+
+  const { data: translatedCharacters } = useGetTranslationCharacters({
     storyId,
     language: translateFromLanguage,
   });
 
-  const nonTranslatedCharacters = useGetTranslationCharactersQueries({
+  const { data: nonTranslatedCharacters } = useGetTranslationCharacters({
     storyId,
     language: translateToLanguage,
   });
 
   const memoizedCombinedTranslations = useMemo(() => {
-    if (translatedCharacters.length > 0 && nonTranslatedCharacters.length > 0) {
-      const arrayOfCharacters =
-        [] as CombinedTranslatedAndNonTranslatedCharacterTypes[];
-      const groupedCharacters: Record<
-        string,
-        CombinedTranslatedAndNonTranslatedCharacterTypes
-      > = {};
+    const combinedArray: CombinedTranslatedAndNonTranslatedCharacterTypes[] =
+      [];
+    const characterMap: {
+      [key: string]: CombinedTranslatedAndNonTranslatedCharacterTypes;
+    } = {};
 
-      translatedCharacters.forEach((tc) => {
-        tc.data?.forEach((tcd) => {
-          const characterId = tcd.characterId;
-          if (!groupedCharacters[characterId]) {
-            groupedCharacters[characterId] = {
-              translated: [],
-              nonTranslated: null,
-            };
-          }
-          groupedCharacters[characterId].translated.push(tcd);
-        });
-      });
+    translatedCharacters?.forEach((tc) => {
+      const characterId = tc.characterId;
+      if (!characterMap[characterId]) {
+        characterMap[characterId] = {
+          translated: tc,
+          nonTranslated: null,
+        };
+      } else {
+        characterMap[characterId].translated = tc;
+      }
+    });
 
-      nonTranslatedCharacters.forEach((ntc) => {
-        ntc.data?.forEach((ntcd) => {
-          const characterId = ntcd.characterId;
-          if (!groupedCharacters[characterId]) {
-            groupedCharacters[characterId] = {
-              translated: [],
-              nonTranslated: null,
-            };
-          }
-          if (!groupedCharacters[characterId].nonTranslated) {
-            groupedCharacters[characterId].nonTranslated = [];
-          }
-          groupedCharacters[characterId].nonTranslated.push(ntcd);
-        });
-      });
+    nonTranslatedCharacters?.forEach((ntc) => {
+      const characterId = ntc.characterId;
+      if (!characterMap[characterId]) {
+        characterMap[characterId] = {
+          translated: null,
+          nonTranslated: ntc,
+        };
+      } else {
+        characterMap[characterId].nonTranslated = ntc;
+      }
+    });
 
-      Object.values(groupedCharacters).forEach((group) =>
-        arrayOfCharacters.push(group)
-      );
+    Object.values(characterMap).forEach((entry) => {
+      combinedArray.push(entry);
+    });
 
-      return arrayOfCharacters.filter((group) => group.translated.length > 0);
-    }
-    return [];
+    return combinedArray;
   }, [translatedCharacters, nonTranslatedCharacters]);
 
   return (
     <>
       <div className="flex w-full gap-[1rem] bg-neutral-alabaster px-[.5rem] py-[.5rem] rounded-md shadow-sm">
         <StoryPrompt setStoryId={setStoryId} />
-        <CharacterPrompt setCharacterId={setCharacterId} />
+        <CharacterPrompt setCharacterId={setCharacterId} storyId={storyId} />
         <CharacterTypesDropDown
           setCharacterType={setCharacterType}
           characterType={characterType}
@@ -101,16 +103,18 @@ export default function FiltersEverythingCharacterForCharacter({
             : "grid-cols-[repeat(auto-fill,minmax(30rem,1fr))] sm:grid-cols-[repeat(auto-fill,minmax(50rem,1fr))]"
         } gap-[1rem] w-full`}
       >
-        {memoizedCombinedTranslations.map((ct, i) => (
-          <DisplayTranslatedNonTranslatedCharacter
-            key={(ct?.translated[i]?._id || i) + "-ct"}
-            characterTypeFilter={characterType}
-            characterIdFilter={characterId}
-            translateFromLanguage={translateFromLanguage}
-            languageToTranslate={translateToLanguage}
-            {...ct}
-          />
-        ))}
+        {memoizedCombinedTranslations.map((ct, i) => {
+          return (
+            <DisplayTranslatedNonTranslatedCharacter
+              key={(ct?.translated?._id || i) + "-ct"}
+              characterTypeFilter={characterType}
+              characterIdFilter={characterId}
+              translateFromLanguage={translateFromLanguage}
+              languageToTranslate={translateToLanguage}
+              {...ct}
+            />
+          );
+        })}
       </main>
     </>
   );

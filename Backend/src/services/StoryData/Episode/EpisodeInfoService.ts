@@ -1,8 +1,8 @@
 import createHttpError from "http-errors";
-import Episode from "../../models/StoryData/Episode";
-import EpisodeInfo from "../../models/StoryData/EpisodeInfo";
-import Staff from "../../models/User/Staff";
-import { validateMongoId } from "../../utils/validateMongoId";
+import Episode from "../../../models/StoryData/Episode";
+import EpisodeInfo from "../../../models/StoryData/EpisodeInfo";
+import Staff from "../../../models/User/Staff";
+import { validateMongoId } from "../../../utils/validateMongoId";
 
 type EpisodeGetByEpisodeIdAndStaffIdTypes = {
   episodeId: string;

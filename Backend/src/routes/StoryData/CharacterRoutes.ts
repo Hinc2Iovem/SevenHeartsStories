@@ -3,12 +3,16 @@ import {
   characterCreateBlankController,
   characterCreateController,
   characterDeleteController,
+  characterGetAllByLanguageAndStoryIdSearchController,
   characterGetAllByStoryIdAndTypeController,
   characterGetAllByStoryIdController,
   characterGetByStoryIdAndNameController,
   characterUpdateController,
   characterUpdateImgController,
+  characterUpdateTranslationController,
   getAllCharacterNameTagsController,
+  getAllTranslationCharactersByStoryIdController,
+  getCharacterTranslationByCharacterIdController,
   getSingleCharacterByIdController,
 } from "../../controllers/StoryData/CharacterController";
 
@@ -41,3 +45,16 @@ characterRoute
   .get(getSingleCharacterByIdController)
   .patch(characterUpdateController)
   .delete(characterDeleteController);
+
+characterRoute
+  .route("/stories/languages/search/translations")
+  .get(characterGetAllByLanguageAndStoryIdSearchController);
+
+characterRoute
+  .route("/stories/:storyId/translations")
+  .get(getAllTranslationCharactersByStoryIdController);
+
+characterRoute
+  .route("/:characterId/translations")
+  .get(getCharacterTranslationByCharacterIdController)
+  .patch(characterUpdateTranslationController);

@@ -5,7 +5,7 @@ import {
   AllPossibleSayPlotFieldCommands,
 } from "../../../../../../const/PLOTFIELD_COMMANDS";
 import useGetAllCharacterNames from "../../../../../../hooks/Fetching/Translation/Characters/useGetAllCharacterNames";
-import useGetTranslationCharactersQueries from "../../../../../../hooks/Fetching/Translation/Characters/useGetTranslationCharactersQueries";
+import useGetTranslationCharactersQueries from "../../../../../../hooks/Fetching/Translation/Characters/useGetTranslationCharacters";
 import { CommandSayVariationTypes } from "../../../../../../types/StoryEditor/PlotField/Say/SayTypes";
 import useCreateSayCharacterCommand from "../hooks/Say/useCreateSayCharacterCommand";
 import useCreateSayCommand from "../hooks/Say/useCreateSayCommand";
@@ -51,7 +51,7 @@ export default function PlotfieldBlank({
     storyId: storyId ?? "",
   });
 
-  const allNames = useGetAllCharacterNames({ translatedCharacters });
+  // const allNames = useGetAllCharacterNames({ translatedCharacters });
   const [characterId, setCharacterId] = useState("");
   const [value, setValue] = useState("");
 
@@ -81,13 +81,13 @@ export default function PlotfieldBlank({
 
   const handleSetCharacterId = (index: number) => {
     const allIds: string[] = [];
-    for (const t of translatedCharacters) {
-      t.data?.map((tp) => {
-        if (tp.textFieldName === "characterName") {
-          allIds.push(tp.characterId);
-        }
-      });
-    }
+    // for (const t of translatedCharacters) {
+    //   t.data?.map((tp) => {
+    //     if (tp.textFieldName === "characterName") {
+    //       allIds.push(tp.characterId);
+    //     }
+    //   });
+    // }
     if (allIds) {
       setCharacterId(allIds[index]);
       return;
@@ -106,7 +106,10 @@ export default function PlotfieldBlank({
   const createCondition = useCreateCondition({ plotFieldCommandId });
   const createCutScene = useCreateCutScene({ plotFieldCommandId });
   const createEffect = useCreateEffect({ plotFieldCommandId });
-  const createGetItem = useCreateGetItem({ plotFieldCommandId });
+  const createGetItem = useCreateGetItem({
+    plotFieldCommandId,
+    topologyBlockId,
+  });
   const createKey = useCreateKey({
     plotFieldCommandId,
     storyId: storyId ?? "",
@@ -187,7 +190,7 @@ export default function PlotfieldBlank({
     }
     let submittedByCharacter = false;
     if (
-      allNames.includes(value.toLowerCase()) ||
+      // allNames.includes(value.toLowerCase()) ||
       AllPossibleSayPlotFieldCommands.includes(value.toLowerCase())
     ) {
       let type: CommandSayVariationTypes = "" as CommandSayVariationTypes;
@@ -198,7 +201,7 @@ export default function PlotfieldBlank({
         value.toLowerCase() !== "notify"
       ) {
         type = "character";
-        index = allNames.findIndex((v) => v === value.toLowerCase());
+        // index = allNames.findIndex((v) => v === value.toLowerCase());
         handleSetCharacterId(index);
       } else {
         type = value as CommandSayVariationTypes;

@@ -3,7 +3,7 @@ import {
   seasonCreateService,
   seasonDeleteService,
   seasonsGetByStoryIdService,
-} from "../../services/StoryData/SeasonService";
+} from "../../../services/StoryData/Season/SeasonService";
 
 type SeasonsGetByStoryIdParams = {
   storyId: string;

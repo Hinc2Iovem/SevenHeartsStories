@@ -14,6 +14,7 @@ export default function SeasonPrompt({
 }: SeasonPromptTypes) {
   const [showSeasons, setShowSeasons] = useState(false);
   const [seasonValue, setSeasonValue] = useState("");
+  const [seasonBackupValue, setSeasonBackupValue] = useState("");
   const modalSeasonsRef = useRef<HTMLDivElement>(null);
 
   useOutOfModal({
@@ -40,6 +41,12 @@ export default function SeasonPrompt({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [debouncedValue, seasonsSearch]);
 
+  useEffect(() => {
+    if (!showSeasons && !seasonValue && seasonBackupValue) {
+      setSeasonValue(seasonBackupValue);
+    }
+  }, [showSeasons, seasonValue, seasonBackupValue]);
+
   return (
     <form
       className="bg-white rounded-md shadow-md relative"
@@ -51,6 +58,8 @@ export default function SeasonPrompt({
         placeholder="Название Сезона"
         onClick={(e) => {
           e.stopPropagation();
+          setSeasonBackupValue(seasonValue);
+          setSeasonValue("");
           setShowSeasons(true);
         }}
         value={seasonValue}

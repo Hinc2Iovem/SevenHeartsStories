@@ -1,13 +1,12 @@
 import { RequestHandler } from "express";
 import {
-  episodeCreateService,
   episodeDeleteService,
   episodeUpdateSeasonIdService,
   episodeGetByEpisodeIdService,
   episodeResetStatusService,
   episodesGetBySeasonIdService,
   episodeUpdateOrderService,
-} from "../../services/StoryData/EpisodeService";
+} from "../../../services/StoryData/Episode/EpisodeService";
 
 type EpisodeGetByEpisodeIdParams = {
   episodeId: string;
@@ -53,39 +52,6 @@ export const episodesGetBySeasonIdController: RequestHandler<
     });
     if (episodes) {
       return res.status(201).json(episodes);
-    } else {
-      return res.status(400).json({ message: "Something went wrong" });
-    }
-  } catch (error) {
-    next(error);
-  }
-};
-type EpisodeCreateParams = {
-  seasonId: string;
-};
-type EpisodeCreateBody = {
-  title: string | undefined;
-  description: string | undefined;
-  currentLanguage: string | undefined;
-};
-
-// @route POST http://localhost:3500/episodes/seasons/:seasonId
-// @access Private
-export const episodeCreateController: RequestHandler<
-  EpisodeCreateParams,
-  unknown,
-  EpisodeCreateBody,
-  unknown
-> = async (req, res, next) => {
-  try {
-    const episode = await episodeCreateService({
-      description: req.body.description,
-      seasonId: req.params.seasonId,
-      title: req.body.title,
-      currentLanguage: req.body.currentLanguage,
-    });
-    if (episode) {
-      return res.status(201).json(episode);
     } else {
       return res.status(400).json({ message: "Something went wrong" });
     }

@@ -10,7 +10,7 @@ import CharacterCharacteristic from "../../models/StoryData/CharacterCharacteris
 import Episode from "../../models/StoryData/Episode";
 import Season from "../../models/StoryData/Season";
 import Story from "../../models/StoryData/Story";
-import Translation from "../../models/StoryData/Translation";
+import Translation from "../../models/StoryData/Translation/Translation";
 import Achievement from "../../models/StoryEditor/PlotField/Achievement/Achievement";
 import Choice from "../../models/StoryEditor/PlotField/Choice/Choice";
 import ChoiceOption from "../../models/StoryEditor/PlotField/Choice/ChoiceOption";
@@ -507,7 +507,6 @@ export const characterTranslationUpdateService = async ({
         text: unknownName,
         language: currentLanguage,
         textFieldName: TranslationTextFieldName.CharacterUnknownName,
-        
       });
     }
   }
@@ -870,8 +869,6 @@ export const characterCharacteristicTranslationUpdateService = async ({
   characterCharacteristicId,
   characteristicName,
 }: UpdateCharacterCharacteristicTypes) => {
-  console.log(characterCharacteristicId);
-
   const existingCharacteristic = await CharacterCharacteristic.findById(
     characterCharacteristicId
   ).exec();
@@ -1255,8 +1252,6 @@ export const getTranslationChoiceOptionService = async ({
     choiceOptionId: existingChoiceOption._id,
     language: currentLanguage,
   }).exec();
-
-  console.log(existingTranslation);
 
   if (!existingTranslation.length) {
     return [];

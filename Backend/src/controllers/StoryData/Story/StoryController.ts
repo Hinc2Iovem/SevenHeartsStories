@@ -12,7 +12,7 @@ import {
   storyGetByIdService,
   storyUpdateImgService,
   storyUpdateStatusForWorkerService,
-} from "../../services/StoryData/StoryService";
+} from "../../../services/StoryData/Story/StoryService";
 
 type GetAllStoriesByLanguageQuery = {
   currentLanguage: string;
@@ -294,9 +294,6 @@ export const storyCreateController: RequestHandler<
 
 export type StoryStatusTypes = "done" | "doing";
 
-type StoryUpdateStatusParams = {
-  storyId: string;
-};
 type StoryUpdateStatusBody = {
   storyStatus: StoryStatusTypes | undefined;
 };

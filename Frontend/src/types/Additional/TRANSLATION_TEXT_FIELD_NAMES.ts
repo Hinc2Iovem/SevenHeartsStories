@@ -26,6 +26,11 @@ export type TranslationTextFieldNameStoryTypes =
   | "storyGenre"
   | "storyDescription";
 
+export type TranslationTextFieldNameGetItemTypes =
+  | "buttonText"
+  | "itemDescription"
+  | "itemName";
+
 export type TranslationTextFieldNameCommandTypes =
   | "achievementName"
   | "choiceQuestion"

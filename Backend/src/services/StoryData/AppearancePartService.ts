@@ -1,7 +1,7 @@
 import createHttpError from "http-errors";
 import AppearancePart from "../../models/StoryData/AppearancePart";
 import { validateMongoId } from "../../utils/validateMongoId";
-import Translation from "../../models/StoryData/Translation";
+import Translation from "../../models/StoryData/Translation/Translation";
 import {
   AppearanceParts,
   AppearancePartsTypes,

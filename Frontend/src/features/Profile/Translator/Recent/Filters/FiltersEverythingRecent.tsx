@@ -12,10 +12,13 @@ import DisplayTranslatedNonTranslatedRecentOneLiners from "../Display/DisplayTra
 import DisplayTranslatedNonTranslatedRecentSeason from "../Display/DisplayTranslatedNonTranslatedRecentSeason";
 import DisplayTranslatedNonTranslatedRecentStory from "../Display/DisplayTranslatedNonTranslatedRecentStory";
 import useMemoizeRefinedTranslations from "./useMemoizeRefinedTranslations";
+import useInvalidateTranslatorQueries from "../../../../../hooks/helpers/Profile/Translator/useInvalidateTranslatorQueries";
 
 type FiltersEverythingCharacterForRecentTypes = {
   translateFromLanguage: CurrentlyAvailableLanguagesTypes;
   translateToLanguage: CurrentlyAvailableLanguagesTypes;
+  prevTranslateFromLanguage: CurrentlyAvailableLanguagesTypes;
+  prevTranslateToLanguage: CurrentlyAvailableLanguagesTypes;
 };
 
 export type UpdatedAtPossibleVariationTypes =
@@ -34,7 +37,15 @@ export type CombinedTranslatedAndNonTranslatedRecentTypes = {
 export default function FiltersEverythingRecent({
   translateFromLanguage,
   translateToLanguage,
+  prevTranslateFromLanguage,
+  prevTranslateToLanguage,
 }: FiltersEverythingCharacterForRecentTypes) {
+  useInvalidateTranslatorQueries({
+    prevTranslateFromLanguage,
+    prevTranslateToLanguage,
+    queryKey: "updatedAt",
+    translateToLanguage,
+  });
   const [period, setPeriod] = useState<UpdatedAtPossibleVariationTypes>(
     "" as UpdatedAtPossibleVariationTypes
   );

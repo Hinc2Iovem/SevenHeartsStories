@@ -46,7 +46,7 @@ export default function DisplayTranslatedNonTranslatedCharacteristic({
   }, [nonTranslated, languageToTranslate]);
 
   const debouncedTranslatedName = useDebounce({
-    value: characterCharacteristic,
+    value: translatedCharacterCharacteristic,
     delay: 500,
   });
 

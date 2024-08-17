@@ -5,10 +5,13 @@ import DisplayTranslatedNonTranslatedEpisode from "../Display/Episode/DisplayTra
 import StoryPrompt from "../../InputPrompts/StoryPrompt";
 import SeasonPrompt from "../../InputPrompts/SeasonPrompt";
 import useGetTranslationEpisodesQueries from "../../../../../hooks/Fetching/Translation/Episode/useGetTranslationEpisodesQueries";
+import useInvalidateTranslatorQueries from "../../../../../hooks/helpers/Profile/Translator/useInvalidateTranslatorQueries";
 
 type FiltersEverythingCharacterForEpisodeTypes = {
   translateFromLanguage: CurrentlyAvailableLanguagesTypes;
   translateToLanguage: CurrentlyAvailableLanguagesTypes;
+  prevTranslateFromLanguage: CurrentlyAvailableLanguagesTypes;
+  prevTranslateToLanguage: CurrentlyAvailableLanguagesTypes;
 };
 
 export type CombinedTranslatedAndNonTranslatedEpisodeTypes = {
@@ -19,7 +22,15 @@ export type CombinedTranslatedAndNonTranslatedEpisodeTypes = {
 export default function FiltersEverythingStoryForEpisode({
   translateFromLanguage,
   translateToLanguage,
+  prevTranslateFromLanguage,
+  prevTranslateToLanguage,
 }: FiltersEverythingCharacterForEpisodeTypes) {
+  useInvalidateTranslatorQueries({
+    prevTranslateFromLanguage,
+    prevTranslateToLanguage,
+    queryKey: "episode",
+    translateToLanguage,
+  });
   const [storyId, setStoryId] = useState("");
   const [seasonId, setSeasonId] = useState("");
 

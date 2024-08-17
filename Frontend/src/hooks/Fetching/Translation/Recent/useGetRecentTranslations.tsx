@@ -12,7 +12,7 @@ export default function useGetRecentTranslations({
   language?: CurrentlyAvailableLanguagesTypes;
 }) {
   return useQuery({
-    queryKey: ["recent", "translation", language, "updatedAt", updateAt],
+    queryKey: ["translation", language, "updatedAt", updateAt],
     queryFn: async () =>
       await axiosCustomized
         .get<RecentTranslationTypes[]>(

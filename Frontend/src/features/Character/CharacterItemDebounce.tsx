@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import wardrobe from "../../assets/images/Story/wardrobe.png";
 import useGetCharacterById from "../../hooks/Fetching/Character/useGetCharacterById";
-import useGetTranslationCharacters from "../../hooks/Fetching/Translation/Characters/useGetTranslationCharacters";
 import useUpdateImg from "../../hooks/Patching/useUpdateImg";
 import { TranslationCharacterTypes } from "../../types/Additional/TranslationTypes";
 import PreviewImage from "../shared/utilities/PreviewImage";
@@ -10,12 +9,9 @@ import CharacterItemMainHero from "./CharacterMainHero";
 
 export default function CharacterItemDebounce({
   characterId,
+  translations,
 }: TranslationCharacterTypes) {
   const { data: character } = useGetCharacterById({ characterId });
-
-  const { data: translationCharacter } = useGetTranslationCharacters({
-    characterId,
-  });
 
   const [isFrontSide, setIsFrontSide] = useState(true);
   const [characterName, setCharacterName] = useState("");
@@ -23,8 +19,8 @@ export default function CharacterItemDebounce({
   const [characterDescription, setCharacterDescription] = useState("");
 
   useEffect(() => {
-    if (translationCharacter) {
-      translationCharacter.map((tc) => {
+    if (translations) {
+      translations.map((tc) => {
         if (tc.textFieldName === "characterName") {
           setCharacterName(tc.text);
         } else if (tc.textFieldName === "characterDescription") {
@@ -34,7 +30,7 @@ export default function CharacterItemDebounce({
         }
       });
     }
-  }, [translationCharacter]);
+  }, [translations]);
 
   return (
     <>
@@ -154,13 +150,13 @@ function CharacterItemMinor({
         <div className="flex flex-col gap-[1rem] p-[1rem] justify-between h-full">
           <div className="gap-[1rem] flex flex-col">
             <div>
-              <h3 className="text-[2rem]">Имя: {characterName}</h3>
-              <p className="text-[1.35rem]">
+              <h3 className="text-[2rem] break-words">Имя: {characterName}</h3>
+              <p className="text-[1.35rem] break-words">
                 Имя(Незнакомец) : {characterUnknownName}
               </p>
-              <p className="text-[1.3rem]">НеймТаг {nameTag}</p>
+              <p className="text-[1.3rem] break-words">НеймТаг {nameTag}</p>
             </div>
-            <p className="text-[1.1rem] text-gray-600">
+            <p className="text-[1.1rem] text-gray-600 break-words">
               Описание: {characterDescription}
             </p>
           </div>
@@ -236,7 +232,7 @@ function CharacterItemEmpty({
         </>
       ) : (
         <div className="flex flex-col gap-[1rem] p-[1rem] h-full">
-          <h3 className="text-[2rem]">{characterName}</h3>
+          <h3 className="text-[2rem] break-words">{characterName}</h3>
         </div>
       )}
     </>

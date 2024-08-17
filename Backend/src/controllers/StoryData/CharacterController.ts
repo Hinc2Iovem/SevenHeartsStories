@@ -3,12 +3,16 @@ import {
   characterCreateBlankService,
   characterCreateService,
   characterDeleteService,
+  characterGetAllByLanguageAndStoryIdSearchService,
   characterGetAllByStoryIdAndTypeService,
   characterGetAllByStoryIdService,
   characterGetByStoryIdAndNameService,
   characterUpdateImgService,
   characterUpdateService,
+  characterUpdateTranslationService,
   getAllCharacterNameTagsService,
+  getAllTranslationCharactersByStoryIdService,
+  getCharacterTranslationByCharacterIdService,
   getSingleCharacterByIdService,
 } from "../../services/StoryData/CharacterService";
 
@@ -119,6 +123,93 @@ export const characterGetAllByStoryIdAndTypeController: RequestHandler<
     const character = await characterGetAllByStoryIdAndTypeService({
       storyId: req.params.storyId,
       type: req.query.type,
+    });
+    if (character) {
+      return res.status(201).json(character);
+    } else {
+      return res.status(400).json({ message: "Something went wrong" });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
+type GetCharacterTranslationByCharacterIdParams = {
+  characterId: string;
+};
+
+// @route GET http://localhost:3500/characters/:characterId/translations
+// @access Private
+export const getCharacterTranslationByCharacterIdController: RequestHandler<
+  GetCharacterTranslationByCharacterIdParams,
+  unknown,
+  unknown,
+  unknown
+> = async (req, res, next) => {
+  try {
+    const character = await getCharacterTranslationByCharacterIdService({
+      characterId: req.params.characterId,
+    });
+    if (character) {
+      return res.status(201).json(character);
+    } else {
+      return res.status(400).json({ message: "Something went wrong" });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
+type CharacterGetAllStoryIdSearchParams = {
+  storyId: string;
+};
+type CharacterGetAllStoryIdSearchQuery = {
+  currentLanguage?: string;
+};
+
+// @route GET http://localhost:3500/characters/stories/:storyId/translations
+// @access Private
+export const getAllTranslationCharactersByStoryIdController: RequestHandler<
+  CharacterGetAllStoryIdSearchParams,
+  unknown,
+  unknown,
+  CharacterGetAllStoryIdSearchQuery
+> = async (req, res, next) => {
+  try {
+    const character = await getAllTranslationCharactersByStoryIdService({
+      storyId: req.params.storyId,
+      currentLanguage: req.query.currentLanguage,
+    });
+    if (character) {
+      return res.status(201).json(character);
+    } else {
+      return res.status(400).json({ message: "Something went wrong" });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
+type CharacterGetAllByLanguageAndStoryIdSearchQuery = {
+  text?: string;
+  currentLanguage?: string;
+  storyId?: string;
+  characterType?: string;
+};
+// @route GET http://localhost:3500/characters/stories/:storyId/languages/search/translations
+// @access Private
+export const characterGetAllByLanguageAndStoryIdSearchController: RequestHandler<
+  unknown,
+  unknown,
+  unknown,
+  CharacterGetAllByLanguageAndStoryIdSearchQuery
+> = async (req, res, next) => {
+  try {
+    const character = await characterGetAllByLanguageAndStoryIdSearchService({
+      text: req.query.text,
+      currentLanguage: req.query.currentLanguage,
+      storyId: req.query.storyId,
+      characterType: req.query.characterType,
     });
     if (character) {
       return res.status(201).json(character);
@@ -261,6 +352,41 @@ export const characterUpdateController: RequestHandler<
       nameTag: req.body.nameTag,
       type: req.body.type,
       img: req.body.img,
+      characterId: req.params.characterId,
+    });
+    if (character) {
+      return res.status(201).json(character);
+    } else {
+      return res.status(400).json({ message: "Something went wrong" });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
+type CharacterUpdateTranslationParams = {
+  characterId: string;
+};
+
+type CharacterUpdateTranslationBody = {
+  textFieldName: string | undefined;
+  text: string | undefined;
+  currentLanguage?: string;
+};
+
+// @route PATCH http://localhost:3500/characters/:characterId/translations
+// @access Private
+export const characterUpdateTranslationController: RequestHandler<
+  CharacterUpdateTranslationParams,
+  unknown,
+  CharacterUpdateTranslationBody,
+  unknown
+> = async (req, res, next) => {
+  try {
+    const character = await characterUpdateTranslationService({
+      text: req.body.text,
+      textFieldName: req.body.textFieldName,
+      currentLanguage: req.body.currentLanguage,
       characterId: req.params.characterId,
     });
     if (character) {

@@ -1,58 +1,56 @@
 import { useEffect, useState } from "react";
-import useGetCommandGetItem from "../hooks/GetItem/useGetCommandGetItem";
+import useUpdateGetItemTranslation from "../../../../../../hooks/Patching/Translation/useUpdateGetItemTranslation";
 import useDebounce from "../../../../../../hooks/utilities/useDebounce";
-import useGetCommandGetItemTranslation from "../hooks/GetItem/useGetCommandGetItemTranslation";
-import useUpdateGetItemTranslationText from "../hooks/GetItem/useUpdateGetItemTranslationText";
+import useGetSingleGetItemTranslation from "../hooks/GetItem/useGetSingleGetItemTranslation";
+import { TranslationTextFieldName } from "../../../../../../const/TRANSLATION_TEXT_FIELD_NAMES";
+import { TranslationTextFieldNameGetItemTypes } from "../../../../../../types/Additional/TRANSLATION_TEXT_FIELD_NAMES";
 
 type CommandGetItemFieldTypes = {
   plotFieldCommandId: string;
+  topologyBlockId: string;
   command: string;
 };
 
 export default function CommandGetItemField({
+  topologyBlockId,
   plotFieldCommandId,
   command,
 }: CommandGetItemFieldTypes) {
   const [nameValue] = useState<string>(command ?? "GetItem");
+  const [itemNameInitial, setItemNameInitial] = useState("");
+  const [itemDescriptionInitial, setItemDescriptionInitial] = useState("");
+  const [buttonTextInitial, setButtonTextInitial] = useState("");
   const [itemName, setItemName] = useState("");
   const [itemDescription, setItemDescription] = useState("");
   const [buttonText, setButtonText] = useState("");
 
-  const [commandGetItemId, setCommandGetItemId] = useState("");
-
-  const { data: commandGetItem } = useGetCommandGetItem({
+  const { data: getItem } = useGetSingleGetItemTranslation({
     plotFieldCommandId,
-  });
-  const { data: translatedGetItem } = useGetCommandGetItemTranslation({
-    getItemId: commandGetItemId ?? "",
+    language: "russian",
   });
 
-  const updateGetItemTranslationTexts = useUpdateGetItemTranslationText({
-    getItemId: commandGetItemId ?? "",
-    buttonText,
-    itemDescription,
-    itemName,
+  const updateGetItemTranslationTexts = useUpdateGetItemTranslation({
+    topologyBlockId,
+    language: "russian",
+    commandId: plotFieldCommandId,
   });
 
   useEffect(() => {
-    if (commandGetItem) {
-      setCommandGetItemId(commandGetItem._id);
-    }
-  }, [commandGetItem]);
-
-  useEffect(() => {
-    if (translatedGetItem) {
-      translatedGetItem.map((tgi) => {
+    if (getItem) {
+      (getItem.translations || [])?.map((tgi) => {
         if (tgi.textFieldName === "itemDescription") {
           setItemDescription(tgi.text);
+          setItemDescriptionInitial(tgi.text);
         } else if (tgi.textFieldName === "itemName") {
           setItemName(tgi.text);
+          setItemNameInitial(tgi.text);
         } else if (tgi.textFieldName === "buttonText") {
           setButtonText(tgi.text);
+          setButtonTextInitial(tgi.text);
         }
       });
     }
-  }, [translatedGetItem]);
+  }, [getItem]);
 
   const debouncedItemNameValue = useDebounce({ value: itemName, delay: 500 });
   const debouncedItemDescriptionValue = useDebounce({
@@ -66,18 +64,45 @@ export default function CommandGetItemField({
 
   useEffect(() => {
     if (
-      debouncedItemNameValue?.trim().length ||
-      debouncedItemDescriptionValue?.trim().length ||
-      debouncedButtonTextValue?.trim().length
+      debouncedItemNameValue !== itemNameInitial &&
+      debouncedItemNameValue?.trim().length
     ) {
-      updateGetItemTranslationTexts.mutate();
+      updateGetItemTranslationTexts.mutate({
+        text: debouncedItemNameValue,
+        textFieldName:
+          TranslationTextFieldName.ItemName as TranslationTextFieldNameGetItemTypes,
+      });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    debouncedItemNameValue,
-    debouncedItemDescriptionValue,
-    debouncedButtonTextValue,
-  ]);
+  }, [debouncedItemNameValue]);
+
+  useEffect(() => {
+    if (
+      debouncedItemDescriptionValue !== itemDescriptionInitial &&
+      debouncedItemDescriptionValue?.trim().length
+    ) {
+      updateGetItemTranslationTexts.mutate({
+        text: debouncedItemDescriptionValue,
+        textFieldName:
+          TranslationTextFieldName.ItemDescription as TranslationTextFieldNameGetItemTypes,
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [debouncedItemDescriptionValue]);
+
+  useEffect(() => {
+    if (
+      debouncedButtonTextValue !== buttonTextInitial &&
+      debouncedButtonTextValue?.trim().length
+    ) {
+      updateGetItemTranslationTexts.mutate({
+        text: debouncedButtonTextValue,
+        textFieldName:
+          TranslationTextFieldName.ButtonText as TranslationTextFieldNameGetItemTypes,
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [debouncedButtonTextValue]);
 
   return (
     <div className="flex flex-wrap gap-[1rem] w-full bg-primary-light-blue rounded-md p-[.5rem] sm:flex-row flex-col">

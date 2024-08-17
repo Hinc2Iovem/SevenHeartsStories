@@ -16,6 +16,12 @@ type ProfileRightSideTranslatorHeaderTypes = {
   setTranslateToLanguage: React.Dispatch<
     React.SetStateAction<CurrentlyAvailableLanguagesTypes>
   >;
+  setPrevTranslateFromLanguage: React.Dispatch<
+    React.SetStateAction<CurrentlyAvailableLanguagesTypes>
+  >;
+  setPrevTranslateToLanguage: React.Dispatch<
+    React.SetStateAction<CurrentlyAvailableLanguagesTypes>
+  >;
   translateFromLanguage: CurrentlyAvailableLanguagesTypes;
   translateToLanguage: CurrentlyAvailableLanguagesTypes;
   setSubCategory: React.Dispatch<
@@ -35,13 +41,15 @@ export default function ProfileRightSideTranslatorHeader({
   setSubCategory,
   setTranslateFromLanguage,
   setTranslateToLanguage,
+  setPrevTranslateFromLanguage,
+  setPrevTranslateToLanguage,
   translateFromLanguage,
   translateToLanguage,
 }: ProfileRightSideTranslatorHeaderTypes) {
   return (
     <header className="flex flex-col gap-[1rem] p-[.5rem] bg-neutral-alabaster rounded-md shadow-sm">
       <div className="flex gap-[1rem] flex-col z-[3] w-full">
-        <div className="flex gap-[1rem] sm:flex-nowrap flex-wrap z-[3] w-full">
+        <div className="flex gap-[1rem] z-[3] w-full">
           <ProfileRightSideTranslatorCategory
             name={"Недавние"}
             category={category}
@@ -50,7 +58,7 @@ export default function ProfileRightSideTranslatorHeader({
             setSubCategory={setSubCategory}
           />
         </div>
-        <div className="flex gap-[1rem] sm:flex-nowrap flex-wrap z-[3] w-full">
+        <div className="flex gap-[1rem] flex-wrap z-[3] w-full">
           {CATEGORIES.map((c) => (
             <ProfileRightSideTranslatorCategory
               key={c}
@@ -66,6 +74,7 @@ export default function ProfileRightSideTranslatorHeader({
       <div className="flex w-full justify-between">
         <ProfileTranslatorHeaderLanguageModal
           key={"Перевести с"}
+          setPrevValue={setPrevTranslateFromLanguage}
           takenValue={translateToLanguage}
           setValue={setTranslateFromLanguage}
           value={translateFromLanguage}
@@ -73,6 +82,7 @@ export default function ProfileRightSideTranslatorHeader({
         />
         <ProfileTranslatorHeaderLanguageModal
           key={"Перевести на"}
+          setPrevValue={setPrevTranslateToLanguage}
           takenValue={translateFromLanguage}
           setValue={setTranslateToLanguage}
           value={translateToLanguage}
@@ -122,7 +132,7 @@ function ProfileRightSideTranslatorCategory({
   useOutOfModal({ modalRef, setShowModal, showModal });
 
   return (
-    <div className="flex-grow sm:max-w-full max-w-fit w-full rounded-md shadow-md relative whitespace-nowrap">
+    <div className="flex-grow rounded-md shadow-md relative whitespace-nowrap">
       <button
         onClick={(e) => {
           if (nameToEng !== "everythingPlot" && nameToEng !== "recent") {
@@ -145,7 +155,7 @@ function ProfileRightSideTranslatorCategory({
         ref={modalRef}
         className={`${
           showModal ? "" : "hidden"
-        } flex flex-col gap-[.5rem] min-w-fit w-full absolute bg-white rounded-md shadow-md translate-y-[1rem] p-[1rem]`}
+        } z-[2] flex flex-col gap-[.5rem] min-w-fit w-full absolute bg-white rounded-md shadow-md translate-y-[1rem] p-[1rem]`}
       >
         {nameToEng === "everythingCharacter" ? (
           <>

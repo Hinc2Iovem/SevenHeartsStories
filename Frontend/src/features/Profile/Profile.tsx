@@ -35,7 +35,7 @@ export default function Profile() {
         <div className="w-full flex flex-col gap-[1rem]">
           <ProfileRightSideScriptWriter
             storiesType={storiesType}
-            debouncedStory={debouncedStory}
+            debouncedStory={debouncedStory || ""}
           />
         </div>
       ) : null}

@@ -16,6 +16,7 @@ type CreateCharacterTypes = {
   nameTag?: string;
   characterType: CharacterTypes;
   language?: CurrentlyAvailableLanguagesTypes;
+  debouncedValue: string;
 };
 
 export default function useCreateCharacter({
@@ -27,6 +28,7 @@ export default function useCreateCharacter({
   nameTag,
   characterType,
   language = "russian",
+  debouncedValue,
 }: CreateCharacterTypes) {
   const queryClient = useQueryClient();
 
@@ -45,7 +47,30 @@ export default function useCreateCharacter({
         .then((r) => r.data),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["story", storyId, "characters", searchCharacterType],
+        queryKey: [
+          "translation",
+          language,
+          "character",
+          "type",
+          "story",
+          storyId,
+          "search",
+        ],
+        exact: true,
+        type: "active",
+      });
+      queryClient.invalidateQueries({
+        queryKey: [
+          "translation",
+          language,
+          "character",
+          "type",
+          searchCharacterType,
+          "story",
+          storyId,
+          "search",
+          debouncedValue,
+        ],
         exact: true,
         type: "active",
       });

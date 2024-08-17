@@ -89,8 +89,8 @@ export default function CharacterItemMainHero({
         <div className="flex flex-col gap-[1rem] p-[1rem] justify-between h-full">
           <div className="gap-[1rem] flex flex-col">
             <div>
-              <h3 className="text-[2rem]">{characterName}</h3>
-              <p className="text-[1.3rem]">НеймТаг: {"SMH"}</p>
+              <h3 className="text-[2rem] break-words">{characterName}</h3>
+              <p className="text-[1.3rem] break-words">НеймТаг: {"SMH"}</p>
             </div>
           </div>
 

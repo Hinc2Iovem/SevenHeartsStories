@@ -17,10 +17,10 @@ type CharacterHeaderTypes = {
 
 export default function CharacterHeader({
   searchCharacterType,
-  debouncedValue,
   searchValue,
   setSearchCharacterType,
   setSearchValue,
+  debouncedValue,
 }: CharacterHeaderTypes) {
   const [showCharacterModal, setShowCharacterModal] = useState(false);
 
@@ -52,15 +52,14 @@ export default function CharacterHeader({
             />
           </ButtonHoverPromptModal>
         </div>
-        {!debouncedValue.trim().length ? (
-          <CharacterHeaderSearchTypeBtns
-            setSearchCharacterType={setSearchCharacterType}
-            searchCharacterType={searchCharacterType}
-          />
-        ) : null}
+        <CharacterHeaderSearchTypeBtns
+          setSearchCharacterType={setSearchCharacterType}
+          searchCharacterType={searchCharacterType}
+        />
       </header>
 
       <CharacterHeaderCreateCharacterModal
+        debouncedValue={debouncedValue}
         searchCharacterType={searchCharacterType}
         setShowCharacterModal={setShowCharacterModal}
         showCharacterModal={showCharacterModal}

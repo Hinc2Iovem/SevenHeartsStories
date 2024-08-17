@@ -1,6 +1,4 @@
-import createHttpError from "http-errors";
 import GetItem from "../../../../models/StoryEditor/PlotField/GetItem/GetItem";
-import PlotFieldCommand from "../../../../models/StoryEditor/PlotField/PlotFieldCommand";
 import { validateMongoId } from "../../../../utils/validateMongoId";
 
 type GetItemByPlotFieldCommandIdTypes = {
@@ -21,27 +19,6 @@ export const getItemByPlotFieldCommandIdService = async ({
   }
 
   return existingItem;
-};
-
-type CreateGetItemTypes = {
-  plotFieldCommandId: string;
-};
-
-export const createGetItemService = async ({
-  plotFieldCommandId,
-}: CreateGetItemTypes) => {
-  validateMongoId({ value: plotFieldCommandId, valueName: "PlotFieldCommand" });
-
-  const existingPlotFieldCommand = await PlotFieldCommand.findById(
-    plotFieldCommandId
-  ).lean();
-  if (!existingPlotFieldCommand) {
-    throw createHttpError(400, "PlotFieldCommand with such id wasn't found");
-  }
-
-  return await GetItem.create({
-    plotFieldCommandId,
-  });
 };
 
 type DeleteGetItemTypes = {

@@ -34,6 +34,14 @@ export default function ProfileRightSideTranslator() {
     useState<CurrentlyAvailableLanguagesTypes>(
       "" as CurrentlyAvailableLanguagesTypes
     );
+  const [prevTranslateFromLanguage, setPrevTranslateFromLanguage] =
+    useState<CurrentlyAvailableLanguagesTypes>(
+      "" as CurrentlyAvailableLanguagesTypes
+    );
+  const [prevTranslateToLanguage, setPrevTranslateToLanguage] =
+    useState<CurrentlyAvailableLanguagesTypes>(
+      "" as CurrentlyAvailableLanguagesTypes
+    );
 
   const [category, setCategory] = useState<PossibleCategoryVariationTypes>(
     "" as PossibleCategoryVariationTypes
@@ -49,6 +57,8 @@ export default function ProfileRightSideTranslator() {
         setCategory={setCategory}
         setSubCategory={setSubCategory}
         subCategory={subCategory}
+        setPrevTranslateFromLanguage={setPrevTranslateFromLanguage}
+        setPrevTranslateToLanguage={setPrevTranslateToLanguage}
         setTranslateFromLanguage={setTranslateFromLanguage}
         setTranslateToLanguage={setTranslateToLanguage}
         translateFromLanguage={translateFromLanguage}
@@ -60,41 +70,57 @@ export default function ProfileRightSideTranslator() {
             <FiltersEverythingCharacterForCharacter
               translateFromLanguage={translateFromLanguage}
               translateToLanguage={translateToLanguage}
+              prevTranslateFromLanguage={prevTranslateFromLanguage}
+              prevTranslateToLanguage={prevTranslateToLanguage}
             />
           ) : subCategory === "Характеристики" ? (
             <FiltersEverythingCharacterForCharacteristic
               translateFromLanguage={translateFromLanguage}
               translateToLanguage={translateToLanguage}
+              prevTranslateFromLanguage={prevTranslateFromLanguage}
+              prevTranslateToLanguage={prevTranslateToLanguage}
             />
           ) : subCategory === "Внешний Вид" ? (
             <FiltersEverythingCharacterForAppearancePart
               translateFromLanguage={translateFromLanguage}
               translateToLanguage={translateToLanguage}
+              prevTranslateFromLanguage={prevTranslateFromLanguage}
+              prevTranslateToLanguage={prevTranslateToLanguage}
             />
           ) : subCategory === "Эпизоды" ? (
             <FiltersEverythingStoryForEpisode
               translateFromLanguage={translateFromLanguage}
               translateToLanguage={translateToLanguage}
+              prevTranslateFromLanguage={prevTranslateFromLanguage}
+              prevTranslateToLanguage={prevTranslateToLanguage}
             />
           ) : subCategory === "Сезоны" ? (
             <FiltersEverythingStoryForSeason
               translateFromLanguage={translateFromLanguage}
               translateToLanguage={translateToLanguage}
+              prevTranslateFromLanguage={prevTranslateFromLanguage}
+              prevTranslateToLanguage={prevTranslateToLanguage}
             />
           ) : subCategory === "Истории" ? (
             <FiltersEverythingStoryForStory
               translateFromLanguage={translateFromLanguage}
               translateToLanguage={translateToLanguage}
+              prevTranslateFromLanguage={prevTranslateFromLanguage}
+              prevTranslateToLanguage={prevTranslateToLanguage}
             />
           ) : category === "everythingPlot" ? (
             <FiltersEverythingPlot
               translateFromLanguage={translateFromLanguage}
               translateToLanguage={translateToLanguage}
+              prevTranslateFromLanguage={prevTranslateFromLanguage}
+              prevTranslateToLanguage={prevTranslateToLanguage}
             />
           ) : category === "recent" ? (
             <FiltersEverythingRecent
               translateFromLanguage={translateFromLanguage}
               translateToLanguage={translateToLanguage}
+              prevTranslateFromLanguage={prevTranslateFromLanguage}
+              prevTranslateToLanguage={prevTranslateToLanguage}
             />
           ) : null}
         </div>

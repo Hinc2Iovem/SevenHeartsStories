@@ -1,42 +1,36 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { axiosCustomized } from "../../../api/axios";
 import { CurrentlyAvailableLanguagesTypes } from "../../../types/Additional/CURRENTLY_AVAILABEL_LANGUAGES";
+import { TranslationTextFieldNameGetItemTypes } from "../../../types/Additional/TRANSLATION_TEXT_FIELD_NAMES";
 
 type UpdateGetItemTranslationTypes = {
-  getItemId: string;
+  commandId: string;
+  topologyBlockId: string;
   language: CurrentlyAvailableLanguagesTypes;
 };
 
 type UpdateGetItemTranslationOnMutationTypes = {
-  itemDescription?: string;
-  buttonText?: string;
-  itemName?: string;
+  text?: string;
+  textFieldName?: TranslationTextFieldNameGetItemTypes;
 };
 
 export default function useUpdateGetItemTranslation({
-  getItemId,
+  topologyBlockId,
+  commandId,
   language,
 }: UpdateGetItemTranslationTypes) {
-  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async ({
-      buttonText,
-      itemDescription,
-      itemName,
+      text,
+      textFieldName,
     }: UpdateGetItemTranslationOnMutationTypes) =>
       await axiosCustomized.patch(
-        `/translations/plotFieldCommands/getItems/${getItemId}`,
+        `/getItems/${commandId}/topologyBlocks/${topologyBlockId}/translations`,
         {
           currentLanguage: language,
-          itemName,
-          itemDescription,
-          buttonText,
+          text,
+          textFieldName,
         }
       ),
-    onSettled: () => {
-      queryClient.invalidateQueries({
-        queryKey: ["translation", language, "plotFieldCommand", getItemId],
-      });
-    },
   });
 }

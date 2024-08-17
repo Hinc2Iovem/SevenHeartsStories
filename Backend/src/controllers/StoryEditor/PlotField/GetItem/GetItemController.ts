@@ -1,8 +1,7 @@
 import { RequestHandler } from "express";
 import {
-  createGetItemService,
   deleteGetItemService,
-  getItemByPlotFieldCommandIdService,
+  getItemByPlotFieldCommandIdService
 } from "../../../../services/StoryEditor/PlotField/GetItem/GetItemService";
 
 type GetItemByPlotFieldCommandIdParams = {
@@ -31,31 +30,7 @@ export const getItemByPlotFieldCommandIdController: RequestHandler<
   }
 };
 
-type CreateGetItemParams = {
-  plotFieldCommandId: string;
-};
 
-// @route POST http://localhost:3500/plotFieldCommands/:plotFieldCommandId/getItems
-// @access Private
-export const createGetItemController: RequestHandler<
-  CreateGetItemParams,
-  unknown,
-  unknown,
-  unknown
-> = async (req, res, next) => {
-  try {
-    const getItem = await createGetItemService({
-      plotFieldCommandId: req.params.plotFieldCommandId,
-    });
-    if (getItem) {
-      return res.status(201).json(getItem);
-    } else {
-      return res.status(400).json({ message: "Something went wrong" });
-    }
-  } catch (error) {
-    next(error);
-  }
-};
 
 type DeleteGetItemParams = {
   getItemId: string;

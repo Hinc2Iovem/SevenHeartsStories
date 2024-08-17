@@ -47,6 +47,10 @@ import {
   soundRoute,
   conditionBlockRoute,
   authRoute,
+  getItemTranslationsRoute,
+  storyTranslationRoute,
+  episodeTranslationRoute,
+  seasonTranslationRoute,
 } from "./routes/index";
 import { verifyJWT } from "./middlewares/verifyJWT";
 
@@ -69,6 +73,7 @@ app.use(cookieParser());
 
 app.use("/auth", authRoute);
 app.use("/stories", storyRoute);
+app.use("/stories", storyTranslationRoute);
 
 app.use("/translations", verifyJWT, translationRoute);
 
@@ -78,8 +83,10 @@ app.use("/characters", verifyJWT, characterRoute);
 app.use("/characterEmotions", verifyJWT, characterEmotionRoute);
 app.use("/commandLibraries", verifyJWT, commandLibraryRoute);
 app.use("/episodes", verifyJWT, episodeRoute);
+app.use("/episodes", verifyJWT, episodeTranslationRoute);
 app.use("/episodeInfo", verifyJWT, episodeInfoRoute);
 app.use("/stories", verifyJWT, seasonRoute);
+app.use("/seasons", verifyJWT, seasonTranslationRoute);
 app.use("/stories", verifyJWT, musicRoute);
 app.use("/stories", verifyJWT, achievementRoute);
 app.use("/stories", verifyJWT, soundRoute);
@@ -98,6 +105,7 @@ app.use("/plotFieldCommands", verifyJWT, conditionValuesRoute);
 app.use("/plotFieldCommands", verifyJWT, cutScenesRoute);
 app.use("/plotFieldCommands", verifyJWT, effectsRoute);
 app.use("/plotFieldCommands", verifyJWT, getItemsRoute);
+app.use("/getItems", verifyJWT, getItemTranslationsRoute);
 app.use("/plotFieldCommands", verifyJWT, keyRoute);
 app.use("/plotFieldCommands", verifyJWT, movesRoute);
 app.use("/plotFieldCommands", verifyJWT, commandMusicRoute);

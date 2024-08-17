@@ -14,6 +14,7 @@ export default function EpisodePrompt({
 }: EpisodePromptTypes) {
   const [showEpisodes, setShowEpisodes] = useState(false);
   const [episodeValue, setEpisodeValue] = useState("");
+  const [episodeBackupValue, setEpisodeBackupValue] = useState("");
 
   const modalEpisodesRef = useRef<HTMLDivElement>(null);
 
@@ -42,6 +43,11 @@ export default function EpisodePrompt({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [debouncedValue, episodesSearch]);
 
+  useEffect(() => {
+    if (!showEpisodes && !episodeValue && episodeBackupValue) {
+      setEpisodeValue(episodeBackupValue);
+    }
+  }, [showEpisodes, episodeValue, episodeBackupValue]);
   return (
     <form
       className="bg-white rounded-md shadow-md relative"
@@ -53,6 +59,8 @@ export default function EpisodePrompt({
         placeholder="Название Эпизода"
         onClick={(e) => {
           e.stopPropagation();
+          setEpisodeBackupValue(episodeValue);
+          setEpisodeValue("");
           setShowEpisodes(true);
         }}
         value={episodeValue}

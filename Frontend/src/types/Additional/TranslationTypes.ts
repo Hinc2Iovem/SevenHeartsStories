@@ -1,3 +1,4 @@
+import { CharacterTypes } from "../StoryData/Character/CharacterTypes";
 import { CurrentlyAvailableLanguagesTypes } from "./CURRENTLY_AVAILABEL_LANGUAGES";
 import {
   TranslationTextFieldNameAppearancePartsTypes,
@@ -6,6 +7,7 @@ import {
   TranslationTextFieldNameChoiceOptionTypes,
   TranslationTextFieldNameCommandTypes,
   TranslationTextFieldNameEpisodeTypes,
+  TranslationTextFieldNameGetItemTypes,
   TranslationTextFieldNameSeasonTypes,
   TranslationTextFieldNameStoryTypes,
 } from "./TRANSLATION_TEXT_FIELD_NAMES";
@@ -26,6 +28,22 @@ export type GetTranslationTypes = {
   language?: CurrentlyAvailableLanguagesTypes;
 };
 
+type GetItemTranslationsTypes = {
+  text: string;
+  textFieldName: TranslationTextFieldNameGetItemTypes;
+  amountOfWords: number;
+};
+
+export type TranslationGetItemTypes = {
+  _id: string;
+  commandId: string;
+  topologyBlockId: string;
+  language: CurrentlyAvailableLanguagesTypes;
+  translations?: GetItemTranslationsTypes[];
+  updatedAt: string;
+  createdAt: string;
+};
+
 export type TranslationCommandTypes = {
   _id: string;
   commandId: string;
@@ -44,13 +62,17 @@ export type TranslationAppearancePartTypes = {
   textFieldName: TranslationTextFieldNameAppearancePartsTypes;
 };
 
-export type TranslationCharacterTypes = {
-  _id: string;
-  characterId: string;
-  language: CurrentlyAvailableLanguagesTypes;
+type TranslationCharacterObjectTypes = {
   text: string;
   amountOfWords: number;
   textFieldName: TranslationTextFieldNameCharacterTypes;
+};
+export type TranslationCharacterTypes = {
+  _id: string;
+  characterId: string;
+  characterType: CharacterTypes;
+  language: CurrentlyAvailableLanguagesTypes;
+  translations?: TranslationCharacterObjectTypes[];
 };
 
 export type TranslationEpisodeTypes = {

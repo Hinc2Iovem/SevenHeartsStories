@@ -10,9 +10,10 @@ import {
 } from "../../controllers/StoryData/CharacterController";
 import Character from "../../models/StoryData/Character";
 import CharacterEmotion from "../../models/StoryData/CharacterEmotion";
-import Translation from "../../models/StoryData/Translation";
+import Translation from "../../models/StoryData/Translation/Translation";
 import { checkCurrentLanguage } from "../../utils/checkCurrentLanguage";
 import { validateMongoId } from "../../utils/validateMongoId";
+import TranslationCharacter from "../../models/StoryData/Translation/TranslationCharacter";
 
 type GetSingleCharacterByIdTypes = {
   characterId: string;
@@ -91,6 +92,86 @@ export const characterGetAllByStoryIdAndTypeService = async ({
   return existingCharacters;
 };
 
+type GetAllTranslationCharactersByStoryIdTypes = {
+  storyId: string;
+  currentLanguage?: string;
+};
+
+export const getAllTranslationCharactersByStoryIdService = async ({
+  storyId,
+  currentLanguage,
+}: GetAllTranslationCharactersByStoryIdTypes) => {
+  validateMongoId({ value: storyId, valueName: "Story" });
+  if (!currentLanguage?.trim().length) {
+    throw createHttpError(400, "CurrentLanguage is required");
+  }
+  checkCurrentLanguage({ currentLanguage });
+
+  const existingCharacters = await TranslationCharacter.find({
+    storyId,
+    language: currentLanguage,
+  }).exec();
+
+  if (!existingCharacters.length) {
+    return [];
+  }
+
+  return existingCharacters;
+};
+type GetCharactersByStoryAndSearchId = {
+  storyId?: string;
+  text?: string;
+  currentLanguage?: string;
+  characterType?: string;
+};
+
+export const characterGetAllByLanguageAndStoryIdSearchService = async ({
+  storyId,
+  text,
+  currentLanguage,
+  characterType,
+}: GetCharactersByStoryAndSearchId) => {
+  if (!currentLanguage?.trim().length) {
+    throw createHttpError(400, "CurrentLanguage is required");
+  }
+
+  const query: { storyId?: string; language: string; characterType?: string } =
+    {
+      language: currentLanguage,
+    };
+
+  if (storyId) {
+    console.log(storyId);
+
+    validateMongoId({ value: storyId, valueName: "Story" });
+    query.storyId = storyId;
+  }
+  if (characterType) {
+    if (!CharacterTypes.includes(characterType.toLowerCase())) {
+      throw createHttpError(
+        400,
+        `Such characterType isn't supported, possible variations: ${CharacterTypes.map(
+          (c) => c
+        )}`
+      );
+    }
+    query.characterType = characterType.toLowerCase();
+  }
+
+  const existingCharacters = await TranslationCharacter.find(query).exec();
+
+  if (!existingCharacters.length) {
+    return [];
+  }
+
+  const filteredCharacters = text?.trim().length
+    ? existingCharacters.filter((ec) =>
+        ec.translations[0].text?.toLowerCase()?.includes(text.toLowerCase())
+      )
+    : existingCharacters;
+
+  return filteredCharacters;
+};
 type GetCharactersByStoryId = {
   storyId: string;
 };
@@ -128,6 +209,25 @@ export const characterGetByStoryIdAndNameService = async ({
     .collation({ locale: "en", strength: 2 })
     .lean()
     .exec();
+  if (!existingCharacter) {
+    return null;
+  }
+
+  return existingCharacter;
+};
+
+type GetCharacterTranslationByCharacterIdTypes = {
+  characterId: string;
+};
+
+export const getCharacterTranslationByCharacterIdService = async ({
+  characterId,
+}: GetCharacterTranslationByCharacterIdTypes) => {
+  validateMongoId({ value: characterId, valueName: "Character" });
+
+  const existingCharacter = await TranslationCharacter.findOne({
+    characterId,
+  }).lean();
   if (!existingCharacter) {
     return null;
   }
@@ -184,11 +284,16 @@ export const characterCreateService = async ({
       type: type.toLowerCase(),
     });
 
-    await Translation.create({
-      characterId: character._id,
+    const translations = {
       textFieldName: TranslationTextFieldName.CharacterName,
-      language: currentLanguage,
       text: name,
+    };
+    await TranslationCharacter.create({
+      characterId: character._id,
+      language: currentLanguage,
+      characterType: "emptycharacter",
+      translations: [translations],
+      storyId,
     });
 
     return character;
@@ -205,24 +310,28 @@ export const characterCreateService = async ({
       type: type.toLowerCase(),
       unknownName: unknownName ?? "",
     });
-    await Translation.create({
+    const translations = [
+      {
+        textFieldName: TranslationTextFieldName.CharacterName,
+        text: name,
+      },
+      {
+        textFieldName: TranslationTextFieldName.CharacterUnknownName,
+        text: unknownName,
+      },
+      {
+        textFieldName: TranslationTextFieldName.CharacterDescription,
+        text: description,
+      },
+    ];
+    await TranslationCharacter.create({
       characterId: character._id,
-      textFieldName: TranslationTextFieldName.CharacterName,
       language: currentLanguage,
-      text: name,
+      characterType: "minorcharacter",
+      translations: translations,
+      storyId,
     });
-    await Translation.create({
-      characterId: character._id,
-      textFieldName: TranslationTextFieldName.CharacterUnknownName,
-      language: currentLanguage,
-      text: unknownName,
-    });
-    await Translation.create({
-      characterId: character._id,
-      textFieldName: TranslationTextFieldName.CharacterDescription,
-      language: currentLanguage,
-      text: description,
-    });
+
     return character;
   } else if (type && type.toLowerCase() === "maincharacter") {
     const existingMainCharacter = await Character.findOne({
@@ -230,7 +339,7 @@ export const characterCreateService = async ({
       isMainCharacter: true,
     });
     if (existingMainCharacter) {
-      throw createHttpError(400, "Main Character is already exists");
+      throw createHttpError(400, "Main Character already exists");
     }
     const character = await Character.create({
       name,
@@ -240,11 +349,16 @@ export const characterCreateService = async ({
       storyId,
       type: type.toLowerCase(),
     });
-    await Translation.create({
-      characterId: character._id,
+    const translations = {
       textFieldName: TranslationTextFieldName.CharacterName,
-      language: currentLanguage,
       text: name,
+    };
+    await TranslationCharacter.create({
+      characterId: character._id,
+      language: currentLanguage,
+      characterType: "maincharacter",
+      translations: [translations],
+      storyId,
     });
 
     return character;
@@ -255,11 +369,16 @@ export const characterCreateService = async ({
       img: img ?? "",
       storyId,
     });
-    await Translation.create({
-      characterId: character._id,
+    const translations = {
       textFieldName: TranslationTextFieldName.CharacterName,
-      language: currentLanguage,
       text: name,
+    };
+    await TranslationCharacter.create({
+      characterId: character._id,
+      language: currentLanguage,
+      characterType: "emptycharacter",
+      translations: [translations],
+      storyId,
     });
   }
 };
@@ -302,13 +421,19 @@ export const characterCreateBlankService = async ({
     storyId,
     type: type.toLowerCase(),
   });
-  await Translation.create({
+  const translations = [
+    {
+      textFieldName: TranslationTextFieldName.CharacterName,
+      text: name,
+    },
+  ];
+  await TranslationCharacter.create({
     characterId: character._id,
-    textFieldName: TranslationTextFieldName.CharacterName,
     language: currentLanguage,
-    text: name,
+    characterType: "minorcharacter",
+    translations: translations,
+    storyId,
   });
-
   return character;
 };
 
@@ -357,6 +482,61 @@ export const characterUpdateService = async ({
   }
 
   return await existingCharacter.save();
+};
+
+type UpdateCharacterTranslationTypes = {
+  characterId: string;
+  textFieldName: string | undefined;
+  text: string | undefined;
+  currentLanguage: string | undefined;
+};
+
+export const characterUpdateTranslationService = async ({
+  text,
+  textFieldName,
+  characterId,
+  currentLanguage,
+}: UpdateCharacterTranslationTypes) => {
+  validateMongoId({ value: characterId, valueName: "Character" });
+
+  const existingCharacter = await Character.findById(characterId).lean();
+  if (!existingCharacter) {
+    throw createHttpError(400, "Character with such id doesn't exist");
+  }
+
+  const existingCharacterTranslation = await TranslationCharacter.findOne({
+    characterId,
+    language: currentLanguage,
+  }).exec();
+
+  if (existingCharacterTranslation) {
+    const currentTranslationField =
+      existingCharacterTranslation.translations.find(
+        (t) => t.textFieldName === textFieldName
+      );
+    if (currentTranslationField) {
+      currentTranslationField.text = text;
+    } else {
+      existingCharacterTranslation.translations.push({
+        text,
+        textFieldName,
+      });
+    }
+    return await existingCharacterTranslation.save();
+  } else {
+    return await TranslationCharacter.create({
+      characterId,
+      characterType: existingCharacter.type,
+      storyId: existingCharacter.storyId,
+      language: currentLanguage,
+      translations: [
+        {
+          text,
+          textFieldName,
+        },
+      ],
+    });
+  }
 };
 
 type UpdateCharacterImgTypes = {

@@ -3,10 +3,13 @@ import { CurrentlyAvailableLanguagesTypes } from "../../../../../types/Additiona
 import { TranslationStoryTypes } from "../../../../../types/Additional/TranslationTypes";
 import DisplayTranslatedNonTranslatedStory from "../Display/Story/DisplayTranslatedNonTranslatedStory";
 import useGetTranslationStoriesQueries from "../../../../../hooks/Fetching/Translation/Story/useGetTranslationStoriesQueries";
+import useInvalidateTranslatorQueries from "../../../../../hooks/helpers/Profile/Translator/useInvalidateTranslatorQueries";
 
 type FiltersEverythingCharacterForStoryTypes = {
   translateFromLanguage: CurrentlyAvailableLanguagesTypes;
   translateToLanguage: CurrentlyAvailableLanguagesTypes;
+  prevTranslateFromLanguage: CurrentlyAvailableLanguagesTypes;
+  prevTranslateToLanguage: CurrentlyAvailableLanguagesTypes;
 };
 
 export type CombinedTranslatedAndNonTranslatedStoryTypes = {
@@ -17,7 +20,16 @@ export type CombinedTranslatedAndNonTranslatedStoryTypes = {
 export default function FiltersEverythingStoryForStory({
   translateFromLanguage,
   translateToLanguage,
+  prevTranslateFromLanguage,
+  prevTranslateToLanguage,
 }: FiltersEverythingCharacterForStoryTypes) {
+  useInvalidateTranslatorQueries({
+    prevTranslateFromLanguage,
+    prevTranslateToLanguage,
+    queryKey: "story",
+    translateToLanguage,
+  });
+
   const translatedStory = useGetTranslationStoriesQueries({
     language: translateFromLanguage,
     showQueries: !!translateFromLanguage && !!translateToLanguage,

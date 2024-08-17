@@ -12,14 +12,12 @@ const APPEARANCE_TYPES = [
 ];
 
 type AppearanceTypesDropDownTypes = {
-  appearanceType: TranslationTextFieldNameAppearancePartsTypes;
   setAppearanceType: React.Dispatch<
     React.SetStateAction<TranslationTextFieldNameAppearancePartsTypes>
   >;
 };
 
 export default function AppearanceTypeDropDown({
-  appearanceType,
   setAppearanceType,
 }: AppearanceTypesDropDownTypes) {
   const [valueToEng, setValueToEng] = useState("");
@@ -48,6 +46,8 @@ export default function AppearanceTypeDropDown({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [valueToEng]);
 
+  console.log(valueToEng);
+
   useOutOfModal({ modalRef, setShowModal, showModal });
   return (
     <div className="bg-white rounded-md shadow-md relative">
@@ -58,7 +58,7 @@ export default function AppearanceTypeDropDown({
         }}
         className="text-[1.3rem] text-center px-[1rem] py-[.5rem] whitespace-nowrap outline-gray-300"
       >
-        {appearanceType || "Внешний Вид Тип"}
+        {valueToEng || "Внешний Вид Тип"}
       </button>
       <aside
         ref={modalRef}
@@ -71,7 +71,7 @@ export default function AppearanceTypeDropDown({
             key={ct}
             type="button"
             onClick={() => {
-              if (ct === appearanceType) {
+              if (ct === valueToEng) {
                 setValueToEng("");
               } else {
                 setValueToEng(ct);
@@ -79,7 +79,7 @@ export default function AppearanceTypeDropDown({
               setShowModal(false);
             }}
             className={`${
-              ct === appearanceType
+              ct === valueToEng
                 ? "bg-primary-pastel-blue text-white"
                 : " text-gray-600 bg-white"
             } text-[1.4rem] outline-gray-300 text-start hover:bg-primary-pastel-blue hover:text-white rounded-md px-[1rem] py-[.5rem] hover:shadow-md`}

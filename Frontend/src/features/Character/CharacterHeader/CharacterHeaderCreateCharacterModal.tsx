@@ -10,6 +10,7 @@ import {
 type CharacterHeaderCreateCharacterModalTypes = {
   setShowCharacterModal: React.Dispatch<React.SetStateAction<boolean>>;
   showCharacterModal: boolean;
+  debouncedValue: string;
   searchCharacterType: SearchCharacterVariationTypes;
 };
 
@@ -17,6 +18,7 @@ export default function CharacterHeaderCreateCharacterModal({
   showCharacterModal,
   setShowCharacterModal,
   searchCharacterType,
+  debouncedValue,
 }: CharacterHeaderCreateCharacterModalTypes) {
   const { storyId } = useParams();
   const [characterType, setCharacterType] =
@@ -29,11 +31,15 @@ export default function CharacterHeaderCreateCharacterModal({
   const createCharacter = useCreateCharacter({
     characterType,
     name,
-    searchCharacterType,
+    searchCharacterType:
+      searchCharacterType === "all"
+        ? ("" as SearchCharacterVariationTypes)
+        : searchCharacterType,
     storyId: storyId ?? "",
     description,
     nameTag,
     unknownName,
+    debouncedValue,
   });
 
   useEffect(() => {
@@ -87,6 +93,7 @@ export default function CharacterHeaderCreateCharacterModal({
             <ul className="flex gap-[1rem] flex-wrap">
               <li>
                 <button
+                  type="button"
                   onClick={() => setCharacterType("EmptyCharacter")}
                   className={`text-[1.3rem] ${
                     characterType === "EmptyCharacter"
@@ -94,11 +101,12 @@ export default function CharacterHeaderCreateCharacterModal({
                       : "bg-white text-black"
                   } p-[1rem] rounded-md transition-all hover:bg-accent-marine-blue hover:text-white shadow-sm`}
                 >
-                  EmptyCharacter
+                  Персонаж Третьего Плана
                 </button>
               </li>
               <li>
                 <button
+                  type="button"
                   onClick={() => setCharacterType("MinorCharacter")}
                   className={`text-[1.3rem] ${
                     characterType === "MinorCharacter"
@@ -106,11 +114,12 @@ export default function CharacterHeaderCreateCharacterModal({
                       : "bg-white text-black"
                   } p-[1rem] rounded-md transition-all hover:bg-accent-marine-blue hover:text-white shadow-sm`}
                 >
-                  MinorCharacter
+                  Второстепенный Персонаж
                 </button>
               </li>
               <li>
                 <button
+                  type="button"
                   onClick={() => setCharacterType("MainCharacter")}
                   className={`text-[1.3rem] ${
                     characterType === "MainCharacter"
@@ -118,7 +127,7 @@ export default function CharacterHeaderCreateCharacterModal({
                       : "bg-white text-black"
                   } p-[1rem] rounded-md transition-all hover:bg-accent-marine-blue hover:text-white shadow-sm`}
                 >
-                  MainHero
+                  Главный Персонаж
                 </button>
               </li>
             </ul>

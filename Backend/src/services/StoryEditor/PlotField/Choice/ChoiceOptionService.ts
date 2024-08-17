@@ -2,7 +2,7 @@ import createHttpError from "http-errors";
 import { Types } from "mongoose";
 import { SexualOrientationTypes } from "../../../../consts/SEXUAL_ORIENTATION";
 import { ChoiceOptionType } from "../../../../controllers/StoryEditor/PlotField/Choice/ChoiceOptionController";
-import Translation from "../../../../models/StoryData/Translation";
+import Translation from "../../../../models/StoryData/Translation/Translation";
 import Choice from "../../../../models/StoryEditor/PlotField/Choice/Choice";
 import ChoiceOption from "../../../../models/StoryEditor/PlotField/Choice/ChoiceOption";
 import OptionCharacteristic from "../../../../models/StoryEditor/PlotField/Choice/OptionCharacteristic";

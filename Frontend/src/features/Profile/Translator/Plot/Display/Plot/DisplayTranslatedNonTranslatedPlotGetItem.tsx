@@ -1,71 +1,93 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
+import { TranslationTextFieldName } from "../../../../../../const/TRANSLATION_TEXT_FIELD_NAMES";
+import useGetNonTranslatedSingleGetItem from "../../../../../../hooks/Fetching/Translation/PlotfieldCommands/GetItem/useGetNonTranslatedSingleGetItem";
+import useUpdateGetItemTranslation from "../../../../../../hooks/Patching/Translation/useUpdateGetItemTranslation";
 import useDebounce from "../../../../../../hooks/utilities/useDebounce";
 import { CurrentlyAvailableLanguagesTypes } from "../../../../../../types/Additional/CURRENTLY_AVAILABEL_LANGUAGES";
-import { TranslationCommandTypes } from "../../../../../../types/Additional/TranslationTypes";
-import useUpdateGetItemTranslation from "../../../../../../hooks/Patching/Translation/useUpdateGetItemTranslation";
+import { TranslationTextFieldNameGetItemTypes } from "../../../../../../types/Additional/TRANSLATION_TEXT_FIELD_NAMES";
+import { TranslationGetItemTypes } from "../../../../../../types/Additional/TranslationTypes";
 import "../../../../../Editor/Flowchart/FlowchartStyles.css";
-
-type CombinedTranslatedAndNonTranslatedPlotTypes = {
-  translated: TranslationCommandTypes[];
-  nonTranslated: TranslationCommandTypes[] | null;
-};
 
 type DisplayTranslatedNonTranslatedPlotGetItemTypes = {
   languageToTranslate: CurrentlyAvailableLanguagesTypes;
   translateFromLanguage: CurrentlyAvailableLanguagesTypes;
-} & CombinedTranslatedAndNonTranslatedPlotTypes;
+} & TranslationGetItemTypes;
 
 export default function DisplayTranslatedNonTranslatedPlotGetItem({
-  nonTranslated,
-  translated,
+  translations,
   languageToTranslate,
   translateFromLanguage,
+  commandId,
+  topologyBlockId,
 }: DisplayTranslatedNonTranslatedPlotGetItemTypes) {
   const [itemId, setItemId] = useState("");
 
+  const [translatedItemNameInitial, setTranslatedItemNameInitial] =
+    useState("");
+  const [
+    translatedItemDescriptionInitial,
+    setTranslatedItemDescriptionInitial,
+  ] = useState("");
+  const [translatedButtonTextInitial, setTranslatedButtonTextInitial] =
+    useState("");
   const [translatedItemName, setTranslatedItemName] = useState("");
   const [translatedItemDescription, setTranslatedItemDescription] =
     useState("");
   const [translatedButtonText, setTranslatedButtonText] = useState("");
 
+  const [itemNameInitial, setItemNameInitial] = useState("");
+  const [itemDescriptionInitial, setItemDescriptionInitial] = useState("");
+  const [buttonTextInitial, setButtonTextInitial] = useState("");
   const [itemName, setItemName] = useState("");
   const [itemDescription, setItemDescription] = useState("");
   const [buttonText, setButtonText] = useState("");
 
-  const hasMounted = useRef(false);
-
   useEffect(() => {
-    if (translated) {
-      translated.map((t) => {
-        setItemId(t.commandId);
+    if (translations) {
+      setItemId(commandId);
+      translations.map((t) => {
         if (t.textFieldName === "itemName") {
+          setTranslatedItemNameInitial(t.text);
           setTranslatedItemName(t.text);
         } else if (t.textFieldName === "itemDescription") {
+          setTranslatedItemDescriptionInitial(t.text);
           setTranslatedItemDescription(t.text);
         } else if (t.textFieldName === "buttonText") {
+          setTranslatedButtonTextInitial(t.text);
           setTranslatedButtonText(t.text);
         }
       });
     }
-  }, [translated]);
+  }, [translations, commandId]);
+
+  const { data: nonTranslated } = useGetNonTranslatedSingleGetItem({
+    commandId,
+    language: languageToTranslate,
+  });
 
   useEffect(() => {
     if (nonTranslated) {
-      nonTranslated.map((nt) => {
+      (nonTranslated.translations || [])?.map((nt) => {
         if (nt.textFieldName === "itemName") {
+          setItemNameInitial(nt.text);
           setItemName(nt.text);
         } else if (nt.textFieldName === "itemDescription") {
+          setItemDescriptionInitial(nt.text);
           setItemDescription(nt.text);
         } else if (nt.textFieldName === "buttonText") {
+          setButtonTextInitial(nt.text);
           setButtonText(nt.text);
         }
       });
     } else {
+      setItemNameInitial("");
       setItemName("");
+      setItemDescriptionInitial("");
       setItemDescription("");
+      setButtonTextInitial("");
       setButtonText("");
     }
-  }, [nonTranslated]);
+  }, [nonTranslated, languageToTranslate]);
 
   const debouncedNameTranslated = useDebounce({
     value: translatedItemName,
@@ -82,38 +104,48 @@ export default function DisplayTranslatedNonTranslatedPlotGetItem({
 
   const updateCharacterTranslationTranslated = useUpdateGetItemTranslation({
     language: translateFromLanguage,
-    getItemId: itemId,
+    commandId: itemId,
+    topologyBlockId,
   });
 
   useEffect(() => {
-    if (hasMounted.current && debouncedNameTranslated?.trim().length) {
+    if (
+      translatedItemNameInitial !== debouncedNameTranslated &&
+      debouncedNameTranslated?.trim().length
+    ) {
       updateCharacterTranslationTranslated.mutate({
-        itemName: debouncedNameTranslated,
+        text: debouncedNameTranslated,
+        textFieldName:
+          TranslationTextFieldName.ItemName as TranslationTextFieldNameGetItemTypes,
       });
-    } else {
-      hasMounted.current = true;
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [debouncedNameTranslated]);
 
   useEffect(() => {
-    if (hasMounted.current && debouncedDescriptionTranslated?.trim().length) {
+    if (
+      translatedItemDescriptionInitial !== debouncedDescriptionTranslated &&
+      debouncedDescriptionTranslated?.trim().length
+    ) {
       updateCharacterTranslationTranslated.mutate({
-        itemDescription: debouncedDescriptionTranslated,
+        text: debouncedDescriptionTranslated,
+        textFieldName:
+          TranslationTextFieldName.ItemDescription as TranslationTextFieldNameGetItemTypes,
       });
-    } else {
-      hasMounted.current = true;
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [debouncedDescriptionTranslated]);
 
   useEffect(() => {
-    if (hasMounted.current && debouncedButtonTextTranslated?.trim().length) {
+    if (
+      translatedButtonTextInitial !== debouncedButtonTextTranslated &&
+      debouncedButtonTextTranslated?.trim().length
+    ) {
       updateCharacterTranslationTranslated.mutate({
-        buttonText: debouncedButtonTextTranslated,
+        text: debouncedButtonTextTranslated,
+        textFieldName:
+          TranslationTextFieldName.ButtonText as TranslationTextFieldNameGetItemTypes,
       });
-    } else {
-      hasMounted.current = true;
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [debouncedButtonTextTranslated]);
@@ -133,38 +165,45 @@ export default function DisplayTranslatedNonTranslatedPlotGetItem({
 
   const updateCharacterTranslation = useUpdateGetItemTranslation({
     language: languageToTranslate,
-    getItemId: itemId,
+    commandId: itemId,
+    topologyBlockId,
   });
 
   useEffect(() => {
-    if (hasMounted.current && debouncedName?.trim().length) {
+    if (itemNameInitial !== debouncedName && debouncedName?.trim().length) {
       updateCharacterTranslation.mutate({
-        itemName: debouncedName,
+        text: debouncedName,
+        textFieldName:
+          TranslationTextFieldName.ItemName as TranslationTextFieldNameGetItemTypes,
       });
-    } else {
-      hasMounted.current = true;
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [debouncedName]);
 
   useEffect(() => {
-    if (hasMounted.current && debouncedDescription?.trim().length) {
+    if (
+      itemDescriptionInitial !== debouncedDescription &&
+      debouncedDescription?.trim().length
+    ) {
       updateCharacterTranslation.mutate({
-        itemDescription: debouncedDescription,
+        text: debouncedDescription,
+        textFieldName:
+          TranslationTextFieldName.ItemDescription as TranslationTextFieldNameGetItemTypes,
       });
-    } else {
-      hasMounted.current = true;
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [debouncedDescription]);
 
   useEffect(() => {
-    if (hasMounted.current && debouncedButtonText?.trim().length) {
+    if (
+      buttonTextInitial !== debouncedButtonText &&
+      debouncedButtonText?.trim().length
+    ) {
       updateCharacterTranslation.mutate({
-        buttonText: debouncedButtonText,
+        text: debouncedButtonText,
+        textFieldName:
+          TranslationTextFieldName.ButtonText as TranslationTextFieldNameGetItemTypes,
       });
-    } else {
-      hasMounted.current = true;
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [debouncedButtonText]);

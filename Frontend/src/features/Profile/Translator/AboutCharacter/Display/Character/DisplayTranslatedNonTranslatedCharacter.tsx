@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import useGetCharacterById from "../../../../../../hooks/Fetching/Character/useGetCharacterById";
+import { TranslationTextFieldName } from "../../../../../../const/TRANSLATION_TEXT_FIELD_NAMES";
 import useUpdateCharacterTranslation from "../../../../../../hooks/Patching/Translation/useUpdateCharacterTranslation";
 import useDebounce from "../../../../../../hooks/utilities/useDebounce";
 import { CurrentlyAvailableLanguagesTypes } from "../../../../../../types/Additional/CURRENTLY_AVAILABEL_LANGUAGES";
@@ -21,20 +21,25 @@ export default function DisplayTranslatedNonTranslatedCharacter({
   languageToTranslate,
   translateFromLanguage,
 }: DisplayTranslatedNonTranslatedCharacterTypes) {
+  const [translatedCharacterNameInitial, setTranslatedCharacterNameInitial] =
+    useState("");
+  const [translatedUnknownNameInitial, setTranslatedUnknownNameInitial] =
+    useState("");
+  const [translatedDescriptionInitial, setTranslatedDescriptionInitial] =
+    useState("");
   const [translatedCharacterName, setTranslatedCharacterName] = useState("");
   const [translatedUnknownName, setTranslatedUnknownName] = useState("");
   const [translatedDescription, setTranslatedDescription] = useState("");
 
+  const [characterNameInitial, setCharacterNameInitial] = useState("");
+  const [unknownNameInitial, setUnknownNameInitial] = useState("");
+  const [descriptionInitial, setDescriptionInitial] = useState("");
   const [characterName, setCharacterName] = useState("");
   const [unknownName, setUnknownName] = useState("");
   const [description, setDescription] = useState("");
 
   const [characterId, setCharacterId] = useState("");
 
-  const { data: character } = useGetCharacterById({ characterId });
-  const [characterType, setCharacterType] = useState<CharacterTypes>(
-    "" as CharacterTypes
-  );
   const [characterTypeFilterToEng, setCharacterTypeFilterToEng] =
     useState<CharacterTypes>("" as CharacterTypes);
 
@@ -53,21 +58,18 @@ export default function DisplayTranslatedNonTranslatedCharacter({
   }, [characterTypeFilter]);
 
   useEffect(() => {
-    if (character) {
-      setCharacterType(character.type);
-    }
-  }, [character]);
-
-  useEffect(() => {
     if (translated) {
-      translated.map((t) => {
+      setCharacterId(translated.characterId);
+      (translated?.translations || [])?.map((t) => {
         if (t.textFieldName === "characterName") {
           setTranslatedCharacterName(t.text);
-          setCharacterId(t.characterId);
+          setTranslatedCharacterNameInitial(t.text);
         } else if (t.textFieldName === "characterDescription") {
           setTranslatedDescription(t.text);
+          setTranslatedDescriptionInitial(t.text);
         } else if (t.textFieldName === "characterUnknownName") {
           setTranslatedUnknownName(t.text);
+          setTranslatedUnknownNameInitial(t.text);
         }
       });
     }
@@ -75,19 +77,25 @@ export default function DisplayTranslatedNonTranslatedCharacter({
 
   useEffect(() => {
     if (nonTranslated) {
-      nonTranslated.map((nt) => {
+      (nonTranslated?.translations || [])?.map((nt) => {
         if (nt.textFieldName === "characterName") {
           setCharacterName(nt.text);
+          setCharacterNameInitial(nt.text);
         } else if (nt.textFieldName === "characterDescription") {
           setDescription(nt.text);
+          setDescriptionInitial(nt.text);
         } else if (nt.textFieldName === "characterUnknownName") {
           setUnknownName(nt.text);
+          setUnknownNameInitial(nt.text);
         }
       });
     } else {
       setCharacterName("");
       setDescription("");
       setUnknownName("");
+      setCharacterNameInitial("");
+      setDescriptionInitial("");
+      setUnknownNameInitial("");
     }
   }, [nonTranslated, languageToTranslate]);
 
@@ -114,25 +122,38 @@ export default function DisplayTranslatedNonTranslatedCharacter({
   });
 
   useEffect(() => {
-    if (debouncedTranslatedName?.trim().length) {
+    if (
+      debouncedTranslatedName !== translatedCharacterNameInitial &&
+      debouncedTranslatedName?.trim().length
+    ) {
       updateCharacterTranslationTranslated.mutate({
-        characterName: debouncedTranslatedName,
+        debouncedValue: debouncedTranslatedName,
+        textFieldName: TranslationTextFieldName.CharacterName,
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [debouncedTranslatedName]);
+
   useEffect(() => {
-    if (debouncedTranslatedUnknownName?.trim().length) {
+    if (
+      debouncedTranslatedUnknownName !== translatedUnknownNameInitial &&
+      debouncedTranslatedUnknownName?.trim().length
+    ) {
       updateCharacterTranslationTranslated.mutate({
-        unknownName: debouncedTranslatedUnknownName,
+        debouncedValue: debouncedTranslatedUnknownName,
+        textFieldName: TranslationTextFieldName.CharacterUnknownName,
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [debouncedTranslatedUnknownName]);
   useEffect(() => {
-    if (debouncedTranslatedDescription?.trim().length) {
+    if (
+      debouncedTranslatedDescription !== translatedDescriptionInitial &&
+      debouncedTranslatedDescription?.trim().length
+    ) {
       updateCharacterTranslationTranslated.mutate({
-        description: debouncedTranslatedDescription,
+        debouncedValue: debouncedTranslatedDescription,
+        textFieldName: TranslationTextFieldName.CharacterDescription,
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -143,20 +164,38 @@ export default function DisplayTranslatedNonTranslatedCharacter({
     characterId,
   });
   useEffect(() => {
-    if (debouncedName?.trim().length) {
-      updateCharacterTranslation.mutate({ characterName: debouncedName });
+    if (
+      debouncedName !== characterNameInitial &&
+      debouncedName?.trim().length
+    ) {
+      updateCharacterTranslation.mutate({
+        debouncedValue: debouncedName,
+        textFieldName: TranslationTextFieldName.CharacterName,
+      });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [debouncedName]);
   useEffect(() => {
-    if (debouncedUnknownName?.trim().length) {
-      updateCharacterTranslation.mutate({ unknownName: debouncedUnknownName });
+    if (
+      debouncedUnknownName !== unknownNameInitial &&
+      debouncedUnknownName?.trim().length
+    ) {
+      updateCharacterTranslation.mutate({
+        debouncedValue: debouncedUnknownName,
+        textFieldName: TranslationTextFieldName.CharacterUnknownName,
+      });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [debouncedUnknownName]);
   useEffect(() => {
-    if (debouncedDescription?.trim().length) {
-      updateCharacterTranslation.mutate({ description: debouncedDescription });
+    if (
+      debouncedDescription !== descriptionInitial &&
+      debouncedDescription?.trim().length
+    ) {
+      updateCharacterTranslation.mutate({
+        debouncedValue: debouncedDescription,
+        textFieldName: TranslationTextFieldName.CharacterDescription,
+      });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [debouncedDescription]);
@@ -193,7 +232,7 @@ export default function DisplayTranslatedNonTranslatedCharacter({
                 className="w-full border-dotted border-gray-600 border-[2px] text-[1.6rem] font-medium text-gray-700 outline-none rounded-md px-[1rem] py-[.5rem] bg-white"
                 onChange={(e) => setTranslatedCharacterName(e.target.value)}
               />
-              {characterType === "minorcharacter" ? (
+              {translated?.characterType === "minorcharacter" ? (
                 <>
                   <input
                     type="text"
@@ -202,9 +241,9 @@ export default function DisplayTranslatedNonTranslatedCharacter({
                     onChange={(e) => setTranslatedUnknownName(e.target.value)}
                   />
                   <textarea
-                    value={translatedDescription}
                     rows={5}
-                    className="w-full border-dotted border-gray-600 border-[2px] text-[1.5rem] font-medium text-gray-700 outline-none rounded-md px-[1rem] py-[.5rem] bg-white | containerScroll"
+                    value={translatedDescription}
+                    className="max-h-[12.5rem] w-full border-dotted border-gray-600 border-[2px] text-[1.5rem] font-medium text-gray-700 outline-none rounded-md px-[1rem] py-[.5rem] bg-white | containerScroll"
                     onChange={(e) => setTranslatedDescription(e.target.value)}
                   />
                 </>
@@ -230,7 +269,7 @@ export default function DisplayTranslatedNonTranslatedCharacter({
                 className="w-full border-dotted border-gray-600 border-[2px] text-[1.6rem] font-medium text-gray-700 outline-none rounded-md px-[1rem] py-[.5rem] bg-white"
                 onChange={(e) => setCharacterName(e.target.value)}
               />
-              {characterType === "minorcharacter" ? (
+              {translated?.characterType === "minorcharacter" ? (
                 <>
                   <input
                     type="text"
@@ -240,10 +279,10 @@ export default function DisplayTranslatedNonTranslatedCharacter({
                     onChange={(e) => setUnknownName(e.target.value)}
                   />
                   <textarea
-                    value={description}
                     placeholder="Описание персонажа"
                     rows={5}
-                    className="w-full border-dotted border-gray-600 border-[2px] text-[1.5rem] font-medium text-gray-700 outline-none rounded-md px-[1rem] py-[.5rem] bg-white | containerScroll"
+                    className="max-h-[12.5rem] w-full border-dotted border-gray-600 border-[2px] text-[1.5rem] font-medium text-gray-700 outline-none rounded-md px-[1rem] py-[.5rem] bg-white | containerScroll"
+                    value={description}
                     onChange={(e) => setDescription(e.target.value)}
                   />
                 </>
@@ -260,7 +299,7 @@ export default function DisplayTranslatedNonTranslatedCharacter({
               : "min-h-[24rem] sm:flex-row flex-col"
           } ${
             characterTypeFilterToEng?.trim().length &&
-            characterType === characterTypeFilterToEng
+            translated?.characterType === characterTypeFilterToEng
               ? ""
               : !characterTypeFilter?.trim().length
               ? ""
@@ -285,7 +324,7 @@ export default function DisplayTranslatedNonTranslatedCharacter({
                 className="w-full border-dotted border-gray-600 border-[2px] text-[1.6rem] font-medium text-gray-700 outline-none rounded-md px-[1rem] py-[.5rem] bg-white"
                 onChange={(e) => setTranslatedCharacterName(e.target.value)}
               />
-              {characterType === "minorcharacter" ? (
+              {translated?.characterType === "minorcharacter" ? (
                 <>
                   <input
                     type="text"
@@ -296,7 +335,7 @@ export default function DisplayTranslatedNonTranslatedCharacter({
                   <textarea
                     value={translatedDescription}
                     rows={5}
-                    className="w-full border-dotted border-gray-600 border-[2px] text-[1.5rem] font-medium text-gray-700 outline-none rounded-md px-[1rem] py-[.5rem] bg-white | containerScroll"
+                    className="max-h-[12.5rem] w-full border-dotted border-gray-600 border-[2px] text-[1.5rem] font-medium text-gray-700 outline-none rounded-md px-[1rem] py-[.5rem] bg-white | containerScroll"
                     onChange={(e) => setTranslatedDescription(e.target.value)}
                   />
                 </>
@@ -322,7 +361,7 @@ export default function DisplayTranslatedNonTranslatedCharacter({
                 className="w-full border-dotted border-gray-600 border-[2px] text-[1.6rem] font-medium text-gray-700 outline-none rounded-md px-[1rem] py-[.5rem] bg-white"
                 onChange={(e) => setCharacterName(e.target.value)}
               />
-              {characterType === "minorcharacter" ? (
+              {translated?.characterType === "minorcharacter" ? (
                 <>
                   <input
                     type="text"
@@ -335,7 +374,7 @@ export default function DisplayTranslatedNonTranslatedCharacter({
                     value={description}
                     placeholder="Описание персонажа"
                     rows={5}
-                    className="w-full border-dotted border-gray-600 border-[2px] text-[1.5rem] font-medium text-gray-700 outline-none rounded-md px-[1rem] py-[.5rem] bg-white | containerScroll"
+                    className="max-h-[12.5rem] w-full border-dotted border-gray-600 border-[2px] text-[1.5rem] font-medium text-gray-700 outline-none rounded-md px-[1rem] py-[.5rem] bg-white | containerScroll"
                     onChange={(e) => setDescription(e.target.value)}
                   />
                 </>

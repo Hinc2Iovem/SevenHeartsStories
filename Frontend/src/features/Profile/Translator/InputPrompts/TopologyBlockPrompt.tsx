@@ -14,6 +14,7 @@ export default function TopologyBlockPrompt({
 }: TopologyBlockPromptTypes) {
   const [showTopologyBlocks, setShowTopologyBlocks] = useState(false);
   const [topologyBlockValue, setTopologyBlockValue] = useState("");
+  const [topologyBlockBackupValue, setTopologyBlockBackupValue] = useState("");
 
   const modalTopologyBlocksRef = useRef<HTMLDivElement>(null);
 
@@ -40,6 +41,18 @@ export default function TopologyBlockPrompt({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [debouncedValue, topologyBlocksSearch]);
 
+  useEffect(() => {
+    if (
+      !showTopologyBlocks &&
+      !topologyBlockValue &&
+      topologyBlockBackupValue
+    ) {
+      setTopologyBlockValue(topologyBlockBackupValue);
+    }
+  }, [showTopologyBlocks, topologyBlockBackupValue, topologyBlockValue]);
+
+  console.log(topologyBlockBackupValue);
+
   return (
     <form
       className="bg-white rounded-md shadow-md relative"
@@ -51,6 +64,8 @@ export default function TopologyBlockPrompt({
         placeholder="Название Блока"
         onClick={(e) => {
           e.stopPropagation();
+          setTopologyBlockBackupValue(topologyBlockValue);
+          setTopologyBlockValue("");
           setShowTopologyBlocks(true);
         }}
         value={topologyBlockValue}

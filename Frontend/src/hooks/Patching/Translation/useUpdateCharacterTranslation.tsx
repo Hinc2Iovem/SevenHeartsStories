@@ -1,4 +1,4 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { axiosCustomized } from "../../../api/axios";
 import { CurrentlyAvailableLanguagesTypes } from "../../../types/Additional/CURRENTLY_AVAILABEL_LANGUAGES";
 
@@ -8,34 +8,23 @@ type UpdateCharacterTranslationTypes = {
 };
 
 type UpdateCharacterTranslationOnMutationTypes = {
-  unknownName?: string;
-  characterName?: string;
-  description?: string;
+  textFieldName?: string;
+  debouncedValue?: string;
 };
 
 export default function useUpdateCharacterTranslation({
   characterId,
   language,
 }: UpdateCharacterTranslationTypes) {
-  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async ({
-      characterName,
-      description,
-      unknownName,
+      textFieldName,
+      debouncedValue,
     }: UpdateCharacterTranslationOnMutationTypes) =>
-      await axiosCustomized.patch(`/translations/characters/${characterId}`, {
+      await axiosCustomized.patch(`/characters/${characterId}/translations`, {
         currentLanguage: language,
-        name: characterName,
-        description,
-        unknownName,
+        textFieldName,
+        text: debouncedValue,
       }),
-    onSettled: () => {
-      queryClient.invalidateQueries({
-        queryKey: ["translation", language, "character", characterId],
-        exact: true,
-        type: "active",
-      });
-    },
   });
 }

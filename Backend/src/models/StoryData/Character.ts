@@ -21,7 +21,7 @@ export const characterSchema = new mongoose.Schema({
   },
   type: {
     type: String,
-    default: "emptycharacter",
+    default: "minorcharacter",
   },
   emotions: {
     type: [

@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import useGetTranslationStoriesQueries from "../../../../hooks/Fetching/Translation/Story/useGetTranslationStoriesQueries";
 import useOutOfModal from "../../../../hooks/UI/useOutOfModal";
 import useDebounce from "../../../../hooks/utilities/useDebounce";
@@ -11,6 +11,7 @@ export default function StoryPrompt({ setStoryId }: StoryPromptTypes) {
   const [showStories, setShowStories] = useState(false);
   const modalStoriesRef = useRef<HTMLDivElement>(null);
   const [storyValue, setStoryValue] = useState("");
+  const [storyBackupValue, setStoryBackupValue] = useState("");
 
   useOutOfModal({
     modalRef: modalStoriesRef,
@@ -38,6 +39,12 @@ export default function StoryPrompt({ setStoryId }: StoryPromptTypes) {
     return allStories;
   }, [allStories, debouncedValue]);
 
+  useEffect(() => {
+    if (!showStories && !storyValue && storyBackupValue) {
+      setStoryValue(storyBackupValue);
+    }
+  }, [showStories, storyValue, storyBackupValue]);
+
   return (
     <form
       className="bg-white rounded-md shadow-md relative"
@@ -49,6 +56,8 @@ export default function StoryPrompt({ setStoryId }: StoryPromptTypes) {
         placeholder="История"
         onClick={(e) => {
           e.stopPropagation();
+          setStoryBackupValue(storyValue);
+          setStoryValue("");
           setShowStories(true);
         }}
         value={storyValue}

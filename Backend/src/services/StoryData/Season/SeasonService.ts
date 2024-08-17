@@ -1,10 +1,10 @@
 import createHttpError from "http-errors";
-import { validateMongoId } from "../../utils/validateMongoId";
-import Season from "../../models/StoryData/Season";
-import Story from "../../models/StoryData/Story";
-import Translation from "../../models/StoryData/Translation";
-import { TranslationTextFieldName } from "../../consts/TRANSLATION_TEXT_FIELD_NAMES";
-import { checkCurrentLanguage } from "../../utils/checkCurrentLanguage";
+import { validateMongoId } from "../../../utils/validateMongoId";
+import Season from "../../../models/StoryData/Season";
+import Story from "../../../models/StoryData/Story";
+import Translation from "../../../models/StoryData/Translation/Translation";
+import { TranslationTextFieldName } from "../../../consts/TRANSLATION_TEXT_FIELD_NAMES";
+import { checkCurrentLanguage } from "../../../utils/checkCurrentLanguage";
 
 type SeasonsGetByStoryIdTypes = {
   storyId: string;

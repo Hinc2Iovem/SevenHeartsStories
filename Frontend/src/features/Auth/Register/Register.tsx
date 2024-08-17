@@ -36,7 +36,6 @@ export default function Register() {
         })
         .then((r) => r.data);
       navigate(from, { replace: true });
-      console.log("res:", res);
       setToken({ accessToken: res.accessToken });
     } catch (error: unknown) {
       if (axios.isAxiosError(error)) {

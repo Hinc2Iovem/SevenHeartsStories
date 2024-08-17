@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import useGetAllCharacterNames from "../../../../../../../../hooks/Fetching/Translation/Characters/useGetAllCharacterNames";
-import useGetTranslationCharactersQueries from "../../../../../../../../hooks/Fetching/Translation/Characters/useGetTranslationCharactersQueries";
+import useGetTranslationCharactersQueries from "../../../../../../../../hooks/Fetching/Translation/Characters/useGetTranslationCharacters";
 import useUpdateNameOrEmotion from "../../../hooks/Say/useUpdateNameOrEmotion";
 import CommandSayCreateCharacterFieldModal from "./ModalCreateCharacter/CommandSayCreateCharacterFieldModal";
 import { useParams } from "react-router-dom";

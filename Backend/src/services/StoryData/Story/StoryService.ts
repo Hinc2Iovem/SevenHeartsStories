@@ -1,13 +1,13 @@
 import createHttpError from "http-errors";
-import { TranslationTextFieldName } from "../../consts/TRANSLATION_TEXT_FIELD_NAMES";
-import { StoryStatusTypes } from "../../controllers/StoryData/StoryController";
-import Season from "../../models/StoryData/Season";
-import Story from "../../models/StoryData/Story";
-import Translation from "../../models/StoryData/Translation";
-import { checkCurrentLanguage } from "../../utils/checkCurrentLanguage";
-import { validateMongoId } from "../../utils/validateMongoId";
-import StoryInfo from "../../models/StoryData/StoryInfo";
-import Staff from "../../models/User/Staff";
+import { TranslationTextFieldName } from "../../../consts/TRANSLATION_TEXT_FIELD_NAMES";
+import { StoryStatusTypes } from "../../../controllers/StoryData/Story/StoryController";
+import Season from "../../../models/StoryData/Season";
+import Story from "../../../models/StoryData/Story";
+import Translation from "../../../models/StoryData/Translation/Translation";
+import { checkCurrentLanguage } from "../../../utils/checkCurrentLanguage";
+import { validateMongoId } from "../../../utils/validateMongoId";
+import StoryInfo from "../../../models/StoryData/StoryInfo";
+import Staff from "../../../models/User/Staff";
 
 type GetAllStoriesByLanguageTypes = {
   currentLanguage: string;
