@@ -15,6 +15,7 @@ import { createTopologyBlock } from "../../../../utils/createTopologyBlock";
 import { createTopologyBlockConnection } from "../../../../utils/createTopologyBlockConnection";
 import { validateMongoId } from "../../../../utils/validateMongoId";
 import OptionPremium from "../../../../models/StoryEditor/PlotField/Choice/OptionPremium";
+import TranslationChoiceOption from "../../../../models/StoryData/Translation/TranslationChoiceOption";
 
 type GetAllChoiceOptionsByChoiceIdTypes = {
   plotFieldCommandChoiceId: string;
@@ -157,7 +158,13 @@ export const createChoiceOptionService = async ({
       plotFieldCommandChoiceOptionId: newChoiceOption._id,
     });
   }
-
+  await TranslationChoiceOption.create({
+    language: "russian",
+    plotFieldCommandChoiceId,
+    translations: [],
+    type: type ?? "common",
+    choiceOptionId: newChoiceOption._id,
+  });
   return newChoiceOption;
 };
 

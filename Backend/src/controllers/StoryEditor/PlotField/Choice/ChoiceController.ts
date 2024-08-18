@@ -1,6 +1,5 @@
 import { RequestHandler } from "express";
 import {
-  createChoiceService,
   deleteChoiceService,
   updateChoiceService,
   getChoiceByPlotFieldCommandIdService,
@@ -22,32 +21,6 @@ export const getChoiceByPlotFieldCommandIdController: RequestHandler<
 > = async (req, res, next) => {
   try {
     const choice = await getChoiceByPlotFieldCommandIdService({
-      plotFieldCommandId: req.params.plotFieldCommandId,
-    });
-    if (choice) {
-      return res.status(201).json(choice);
-    } else {
-      return res.status(400).json({ message: "Something went wrong" });
-    }
-  } catch (error) {
-    next(error);
-  }
-};
-
-type CreateChoiceParams = {
-  plotFieldCommandId: string;
-};
-
-// @route POST http://localhost:3500/plotFieldCommands/:plotFieldCommandId/choices
-// @access Private
-export const createChoiceController: RequestHandler<
-  CreateChoiceParams,
-  unknown,
-  unknown,
-  unknown
-> = async (req, res, next) => {
-  try {
-    const choice = await createChoiceService({
       plotFieldCommandId: req.params.plotFieldCommandId,
     });
     if (choice) {

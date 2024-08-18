@@ -7,7 +7,7 @@ import {
   appearancePartGetByAppearancePartIdController,
   appearancePartGetByCharacterIdAndTypeController,
   appearancePartGetByCharacterIdController,
-} from "../../controllers/StoryData/AppearancePartController";
+} from "../../../controllers/StoryData/AppearancePart/AppearancePartController";
 
 // Default route === /appearanceParts
 export const appearancePartRoute = express.Router();

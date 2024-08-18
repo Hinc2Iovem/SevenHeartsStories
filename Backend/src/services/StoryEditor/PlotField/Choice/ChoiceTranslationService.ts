@@ -1,18 +1,19 @@
 import createHttpError from "http-errors";
 import { validateMongoId } from "../../../../utils/validateMongoId";
-import TranslationGetItem from "../../../../models/StoryData/Translation/TranslationGetItem";
+import TranslationChoice from "../../../../models/StoryData/Translation/TranslationChoice";
 import PlotFieldCommand from "../../../../models/StoryEditor/PlotField/PlotFieldCommand";
 import { checkCurrentLanguage } from "../../../../utils/checkCurrentLanguage";
+import Choice from "../../../../models/StoryEditor/PlotField/Choice/Choice";
 
-type GetItemByPlotFieldCommandIdTypes = {
+type ChoiceByPlotFieldCommandIdTypes = {
   plotFieldCommandId: string;
   currentLanguage: string;
 };
 
-export const getItemTranslationByCommandIdService = async ({
+export const getChoiceTranslationByCommandIdService = async ({
   plotFieldCommandId,
   currentLanguage,
-}: GetItemByPlotFieldCommandIdTypes) => {
+}: ChoiceByPlotFieldCommandIdTypes) => {
   validateMongoId({ value: plotFieldCommandId, valueName: "PlotFieldCommand" });
   if (!currentLanguage?.trim().length) {
     throw createHttpError(400, `CurrentLanguage is required`);
@@ -20,7 +21,7 @@ export const getItemTranslationByCommandIdService = async ({
 
   checkCurrentLanguage({ currentLanguage });
 
-  const existingItem = await TranslationGetItem.findOne({
+  const existingItem = await TranslationChoice.findOne({
     commandId: plotFieldCommandId,
     language: currentLanguage,
   }).lean();
@@ -32,15 +33,15 @@ export const getItemTranslationByCommandIdService = async ({
   return existingItem;
 };
 
-type GetItemByTopologyBlockIdTypes = {
+type ChoiceByTopologyBlockIdTypes = {
   topologyBlockId: string;
   currentLanguage: string;
 };
 
-export const getAllItemTranslationByTopologyBlockIdService = async ({
+export const getAllChoicesTranslationByTopologyBlockIdService = async ({
   topologyBlockId,
   currentLanguage,
-}: GetItemByTopologyBlockIdTypes) => {
+}: ChoiceByTopologyBlockIdTypes) => {
   validateMongoId({ value: topologyBlockId, valueName: "TopologyBlock" });
   if (!currentLanguage?.trim().length) {
     throw createHttpError(400, `CurrentLanguage is required`);
@@ -48,7 +49,7 @@ export const getAllItemTranslationByTopologyBlockIdService = async ({
 
   checkCurrentLanguage({ currentLanguage });
 
-  const existingItem = await TranslationGetItem.find({
+  const existingItem = await TranslationChoice.find({
     topologyBlockId,
     language: currentLanguage,
   }).lean();
@@ -60,15 +61,15 @@ export const getAllItemTranslationByTopologyBlockIdService = async ({
   return existingItem;
 };
 
-type CreateGetItemTypes = {
+type CreateChoiceTypes = {
   plotFieldCommandId: string;
   topologyBlockId: string;
 };
 
-export const createGetItemTranslationService = async ({
+export const createChoiceTranslationService = async ({
   plotFieldCommandId,
   topologyBlockId,
-}: CreateGetItemTypes) => {
+}: CreateChoiceTypes) => {
   validateMongoId({ value: plotFieldCommandId, valueName: "PlotFieldCommand" });
   validateMongoId({ value: topologyBlockId, valueName: "TopologyBlock" });
 
@@ -79,7 +80,8 @@ export const createGetItemTranslationService = async ({
     throw createHttpError(400, "PlotFieldCommand with such id wasn't found");
   }
 
-  return await TranslationGetItem.create({
+  await Choice.create({ plotFieldCommandId });
+  return await TranslationChoice.create({
     commandId: plotFieldCommandId,
     language: "russian",
     topologyBlockId,
@@ -87,7 +89,7 @@ export const createGetItemTranslationService = async ({
   });
 };
 
-type UpdateGetItemTypes = {
+type UpdateChoiceTypes = {
   plotFieldCommandId: string;
   topologyBlockId: string;
   textFieldName: string | undefined;
@@ -95,16 +97,16 @@ type UpdateGetItemTypes = {
   currentLanguage?: string;
 };
 
-export const getItemUpdateTranslationService = async ({
+export const choiceUpdateTranslationService = async ({
   plotFieldCommandId,
   text,
   textFieldName,
   currentLanguage,
   topologyBlockId,
-}: UpdateGetItemTypes) => {
-  validateMongoId({ value: plotFieldCommandId, valueName: "GetItem" });
+}: UpdateChoiceTypes) => {
+  validateMongoId({ value: plotFieldCommandId, valueName: "Choice" });
 
-  const existingPlotFieldCommand = await TranslationGetItem.findOne({
+  const existingPlotFieldCommand = await TranslationChoice.findOne({
     commandId: plotFieldCommandId,
     language: currentLanguage,
   }).exec();
@@ -125,7 +127,7 @@ export const getItemUpdateTranslationService = async ({
     return await existingPlotFieldCommand.save();
   } else {
     validateMongoId({ value: topologyBlockId, valueName: "TopologyBlock" });
-    return await TranslationGetItem.create({
+    return await TranslationChoice.create({
       commandId: plotFieldCommandId,
       language: currentLanguage,
       topologyBlockId,

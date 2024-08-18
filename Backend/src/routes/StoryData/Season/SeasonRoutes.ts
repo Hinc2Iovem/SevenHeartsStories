@@ -3,7 +3,7 @@ import {
   seasonCreateController,
   seasonDeleteController,
   seasonsGetByStoryIdController,
-} from "../../controllers/StoryData/Season/SeasonController";
+} from "../../../controllers/StoryData/Season/SeasonController";
 
 // Default route === /stories
 export const seasonRoute = express.Router();

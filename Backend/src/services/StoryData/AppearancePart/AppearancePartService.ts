@@ -1,12 +1,12 @@
 import createHttpError from "http-errors";
-import AppearancePart from "../../models/StoryData/AppearancePart";
-import { validateMongoId } from "../../utils/validateMongoId";
-import Translation from "../../models/StoryData/Translation/Translation";
+import AppearancePart from "../../../models/StoryData/AppearancePart";
+import { validateMongoId } from "../../../utils/validateMongoId";
+import Translation from "../../../models/StoryData/Translation/Translation";
 import {
   AppearanceParts,
   AppearancePartsTypes,
-} from "../../consts/APPEARANCE_PARTS";
-import { checkCurrentLanguage } from "../../utils/checkCurrentLanguage";
+} from "../../../consts/APPEARANCE_PARTS";
+import { checkCurrentLanguage } from "../../../utils/checkCurrentLanguage";
 
 export const appearancePartGetAllService = async () => {
   const appearanceParts = await AppearancePart.find().lean();

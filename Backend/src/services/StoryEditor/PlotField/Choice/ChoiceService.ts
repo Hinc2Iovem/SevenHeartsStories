@@ -26,27 +26,6 @@ export const getChoiceByPlotFieldCommandIdService = async ({
   return existingChoice;
 };
 
-type CreateChoiceTypes = {
-  plotFieldCommandId: string;
-};
-
-export const createChoiceService = async ({
-  plotFieldCommandId,
-}: CreateChoiceTypes) => {
-  validateMongoId({ value: plotFieldCommandId, valueName: "PlotFieldCommand" });
-
-  const existingPlotFieldCommand = await PlotFieldCommand.findById(
-    plotFieldCommandId
-  ).lean();
-  if (!existingPlotFieldCommand) {
-    throw createHttpError(400, "PlotFieldCommand with such id wasn't found");
-  }
-
-  return await Choice.create({
-    plotFieldCommandId,
-  });
-};
-
 type UpdateChoiceTypes = {
   choiceId: string;
   timeLimit: number | undefined;

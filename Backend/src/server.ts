@@ -51,6 +51,12 @@ import {
   storyTranslationRoute,
   episodeTranslationRoute,
   seasonTranslationRoute,
+  sayTranslationsRoute,
+  achievementTranslationsRoute,
+  commandWardrobeTranslationsRoute,
+  appearancePartTranslationsRoute,
+  choiceTranslationsRoute,
+  choiceOptionTranslationsRoute,
 } from "./routes/index";
 import { verifyJWT } from "./middlewares/verifyJWT";
 
@@ -78,6 +84,7 @@ app.use("/stories", storyTranslationRoute);
 app.use("/translations", verifyJWT, translationRoute);
 
 app.use("/appearanceParts", verifyJWT, appearancePartRoute);
+app.use("/appearanceParts", verifyJWT, appearancePartTranslationsRoute);
 app.use("/characterCharacteristics", verifyJWT, characterCharacteristicRoute);
 app.use("/characters", verifyJWT, characterRoute);
 app.use("/characterEmotions", verifyJWT, characterEmotionRoute);
@@ -89,13 +96,16 @@ app.use("/stories", verifyJWT, seasonRoute);
 app.use("/seasons", verifyJWT, seasonTranslationRoute);
 app.use("/stories", verifyJWT, musicRoute);
 app.use("/stories", verifyJWT, achievementRoute);
+app.use("/achievements", verifyJWT, achievementTranslationsRoute);
 app.use("/stories", verifyJWT, soundRoute);
 
 app.use("/plotFieldCommands", verifyJWT, ambientRoute);
 app.use("/plotFieldCommands", verifyJWT, backgroundRoute);
 app.use("/plotFieldCommands", verifyJWT, callRoute);
 app.use("/plotFieldCommands", verifyJWT, choiceOptionRoute);
+app.use("/choiceOptions", verifyJWT, choiceOptionTranslationsRoute);
 app.use("/plotFieldCommands", verifyJWT, choiceRoute);
+app.use("/choices", verifyJWT, choiceTranslationsRoute);
 app.use("/plotFieldCommands", verifyJWT, choiceOptionVariationsRoute);
 app.use("/plotFieldCommands", verifyJWT, ifRoute);
 app.use("/plotFieldCommands", verifyJWT, ifValuesRoute);
@@ -111,10 +121,12 @@ app.use("/plotFieldCommands", verifyJWT, movesRoute);
 app.use("/plotFieldCommands", verifyJWT, commandMusicRoute);
 app.use("/plotFieldCommands", verifyJWT, commandNameRoute);
 app.use("/plotFieldCommands", verifyJWT, sayRoute);
+app.use("/says", verifyJWT, sayTranslationsRoute);
 app.use("/plotFieldCommands", verifyJWT, soundCommandRoute);
 app.use("/plotFieldCommands", verifyJWT, suitRoute);
 app.use("/plotFieldCommands", verifyJWT, waitRoute);
 app.use("/plotFieldCommands", verifyJWT, wardrobeRoute);
+app.use("/commandWardrobes", verifyJWT, commandWardrobeTranslationsRoute);
 
 app.use("/topologyBlocks", verifyJWT, topologyBlockRoute);
 app.use("/plotField", verifyJWT, plotFieldCommandRoute);

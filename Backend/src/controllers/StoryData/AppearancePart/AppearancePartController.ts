@@ -7,8 +7,8 @@ import {
   appearancePartGetByCharacterIdService,
   appearancePartUpdateImgService,
   appearancePartGetByAppearancePartIdService,
-} from "../../services/StoryData/AppearancePartService";
-import { AppearancePartsTypes } from "../../consts/APPEARANCE_PARTS";
+} from "../../../services/StoryData/AppearancePart/AppearancePartService";
+import { AppearancePartsTypes } from "../../../consts/APPEARANCE_PARTS";
 
 // @route GET http://localhost:3500/appearanceParts
 // @access Private

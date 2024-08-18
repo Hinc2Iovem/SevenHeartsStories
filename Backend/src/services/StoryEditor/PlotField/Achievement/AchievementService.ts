@@ -45,50 +45,6 @@ export const getAchievementsByStoryIdService = async ({
   return existingAchievements;
 };
 
-type CreateAchievementTypes = {
-  storyId: string;
-  plotFieldCommandId: string;
-};
-
-export const createAchievementService = async ({
-  plotFieldCommandId,
-  storyId,
-}: CreateAchievementTypes) => {
-  validateMongoId({ value: storyId, valueName: "Story" });
-  validateMongoId({ value: plotFieldCommandId, valueName: "PlotFieldCommand" });
-
-  const existingPlotFieldCommand = await PlotFieldCommand.findById(
-    plotFieldCommandId
-  ).lean();
-  if (!existingPlotFieldCommand) {
-    throw createHttpError(400, "PlotFieldCommand with such id wasn't found");
-  }
-
-  const existingStory = await Story.findById(storyId).lean();
-  if (!existingStory) {
-    throw createHttpError(400, "Story with such id wasn't found");
-  }
-
-  const currentTopologyBlock = await TopologyBlock.findById(
-    existingPlotFieldCommand.topologyBlockId
-  ).lean();
-  if (currentTopologyBlock) {
-    const topologyBlockId = currentTopologyBlock._id;
-    const topologyBlockInfo = await TopologyBlockInfo.findOne({
-      topologyBlockId,
-    }).exec();
-    if (topologyBlockInfo) {
-      topologyBlockInfo.amountOfAchievements += 1;
-      await topologyBlockInfo.save();
-    }
-  }
-
-  return await Achievement.create({
-    storyId,
-    plotFieldCommandId,
-  });
-};
-
 type DeleteAchievementTypes = {
   achievementId: string;
 };

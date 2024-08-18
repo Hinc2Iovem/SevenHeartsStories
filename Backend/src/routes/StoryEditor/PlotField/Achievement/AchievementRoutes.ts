@@ -1,6 +1,5 @@
 import express from "express";
 import {
-  createAchievementController,
   deleteAchievementController,
   getAchievementByPlotFieldCommandIdController,
   getAchievementsByStoryIdController,
@@ -16,10 +15,6 @@ achievementRoute
 achievementRoute
   .route("/plotFieldCommands/:plotFieldCommandId/achievements")
   .get(getAchievementByPlotFieldCommandIdController);
-
-achievementRoute
-  .route("/:storyId/plotFieldCommands/:plotFieldCommandId/achievements")
-  .post(createAchievementController);
 
 achievementRoute
   .route("/plotFieldCommands/achievements/:achievementId")
