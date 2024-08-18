@@ -1,6 +1,6 @@
 import mongoose, { InferSchemaType, model } from "mongoose";
 
-export const translationChoiceSchema = new mongoose.Schema(
+export const translationChoiceOptionSchema = new mongoose.Schema(
   {
     plotFieldCommandChoiceId: {
       type: mongoose.Schema.Types.ObjectId,
@@ -43,9 +43,11 @@ export const translationChoiceSchema = new mongoose.Schema(
   }
 );
 
-type TranslationChoice = InferSchemaType<typeof translationChoiceSchema>;
+type TranslationChoiceOption = InferSchemaType<
+  typeof translationChoiceOptionSchema
+>;
 
-export default model<TranslationChoice>(
-  "TranslationChoice",
-  translationChoiceSchema
+export default model<TranslationChoiceOption>(
+  "TranslationChoiceOption",
+  translationChoiceOptionSchema
 );

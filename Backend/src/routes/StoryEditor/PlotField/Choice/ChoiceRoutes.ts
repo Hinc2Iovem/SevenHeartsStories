@@ -1,6 +1,5 @@
 import express from "express";
 import {
-  createChoiceController,
   deleteChoiceController,
   getChoiceByPlotFieldCommandIdController,
   updateChoiceController,
@@ -13,8 +12,7 @@ export const choiceRoute = express.Router();
 
 choiceRoute
   .route("/:plotFieldCommandId/choices")
-  .get(getChoiceByPlotFieldCommandIdController)
-  .post(createChoiceController);
+  .get(getChoiceByPlotFieldCommandIdController);
 
 choiceRoute.route("/choices/:choiceId").patch(updateChoiceController);
 
