@@ -2,6 +2,7 @@ import { useState } from "react";
 import useGetDecodedJWTValues from "../../../../hooks/Auth/useGetDecodedJWTValues";
 import { StoryFilterTypes } from "../../../Story/Story";
 import StoryFilterTypesHeader from "../../../Story/StoryFilterTypes";
+import CreateStory from "./CreateStory";
 
 type ProfileLeftSideScriptwriterTypes = {
   setSearchValue: React.Dispatch<React.SetStateAction<string>>;
@@ -89,6 +90,9 @@ export default function ProfileLeftSideScriptwriter({
               setLocalAssignedSearchValue(e.target.value);
               setSearchValue(e.target.value);
               if (storiesType !== "allAssigned") {
+                if (storiesType === "all") {
+                  setStoriesType("allAssigned");
+                }
                 setLocalSearchValue("");
               }
             }}
@@ -100,6 +104,7 @@ export default function ProfileLeftSideScriptwriter({
           storiesType={storiesType}
         />
       </div>
+      <CreateStory />
     </div>
   );
 }

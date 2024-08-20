@@ -7,16 +7,25 @@ import { TranslationCharacterCharacteristicTypes } from "../../../../../../types
 type DisplayTranslatedNonTranslatedCharacteristicTypes = {
   languageToTranslate: CurrentlyAvailableLanguagesTypes;
   translateFromLanguage: CurrentlyAvailableLanguagesTypes;
-  translated: TranslationCharacterCharacteristicTypes;
-  nonTranslated: TranslationCharacterCharacteristicTypes;
+  translated: TranslationCharacterCharacteristicTypes | null;
+  nonTranslated: TranslationCharacterCharacteristicTypes | null;
+  storyId: string;
 };
 
 export default function DisplayTranslatedNonTranslatedCharacteristic({
-  nonTranslated,
   translated,
+  nonTranslated,
   languageToTranslate,
   translateFromLanguage,
+  storyId,
 }: DisplayTranslatedNonTranslatedCharacteristicTypes) {
+  const [
+    translatedBackUpCharacterCharacteristic,
+    setTranslatedBackUpCharacterCharacteristic,
+  ] = useState("");
+
+  const [backUpCharacterCharacteristic, setBackUpCharacterCharacteristic] =
+    useState("");
   const [
     translatedCharacterCharacteristic,
     setTranslatedCharacterCharacteristic,
@@ -28,18 +37,32 @@ export default function DisplayTranslatedNonTranslatedCharacteristic({
 
   useEffect(() => {
     if (translated) {
-      if (translated.textFieldName === "characterCharacteristic") {
-        setTranslatedCharacterCharacteristic(translated.text);
-        setCharacterCharacteristicId(translated.characterCharacteristicId);
-      }
+      setTranslatedCharacterCharacteristic(
+        translated.translations.find(
+          (t) => t.textFieldName === "characterCharacteristic"
+        )?.text || ""
+      );
+      setTranslatedBackUpCharacterCharacteristic(
+        translated.translations.find(
+          (t) => t.textFieldName === "characterCharacteristic"
+        )?.text || ""
+      );
+      setCharacterCharacteristicId(translated.characteristicId);
     }
   }, [translated]);
 
   useEffect(() => {
     if (nonTranslated) {
-      if (nonTranslated.textFieldName === "characterCharacteristic") {
-        setCharacterCharacteristic(nonTranslated.text);
-      }
+      setCharacterCharacteristic(
+        nonTranslated.translations.find(
+          (t) => t.textFieldName === "characterCharacteristic"
+        )?.text || ""
+      );
+      setBackUpCharacterCharacteristic(
+        nonTranslated.translations.find(
+          (t) => t.textFieldName === "characterCharacteristic"
+        )?.text || ""
+      );
     } else {
       setCharacterCharacteristic("");
     }
@@ -54,10 +77,14 @@ export default function DisplayTranslatedNonTranslatedCharacteristic({
     useUpdateCharacteristicTranslation({
       language: translateFromLanguage,
       characterCharacteristicId,
+      storyId,
     });
 
   useEffect(() => {
-    if (debouncedTranslatedName?.trim().length) {
+    if (
+      translatedBackUpCharacterCharacteristic !== debouncedTranslatedName &&
+      debouncedTranslatedName?.trim().length
+    ) {
       updateCharacterTranslationTranslated.mutate({
         characteristicName: debouncedTranslatedName,
       });
@@ -73,10 +100,14 @@ export default function DisplayTranslatedNonTranslatedCharacteristic({
   const updateCharacterTranslation = useUpdateCharacteristicTranslation({
     language: languageToTranslate,
     characterCharacteristicId,
+    storyId,
   });
 
   useEffect(() => {
-    if (debouncedName?.trim().length) {
+    if (
+      backUpCharacterCharacteristic !== debouncedName &&
+      debouncedName?.trim().length
+    ) {
       updateCharacterTranslation.mutate({
         characteristicName: debouncedName,
       });

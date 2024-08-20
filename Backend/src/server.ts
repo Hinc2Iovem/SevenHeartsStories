@@ -57,6 +57,7 @@ import {
   appearancePartTranslationsRoute,
   choiceTranslationsRoute,
   choiceOptionTranslationsRoute,
+  characteristicTranslationRoute,
 } from "./routes/index";
 import { verifyJWT } from "./middlewares/verifyJWT";
 
@@ -78,14 +79,15 @@ app.use(express.json());
 app.use(cookieParser());
 
 app.use("/auth", authRoute);
-app.use("/stories", storyRoute);
 app.use("/stories", storyTranslationRoute);
+app.use("/stories", storyRoute);
 
 app.use("/translations", verifyJWT, translationRoute);
 
 app.use("/appearanceParts", verifyJWT, appearancePartRoute);
 app.use("/appearanceParts", verifyJWT, appearancePartTranslationsRoute);
 app.use("/characterCharacteristics", verifyJWT, characterCharacteristicRoute);
+app.use("/characteristics", verifyJWT, characteristicTranslationRoute);
 app.use("/characters", verifyJWT, characterRoute);
 app.use("/characterEmotions", verifyJWT, characterEmotionRoute);
 app.use("/commandLibraries", verifyJWT, commandLibraryRoute);

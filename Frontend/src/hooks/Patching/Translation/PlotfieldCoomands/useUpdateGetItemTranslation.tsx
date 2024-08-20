@@ -1,7 +1,7 @@
 import { useMutation } from "@tanstack/react-query";
-import { axiosCustomized } from "../../../api/axios";
-import { CurrentlyAvailableLanguagesTypes } from "../../../types/Additional/CURRENTLY_AVAILABEL_LANGUAGES";
-import { TranslationTextFieldNameGetItemTypes } from "../../../types/Additional/TRANSLATION_TEXT_FIELD_NAMES";
+import { axiosCustomized } from "../../../../api/axios";
+import { CurrentlyAvailableLanguagesTypes } from "../../../../types/Additional/CURRENTLY_AVAILABEL_LANGUAGES";
+import { TranslationTextFieldNameGetItemTypes } from "../../../../types/Additional/TRANSLATION_TEXT_FIELD_NAMES";
 
 type UpdateGetItemTranslationTypes = {
   commandId: string;

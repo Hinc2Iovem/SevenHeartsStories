@@ -6,9 +6,10 @@ import { TranslationSeasonTypes } from "../../../../../../types/Additional/Trans
 
 type DisplayTranslatedNonTranslatedSeasonTypes = {
   languageToTranslate: CurrentlyAvailableLanguagesTypes;
-  translated: TranslationSeasonTypes;
+  translated: TranslationSeasonTypes | null;
   translateFromLanguage: CurrentlyAvailableLanguagesTypes;
   nonTranslated: TranslationSeasonTypes | null;
+  storyId: string;
 };
 
 export default function DisplayTranslatedNonTranslatedSeason({
@@ -16,27 +17,32 @@ export default function DisplayTranslatedNonTranslatedSeason({
   translated,
   languageToTranslate,
   translateFromLanguage,
+  storyId,
 }: DisplayTranslatedNonTranslatedSeasonTypes) {
+  const [translatedBackUpSeasonName, setTranslatedBackUpSeasonName] =
+    useState("");
   const [translatedSeasonName, setTranslatedSeasonName] = useState("");
+
+  const [backUpSeasonName, setBackUpSeasonName] = useState("");
   const [seasonName, setSeasonName] = useState("");
+
   const [seasonId, setSeasonId] = useState("");
 
   useEffect(() => {
     if (translated) {
       setSeasonId(translated.seasonId);
-      if (translated.textFieldName === "seasonName") {
-        setTranslatedSeasonName(translated.text);
-      }
+      setTranslatedSeasonName(translated.translations[0]?.text || "");
+      setTranslatedBackUpSeasonName(translated.translations[0]?.text || "");
     }
   }, [translated]);
 
   useEffect(() => {
     if (nonTranslated) {
-      if (nonTranslated.textFieldName === "seasonName") {
-        setSeasonName(nonTranslated.text);
-      }
+      setSeasonName(nonTranslated.translations[0]?.text || "");
+      setBackUpSeasonName(nonTranslated.translations[0]?.text || "");
     } else {
       setSeasonName("");
+      setBackUpSeasonName("");
     }
   }, [nonTranslated, languageToTranslate]);
 
@@ -48,10 +54,14 @@ export default function DisplayTranslatedNonTranslatedSeason({
   const updateCharacterTranslationTranslated = useUpdateSeasonTranslation({
     language: translateFromLanguage,
     seasonId,
+    storyId,
   });
 
   useEffect(() => {
-    if (debouncedTranslatedName?.trim().length) {
+    if (
+      debouncedTranslatedName !== translatedBackUpSeasonName &&
+      debouncedTranslatedName?.trim().length
+    ) {
       updateCharacterTranslationTranslated.mutate({
         seasonName: debouncedTranslatedName,
       });
@@ -67,10 +77,11 @@ export default function DisplayTranslatedNonTranslatedSeason({
   const updateCharacterTranslation = useUpdateSeasonTranslation({
     language: languageToTranslate,
     seasonId,
+    storyId,
   });
 
   useEffect(() => {
-    if (debouncedName?.trim().length) {
+    if (debouncedName !== backUpSeasonName && debouncedName?.trim().length) {
       updateCharacterTranslation.mutate({
         seasonName: debouncedName,
       });

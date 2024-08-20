@@ -1,38 +1,34 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { axiosCustomized } from "../../../api/axios";
 import { CurrentlyAvailableLanguagesTypes } from "../../../types/Additional/CURRENTLY_AVAILABEL_LANGUAGES";
+import { TranslationTextFieldNameEpisodeTypes } from "../../../types/Additional/TRANSLATION_TEXT_FIELD_NAMES";
 
 type UpdateEpisodeTranslationTypes = {
   episodeId: string;
+  seasonId: string;
   language: CurrentlyAvailableLanguagesTypes;
 };
 
 type UpdateEpisodeTranslationOnMutationTypes = {
-  episodeName?: string;
-  description?: string;
+  text: string;
+  textFieldName: TranslationTextFieldNameEpisodeTypes;
 };
 
 export default function useUpdateEpisodeTranslation({
   episodeId,
+  seasonId,
   language,
 }: UpdateEpisodeTranslationTypes) {
-  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async ({
-      episodeName,
-      description,
+      text,
+      textFieldName,
     }: UpdateEpisodeTranslationOnMutationTypes) =>
-      await axiosCustomized.patch(`/translations/episodes/${episodeId}`, {
+      await axiosCustomized.patch(`/episodes/${episodeId}/translations`, {
         currentLanguage: language,
-        title: episodeName,
-        description,
+        text,
+        textFieldName,
+        seasonId,
       }),
-    onSettled: () => {
-      queryClient.invalidateQueries({
-        queryKey: ["translation", language, "episode", episodeId],
-        type: "active",
-        exact: true,
-      });
-    },
   });
 }

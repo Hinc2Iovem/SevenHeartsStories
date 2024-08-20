@@ -1,9 +1,9 @@
 import { useMemo } from "react";
+import useGetTranslationStories from "../../../../../hooks/Fetching/Translation/Story/useGetTranslationStories";
+import useInvalidateTranslatorStoryQueries from "../../../../../hooks/helpers/Profile/Translator/useInvalidateTranslatorStoryQueries";
 import { CurrentlyAvailableLanguagesTypes } from "../../../../../types/Additional/CURRENTLY_AVAILABEL_LANGUAGES";
 import { TranslationStoryTypes } from "../../../../../types/Additional/TranslationTypes";
 import DisplayTranslatedNonTranslatedStory from "../Display/Story/DisplayTranslatedNonTranslatedStory";
-import useGetTranslationStoriesQueries from "../../../../../hooks/Fetching/Translation/Story/useGetTranslationStoriesQueries";
-import useInvalidateTranslatorQueries from "../../../../../hooks/helpers/Profile/Translator/useInvalidateTranslatorQueries";
 
 type FiltersEverythingCharacterForStoryTypes = {
   translateFromLanguage: CurrentlyAvailableLanguagesTypes;
@@ -13,8 +13,8 @@ type FiltersEverythingCharacterForStoryTypes = {
 };
 
 export type CombinedTranslatedAndNonTranslatedStoryTypes = {
-  translated: TranslationStoryTypes[];
-  nonTranslated: TranslationStoryTypes[] | null;
+  translated: TranslationStoryTypes | null;
+  nonTranslated: TranslationStoryTypes | null;
 };
 
 export default function FiltersEverythingStoryForStory({
@@ -23,65 +23,55 @@ export default function FiltersEverythingStoryForStory({
   prevTranslateFromLanguage,
   prevTranslateToLanguage,
 }: FiltersEverythingCharacterForStoryTypes) {
-  useInvalidateTranslatorQueries({
+  useInvalidateTranslatorStoryQueries({
     prevTranslateFromLanguage,
     prevTranslateToLanguage,
-    queryKey: "story",
     translateToLanguage,
   });
 
-  const translatedStory = useGetTranslationStoriesQueries({
+  const { data: translatedStory } = useGetTranslationStories({
     language: translateFromLanguage,
-    showQueries: !!translateFromLanguage && !!translateToLanguage,
   });
 
-  const nonTranslatedStory = useGetTranslationStoriesQueries({
+  const { data: nonTranslatedStory } = useGetTranslationStories({
     language: translateToLanguage,
-    showQueries: !!translateFromLanguage && !!translateToLanguage,
   });
 
   const memoizedCombinedTranslations = useMemo(() => {
-    if (translatedStory.length > 0 && nonTranslatedStory.length > 0) {
-      const arrayOfStory = [] as CombinedTranslatedAndNonTranslatedStoryTypes[];
-      const groupedStory: Record<
-        string,
-        CombinedTranslatedAndNonTranslatedStoryTypes
-      > = {};
+    const combinedArray: CombinedTranslatedAndNonTranslatedStoryTypes[] = [];
+    const storyMap: {
+      [key: string]: CombinedTranslatedAndNonTranslatedStoryTypes;
+    } = {};
 
-      translatedStory.forEach((tc) => {
-        tc.data?.map((tcd) => {
-          const storyId = tcd.storyId;
-          if (!groupedStory[storyId]) {
-            groupedStory[storyId] = {
-              translated: [],
-              nonTranslated: null,
-            };
-          }
-          groupedStory[storyId].translated.push(tcd);
-        });
-      });
+    translatedStory?.forEach((tc) => {
+      const storyId = tc.storyId;
+      if (!storyMap[storyId]) {
+        storyMap[storyId] = {
+          translated: tc,
+          nonTranslated: null,
+        };
+      } else {
+        storyMap[storyId].translated = tc;
+      }
+    });
 
-      nonTranslatedStory.forEach((ntc) => {
-        ntc.data?.map((ntcd) => {
-          const storyId = ntcd.storyId;
-          if (!groupedStory[storyId]) {
-            groupedStory[storyId] = {
-              translated: [],
-              nonTranslated: null,
-            };
-          }
-          if (!groupedStory[storyId].nonTranslated) {
-            groupedStory[storyId].nonTranslated = [];
-          }
-          groupedStory[storyId].nonTranslated.push(ntcd);
-        });
-      });
+    nonTranslatedStory?.forEach((ntc) => {
+      const storyId = ntc.storyId;
+      if (!storyMap[storyId]) {
+        storyMap[storyId] = {
+          translated: null,
+          nonTranslated: ntc,
+        };
+      } else {
+        storyMap[storyId].nonTranslated = ntc;
+      }
+    });
 
-      Object.values(groupedStory).forEach((group) => arrayOfStory.push(group));
+    Object.values(storyMap).forEach((entry) => {
+      combinedArray.push(entry);
+    });
 
-      return arrayOfStory.filter((group) => group.translated.length > 0);
-    }
-    return [];
+    return combinedArray;
   }, [translatedStory, nonTranslatedStory]);
 
   return (
@@ -91,7 +81,7 @@ export default function FiltersEverythingStoryForStory({
       >
         {memoizedCombinedTranslations.map((ct, i) => (
           <DisplayTranslatedNonTranslatedStory
-            key={(ct.translated[i]?._id || i) + "-ctStory"}
+            key={(ct.translated?._id || i) + "-ctStory"}
             languageToTranslate={translateToLanguage}
             translateFromLanguage={translateFromLanguage}
             {...ct}

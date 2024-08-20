@@ -14,9 +14,8 @@ export default function Wardrobe() {
     useGetAllAppearancePartsByCharacterIdAndType({
       characterId,
       appearanceType: bodyType,
+      language: "russian",
     });
-
-  console.log(characterId);
 
   return (
     <section className="max-w-[146rem] p-[1rem] mx-auto">

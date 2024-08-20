@@ -8,6 +8,7 @@ import TopologyBlock from "../../../models/StoryEditor/Topology/TopologyBlock";
 import TopologyBlockInfo from "../../../models/StoryEditor/Topology/TopologyBlockInfo";
 import { checkCurrentLanguage } from "../../../utils/checkCurrentLanguage";
 import { validateMongoId } from "../../../utils/validateMongoId";
+import mongoose from "mongoose";
 
 type GetAllSeasonsByLanguageTypes = {
   currentLanguage?: string;
@@ -35,26 +36,29 @@ export const getAllSeasonsTranslationsByStoryIdAndLanguageService = async ({
   return existingSeasons;
 };
 
-type GetSeasonsByTypeSearchId = {
+type GetSeasonsSearchId = {
   storyId?: string;
   text?: string;
   currentLanguage?: string;
 };
 
-export const getAllSeasonsTranslationsByTypeAndSearchService = async ({
+export const getAllSeasonsTranslationsAndSearchService = async ({
   storyId,
   text,
   currentLanguage,
-}: GetSeasonsByTypeSearchId) => {
+}: GetSeasonsSearchId) => {
   validateMongoId({ value: storyId, valueName: "Story" });
   if (!currentLanguage?.trim().length) {
     throw createHttpError(400, "CurrentLanguage is required");
   }
 
-  const query: { storyId?: string; language: string } = {
+  const query: { storyId?: mongoose.Types.ObjectId; language: string } = {
     language: currentLanguage,
-    storyId: storyId || "",
   };
+
+  if (storyId) {
+    query.storyId = new mongoose.Types.ObjectId(storyId);
+  }
 
   const existingSeasons = await TranslationSeason.find(query).exec();
 
@@ -156,7 +160,7 @@ export const seasonTranslationUpdateService = async ({
   validateMongoId({ value: seasonId, valueName: "Season" });
   if (
     !text?.trim().length ||
-    textFieldName?.trim().length ||
+    !textFieldName?.trim().length ||
     !currentLanguage?.trim().length
   ) {
     throw createHttpError(

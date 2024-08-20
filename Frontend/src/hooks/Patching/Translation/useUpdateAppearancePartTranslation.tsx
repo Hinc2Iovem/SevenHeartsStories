@@ -5,6 +5,7 @@ import { TranslationTextFieldNameAppearancePartsTypes } from "../../../types/Add
 
 type UpdateCharacterTranslationTypes = {
   appearancePartId: string;
+  characterId: string;
   language: CurrentlyAvailableLanguagesTypes;
 };
 
@@ -15,6 +16,7 @@ type UpdateCharacterTranslationOnMutationTypes = {
 
 export default function useUpdateAppearancePartTranslation({
   appearancePartId,
+  characterId,
   language,
 }: UpdateCharacterTranslationTypes) {
   return useMutation({
@@ -23,11 +25,11 @@ export default function useUpdateAppearancePartTranslation({
       appearancePartType,
     }: UpdateCharacterTranslationOnMutationTypes) =>
       await axiosCustomized.patch(
-        `/translations/appearanceParts/${appearancePartId}`,
+        `/appearanceParts/${appearancePartId}/characters/${characterId}/translations`,
         {
           currentLanguage: language,
-          appearancePartName,
-          appearancePartType,
+          text: appearancePartName,
+          textFieldName: appearancePartType,
         }
       ),
   });

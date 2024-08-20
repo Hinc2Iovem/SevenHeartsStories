@@ -1,7 +1,8 @@
 import express from "express";
 import {
-  getAllStoriesTranslationsByTypeAndSearchController,
+  getAllAssignedStoriesTranslationsByLanguageAndStaffIdController,
   getAllStoriesTranslationsByLanguageController,
+  getAllStoriesTranslationsByTypeAndSearchController,
   storyCreateController,
   storyGetByIdController,
   storyTranslationUpdateController,
@@ -25,3 +26,10 @@ storyTranslationRoute
 storyTranslationRoute
   .route("/storyStatus/search/translations")
   .get(verifyJWT, getAllStoriesTranslationsByTypeAndSearchController);
+
+storyTranslationRoute
+  .route("/staff/:staffId/search/translations")
+  .get(
+    verifyJWT,
+    getAllAssignedStoriesTranslationsByLanguageAndStaffIdController
+  );

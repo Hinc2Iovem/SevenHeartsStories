@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import useUpdateGetItemTranslation from "../../../../../../hooks/Patching/Translation/useUpdateGetItemTranslation";
+import useUpdateGetItemTranslation from "../../../../../../hooks/Patching/Translation/PlotfieldCoomands/useUpdateGetItemTranslation";
 import useDebounce from "../../../../../../hooks/utilities/useDebounce";
 import useGetSingleGetItemTranslation from "../hooks/GetItem/useGetSingleGetItemTranslation";
 import { TranslationTextFieldName } from "../../../../../../const/TRANSLATION_TEXT_FIELD_NAMES";

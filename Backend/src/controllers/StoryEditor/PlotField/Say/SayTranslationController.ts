@@ -74,7 +74,6 @@ type CreateSayParams = {
 
 type CreateSayBody = {
   characterId: string;
-  characterEmotionId: string;
   type?: SayType | undefined;
 };
 
@@ -90,7 +89,6 @@ export const createSayTranslationController: RequestHandler<
     const say = await createSayTranslationService({
       plotFieldCommandId: req.params.plotFieldCommandId,
       topologyBlockId: req.params.topologyBlockId,
-      characterEmotionId: req.body.characterEmotionId,
       characterId: req.body.characterId,
       type: req.body.type,
     });

@@ -17,15 +17,15 @@ export default function useCreateCharacteristic({
   return useMutation({
     mutationFn: async () =>
       await axiosCustomized.post(
-        `/characterCharacteristics/stories/${storyId}`,
+        `/characteristics/stories/${storyId}/translations`,
         {
-          characteristicName,
+          text: characteristicName,
           currentLanguage: language,
         }
       ),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["characteristics", "stories", storyId],
+        queryKey: ["translation", language, "story", storyId, "characteristic"],
         exact: true,
         type: "active",
       });

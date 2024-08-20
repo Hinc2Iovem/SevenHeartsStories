@@ -1,10 +1,10 @@
 import { useMemo, useState } from "react";
-import useGetTranslationCharacteristicsQueries from "../../../../../hooks/Fetching/Translation/Characteristic/useGetTranslationCharacteristicsQueries";
+import useGetAllCharacteristicsByStoryId from "../../../../../hooks/Fetching/Translation/Characteristic/useGetAllCharacteristicsByStoryId";
 import { CurrentlyAvailableLanguagesTypes } from "../../../../../types/Additional/CURRENTLY_AVAILABEL_LANGUAGES";
 import { TranslationCharacterCharacteristicTypes } from "../../../../../types/Additional/TranslationTypes";
-import DisplayTranslatedNonTranslatedCharacteristic from "../Display/Characteristic/DisplayTranslatedNonTranslatedCharacteristic";
 import StoryPrompt from "../../InputPrompts/StoryPrompt";
-import useInvalidateTranslatorQueries from "../../../../../hooks/helpers/Profile/Translator/useInvalidateTranslatorQueries";
+import DisplayTranslatedNonTranslatedCharacteristic from "../Display/Characteristic/DisplayTranslatedNonTranslatedCharacteristic";
+import useInvalidateTranslatorCharacteristicQueries from "../../../../../hooks/helpers/Profile/Translator/useInvalidateTranslatorCharacteristicQueries";
 
 type FiltersEverythingCharacterForCharacteristicTypes = {
   translateFromLanguage: CurrentlyAvailableLanguagesTypes;
@@ -14,8 +14,8 @@ type FiltersEverythingCharacterForCharacteristicTypes = {
 };
 
 export type CombinedTranslatedAndNonTranslatedCharacteristicTypes = {
-  translated: TranslationCharacterCharacteristicTypes[];
-  nonTranslated: TranslationCharacterCharacteristicTypes[] | null;
+  translated: TranslationCharacterCharacteristicTypes | null;
+  nonTranslated: TranslationCharacterCharacteristicTypes | null;
 };
 
 export default function FiltersEverythingCharacterForCharacteristic({
@@ -24,77 +24,69 @@ export default function FiltersEverythingCharacterForCharacteristic({
   prevTranslateFromLanguage,
   prevTranslateToLanguage,
 }: FiltersEverythingCharacterForCharacteristicTypes) {
-  useInvalidateTranslatorQueries({
-    prevTranslateFromLanguage,
-    prevTranslateToLanguage,
-    queryKey: "characteristic",
-    translateToLanguage,
-  });
   const [storyId, setStoryId] = useState("");
 
-  const translatedCharacteristic = useGetTranslationCharacteristicsQueries({
+  useInvalidateTranslatorCharacteristicQueries({
+    prevTranslateFromLanguage,
+    prevTranslateToLanguage,
+    translateToLanguage,
     storyId,
-    language: translateFromLanguage,
   });
 
-  const nonTranslatedCharacteristic = useGetTranslationCharacteristicsQueries({
-    storyId,
-    language: translateToLanguage,
-  });
+  const { data: translatedCharacteristics } = useGetAllCharacteristicsByStoryId(
+    {
+      storyId,
+      language: translateFromLanguage,
+    }
+  );
+  const { data: nonTranslatedCharacteristics } =
+    useGetAllCharacteristicsByStoryId({
+      storyId,
+      language: translateToLanguage,
+    });
 
   const memoizedCombinedTranslations = useMemo(() => {
-    if (
-      translatedCharacteristic.length > 0 &&
-      nonTranslatedCharacteristic.length > 0
-    ) {
-      const arrayOfCharacteristic =
-        [] as CombinedTranslatedAndNonTranslatedCharacteristicTypes[];
-      const groupedCharacteristic: Record<
-        string,
-        CombinedTranslatedAndNonTranslatedCharacteristicTypes
-      > = {};
+    const combinedArray: CombinedTranslatedAndNonTranslatedCharacteristicTypes[] =
+      [];
+    const characteristicMap: {
+      [key: string]: CombinedTranslatedAndNonTranslatedCharacteristicTypes;
+    } = {};
 
-      translatedCharacteristic.forEach((tc) => {
-        tc.data?.forEach((tcd) => {
-          const characterCharacteristicId = tcd.characterCharacteristicId;
-          if (!groupedCharacteristic[characterCharacteristicId]) {
-            groupedCharacteristic[characterCharacteristicId] = {
-              translated: [],
-              nonTranslated: null,
-            };
-          }
-          groupedCharacteristic[characterCharacteristicId].translated.push(tcd);
-        });
-      });
+    translatedCharacteristics?.forEach((tc) => {
+      const characteristicId = tc.characteristicId;
+      if (!characteristicMap[characteristicId]) {
+        characteristicMap[characteristicId] = {
+          translated: tc,
+          nonTranslated: null,
+        };
+      } else {
+        characteristicMap[characteristicId].translated = tc;
+      }
+    });
 
-      nonTranslatedCharacteristic.forEach((ntc) => {
-        ntc.data?.forEach((ntcd) => {
-          const characterCharacteristicId = ntcd.characterCharacteristicId;
-          if (!groupedCharacteristic[characterCharacteristicId]) {
-            groupedCharacteristic[characterCharacteristicId] = {
-              translated: [],
-              nonTranslated: null,
-            };
-          }
-          if (!groupedCharacteristic[characterCharacteristicId].nonTranslated) {
-            groupedCharacteristic[characterCharacteristicId].nonTranslated = [];
-          }
-          groupedCharacteristic[characterCharacteristicId].nonTranslated.push(
-            ntcd
-          );
-        });
-      });
+    nonTranslatedCharacteristics?.forEach((ntc) => {
+      const characteristicId = ntc.characteristicId;
+      if (!characteristicMap[characteristicId]) {
+        characteristicMap[characteristicId] = {
+          translated: null,
+          nonTranslated: ntc,
+        };
+      } else {
+        characteristicMap[characteristicId].nonTranslated = ntc;
+      }
+    });
 
-      Object.values(groupedCharacteristic).forEach((group) =>
-        arrayOfCharacteristic.push(group)
-      );
+    Object.values(characteristicMap).forEach((entry) => {
+      combinedArray.push(entry);
+    });
 
-      return arrayOfCharacteristic.filter(
-        (group) => group.translated.length > 0
-      );
-    }
-    return [];
-  }, [translatedCharacteristic, nonTranslatedCharacteristic]);
+    return combinedArray;
+  }, [translatedCharacteristics, nonTranslatedCharacteristics]);
+
+  console.log("trans: ", translatedCharacteristics);
+  console.log("nonTrans: ", nonTranslatedCharacteristics);
+
+  console.log(memoizedCombinedTranslations);
 
   return (
     <>
@@ -104,17 +96,15 @@ export default function FiltersEverythingCharacterForCharacteristic({
       <main
         className={`grid grid-cols-[repeat(auto-fill,minmax(25rem,1fr))] gap-[1rem] w-full`}
       >
-        {memoizedCombinedTranslations.map((ct) => {
-          return ct.translated.map((ctt, i) => (
-            <DisplayTranslatedNonTranslatedCharacteristic
-              key={(ctt._id || i) + "-ctCharacteristic"}
-              languageToTranslate={translateToLanguage}
-              translated={ctt}
-              nonTranslated={(ct?.nonTranslated || [])[i]}
-              translateFromLanguage={translateFromLanguage}
-            />
-          ));
-        })}
+        {memoizedCombinedTranslations?.map((ct, i) => (
+          <DisplayTranslatedNonTranslatedCharacteristic
+            key={(ct?.translated?._id || i) + "-ctCharacteristic"}
+            languageToTranslate={translateToLanguage}
+            translateFromLanguage={translateFromLanguage}
+            storyId={storyId}
+            {...ct}
+          />
+        ))}
       </main>
     </>
   );

@@ -9,7 +9,7 @@ import {
 import { verifyHeadScriptwriter } from "../../../middlewares/verifyHeadScriptwriter";
 import { verifyJWT } from "../../../middlewares/verifyJWT";
 
-// Default route === /stories
+// Default route === /episodes
 export const episodeTranslationRoute = express.Router();
 
 episodeTranslationRoute

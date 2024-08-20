@@ -6,6 +6,8 @@ import SeasonPrompt from "../../InputPrompts/SeasonPrompt";
 import StoryPrompt from "../../InputPrompts/StoryPrompt";
 import TopologyBlockPrompt from "../../InputPrompts/TopologyBlockPrompt";
 import FiltersEverythingPlotGetItem from "./FiltersEverythingPlotGetItem";
+import FiltersEverythingPlotCommandWardrobe from "./FiltersEverythingPlotCommandWardrobe";
+import FiltersEverythingPlotChoice from "./FiltersEverythingPlotChoice";
 
 type FiltersEverythingPlotTypes = {
   translateFromLanguage: CurrentlyAvailableLanguagesTypes;
@@ -236,7 +238,21 @@ export default function FiltersEverythingPlot({
             )}
           </div>
         ) : null} */}
+        <FiltersEverythingPlotCommandWardrobe
+          prevTranslateFromLanguage={prevTranslateFromLanguage}
+          prevTranslateToLanguage={prevTranslateToLanguage}
+          topologyBlockId={topologyBlockId}
+          translateFromLanguage={translateFromLanguage}
+          translateToLanguage={translateToLanguage}
+        />
         <FiltersEverythingPlotGetItem
+          prevTranslateFromLanguage={prevTranslateFromLanguage}
+          prevTranslateToLanguage={prevTranslateToLanguage}
+          topologyBlockId={topologyBlockId}
+          translateFromLanguage={translateFromLanguage}
+          translateToLanguage={translateToLanguage}
+        />
+        <FiltersEverythingPlotChoice
           prevTranslateFromLanguage={prevTranslateFromLanguage}
           prevTranslateToLanguage={prevTranslateToLanguage}
           topologyBlockId={topologyBlockId}

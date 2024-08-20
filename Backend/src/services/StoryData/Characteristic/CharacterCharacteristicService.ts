@@ -1,9 +1,9 @@
 import createHttpError from "http-errors";
-import { TranslationTextFieldName } from "../../consts/TRANSLATION_TEXT_FIELD_NAMES";
-import CharacterCharacteristic from "../../models/StoryData/CharacterCharacteristic";
-import Translation from "../../models/StoryData/Translation/Translation";
-import { checkCurrentLanguage } from "../../utils/checkCurrentLanguage";
-import { validateMongoId } from "../../utils/validateMongoId";
+import { TranslationTextFieldName } from "../../../consts/TRANSLATION_TEXT_FIELD_NAMES";
+import CharacterCharacteristic from "../../../models/StoryData/CharacterCharacteristic";
+import Translation from "../../../models/StoryData/Translation/Translation";
+import { checkCurrentLanguage } from "../../../utils/checkCurrentLanguage";
+import { validateMongoId } from "../../../utils/validateMongoId";
 
 type CharacterCharacteristicGetByIdTypes = {
   characterCharacteristicId: string;

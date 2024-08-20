@@ -15,6 +15,8 @@ type ProfileRightSideItemTypes = {
   openedStoryId: string;
   setCharacterIds: React.Dispatch<React.SetStateAction<string[]>>;
   characterIds: string[];
+  setShowScriptwriters: React.Dispatch<React.SetStateAction<boolean>>;
+  showScriptwriters: boolean;
   assignedWorkers?:
     | {
         staffId: string;
@@ -36,12 +38,13 @@ export default function ProfileRightSideItem({
   storyStatus,
   title,
   imgUrl,
+  setShowScriptwriters,
+  showScriptwriters,
 }: ProfileRightSideItemTypes) {
   const { roles } = useGetDecodedJWTValues();
   const [imagePreview, setPreview] = useState<string | ArrayBuffer | null>(
     null
   );
-
   const uploadImgMutation = useUpdateImg({
     id: storyId,
     path: "/stories",
@@ -55,8 +58,8 @@ export default function ProfileRightSideItem({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [imagePreview]);
   return (
-    <article className="w-full h-[24rem] rounded-md shadow-md shadow-gray-400 relative">
-      <div className="relative border-[3px] w-full h-[20rem] border-white bg-white">
+    <article className="w-full h-[26rem] bg-white rounded-md shadow-sm relative flex flex-col justify-between">
+      <div className="relative border-[3px] w-full max-h-[23rem] h-full border-white bg-white">
         {imgUrl ? (
           <img
             src={imgUrl}
@@ -99,16 +102,16 @@ export default function ProfileRightSideItem({
           setCharacterIds={setCharacterIds}
           characterIds={characterIds}
           assignedWorkers={assignedWorkers}
+          setShowScriptwriters={setShowScriptwriters}
+          showScriptwriters={showScriptwriters}
         />
       ) : null}
-      <div className="bg-white w-full p-[1rem] rounded-b-md shadow-md shadow-gray-400">
-        <Link
-          to={`/stories/${storyId}`}
-          className="text-[1.5rem] hover:text-gray-600 transition-all"
-        >
-          {title.length > 25 ? title.substring(0, 25) + "..." : title}
-        </Link>
-      </div>
+      <Link
+        to={`/stories/${storyId}`}
+        className="text-[1.5rem] hover:text-gray-600 transition-all bg-white w-full p-[1rem] rounded-b-md"
+      >
+        {title.length > 25 ? title.substring(0, 25) + "..." : title}
+      </Link>
     </article>
   );
 }

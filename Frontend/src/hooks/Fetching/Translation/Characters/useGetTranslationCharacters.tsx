@@ -8,7 +8,7 @@ export default function useGetTranslationCharacters({
   language,
 }: {
   storyId: string;
-  language?: CurrentlyAvailableLanguagesTypes;
+  language: CurrentlyAvailableLanguagesTypes;
 }) {
   return useQuery({
     queryKey: ["translation", language, "character", "story", storyId],

@@ -64,7 +64,6 @@ export const getAllSayTranslationByTopologyBlockIdService = async ({
 
 type CreateSayTypes = {
   characterId: string;
-  characterEmotionId: string;
   type: SayType | undefined;
   plotFieldCommandId: string;
   topologyBlockId: string;
@@ -73,7 +72,6 @@ type CreateSayTypes = {
 const AllPossibleTypeVariations = ["author", "character", "hint", "notify"];
 
 export const createSayTranslationService = async ({
-  characterEmotionId,
   characterId,
   type,
   plotFieldCommandId,
@@ -112,10 +110,7 @@ export const createSayTranslationService = async ({
     return await Say.create({ plotFieldCommandId, type: "author" });
   } else if (type?.toLowerCase() === "character") {
     validateMongoId({ value: characterId, valueName: "Character" });
-    validateMongoId({
-      value: characterEmotionId,
-      valueName: "CharacterEmotion",
-    });
+
     await TranslationSay.create({
       commandId: plotFieldCommandId,
       topologyBlockId,
@@ -124,7 +119,6 @@ export const createSayTranslationService = async ({
     });
     return await Say.create({
       characterId,
-      characterEmotionId,
       plotFieldCommandId,
       type: "character",
     });

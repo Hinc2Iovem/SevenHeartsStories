@@ -3,15 +3,17 @@ import { axiosCustomized } from "../../../../../../../api/axios";
 
 type CreateWardrobeTypes = {
   plotFieldCommandId: string;
+  topologyBlockId: string;
 };
 
 export default function useCreateWardrobe({
   plotFieldCommandId,
+  topologyBlockId,
 }: CreateWardrobeTypes) {
   return useMutation({
     mutationFn: async () =>
       await axiosCustomized.post(
-        `/plotFieldCommands/${plotFieldCommandId}/wardrobes`
+        `/commandWardrobes/${plotFieldCommandId}/topologyBlocks/${topologyBlockId}/translations`
       ),
   });
 }

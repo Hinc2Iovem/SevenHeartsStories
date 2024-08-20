@@ -3,7 +3,6 @@ import useGetTranslationCharacters from "../../../../../hooks/Fetching/Translati
 import useInvalidateTranslatorCharacterQueries from "../../../../../hooks/helpers/Profile/Translator/useInvalidateTranslatorCharacterQueries";
 import { CurrentlyAvailableLanguagesTypes } from "../../../../../types/Additional/CURRENTLY_AVAILABEL_LANGUAGES";
 import { TranslationCharacterTypes } from "../../../../../types/Additional/TranslationTypes";
-import CharacterPrompt from "../../InputPrompts/CharacterPrompt";
 import StoryPrompt from "../../InputPrompts/StoryPrompt";
 import CharacterTypesDropDown from "../Display/Character/CharacterTypesDropDown";
 import DisplayTranslatedNonTranslatedCharacter from "../Display/Character/DisplayTranslatedNonTranslatedCharacter";
@@ -27,7 +26,6 @@ export default function FiltersEverythingCharacterForCharacter({
   prevTranslateToLanguage,
 }: FiltersEverythingCharacterForCharacterTypes) {
   const [storyId, setStoryId] = useState("");
-  const [characterId, setCharacterId] = useState("");
   const [characterType, setCharacterType] = useState("");
 
   useInvalidateTranslatorCharacterQueries({
@@ -89,7 +87,6 @@ export default function FiltersEverythingCharacterForCharacter({
     <>
       <div className="flex w-full gap-[1rem] bg-neutral-alabaster px-[.5rem] py-[.5rem] rounded-md shadow-sm">
         <StoryPrompt setStoryId={setStoryId} />
-        <CharacterPrompt setCharacterId={setCharacterId} storyId={storyId} />
         <CharacterTypesDropDown
           setCharacterType={setCharacterType}
           characterType={characterType}
@@ -108,7 +105,6 @@ export default function FiltersEverythingCharacterForCharacter({
             <DisplayTranslatedNonTranslatedCharacter
               key={(ct?.translated?._id || i) + "-ct"}
               characterTypeFilter={characterType}
-              characterIdFilter={characterId}
               translateFromLanguage={translateFromLanguage}
               languageToTranslate={translateToLanguage}
               {...ct}

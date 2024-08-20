@@ -1,9 +1,9 @@
-import { useEffect, useState } from "react";
+import { useRef, useState } from "react";
 import { useParams } from "react-router-dom";
-import useGetAllCharactersByStoryId from "../../../hooks/Fetching/Character/useGetAllCharactersByStoryId";
+import useGetCharacterById from "../../../hooks/Fetching/Character/useGetCharacterById";
 import useGetTranslationCharacters from "../../../hooks/Fetching/Translation/Characters/useGetTranslationCharacters";
-import useEscapeOfModal from "../../../hooks/UI/useEscapeOfModal";
-import { CharacterGetTypes } from "../../../types/StoryData/Character/CharacterTypes";
+import useOutOfModal from "../../../hooks/UI/useOutOfModal";
+import { TranslationCharacterTypes } from "../../../types/Additional/TranslationTypes";
 
 type WardrobeHeaderChooseCharacterTypes = {
   setCharacterId: React.Dispatch<React.SetStateAction<string>>;
@@ -22,19 +22,24 @@ export default function WardrobeHeaderChooseCharacter({
 }: WardrobeHeaderChooseCharacterTypes) {
   const { storyId } = useParams();
   const [characterName, setCharacterName] = useState("");
+  const modalRef = useRef<HTMLDivElement>(null);
 
-  useEscapeOfModal({
-    setValue: setShowCharacterModal,
-    value: showCharacterModal,
-  });
-
-  const { data: characters } = useGetAllCharactersByStoryId({
+  const { data: characters } = useGetTranslationCharacters({
     storyId: storyId ?? "",
+    language: "russian",
   });
+
+  useOutOfModal({
+    modalRef,
+    setShowModal: setShowCharacterModal,
+    showModal: showCharacterModal,
+  });
+
   return (
     <div className="flex flex-col gap-[.5rem] relative min-w-[20rem]">
       <button
-        onClick={() => {
+        onClick={(e) => {
+          e.stopPropagation();
           setShowBodyTypeModal(false);
           setShowModal(false);
           setShowCharacterModal(true);
@@ -51,6 +56,7 @@ export default function WardrobeHeaderChooseCharacter({
         {characterName}
       </p>
       <aside
+        ref={modalRef}
         id="scrollBar"
         className={`${
           showCharacterModal ? "" : "hidden"
@@ -75,50 +81,43 @@ type WardrobeHeaderChooseCharacterItemTypes = {
   setCharacterName: React.Dispatch<React.SetStateAction<string>>;
   setCharacterId: React.Dispatch<React.SetStateAction<string>>;
   setShowCharacterModal: React.Dispatch<React.SetStateAction<boolean>>;
-} & CharacterGetTypes;
+} & TranslationCharacterTypes;
 
 function WardrobeHeaderChooseCharacterItem({
-  _id,
-  img,
   setCharacterId,
   setCharacterName,
   setShowCharacterModal,
+  characterId,
+  translations,
 }: WardrobeHeaderChooseCharacterItemTypes) {
-  const { data: translationCharacter } = useGetTranslationCharacters({
-    characterId: _id,
-  });
-
-  const [currentCharacterName, setCurrentCharacterName] = useState("");
-
-  useEffect(() => {
-    if (translationCharacter) {
-      translationCharacter.map((tc) => {
-        if (tc.textFieldName === "characterName") {
-          setCurrentCharacterName(tc.text);
-        }
-      });
-    }
-  }, [translationCharacter]);
+  const { data: character } = useGetCharacterById({ characterId });
+  const [currentCharacterName] = useState(
+    translations?.find((t) => t.textFieldName === "characterName")?.text || ""
+  );
 
   return (
     <>
-      {img ? (
+      {character?.img ? (
         <button
           onClick={() => {
             setCharacterName(currentCharacterName);
-            setCharacterId(_id);
+            setCharacterId(characterId);
             setShowCharacterModal(false);
           }}
           className="rounded-md flex px-[.5rem] py-[.2rem] items-center justify-between hover:bg-primary-light-blue hover:text-white transition-all "
         >
           <p className="text-[1.3rem] rounded-md">{currentCharacterName}</p>
-          <img src={img} alt="CharacterImg" className="w-[3rem] rounded-md" />
+          <img
+            src={character?.img}
+            alt="CharacterImg"
+            className="w-[3rem] rounded-md"
+          />
         </button>
       ) : (
         <button
           onClick={() => {
             setCharacterName(currentCharacterName);
-            setCharacterId(_id);
+            setCharacterId(characterId);
             setShowCharacterModal(false);
           }}
           className="text-start text-[1.3rem] px-[.5rem] py-[.2rem] hover:bg-primary-light-blue hover:text-white transition-all rounded-md"

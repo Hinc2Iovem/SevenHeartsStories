@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import useGetSingleStory from "../../../hooks/Fetching/Story/useGetSingleStory";
 import { StoryFilterTypes } from "../../Story/Story";
 import ProfileRightSideItem from "./ProfileRightSideItem";
+import { TranslationStoryTypes } from "../../../types/Additional/TranslationTypes";
 
 type ProfileRightSideBySearchItemTypes = {
   storiesType: StoryFilterTypes;
@@ -10,8 +11,7 @@ type ProfileRightSideBySearchItemTypes = {
   openedStoryId: string;
   setCharacterIds: React.Dispatch<React.SetStateAction<string[]>>;
   characterIds: string[];
-  title: string;
-};
+} & TranslationStoryTypes;
 
 export default function ProfileRightSideBySearchItem({
   characterIds,
@@ -20,9 +20,13 @@ export default function ProfileRightSideBySearchItem({
   setOpenedStoryId,
   storiesType,
   storyId,
-  title,
+  translations,
 }: ProfileRightSideBySearchItemTypes) {
   const { data: story } = useGetSingleStory({ storyId });
+  const [showScriptwriters, setShowScriptwriters] = useState(false);
+  const [storyTitle] = useState(
+    translations.find((t) => t.textFieldName === "storyName")?.text || ""
+  );
   const [imgUrl, setImgUrl] = useState("");
 
   useEffect(() => {
@@ -39,9 +43,11 @@ export default function ProfileRightSideBySearchItem({
       setOpenedStoryId={setOpenedStoryId}
       storiesType={storiesType}
       storyId={storyId}
-      title={title}
+      title={storyTitle}
       assignedWorkers={story?.storyStaffInfo || []}
       storyStatus={story?.storyStatus}
+      showScriptwriters={showScriptwriters}
+      setShowScriptwriters={setShowScriptwriters}
     />
   );
 }

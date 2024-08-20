@@ -1,9 +1,11 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { axiosCustomized } from "../../../api/axios";
+import { TranslationTextFieldName } from "../../../const/TRANSLATION_TEXT_FIELD_NAMES";
 import { CurrentlyAvailableLanguagesTypes } from "../../../types/Additional/CURRENTLY_AVAILABEL_LANGUAGES";
 
 type UpdateSeasonTranslationTypes = {
   seasonId: string;
+  storyId: string;
   language: CurrentlyAvailableLanguagesTypes;
 };
 
@@ -14,22 +16,17 @@ type UpdateSeasonTranslationOnMutationTypes = {
 export default function useUpdateSeasonTranslation({
   seasonId,
   language,
+  storyId,
 }: UpdateSeasonTranslationTypes) {
-  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async ({
       seasonName,
     }: UpdateSeasonTranslationOnMutationTypes) =>
-      await axiosCustomized.patch(`/translations/seasons/${seasonId}`, {
+      await axiosCustomized.patch(`/seasons/${seasonId}/translations`, {
         currentLanguage: language,
-        title: seasonName,
+        text: seasonName,
+        textFieldName: TranslationTextFieldName.SeasonName,
+        storyId,
       }),
-    onSettled: () => {
-      queryClient.invalidateQueries({
-        queryKey: ["translation", language, "season", seasonId],
-        exact: true,
-        type: "active",
-      });
-    },
   });
 }

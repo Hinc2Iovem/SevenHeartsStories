@@ -1,15 +1,3 @@
-import { useEffect, useRef, useState } from "react";
-import add from "../../assets/images/shared/add.png";
-import arrowDown from "../../assets/images/shared/arrowDown.png";
-import arrowUp from "../../assets/images/shared/arrowUp.png";
-import useGetEpisodesBySeasonId from "../../hooks/Fetching/Episode/useGetEpisodesBySeasonId";
-import useGetTranslationSeason from "../../hooks/Fetching/Translation/useGetTranslationSeason";
-import useUpdateEpisodeOrder from "../../hooks/Patching/Episode/useUpdateEpisodeOrder";
-import useCreateNewEpisode from "../../hooks/Posting/Episode/useCreateNewEpisode";
-import useOutOfModal from "../../hooks/UI/useOutOfModal";
-import { SeasonTypes } from "../../types/StoryData/Season/SeasonTypes";
-import ButtonHoverPromptModal from "../shared/ButtonAsideHoverPromptModal/ButtonHoverPromptModal";
-import EpisodeItem from "./EpisodeItem";
 import {
   DragDropContext,
   Draggable,
@@ -17,32 +5,49 @@ import {
   DroppableProvided,
   DropResult,
 } from "@hello-pangea/dnd";
+import { useEffect, useRef, useState } from "react";
+import add from "../../assets/images/shared/add.png";
+import arrowDown from "../../assets/images/shared/arrowDown.png";
+import arrowUp from "../../assets/images/shared/arrowUp.png";
+import useGetEpisodesBySeasonId from "../../hooks/Fetching/Episode/useGetEpisodesBySeasonId";
+import useUpdateEpisodeOrder from "../../hooks/Patching/Episode/useUpdateEpisodeOrder";
+import useCreateNewEpisode from "../../hooks/Posting/Episode/useCreateNewEpisode";
+import useOutOfModal from "../../hooks/UI/useOutOfModal";
+import { TranslationSeasonTypes } from "../../types/Additional/TranslationTypes";
+import ButtonHoverPromptModal from "../shared/ButtonAsideHoverPromptModal/ButtonHoverPromptModal";
+import EpisodeItem from "./EpisodeItem";
 
 type DisplaySeasonsTypes = {
   index: number;
-} & SeasonTypes;
+} & TranslationSeasonTypes;
 
-export default function DisplaySeasons({ _id, index }: DisplaySeasonsTypes) {
+export default function DisplaySeasons({
+  index,
+  seasonId,
+  translations,
+}: DisplaySeasonsTypes) {
   const [shrinkEpisodes, setShrinkEpisodes] = useState(false);
-  const { data } = useGetTranslationSeason({
-    seasonId: _id,
-    language: "russian",
+  const { data: fetchedEpisodes } = useGetEpisodesBySeasonId({
+    seasonId,
   });
-  const { data: episodeIds } = useGetEpisodesBySeasonId({ seasonId: _id });
+  const [seasonTitle] = useState(
+    translations.find((t) => t.textFieldName === "seasonName")?.text || ""
+  );
+
   const [description, setDescription] = useState("");
   const [title, setTitle] = useState("");
   const [showModal, setShowModal] = useState(false);
   const modalRef = useRef<HTMLDivElement | null>(null);
-  const [episodes, setEpisodes] = useState(episodeIds || []);
+  const [episodes, setEpisodes] = useState(fetchedEpisodes || []);
 
   useEffect(() => {
-    if (episodeIds) {
-      setEpisodes(episodeIds);
+    if (fetchedEpisodes) {
+      setEpisodes(fetchedEpisodes);
     }
-  }, [episodeIds]);
+  }, [fetchedEpisodes]);
   const createNewEpisode = useCreateNewEpisode({
     description,
-    seasonId: _id,
+    seasonId,
     title,
   });
   const updateEpisodeOrder = useUpdateEpisodeOrder();
@@ -78,7 +83,7 @@ export default function DisplaySeasons({ _id, index }: DisplaySeasonsTypes) {
       <div className="flex w-full justify-between items-center relative">
         <div className="bg-white p-[1rem] px-[2rem] rounded-md shadow-md relative">
           <h2 className="text-[2.5rem] text-gray-700">
-            {data?.text ?? `Сезон ${index}`}
+            {seasonTitle || `Сезон ${index}`}
           </h2>
           <button
             onClick={() => setShrinkEpisodes((prev) => !prev)}

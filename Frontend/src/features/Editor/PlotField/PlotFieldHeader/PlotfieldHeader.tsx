@@ -25,6 +25,7 @@ export default function PlotfieldHeader({
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [commandCreatedByKeyCombinationBlankCommand]);
+
   return (
     <header className="flex gap-[1rem]">
       <ButtonHoverPromptModal

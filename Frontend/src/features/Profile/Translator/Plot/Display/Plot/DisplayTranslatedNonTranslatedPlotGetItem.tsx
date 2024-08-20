@@ -1,24 +1,22 @@
 import { useEffect, useState } from "react";
 import { TranslationTextFieldName } from "../../../../../../const/TRANSLATION_TEXT_FIELD_NAMES";
-import useGetNonTranslatedSingleGetItem from "../../../../../../hooks/Fetching/Translation/PlotfieldCommands/GetItem/useGetNonTranslatedSingleGetItem";
-import useUpdateGetItemTranslation from "../../../../../../hooks/Patching/Translation/useUpdateGetItemTranslation";
+import useUpdateGetItemTranslation from "../../../../../../hooks/Patching/Translation/PlotfieldCoomands/useUpdateGetItemTranslation";
 import useDebounce from "../../../../../../hooks/utilities/useDebounce";
 import { CurrentlyAvailableLanguagesTypes } from "../../../../../../types/Additional/CURRENTLY_AVAILABEL_LANGUAGES";
 import { TranslationTextFieldNameGetItemTypes } from "../../../../../../types/Additional/TRANSLATION_TEXT_FIELD_NAMES";
-import { TranslationGetItemTypes } from "../../../../../../types/Additional/TranslationTypes";
 import "../../../../../Editor/Flowchart/FlowchartStyles.css";
+import { CombinedTranslatedAndNonTranslatedGetItemTypes } from "../../Filters/FiltersEverythingPlotGetItem";
 
 type DisplayTranslatedNonTranslatedPlotGetItemTypes = {
   languageToTranslate: CurrentlyAvailableLanguagesTypes;
   translateFromLanguage: CurrentlyAvailableLanguagesTypes;
-} & TranslationGetItemTypes;
+} & CombinedTranslatedAndNonTranslatedGetItemTypes;
 
 export default function DisplayTranslatedNonTranslatedPlotGetItem({
-  translations,
   languageToTranslate,
   translateFromLanguage,
-  commandId,
-  topologyBlockId,
+  nonTranslated,
+  translated,
 }: DisplayTranslatedNonTranslatedPlotGetItemTypes) {
   const [itemId, setItemId] = useState("");
 
@@ -43,9 +41,9 @@ export default function DisplayTranslatedNonTranslatedPlotGetItem({
   const [buttonText, setButtonText] = useState("");
 
   useEffect(() => {
-    if (translations) {
-      setItemId(commandId);
-      translations.map((t) => {
+    if (translated) {
+      setItemId(translated.commandId);
+      translated.translations?.map((t) => {
         if (t.textFieldName === "itemName") {
           setTranslatedItemNameInitial(t.text);
           setTranslatedItemName(t.text);
@@ -58,12 +56,7 @@ export default function DisplayTranslatedNonTranslatedPlotGetItem({
         }
       });
     }
-  }, [translations, commandId]);
-
-  const { data: nonTranslated } = useGetNonTranslatedSingleGetItem({
-    commandId,
-    language: languageToTranslate,
-  });
+  }, [translated]);
 
   useEffect(() => {
     if (nonTranslated) {
@@ -105,7 +98,7 @@ export default function DisplayTranslatedNonTranslatedPlotGetItem({
   const updateCharacterTranslationTranslated = useUpdateGetItemTranslation({
     language: translateFromLanguage,
     commandId: itemId,
-    topologyBlockId,
+    topologyBlockId: translated?.topologyBlockId || "",
   });
 
   useEffect(() => {
@@ -166,7 +159,7 @@ export default function DisplayTranslatedNonTranslatedPlotGetItem({
   const updateCharacterTranslation = useUpdateGetItemTranslation({
     language: languageToTranslate,
     commandId: itemId,
-    topologyBlockId,
+    topologyBlockId: translated?.topologyBlockId || "",
   });
 
   useEffect(() => {

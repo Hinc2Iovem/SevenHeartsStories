@@ -81,6 +81,7 @@ export default function FlowchartTopologyBlock({
           <div
             onClick={(e) => {
               e.stopPropagation();
+              localStorage.setItem("topologyBlockId", _id);
               if (clicked) {
                 setShowAllTopologyBlocks(true);
                 setClicked(false);

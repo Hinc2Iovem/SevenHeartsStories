@@ -4,17 +4,22 @@ import { CommandSayVariationTypes } from "../../../../../../../types/StoryEditor
 
 type CreateSayCommandTypes = {
   plotFieldCommandId: string;
+  topologyBlockId: string;
+  characterId?: string;
 };
 
 export default function useCreateSayCommand({
   plotFieldCommandId,
+  topologyBlockId,
+  characterId,
 }: CreateSayCommandTypes) {
   return useMutation({
     mutationFn: async ({ type }: { type: CommandSayVariationTypes }) =>
       await axiosCustomized.post(
-        `/plotFieldCommands/${plotFieldCommandId}/say/characters/:characterId`,
+        `/says/${plotFieldCommandId}/topologyBlocks/${topologyBlockId}/translations`,
         {
           type,
+          characterId,
         }
       ),
   });

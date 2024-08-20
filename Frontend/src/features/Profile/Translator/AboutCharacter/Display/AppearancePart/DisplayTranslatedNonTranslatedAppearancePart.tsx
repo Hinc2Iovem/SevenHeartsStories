@@ -8,7 +8,7 @@ import { TranslationAppearancePartTypes } from "../../../../../../types/Addition
 type DisplayTranslatedNonTranslatedAppearancePartTypes = {
   languageToTranslate: CurrentlyAvailableLanguagesTypes;
   filteredAppearanceType: TranslationTextFieldNameAppearancePartsTypes;
-  translated: TranslationAppearancePartTypes;
+  translated: TranslationAppearancePartTypes | null;
   nonTranslated: TranslationAppearancePartTypes | null;
   translateFromLanguage: CurrentlyAvailableLanguagesTypes;
 };
@@ -21,27 +21,28 @@ export default function DisplayTranslatedNonTranslatedAppearancePart({
   translateFromLanguage,
 }: DisplayTranslatedNonTranslatedAppearancePartTypes) {
   const [translatedAppearancePart, setTranslatedAppearancePart] = useState("");
-
-  const [appearancePartTypeToRus, setAppearancePartTypeToRus] = useState("");
-
+  const [translatedBackUpAppearancePart, setTranslatedBackUpAppearancePart] =
+    useState("");
+  const [backUpAppearancePart, setBackUpAppearancePart] = useState("");
   const [appearancePart, setAppearancePart] = useState("");
-
+  const [appearancePartTypeToRus, setAppearancePartTypeToRus] = useState("");
   const [appearancePartId, setAppearancePartId] = useState("");
 
   useEffect(() => {
     if (translated) {
       setAppearancePartId(translated.appearancePartId);
-      setTranslatedAppearancePart(translated.text);
+      setTranslatedBackUpAppearancePart(translated.translations[0]?.text || "");
+      setTranslatedAppearancePart(translated.translations[0]?.text || "");
       const value =
-        translated.textFieldName === "accessory"
+        translated.type === "accessory"
           ? "украшение"
-          : translated.textFieldName === "art"
+          : translated.type === "art"
           ? "татуировка"
-          : translated.textFieldName === "body"
+          : translated.type === "body"
           ? "тело"
-          : translated.textFieldName === "dress"
+          : translated.type === "dress"
           ? "костюм"
-          : translated.textFieldName === "hair"
+          : translated.type === "hair"
           ? "волосы"
           : "кожа";
       setAppearancePartTypeToRus(value);
@@ -50,7 +51,8 @@ export default function DisplayTranslatedNonTranslatedAppearancePart({
 
   useEffect(() => {
     if (nonTranslated) {
-      setAppearancePart(nonTranslated.text);
+      setAppearancePart(nonTranslated.translations[0]?.text || "");
+      setBackUpAppearancePart(nonTranslated.translations[0]?.text || "");
     } else {
       setAppearancePart("");
     }
@@ -65,13 +67,19 @@ export default function DisplayTranslatedNonTranslatedAppearancePart({
     useUpdateAppearancePartTranslation({
       language: translateFromLanguage,
       appearancePartId,
+      characterId: translated?.characterId || "",
     });
 
   useEffect(() => {
-    if (debouncedTranslatedName?.trim().length) {
+    if (
+      translatedBackUpAppearancePart !== debouncedTranslatedName &&
+      debouncedTranslatedName?.trim().length
+    ) {
       updateCharacterTranslationTranslated.mutate({
         appearancePartName: debouncedTranslatedName,
-        appearancePartType: translated.textFieldName,
+        appearancePartType:
+          translated?.type ||
+          ("" as TranslationTextFieldNameAppearancePartsTypes),
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -85,13 +93,19 @@ export default function DisplayTranslatedNonTranslatedAppearancePart({
   const updateCharacterTranslation = useUpdateAppearancePartTranslation({
     language: languageToTranslate,
     appearancePartId,
+    characterId: translated?.characterId || "",
   });
 
   useEffect(() => {
-    if (debouncedName?.trim().length) {
+    if (
+      backUpAppearancePart !== debouncedTranslatedName &&
+      debouncedName?.trim().length
+    ) {
       updateCharacterTranslation.mutate({
         appearancePartName: debouncedName,
-        appearancePartType: translated.textFieldName,
+        appearancePartType:
+          translated?.type ||
+          ("" as TranslationTextFieldNameAppearancePartsTypes),
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -100,7 +114,8 @@ export default function DisplayTranslatedNonTranslatedAppearancePart({
   return (
     <>
       {filteredAppearanceType ? (
-        filteredAppearanceType === translated.textFieldName ? (
+        filteredAppearanceType === translated?.type ||
+        ("" as TranslationTextFieldNameAppearancePartsTypes) ? (
           <div
             className={`h-fit flex-col w-full flex gap-[.5rem] bg-primary-pastel-blue p-[.5rem] rounded-md`}
           >

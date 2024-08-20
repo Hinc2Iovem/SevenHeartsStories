@@ -13,12 +13,13 @@ export default function useGetTranslationEpisode({
   language = "russian",
 }: GetTranslationEpisodeTypes) {
   return useQuery({
-    queryKey: ["translation", "episode", episodeId],
+    queryKey: ["translation", language, "episode", episodeId],
     queryFn: async () =>
       await axiosCustomized
-        .get<TranslationEpisodeTypes[]>(
-          `/translations/episodes/${episodeId}?currentLanguage=${language}`
+        .get<TranslationEpisodeTypes>(
+          `/episodes/${episodeId}/translations?currentLanguage=${language}`
         )
         .then((r) => r.data),
+    enabled: !!episodeId,
   });
 }

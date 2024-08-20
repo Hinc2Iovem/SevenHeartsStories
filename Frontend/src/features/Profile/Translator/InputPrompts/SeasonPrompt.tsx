@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import useGetSeasonTranslationByTextFieldNameAndSearch from "../../../../hooks/Fetching/Season/useGetSeasonTranslationByTextFieldNameAndSearch";
+import useGetSeasonTranslationsByStoryIdAndSearch from "../../../../hooks/Fetching/Translation/Season/useGetSeasonTranslationsByStoryIdAndSearch";
 import useOutOfModal from "../../../../hooks/UI/useOutOfModal";
 import useDebounce from "../../../../hooks/utilities/useDebounce";
 
@@ -26,7 +26,7 @@ export default function SeasonPrompt({
   const debouncedValue = useDebounce({ value: seasonValue, delay: 500 });
 
   const { data: seasonsSearch, isLoading } =
-    useGetSeasonTranslationByTextFieldNameAndSearch({
+    useGetSeasonTranslationsByStoryIdAndSearch({
       debouncedValue,
       language: "russian",
       storyId,
@@ -35,7 +35,8 @@ export default function SeasonPrompt({
   useEffect(() => {
     if (debouncedValue?.trim().length) {
       setSeasonId(
-        seasonsSearch?.find((cs) => cs.text === debouncedValue)?.seasonId || ""
+        seasonsSearch?.find((cs) => cs.translations[0]?.text === debouncedValue)
+          ?.seasonId || ""
       );
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -47,6 +48,9 @@ export default function SeasonPrompt({
     }
   }, [showSeasons, seasonValue, seasonBackupValue]);
 
+  useEffect(() => {
+    setSeasonValue("");
+  }, [storyId]);
   return (
     <form
       className="bg-white rounded-md shadow-md relative"
@@ -58,7 +62,9 @@ export default function SeasonPrompt({
         placeholder="Название Сезона"
         onClick={(e) => {
           e.stopPropagation();
-          setSeasonBackupValue(seasonValue);
+          if (seasonValue?.trim().length) {
+            setSeasonBackupValue(seasonValue);
+          }
           setSeasonValue("");
           setShowSeasons(true);
         }}
@@ -83,12 +89,12 @@ export default function SeasonPrompt({
                 type="button"
                 onClick={() => {
                   setSeasonId(s.seasonId);
-                  setSeasonValue(s.text);
+                  setSeasonValue(s.translations[0]?.text || "");
                   setShowSeasons(false);
                 }}
                 className="text-[1.4rem] outline-gray-300 text-gray-600 text-start hover:bg-primary-pastel-blue hover:text-white rounded-md px-[1rem] py-[.5rem] hover:shadow-md"
               >
-                {s.text}
+                {s.translations[0]?.text || ""}
               </button>
             ))
           ) : (

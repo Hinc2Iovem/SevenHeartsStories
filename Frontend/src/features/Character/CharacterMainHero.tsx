@@ -74,12 +74,13 @@ export default function CharacterItemMainHero({
             </div>
           ) : (
             <PreviewImage
-              imgClasses="w-full h-full object-cover rounded-md absolute top-0 bottom-0 left-0 right-0 border-[2px] border-b-0 rounded-b-none border-white"
+              imgClasses="w-full h-full bg-neutral-alabaster object-cover rounded-md border-[2px] border-b-0 rounded-b-none border-white"
+              divClasses="bg-neutral-alabaster w-full h-full relative"
               imagePreview={imagePreview}
               setPreview={setPreview}
             />
           )}
-          <div className="w-full rounded-b-md bg-neutral-alabaster p-[1rem] absolute bottom-0 text-[1.5rem] shadow-sm border-t-[1px] border-gray-300 rounded-t-md shadow-gray-600">
+          <div className="w-full rounded-b-md bg-neutral-alabaster p-[1rem] text-[1.5rem] shadow-sm border-t-[1px] border-gray-300 rounded-t-md shadow-gray-600">
             {characterName.length > 30
               ? characterName.substring(0, 30) + "..."
               : characterName}

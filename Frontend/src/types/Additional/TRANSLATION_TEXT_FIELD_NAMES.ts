@@ -31,6 +31,15 @@ export type TranslationTextFieldNameGetItemTypes =
   | "itemDescription"
   | "itemName";
 
+export type TranslationTextFieldNameCommandWardrobeTypes =
+  "commandWardrobeTitle";
+
+export type TranslationTextFieldNameSayTypes = "sayText";
+
+export type TranslationTextFieldNameChoiceTypes = "choiceQuestion";
+
+export type TranslationTextFieldNameAchievementTypes = "achievementName";
+
 export type TranslationTextFieldNameCommandTypes =
   | "achievementName"
   | "choiceQuestion"

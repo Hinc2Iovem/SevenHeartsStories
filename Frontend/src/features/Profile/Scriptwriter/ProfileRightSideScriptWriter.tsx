@@ -1,8 +1,7 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import useGetDecodedJWTValues from "../../../hooks/Auth/useGetDecodedJWTValues";
-import useGetAssignedStoriesByStatus from "../../../hooks/Fetching/Staff/useGetAssignedStoriesByStatus";
-import useGetStoryTranslationByTextFieldName from "../../../hooks/Fetching/Story/useGetStoryTranslationByTextFieldName";
-import useGetStoryTranslationByTextFieldNameAndSearchAssigned from "../../../hooks/Fetching/Story/useGetStoryTranslationByTextFieldNameAndSearchAssigned";
+import useGetAllAssignedStoryTranslationsSearch from "../../../hooks/Fetching/Story/useGetAllAssignedStoryTranslationsSearch";
+import useGetAllStoryTranslationsSearch from "../../../hooks/Fetching/Story/useGetAllStoryTranslationsSearch";
 import { StoryFilterTypes } from "../../Story/Story";
 import ProfileRightSideBySearchItem from "./ProfileRightSideBySearchItem";
 
@@ -23,80 +22,65 @@ export default function ProfileRightSideScriptWriter({
     setOpenedStoryId("");
   }, [storiesType]);
 
-  const { data: allTranslatedStories } = useGetStoryTranslationByTextFieldName({
+  const { data: allTranslatedStories } = useGetAllStoryTranslationsSearch({
     language: "russian",
     storiesType,
+    debouncedValue: debouncedStory,
   });
-
-  const translatedMemoizedData = useMemo(() => {
-    let allData = allTranslatedStories;
-
-    if (debouncedStory) {
-      allData = allData?.filter((t) =>
-        t.text.toLowerCase().includes(debouncedStory.toLowerCase())
-      );
-    }
-
-    return allData;
-  }, [allTranslatedStories, debouncedStory]);
-
-  const { data: translatedStories } =
-    useGetStoryTranslationByTextFieldNameAndSearchAssigned({
-      debouncedValue: debouncedStory,
+  const { data: allAssignedTranslatedStories } =
+    useGetAllAssignedStoryTranslationsSearch({
       language: "russian",
+      storyStatus:
+        storiesType !== "all" && storiesType !== "allAssigned"
+          ? storiesType
+          : "",
+      debouncedValue: debouncedStory,
       staffId: staffId || "",
-      storiesType,
+      startFetching: storiesType === "all" ? false : true,
     });
 
-  console.log(debouncedStory);
-
-  const { data: assignedStories } = useGetAssignedStoriesByStatus({
-    staffId: staffId ?? "",
-    language: "russian",
-    storyStatus: storiesType,
-    text: debouncedStory,
-  });
+  console.log(allAssignedTranslatedStories);
 
   return (
     <div className="grid grid-cols-[repeat(auto-fill,minmax(20rem,1fr))] gap-[1rem] justify-items-center justify-center w-full">
-      {storiesType === "all" && translatedMemoizedData?.length
-        ? translatedMemoizedData.map((ts) => (
-            <ProfileRightSideBySearchItem
-              key={ts._id}
-              setOpenedStoryId={setOpenedStoryId}
-              openedStoryId={openedStoryId}
-              storiesType={storiesType}
-              storyId={ts.storyId}
-              characterIds={characterIds}
-              setCharacterIds={setCharacterIds}
-              title={ts.textFieldName === "storyName" ? ts.text : ""}
-            />
-          ))
-        : translatedStories?.length && storiesType === "allAssigned"
-        ? translatedStories.map((ts) => (
-            <ProfileRightSideBySearchItem
-              key={ts._id}
-              setOpenedStoryId={setOpenedStoryId}
-              openedStoryId={openedStoryId}
-              storiesType={storiesType}
-              storyId={ts.storyId}
-              characterIds={characterIds}
-              setCharacterIds={setCharacterIds}
-              title={ts.textFieldName === "storyName" ? ts.text : ""}
-            />
-          ))
-        : assignedStories?.map((st) => (
-            <ProfileRightSideBySearchItem
-              key={st._id}
-              setOpenedStoryId={setOpenedStoryId}
-              openedStoryId={openedStoryId}
-              storiesType={storiesType}
-              storyId={st.storyId}
-              characterIds={characterIds}
-              setCharacterIds={setCharacterIds}
-              title={st.textFieldName === "storyName" ? st.text : ""}
-            />
-          ))}
+      {
+        storiesType === "all" && allTranslatedStories?.length
+          ? allTranslatedStories.map((ts) => (
+              <ProfileRightSideBySearchItem
+                key={ts._id}
+                setOpenedStoryId={setOpenedStoryId}
+                openedStoryId={openedStoryId}
+                storiesType={storiesType}
+                characterIds={characterIds}
+                setCharacterIds={setCharacterIds}
+                {...ts}
+              />
+            ))
+          : allAssignedTranslatedStories?.length
+          ? allAssignedTranslatedStories.map((ts) => (
+              <ProfileRightSideBySearchItem
+                key={ts._id}
+                setOpenedStoryId={setOpenedStoryId}
+                openedStoryId={openedStoryId}
+                storiesType={storiesType}
+                characterIds={characterIds}
+                setCharacterIds={setCharacterIds}
+                {...ts}
+              />
+            ))
+          : null
+        // : assignedStories?.map((st) => (
+        //     <ProfileRightSideBySearchItem
+        //       key={st._id}
+        //       setOpenedStoryId={setOpenedStoryId}
+        //       openedStoryId={openedStoryId}
+        //       storiesType={storiesType}
+        //       storyId={st.storyId}
+        //       characterIds={characterIds}
+        //       setCharacterIds={setCharacterIds}
+        //       title={st.textFieldName === "storyName" ? st.text : ""}
+        //     />))
+      }
     </div>
   );
 }

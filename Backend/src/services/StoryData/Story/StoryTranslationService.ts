@@ -1,12 +1,76 @@
 import createHttpError from "http-errors";
 import { TranslationTextFieldName } from "../../../consts/TRANSLATION_TEXT_FIELD_NAMES";
-import { StoryStatusTypes } from "../../../controllers/StoryData/Story/StoryController";
 import Season from "../../../models/StoryData/Season";
 import Story from "../../../models/StoryData/Story";
 import Translation from "../../../models/StoryData/Translation/Translation";
+import TranslationStory from "../../../models/StoryData/Translation/TranslationStory";
 import { checkCurrentLanguage } from "../../../utils/checkCurrentLanguage";
 import { validateMongoId } from "../../../utils/validateMongoId";
-import TranslationStory from "../../../models/StoryData/Translation/TranslationStory";
+import mongoose from "mongoose";
+import TranslationSeason from "../../../models/StoryData/Translation/TranslationSeason";
+
+type GetAllAssignedStoriesByLanguageAndStaffIdTypes = {
+  currentLanguage?: string;
+  staffId: string;
+  storyStatus?: string;
+  text?: string;
+};
+
+export const getAllAssignedStoriesTranslationsByLanguageAndStaffIdService =
+  async ({
+    currentLanguage,
+    staffId,
+    storyStatus,
+    text,
+  }: GetAllAssignedStoriesByLanguageAndStaffIdTypes) => {
+    validateMongoId({ value: staffId, valueName: "Staff" });
+
+    if (!currentLanguage?.trim().length) {
+      throw createHttpError(400, "CurrentLanguage is required");
+    }
+    checkCurrentLanguage({ currentLanguage });
+
+    const allAssignedStories = await Story.find({
+      storyStaffInfo: {
+        $elemMatch: {
+          staffId,
+          ...(storyStatus?.trim().length && { storyStatus }),
+        },
+      },
+    });
+
+    if (!allAssignedStories.length) {
+      return [];
+    }
+
+    const allTranslatedAssignedStories = [];
+    for (const s of allAssignedStories) {
+      const translationQuery: {
+        language: string;
+        storyId: mongoose.Types.ObjectId;
+        "translations.0.text"?: { $regex: string; $options: string };
+      } = {
+        language: currentLanguage,
+        storyId: s._id as mongoose.Types.ObjectId,
+      };
+
+      if (text?.trim().length) {
+        translationQuery["translations.0.text"] = {
+          $regex: text,
+          $options: "i",
+        };
+      }
+
+      const existingStory = await TranslationStory.findOne(
+        translationQuery
+      ).lean();
+      if (existingStory) {
+        allTranslatedAssignedStories.push(existingStory);
+      }
+    }
+
+    return allTranslatedAssignedStories;
+  };
 
 type GetAllStoriesByLanguageTypes = {
   currentLanguage: string;
@@ -154,11 +218,18 @@ export const storyCreateService = async ({
     storyId: newStory._id,
   });
 
-  await Translation.create({
+  const seasonTranslations = [
+    {
+      text: "Сезон 1",
+      textFieldName: TranslationTextFieldName.SeasonName,
+    },
+  ];
+
+  await TranslationSeason.create({
     seasonId: newSeason._id,
+    storyId: newStory._id,
+    translations: seasonTranslations,
     language: "russian",
-    text: "Сезон 1",
-    textFieldName: TranslationTextFieldName.SeasonName,
   });
 
   return newStory;
@@ -180,7 +251,7 @@ export const storyTranslationUpdateService = async ({
   validateMongoId({ value: storyId, valueName: "Story" });
   if (
     !text?.trim().length ||
-    textFieldName?.trim().length ||
+    !textFieldName?.trim().length ||
     !currentLanguage?.trim().length
   ) {
     throw createHttpError(

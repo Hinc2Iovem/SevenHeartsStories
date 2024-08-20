@@ -1,41 +1,42 @@
 import { useEffect, useState } from "react";
-import { CurrentlyAvailableLanguagesTypes } from "../../../../../../types/Additional/CURRENTLY_AVAILABEL_LANGUAGES";
-import { ChoiceOptionTypes } from "../../../../../../types/StoryEditor/PlotField/Choice/ChoiceTypes";
-import useGetTranslationChoiceOption from "../../../../../../hooks/Fetching/Translation/PlotfieldCommands/useGetTranslationChoiceOption";
 import useDebounce from "../../../../../../hooks/utilities/useDebounce";
+import { CurrentlyAvailableLanguagesTypes } from "../../../../../../types/Additional/CURRENTLY_AVAILABEL_LANGUAGES";
+import { TranslationChoiceOptionTypes } from "../../../../../../types/Additional/TranslationTypes";
 import useUpdateChoiceOptionTranslationText from "../../../../../Editor/PlotField/PlotFieldMain/Commands/hooks/Choice/ChoiceOption/useUpdateChoiceOptionTranslationText";
+import { ChoiceOptionVariationsTypes } from "../../../../../../types/StoryEditor/PlotField/Choice/ChoiceTypes";
 
 type DisplayTranslatedNonTranslatedChoiceOptionTypes = {
-  language: CurrentlyAvailableLanguagesTypes;
-} & ChoiceOptionTypes;
+  currentLanguage: CurrentlyAvailableLanguagesTypes;
+  currentType?: ChoiceOptionVariationsTypes;
+  currentChoiceId?: string;
+} & TranslationChoiceOptionTypes;
 export default function DisplayTranslatedNonTranslatedChoiceOption({
-  _id,
-  language,
+  currentLanguage,
+  translations,
+  choiceOptionId,
+  plotFieldCommandChoiceId,
+  type,
+  currentType,
+  currentChoiceId,
 }: DisplayTranslatedNonTranslatedChoiceOptionTypes) {
-  const [optionText, setOptionText] = useState("");
-  const { data: option } = useGetTranslationChoiceOption({
-    optionId: _id,
-    language,
-  });
-
-  useEffect(() => {
-    if (option) {
-      setOptionText(option.text);
-    } else {
-      setOptionText("");
-    }
-  }, [option]);
+  const [initialOptionText] = useState(translations[0]?.text || "");
+  const [optionText, setOptionText] = useState(translations[0]?.text || "");
 
   const debouncedOption = useDebounce({ value: optionText, delay: 500 });
 
   const updateChoiceOption = useUpdateChoiceOptionTranslationText({
-    choiceOptionId: _id,
+    choiceOptionId,
     option: debouncedOption,
-    language,
+    language: currentLanguage,
+    type: type || currentType,
+    choiceId: plotFieldCommandChoiceId || currentChoiceId,
   });
 
   useEffect(() => {
-    if (debouncedOption?.trim().length) {
+    if (
+      initialOptionText !== debouncedOption &&
+      debouncedOption?.trim().length
+    ) {
       updateChoiceOption.mutate();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

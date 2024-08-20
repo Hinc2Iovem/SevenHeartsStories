@@ -8,6 +8,7 @@ import {
   AppearanceParts,
   AppearancePartsTypes,
 } from "../../../consts/APPEARANCE_PARTS";
+import { appearancePartTranslationUpdateNameTypeService } from "../../Additional/TranslationService";
 
 type AppearancePartByAppearancePartIdTypes = {
   appearancePartId: string;
@@ -56,11 +57,18 @@ export const getAllAppearancePartsTranslationByCharacterIdAndTypeService =
 
     checkCurrentLanguage({ currentLanguage });
 
-    const existingAppearanceParts = await TranslationAppearancePart.find({
+    const query: { characterId: string; language: string; type?: string } = {
       characterId,
       language: currentLanguage,
-      type,
-    }).lean();
+    };
+
+    if (type?.trim().length) {
+      query.type = type.toLowerCase();
+    }
+
+    const existingAppearanceParts = await TranslationAppearancePart.find(
+      query
+    ).lean();
 
     if (!existingAppearanceParts.length) {
       return [];
@@ -99,16 +107,21 @@ export const getAllAppearancePartsTranslationByCharacterIdService = async ({
 
 type CreateAppearancePartTypes = {
   characterId: string;
-  type: AppearancePartsTypes;
+  type?: AppearancePartsTypes;
+  appearancePartName?: string;
 };
 
 export const createAppearancePartTranslationService = async ({
   characterId,
   type,
+  appearancePartName,
 }: CreateAppearancePartTypes) => {
   validateMongoId({ value: characterId, valueName: "Character" });
+  if (!appearancePartName?.trim().length) {
+    throw createHttpError(400, "AppearancePartName is required");
+  }
 
-  if (!AppearanceParts.includes(type.toLowerCase())) {
+  if (!AppearanceParts.includes(type?.toLowerCase() || "")) {
     throw createHttpError(
       400,
       `Appearance part can be only of type ${AppearanceParts.map((ap) => ap)}`
@@ -117,12 +130,19 @@ export const createAppearancePartTranslationService = async ({
 
   const newAppearancePart = await AppearancePart.create({ characterId, type });
 
+  const translations = [
+    {
+      text: appearancePartName,
+      textFieldName: type,
+    },
+  ];
+
   return await TranslationAppearancePart.create({
     language: "russian",
     characterId,
     appearancePartId: newAppearancePart._id,
     type,
-    translations: [],
+    translations: translations,
   });
 };
 
@@ -168,6 +188,7 @@ export const appearancePartUpdateTranslationService = async ({
       appearancePartId,
       language: currentLanguage,
       characterId,
+      type: textFieldName,
       translations: [
         {
           text,

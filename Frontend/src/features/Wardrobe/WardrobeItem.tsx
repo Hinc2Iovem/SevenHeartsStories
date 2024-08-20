@@ -1,20 +1,23 @@
 import { useEffect, useState } from "react";
-import useGetTranslationAppearancePart from "../../hooks/Fetching/Translation/useGetTranslationAppearancePart";
 import useUpdateImg from "../../hooks/Patching/useUpdateImg";
-import { AppearancePartTypes } from "../../types/StoryData/AppearancePart/AppearancePartTypes";
+import { TranslationAppearancePartTypes } from "../../types/Additional/TranslationTypes";
 import PreviewImage from "../shared/utilities/PreviewImage";
+import useGetAppearancePartById from "../../hooks/Fetching/AppearancePart/useGetAppearancePartById";
 
-export default function WardrobeItem({ _id, img }: AppearancePartTypes) {
-  const { data: translationAppearancePart } = useGetTranslationAppearancePart({
-    appearancePartId: _id,
+export default function WardrobeItem({
+  appearancePartId,
+  translations,
+}: TranslationAppearancePartTypes) {
+  const { data: appearancePart } = useGetAppearancePartById({
+    appearancePartId,
   });
-
+  const [text] = useState(translations[0]?.text || "");
   const [imagePreview, setPreview] = useState<string | ArrayBuffer | null>(
     null
   );
 
   const updateImg = useUpdateImg({
-    id: _id,
+    id: appearancePartId,
     path: "/appearanceParts",
     preview: imagePreview,
   });
@@ -29,9 +32,9 @@ export default function WardrobeItem({ _id, img }: AppearancePartTypes) {
   return (
     <article className="w-full min-h-[20rem] h-full rounded-md shadow-md shadow-gray-400 bg-white">
       <div className="relative border-[3px] w-full h-[20rem] border-white">
-        {img ? (
+        {appearancePart?.img ? (
           <img
-            src={img}
+            src={appearancePart?.img}
             alt="StoryBg"
             className={`w-[10rem] left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 cursor-pointer absolute rounded-md`}
           />
@@ -45,7 +48,7 @@ export default function WardrobeItem({ _id, img }: AppearancePartTypes) {
       </div>
       <div className="bg-white w-full p-[1rem] rounded-b-md shadow-md shadow-gray-400">
         <p className="text-[1.5rem] hover:text-gray-600 transition-all">
-          {translationAppearancePart?.text}
+          {text}
         </p>
       </div>
     </article>

@@ -7,9 +7,9 @@ import useCheckKeysCombinationExpandPlotField from "../../hooks/helpers/useCheck
 import { TopologyBlockTypes } from "../../types/TopologyBlock/TopologyBlockTypes";
 import Flowchart from "./Flowchart/Flowchart";
 import FlowchartExpanded from "./Flowchart/FlowchartExpanded";
-import "./Flowchart/FlowchartStyles.css";
 import PlotField from "./PlotField/PlotField";
 import useCreateTopologyBlock from "./PlotField/PlotFieldMain/Commands/hooks/TopologyBlock/useCreateTopologyBlock";
+import "./Flowchart/FlowchartStyles.css";
 
 export default function EditorMain() {
   const { episodeId } = useParams();
@@ -29,6 +29,11 @@ export default function EditorMain() {
         )
         .then((r) => r.data),
   });
+
+  const [localTopologyBlockId] = useState(
+    localStorage.getItem("topologyBlockId")
+  );
+
   const [currentTopologyBlockId, setCurrentTopologyBlockId] = useState(
     firstTopologyBlock?._id ?? ""
   );
@@ -40,10 +45,12 @@ export default function EditorMain() {
   // };
 
   useEffect(() => {
-    if (firstTopologyBlock) {
+    if (localTopologyBlockId) {
+      setCurrentTopologyBlockId(localTopologyBlockId);
+    } else if (firstTopologyBlock) {
       setCurrentTopologyBlockId(firstTopologyBlock._id);
     }
-  }, [firstTopologyBlock]);
+  }, [firstTopologyBlock, localTopologyBlockId]);
 
   const createTopologyBlock = useCreateTopologyBlock({
     episodeId: episodeId ?? "",

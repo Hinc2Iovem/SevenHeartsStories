@@ -1,12 +1,12 @@
 import { useMemo, useState } from "react";
-import useGetTranslationAppearancePartsQueries from "../../../../../hooks/Fetching/Translation/AppearancePart/useGetTranslationAppearancePartsQueries";
+import useGetTranslationAppearanceParts from "../../../../../hooks/Fetching/Translation/AppearancePart/useGetTranslationAppearanceParts";
+import useInvalidateTranslatorAppearancePartsQueries from "../../../../../hooks/helpers/Profile/Translator/useInvalidateTranslatorAppearancePartsQueries";
 import { CurrentlyAvailableLanguagesTypes } from "../../../../../types/Additional/CURRENTLY_AVAILABEL_LANGUAGES";
 import { TranslationTextFieldNameAppearancePartsTypes } from "../../../../../types/Additional/TRANSLATION_TEXT_FIELD_NAMES";
 import { TranslationAppearancePartTypes } from "../../../../../types/Additional/TranslationTypes";
 import CharacterPrompt from "../../InputPrompts/CharacterPrompt";
 import AppearanceTypeDropDown from "../Display/AppearancePart/AppearanceTypeDropDown";
 import DisplayTranslatedNonTranslatedAppearancePart from "../Display/AppearancePart/DisplayTranslatedNonTranslatedAppearancePart";
-import useInvalidateTranslatorQueries from "../../../../../hooks/helpers/Profile/Translator/useInvalidateTranslatorQueries";
 
 type FiltersEverythingCharacterForAppearancePartTypes = {
   translateFromLanguage: CurrentlyAvailableLanguagesTypes;
@@ -16,8 +16,8 @@ type FiltersEverythingCharacterForAppearancePartTypes = {
 };
 
 export type CombinedTranslatedAndNonTranslatedAppearancePartTypes = {
-  translated: TranslationAppearancePartTypes[];
-  nonTranslated: TranslationAppearancePartTypes[] | null;
+  translated: TranslationAppearancePartTypes | null;
+  nonTranslated: TranslationAppearancePartTypes | null;
 };
 
 export default function FiltersEverythingCharacterForAppearancePart({
@@ -26,103 +26,92 @@ export default function FiltersEverythingCharacterForAppearancePart({
   prevTranslateFromLanguage,
   prevTranslateToLanguage,
 }: FiltersEverythingCharacterForAppearancePartTypes) {
-  useInvalidateTranslatorQueries({
-    prevTranslateFromLanguage,
-    prevTranslateToLanguage,
-    queryKey: "appearancePart",
-    translateToLanguage,
-  });
-
   const [characterId, setCharacterId] = useState("");
   const [appearanceType, setAppearanceType] = useState(
     "" as TranslationTextFieldNameAppearancePartsTypes
   );
 
-  const translatedAppearancePart = useGetTranslationAppearancePartsQueries({
+  useInvalidateTranslatorAppearancePartsQueries({
+    prevTranslateFromLanguage,
+    prevTranslateToLanguage,
+    translateToLanguage,
+    characterId,
+    type: appearanceType,
+  });
+
+  const { data: translatedAppearancePart } = useGetTranslationAppearanceParts({
     characterId,
     language: translateFromLanguage,
   });
 
-  const nonTranslatedAppearancePart = useGetTranslationAppearancePartsQueries({
-    characterId,
-    language: translateToLanguage,
-  });
+  const { data: nonTranslatedAppearancePart } =
+    useGetTranslationAppearanceParts({
+      characterId,
+      language: translateToLanguage,
+    });
 
   const memoizedCombinedTranslations = useMemo(() => {
-    if (
-      translatedAppearancePart.length > 0 &&
-      nonTranslatedAppearancePart.length > 0
-    ) {
-      const arrayOfAppearancePart =
-        [] as CombinedTranslatedAndNonTranslatedAppearancePartTypes[];
-      const groupedAppearancePart: Record<
-        string,
-        CombinedTranslatedAndNonTranslatedAppearancePartTypes
-      > = {};
+    const combinedArray: CombinedTranslatedAndNonTranslatedAppearancePartTypes[] =
+      [];
+    const appearancePartMap: {
+      [key: string]: CombinedTranslatedAndNonTranslatedAppearancePartTypes;
+    } = {};
 
-      translatedAppearancePart.forEach((tc) => {
-        if (tc.data) {
-          const appearancePartId = tc.data.appearancePartId;
-          if (!groupedAppearancePart[appearancePartId]) {
-            groupedAppearancePart[appearancePartId] = {
-              translated: [],
-              nonTranslated: null,
-            };
-          }
-          groupedAppearancePart[appearancePartId].translated.push(tc.data);
-        }
-      });
+    translatedAppearancePart?.forEach((tc) => {
+      const appearancePartId = tc.appearancePartId;
+      if (!appearancePartMap[appearancePartId]) {
+        appearancePartMap[appearancePartId] = {
+          translated: tc,
+          nonTranslated: null,
+        };
+      } else {
+        appearancePartMap[appearancePartId].translated = tc;
+      }
+    });
 
-      nonTranslatedAppearancePart.forEach((ntc) => {
-        if (ntc.data) {
-          const appearancePartId = ntc.data.appearancePartId;
-          if (!groupedAppearancePart[appearancePartId]) {
-            groupedAppearancePart[appearancePartId] = {
-              translated: [],
-              nonTranslated: null,
-            };
-          }
-          if (!groupedAppearancePart[appearancePartId].nonTranslated) {
-            groupedAppearancePart[appearancePartId].nonTranslated = [];
-          }
-          groupedAppearancePart[appearancePartId].nonTranslated.push(ntc.data);
-        }
-      });
+    nonTranslatedAppearancePart?.forEach((ntc) => {
+      const appearancePartId = ntc.appearancePartId;
+      if (!appearancePartMap[appearancePartId]) {
+        appearancePartMap[appearancePartId] = {
+          translated: null,
+          nonTranslated: ntc,
+        };
+      } else {
+        appearancePartMap[appearancePartId].nonTranslated = ntc;
+      }
+    });
 
-      Object.values(groupedAppearancePart).forEach((group) =>
-        arrayOfAppearancePart.push(group)
-      );
+    Object.values(appearancePartMap).forEach((entry) => {
+      combinedArray.push(entry);
+    });
 
-      return arrayOfAppearancePart.filter(
-        (group) => group.translated.length > 0
-      );
-    }
-    return [];
+    return combinedArray;
   }, [translatedAppearancePart, nonTranslatedAppearancePart]);
+
+  console.log(memoizedCombinedTranslations);
+  console.log("characterId: ", characterId);
 
   return (
     <>
       <div className="flex w-full gap-[1rem] bg-neutral-alabaster px-[.5rem] py-[.5rem] rounded-md shadow-sm">
-        <CharacterPrompt setCharacterId={setCharacterId} />
+        <CharacterPrompt
+          setCharacterId={setCharacterId}
+          characterId={characterId}
+        />
         <AppearanceTypeDropDown setAppearanceType={setAppearanceType} />
       </div>
       <main
         className={`grid grid-cols-[repeat(auto-fill,minmax(25rem,1fr))] gap-[1rem] w-full`}
       >
-        {memoizedCombinedTranslations.map((ct) => {
-          {
-            return ct.translated.map((ctt, i) => (
-              <DisplayTranslatedNonTranslatedAppearancePart
-                key={(ctt._id || i) + "-ctAppearancePart"}
-                filteredAppearanceType={appearanceType}
-                languageToTranslate={translateToLanguage}
-                translateFromLanguage={translateFromLanguage}
-                translated={ctt}
-                nonTranslated={(ct.nonTranslated || [])[i]}
-              />
-            ));
-          }
-        })}
+        {memoizedCombinedTranslations.map((ct, i) => (
+          <DisplayTranslatedNonTranslatedAppearancePart
+            key={(ct.translated?._id || i) + "-ctAppearancePart"}
+            filteredAppearanceType={appearanceType}
+            languageToTranslate={translateToLanguage}
+            translateFromLanguage={translateFromLanguage}
+            {...ct}
+          />
+        ))}
       </main>
     </>
   );

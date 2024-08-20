@@ -5,7 +5,7 @@ import {
   characterCharacteristicGetByIdService,
   getAllCharacterCharacteristicsByStoryIdService,
   getAllCharacterCharacteristicsService,
-} from "../../services/StoryData/CharacterCharacteristicService";
+} from "../../services/StoryData/Characteristic/CharacterCharacteristicService";
 
 type CharacterCharacteristicGetByIdParams = {
   characterCharacteristicId: string;

@@ -1,15 +1,14 @@
 import createHttpError from "http-errors";
 import { TranslationTextFieldName } from "../../../consts/TRANSLATION_TEXT_FIELD_NAMES";
-import Season from "../../../models/StoryData/Season";
 import Episode from "../../../models/StoryData/Episode";
-import Translation from "../../../models/StoryData/Translation/Translation";
+import Season from "../../../models/StoryData/Season";
+import Story from "../../../models/StoryData/Story";
 import TranslationEpisode from "../../../models/StoryData/Translation/TranslationEpisode";
+import PlotFieldCommand from "../../../models/StoryEditor/PlotField/PlotFieldCommand";
+import TopologyBlock from "../../../models/StoryEditor/Topology/TopologyBlock";
+import TopologyBlockInfo from "../../../models/StoryEditor/Topology/TopologyBlockInfo";
 import { checkCurrentLanguage } from "../../../utils/checkCurrentLanguage";
 import { validateMongoId } from "../../../utils/validateMongoId";
-import TopologyBlock from "../../../models/StoryEditor/Topology/TopologyBlock";
-import Story from "../../../models/StoryData/Story";
-import TopologyBlockInfo from "../../../models/StoryEditor/Topology/TopologyBlockInfo";
-import PlotFieldCommand from "../../../models/StoryEditor/PlotField/PlotFieldCommand";
 
 type GetAllEpisodesByLanguageTypes = {
   currentLanguage?: string;
@@ -50,19 +49,21 @@ export const getAllEpisodesTranslationsByTypeAndSearchService = async ({
   currentLanguage,
   seasonId,
 }: GetEpisodesByTypeSearchId) => {
-  validateMongoId({ value: seasonId, valueName: "Season" });
   if (!currentLanguage?.trim().length) {
     throw createHttpError(400, "CurrentLanguage is required");
   }
 
-  const query: { seasonId: string; episodeStatus?: string; language: string } =
+  const query: { seasonId?: string; episodeStatus?: string; language: string } =
     {
       language: currentLanguage,
-      seasonId: seasonId || "",
     };
 
   if (episodeStatus) {
     query.episodeStatus = episodeStatus;
+  }
+  if (seasonId) {
+    validateMongoId({ value: seasonId, valueName: "Season" });
+    query.seasonId = seasonId;
   }
 
   const existingEpisodes = await TranslationEpisode.find(query).exec();
@@ -215,7 +216,7 @@ export const episodeTranslationUpdateService = async ({
   validateMongoId({ value: episodeId, valueName: "Episode" });
   if (
     !text?.trim().length ||
-    textFieldName?.trim().length ||
+    !textFieldName?.trim().length ||
     !currentLanguage?.trim().length
   ) {
     throw createHttpError(

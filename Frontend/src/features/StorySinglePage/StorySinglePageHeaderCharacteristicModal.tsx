@@ -1,8 +1,9 @@
 import { useEffect, useRef, useState } from "react";
-import useGetTranslationCharacteristicsQueries from "../../hooks/Fetching/Translation/Characteristic/useGetTranslationCharacteristicsQueries";
+import useGetAllCharacteristicsByStoryId from "../../hooks/Fetching/Translation/Characteristic/useGetAllCharacteristicsByStoryId";
 import useOutOfModal from "../../hooks/UI/useOutOfModal";
 import { useParams } from "react-router-dom";
 import useCreateCharacteristic from "../../hooks/Posting/Characteristic/useCreateCharacteristic";
+import "../Editor/Flowchart/FlowchartStyles.css";
 
 type StorySinglePageHeaderCharacteristicModalTypes = {
   showCharacteristicsModal: boolean;
@@ -17,7 +18,7 @@ export default function StorySinglePageHeaderCharacteristicModal({
   const [characteristicName, setCharacteristicName] = useState("");
   const modalRef = useRef<HTMLDivElement>(null);
 
-  const characteristics = useGetTranslationCharacteristicsQueries({
+  const { data: characteristics } = useGetAllCharacteristicsByStoryId({
     storyId: storyId || "",
     language: "russian",
   });
@@ -52,7 +53,7 @@ export default function StorySinglePageHeaderCharacteristicModal({
       ref={modalRef}
       className={`${
         showCharacteristicsModal ? "" : "hidden"
-      } absolute w-[25rem] max-h-[30rem] overflow-auto flex flex-col gap-[1rem] rounded-md shadow-md bg-white right-0 z-[1]`}
+      } absolute w-[25rem] max-h-[30rem] flex flex-col gap-[1rem] rounded-md shadow-md bg-white right-0 z-[1]`}
     >
       <form
         onSubmit={handleSubmit}
@@ -71,19 +72,20 @@ export default function StorySinglePageHeaderCharacteristicModal({
       </form>
       <div
         className={`${
-          characteristics.length ? "" : "hidden"
-        } px-[1rem] flex gap-[1rem] pb-[1rem] flex-wrap`}
+          characteristics?.length ? "" : "hidden"
+        } px-[1rem] flex gap-[1rem] pb-[1rem] flex-wrap overflow-auto max-h-[20rem] | containerScroll`}
       >
-        {characteristics.map((c) =>
-          c.data?.map((cd) => (
-            <h3
-              className="text-[1.5rem] bg-white rounded-md shadow-md p-[.2rem] cursor-default hover:text-white hover:bg-green-300 transition-all"
-              key={cd._id}
-            >
-              {cd.text}
-            </h3>
-          ))
-        )}
+        {(characteristics?.length || 0) > 0
+          ? characteristics?.map((c) => (
+              <h3
+                className="text-[1.5rem] bg-white flex-grow rounded-md shadow-md p-[.2rem] cursor-default hover:text-white hover:bg-green-300 transition-all"
+                key={c._id}
+                style={{ wordBreak: "break-word" }}
+              >
+                {c.translations[0]?.text || ""}
+              </h3>
+            ))
+          : null}
       </div>
     </aside>
   );

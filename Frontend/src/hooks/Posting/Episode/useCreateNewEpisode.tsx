@@ -18,9 +18,8 @@ export default function useCreateNewEpisode({
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationKey: ["new", "episode", "seasons", seasonId],
     mutationFn: async () =>
-      await axiosCustomized.post(`/episodes/seasons/${seasonId}`, {
+      await axiosCustomized.post(`/episodes/seasons/${seasonId}/translations`, {
         currentLanguage: language,
         title,
         description,

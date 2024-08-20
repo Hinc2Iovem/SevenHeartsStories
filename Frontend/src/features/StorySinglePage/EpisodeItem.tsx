@@ -17,7 +17,7 @@ export default function EpisodeItem({
 }: EpisodeItemTypes) {
   const { storyId } = useParams();
   const [isEpisodeInfoOpen, setIsEpisodeInfoOpen] = useState(false);
-  const { data } = useGetTranslationEpisode({ episodeId: _id });
+  const { data: episode } = useGetTranslationEpisode({ episodeId: _id });
   const [episodeTitle, setEpisodeTitle] = useState("");
   const [episodeDescription, setEpisodeDescription] = useState("");
 
@@ -27,8 +27,8 @@ export default function EpisodeItem({
   });
 
   useEffect(() => {
-    if (data) {
-      data.map((d) => {
+    if (episode) {
+      episode.translations.map((d) => {
         if (d.textFieldName === "episodeDescription") {
           setEpisodeDescription(d.text);
         } else if (d.textFieldName === "episodeName") {
@@ -36,7 +36,7 @@ export default function EpisodeItem({
         }
       });
     }
-  }, [data]);
+  }, [episode]);
 
   return (
     <li

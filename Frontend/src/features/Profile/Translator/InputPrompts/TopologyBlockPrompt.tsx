@@ -64,7 +64,9 @@ export default function TopologyBlockPrompt({
         placeholder="Название Блока"
         onClick={(e) => {
           e.stopPropagation();
-          setTopologyBlockBackupValue(topologyBlockValue);
+          if (topologyBlockValue?.trim().length) {
+            setTopologyBlockBackupValue(topologyBlockValue);
+          }
           setTopologyBlockValue("");
           setShowTopologyBlocks(true);
         }}

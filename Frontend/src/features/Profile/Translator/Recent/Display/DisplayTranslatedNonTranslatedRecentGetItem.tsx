@@ -4,7 +4,7 @@ import { TranslationCommandTypes } from "../../../../../types/Additional/Transla
 import "../../../../Editor/Flowchart/FlowchartStyles.css";
 import useGetTranslationCommandByCommandId from "../../../../../hooks/Fetching/Translation/PlotfieldCommands/useGetTranslationCommandByCommandId";
 import useDebounce from "../../../../../hooks/utilities/useDebounce";
-import useUpdateGetItemTranslation from "../../../../../hooks/Patching/Translation/useUpdateGetItemTranslation";
+import useUpdateGetItemTranslation from "../../../../../hooks/Patching/Translation/PlotfieldCoomands/useUpdateGetItemTranslation";
 
 type CombinedTranslatedAndNonTranslatedRecentTypes = {
   translated: TranslationCommandTypes[];

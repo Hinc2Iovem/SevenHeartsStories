@@ -1,5 +1,6 @@
 import { RequestHandler } from "express";
 import {
+  getAllAssignedStoriesTranslationsByLanguageAndStaffIdService,
   getAllStoriesTranslationsByLanguageService,
   getAllStoriesTranslationsByTypeAndSearchService,
   getStoryByIdAndLanguageService,
@@ -7,6 +8,40 @@ import {
   storyTranslationUpdateService,
 } from "../../../services/StoryData/Story/StoryTranslationService";
 
+type GetAllStoriesByLanguageAndStaffIdParams = {
+  staffId: string;
+};
+type GetAllStoriesByLanguageAndStaffIdQuery = {
+  currentLanguage?: string;
+  text?: string;
+  storyStatus?: string;
+};
+
+// @route GET http://localhost:3500/stories/staff/:staffId/search/translations
+// @access Private
+export const getAllAssignedStoriesTranslationsByLanguageAndStaffIdController: RequestHandler<
+  GetAllStoriesByLanguageAndStaffIdParams,
+  unknown,
+  unknown,
+  GetAllStoriesByLanguageAndStaffIdQuery
+> = async (req, res, next) => {
+  try {
+    const story =
+      await getAllAssignedStoriesTranslationsByLanguageAndStaffIdService({
+        staffId: req.params.staffId,
+        currentLanguage: req.query.currentLanguage,
+        text: req.query.text,
+        storyStatus: req.query.storyStatus,
+      });
+    if (story) {
+      return res.status(201).json(story);
+    } else {
+      return res.status(400).json({ message: "Something went wrong" });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
 type GetAllStoriesByLanguageQuery = {
   currentLanguage: string;
 };

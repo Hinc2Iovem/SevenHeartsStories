@@ -1,10 +1,10 @@
 import { useMemo, useState } from "react";
+import useGetSeasonsByStoryId from "../../../../../hooks/Fetching/Season/useGetSeasonsByStoryId";
+import useInvalidateTranslatorSeasonQueries from "../../../../../hooks/helpers/Profile/Translator/useInvalidateTranslatorSeasonQueries";
 import { CurrentlyAvailableLanguagesTypes } from "../../../../../types/Additional/CURRENTLY_AVAILABEL_LANGUAGES";
 import { TranslationSeasonTypes } from "../../../../../types/Additional/TranslationTypes";
 import StoryPrompt from "../../InputPrompts/StoryPrompt";
-import useGetTranslationSeasonsQueries from "../../../../../hooks/Fetching/Translation/Season/useGetTranslationSeasonsQueries";
 import DisplayTranslatedNonTranslatedSeason from "../Display/Season/DisplayTranslatedNonTranslatedSeason";
-import useInvalidateTranslatorQueries from "../../../../../hooks/helpers/Profile/Translator/useInvalidateTranslatorQueries";
 
 type FiltersEverythingCharacterForSeasonTypes = {
   translateFromLanguage: CurrentlyAvailableLanguagesTypes;
@@ -14,8 +14,8 @@ type FiltersEverythingCharacterForSeasonTypes = {
 };
 
 export type CombinedTranslatedAndNonTranslatedSeasonTypes = {
-  translated: TranslationSeasonTypes[];
-  nonTranslated: TranslationSeasonTypes[] | null;
+  translated: TranslationSeasonTypes | null;
+  nonTranslated: TranslationSeasonTypes | null;
 };
 
 export default function FiltersEverythingStoryForSeason({
@@ -24,69 +24,60 @@ export default function FiltersEverythingStoryForSeason({
   prevTranslateFromLanguage,
   prevTranslateToLanguage,
 }: FiltersEverythingCharacterForSeasonTypes) {
-  useInvalidateTranslatorQueries({
-    prevTranslateFromLanguage,
-    prevTranslateToLanguage,
-    queryKey: "season",
-    translateToLanguage,
-  });
   const [storyId, setStoryId] = useState("");
 
-  const translatedSeason = useGetTranslationSeasonsQueries({
+  useInvalidateTranslatorSeasonQueries({
+    prevTranslateFromLanguage,
+    prevTranslateToLanguage,
+    translateToLanguage,
+    storyId,
+  });
+
+  const { data: translatedSeason } = useGetSeasonsByStoryId({
     storyId,
     language: translateFromLanguage,
   });
 
-  const nonTranslatedSeason = useGetTranslationSeasonsQueries({
+  const { data: nonTranslatedSeason } = useGetSeasonsByStoryId({
     storyId,
     language: translateToLanguage,
   });
 
   const memoizedCombinedTranslations = useMemo(() => {
-    if (translatedSeason.length > 0 && nonTranslatedSeason.length > 0) {
-      const arrayOfSeason =
-        [] as CombinedTranslatedAndNonTranslatedSeasonTypes[];
-      const groupedSeason: Record<
-        string,
-        CombinedTranslatedAndNonTranslatedSeasonTypes
-      > = {};
+    const combinedArray: CombinedTranslatedAndNonTranslatedSeasonTypes[] = [];
+    const seasonMap: {
+      [key: string]: CombinedTranslatedAndNonTranslatedSeasonTypes;
+    } = {};
 
-      translatedSeason.forEach((tc) => {
-        if (tc.data) {
-          const seasonId = tc.data.seasonId;
-          if (!groupedSeason[seasonId]) {
-            groupedSeason[seasonId] = {
-              translated: [],
-              nonTranslated: null,
-            };
-          }
-          groupedSeason[seasonId].translated.push(tc.data);
-        }
-      });
+    translatedSeason?.forEach((tc) => {
+      const seasonId = tc.seasonId;
+      if (!seasonMap[seasonId]) {
+        seasonMap[seasonId] = {
+          translated: tc,
+          nonTranslated: null,
+        };
+      } else {
+        seasonMap[seasonId].translated = tc;
+      }
+    });
 
-      nonTranslatedSeason.forEach((ntc) => {
-        if (ntc.data) {
-          const seasonId = ntc.data.seasonId;
-          if (!groupedSeason[seasonId]) {
-            groupedSeason[seasonId] = {
-              translated: [],
-              nonTranslated: null,
-            };
-          }
-          if (!groupedSeason[seasonId].nonTranslated) {
-            groupedSeason[seasonId].nonTranslated = [];
-          }
-          groupedSeason[seasonId].nonTranslated.push(ntc.data);
-        }
-      });
+    nonTranslatedSeason?.forEach((ntc) => {
+      const seasonId = ntc.seasonId;
+      if (!seasonMap[seasonId]) {
+        seasonMap[seasonId] = {
+          translated: null,
+          nonTranslated: ntc,
+        };
+      } else {
+        seasonMap[seasonId].nonTranslated = ntc;
+      }
+    });
 
-      Object.values(groupedSeason).forEach((group) =>
-        arrayOfSeason.push(group)
-      );
+    Object.values(seasonMap).forEach((entry) => {
+      combinedArray.push(entry);
+    });
 
-      return arrayOfSeason.filter((group) => group.translated.length > 0);
-    }
-    return [];
+    return combinedArray;
   }, [translatedSeason, nonTranslatedSeason]);
 
   return (
@@ -97,19 +88,15 @@ export default function FiltersEverythingStoryForSeason({
       <main
         className={`grid grid-cols-[repeat(auto-fill,minmax(30rem,1fr))] gap-[1rem] w-full`}
       >
-        {memoizedCombinedTranslations.map((ct) => {
-          {
-            return ct.translated.map((ctt, i) => (
-              <DisplayTranslatedNonTranslatedSeason
-                key={(ctt?._id || i) + "-ctSeason"}
-                languageToTranslate={translateToLanguage}
-                translateFromLanguage={translateFromLanguage}
-                translated={ctt}
-                nonTranslated={(ct.nonTranslated || [])[i]}
-              />
-            ));
-          }
-        })}
+        {memoizedCombinedTranslations.map((ct, i) => (
+          <DisplayTranslatedNonTranslatedSeason
+            key={(ct.translated?._id || i) + "-ctSeason"}
+            languageToTranslate={translateToLanguage}
+            translateFromLanguage={translateFromLanguage}
+            storyId={storyId}
+            {...ct}
+          />
+        ))}
       </main>
     </>
   );

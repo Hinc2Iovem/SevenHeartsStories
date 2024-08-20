@@ -6,11 +6,13 @@ import useDebounce from "../../../../hooks/utilities/useDebounce";
 type CharacterPromptTypes = {
   setCharacterId: React.Dispatch<React.SetStateAction<string>>;
   storyId?: string;
+  characterId: string;
 };
 
 export default function CharacterPrompt({
   setCharacterId,
   storyId,
+  characterId,
 }: CharacterPromptTypes) {
   const [showCharacters, setShowCharacters] = useState(false);
   const modalCharactersRef = useRef<HTMLDivElement>(null);
@@ -34,7 +36,7 @@ export default function CharacterPrompt({
     });
 
   useEffect(() => {
-    if (debouncedValue?.trim().length) {
+    if (!characterId && debouncedValue?.trim().length) {
       setCharacterId(
         charactersSearch?.find(
           (cs) => (cs?.translations || [])[0]?.text === debouncedValue
@@ -61,7 +63,9 @@ export default function CharacterPrompt({
         placeholder="Имя Персонажа"
         onClick={(e) => {
           e.stopPropagation();
-          setCharacterBackupValue(characterValue);
+          if (characterValue?.trim().length) {
+            setCharacterBackupValue(characterValue);
+          }
           setCharacterValue("");
           setShowCharacters(true);
         }}
@@ -74,6 +78,8 @@ export default function CharacterPrompt({
           showCharacters ? "" : "hidden"
         } max-h-[15rem] overflow-auto flex flex-col gap-[.5rem] min-w-fit w-full absolute bg-white rounded-md shadow-md translate-y-[.5rem] p-[1rem] | containerScroll`}
       >
+        {/* {storyId ? (
+          <> */}
         {isLoading ? (
           <div className="text-[1.4rem] text-gray-600 text-center py-[.5rem]">
             Загрузка...
@@ -104,6 +110,19 @@ export default function CharacterPrompt({
             Нету Подходящих Персонажей
           </button>
         )}
+        {/* ) : (
+          <button
+            type="button"
+            onClick={() => {
+              setShowCharacters(false);
+            }}
+            className={`${
+              showCharacters ? "" : "hidden"
+            } text-[1.4rem] outline-gray-300 text-gray-600 text-start hover:bg-primary-pastel-blue hover:text-white rounded-md px-[1rem] py-[.5rem] hover:shadow-md`}
+          >
+            Выберите Историю
+          </button>
+        )} */}
       </aside>
     </form>
   );

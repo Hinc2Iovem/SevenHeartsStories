@@ -141,8 +141,6 @@ export const characterGetAllByLanguageAndStoryIdSearchService = async ({
     };
 
   if (storyId) {
-    console.log(storyId);
-
     validateMongoId({ value: storyId, valueName: "Story" });
     query.storyId = storyId;
   }

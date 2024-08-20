@@ -3,15 +3,17 @@ import { axiosCustomized } from "../../../../../../../api/axios";
 
 type CreateChoiceTypes = {
   plotFieldCommandId: string;
+  topologyBlockId: string;
 };
 
 export default function useCreateChoice({
   plotFieldCommandId,
+  topologyBlockId,
 }: CreateChoiceTypes) {
   return useMutation({
     mutationFn: async () =>
       await axiosCustomized.post(
-        `/plotFieldCommands/${plotFieldCommandId}/choices`
+        `/choices/${plotFieldCommandId}/topologyBlocks/${topologyBlockId}/translations`
       ),
   });
 }

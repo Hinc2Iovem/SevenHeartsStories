@@ -1,7 +1,8 @@
-import { useEffect, useMemo, useRef, useState } from "react";
-import useGetTranslationStoriesQueries from "../../../../hooks/Fetching/Translation/Story/useGetTranslationStoriesQueries";
+import { useEffect, useRef, useState } from "react";
+import useGetTranslationStoriesSearch from "../../../../hooks/Fetching/Translation/Story/useGetTranslationStoriesSearch";
 import useOutOfModal from "../../../../hooks/UI/useOutOfModal";
 import useDebounce from "../../../../hooks/utilities/useDebounce";
+import { TranslationStoryTypes } from "../../../../types/Additional/TranslationTypes";
 
 type StoryPromptTypes = {
   setStoryId: React.Dispatch<React.SetStateAction<string>>;
@@ -21,23 +22,11 @@ export default function StoryPrompt({ setStoryId }: StoryPromptTypes) {
 
   const debouncedValue = useDebounce({ value: storyValue, delay: 500 });
 
-  const allStories = useGetTranslationStoriesQueries({
+  const { data: allStories } = useGetTranslationStoriesSearch({
     language: "russian",
-    showQueries: showStories,
+    debouncedValue,
+    showStories,
   });
-
-  const memoizedStories = useMemo(() => {
-    if (debouncedValue) {
-      return allStories.map((queryResult) => ({
-        data: queryResult.data?.filter((story) => {
-          if (story.textFieldName === "storyName") {
-            story.text.toLowerCase().includes(debouncedValue.toLowerCase());
-          }
-        }),
-      }));
-    }
-    return allStories;
-  }, [allStories, debouncedValue]);
 
   useEffect(() => {
     if (!showStories && !storyValue && storyBackupValue) {
@@ -56,7 +45,9 @@ export default function StoryPrompt({ setStoryId }: StoryPromptTypes) {
         placeholder="История"
         onClick={(e) => {
           e.stopPropagation();
-          setStoryBackupValue(storyValue);
+          if (storyValue?.trim().length) {
+            setStoryBackupValue(storyValue);
+          }
           setStoryValue("");
           setShowStories(true);
         }}
@@ -69,23 +60,16 @@ export default function StoryPrompt({ setStoryId }: StoryPromptTypes) {
           showStories ? "" : "hidden"
         } max-h-[15rem] overflow-auto flex flex-col gap-[.5rem] min-w-fit w-full absolute bg-white rounded-md shadow-md translate-y-[.5rem] p-[1rem] | containerScroll`}
       >
-        {memoizedStories.length > 0 ? (
-          memoizedStories.map((s) =>
-            s.data?.map((sd) => (
-              <button
-                key={sd._id}
-                type="button"
-                onClick={() => {
-                  setStoryId(sd.storyId);
-                  setStoryValue(sd.text);
-                  setShowStories(false);
-                }}
-                className="text-[1.4rem] outline-gray-300 text-gray-600 text-start hover:bg-primary-pastel-blue hover:text-white rounded-md px-[1rem] py-[.5rem] hover:shadow-md"
-              >
-                {sd.text}
-              </button>
-            ))
-          )
+        {(allStories?.length || 0) > 0 ? (
+          allStories?.map((s, i) => (
+            <StoryPromptButton
+              key={s._id || i + "story"}
+              setShowStories={setShowStories}
+              setStoryId={setStoryId}
+              setStoryValue={setStoryValue}
+              {...s}
+            />
+          ))
         ) : (
           <button
             type="button"
@@ -99,5 +83,37 @@ export default function StoryPrompt({ setStoryId }: StoryPromptTypes) {
         )}
       </aside>
     </form>
+  );
+}
+
+type StoryPromptButtonTypes = {
+  setStoryId: React.Dispatch<React.SetStateAction<string>>;
+  setStoryValue: React.Dispatch<React.SetStateAction<string>>;
+  setShowStories: React.Dispatch<React.SetStateAction<boolean>>;
+} & TranslationStoryTypes;
+
+function StoryPromptButton({
+  storyId,
+  translations,
+  setShowStories,
+  setStoryId,
+  setStoryValue,
+}: StoryPromptButtonTypes) {
+  const [storyTitle] = useState(
+    translations.find((t) => t.textFieldName === "storyName")?.text || ""
+  );
+
+  return (
+    <button
+      type="button"
+      onClick={() => {
+        setStoryId(storyId);
+        setStoryValue(storyTitle);
+        setShowStories(false);
+      }}
+      className="text-[1.4rem] outline-gray-300 text-gray-600 text-start hover:bg-primary-pastel-blue hover:text-white rounded-md px-[1rem] py-[.5rem] hover:shadow-md"
+    >
+      {storyTitle}
+    </button>
   );
 }

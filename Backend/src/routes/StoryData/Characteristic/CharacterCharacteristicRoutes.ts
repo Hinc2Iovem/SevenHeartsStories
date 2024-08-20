@@ -5,7 +5,7 @@ import {
   getAllCharacterCharacteristicsByStoryIdController,
   getAllCharacterCharacteristicController,
   characterCharacteristicGetByIdController,
-} from "../../controllers/StoryData/CharacterCharacteristicController";
+} from "../../../controllers/StoryData/CharacterCharacteristicController";
 
 // Default route === /characterCharacteristics
 export const characterCharacteristicRoute = express.Router();

@@ -108,7 +108,9 @@ type CreateAppearancePartParams = {
 };
 
 type CreateAppearancePartBody = {
-  type: AppearancePartsTypes;
+  type?: AppearancePartsTypes;
+  appearancePartName?: string;
+  currentLanguage?: string;
 };
 
 // @route POST http://localhost:3500/appearanceParts/characters/:characterId/translations
@@ -123,6 +125,7 @@ export const createAppearancePartTranslationController: RequestHandler<
     const appearancePart = await createAppearancePartTranslationService({
       characterId: req.params.characterId,
       type: req.body.type,
+      appearancePartName: req.body.appearancePartName,
     });
     if (appearancePart) {
       return res.status(201).json(appearancePart);
@@ -155,11 +158,11 @@ export const appearancePartUpdateTranslationController: RequestHandler<
 > = async (req, res, next) => {
   try {
     const appearancePart = await appearancePartUpdateTranslationService({
+      appearancePartId: req.params.appearancePartId,
+      characterId: req.params.characterId,
       text: req.body.text,
       textFieldName: req.body.textFieldName,
       currentLanguage: req.body.currentLanguage,
-      appearancePartId: req.params.appearancePartId,
-      characterId: req.params.characterId,
     });
     if (appearancePart) {
       return res.status(201).json(appearancePart);

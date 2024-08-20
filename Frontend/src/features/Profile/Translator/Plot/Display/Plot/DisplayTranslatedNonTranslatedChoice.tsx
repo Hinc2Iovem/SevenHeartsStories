@@ -1,60 +1,64 @@
-import { useEffect, useRef, useState } from "react";
-import useUpdateCommandTranslation, {
-  CommandDynamicBodyNameVariationsTypes,
-  CommandEndPointVariationsTypes,
-} from "../../../../../../hooks/Patching/Translation/useUpdateCommandTranslation";
+import { useEffect, useState } from "react";
 import useDebounce from "../../../../../../hooks/utilities/useDebounce";
 import { CurrentlyAvailableLanguagesTypes } from "../../../../../../types/Additional/CURRENTLY_AVAILABEL_LANGUAGES";
-import { TranslationTextFieldNameCommandTypes } from "../../../../../../types/Additional/TRANSLATION_TEXT_FIELD_NAMES";
 import useGetAllChoiceOptionsByChoiceId from "../../../../../Editor/PlotField/PlotFieldMain/Commands/hooks/Choice/ChoiceOption/useGetChoiceAllChoiceOptionsByChoiceId";
-import { CombinedTranslatedAndNonTranslatedPlotTypes } from "../../Filters/FiltersEverythingPlot";
+import { CombinedTranslatedAndNonTranslatedChoiceTypes } from "../../Filters/FiltersEverythingPlotChoice";
 import DisplayTranslatedNonTranslatedChoiceOption from "./DisplayTranslatedNonTranslatedChoiceOption";
+import useUpdateChoiceTranslation from "../../../../../../hooks/Patching/Translation/PlotfieldCoomands/useUpdateChoiceTranslation";
+import { TranslationTextFieldName } from "../../../../../../const/TRANSLATION_TEXT_FIELD_NAMES";
+import { TranslationTextFieldNameChoiceTypes } from "../../../../../../types/Additional/TRANSLATION_TEXT_FIELD_NAMES";
 import "../../../../../Editor/Flowchart/FlowchartStyles.css";
+import useInvalidateTranslatorChoiceOptionQueries from "../../../../../../hooks/helpers/Profile/Translator/useInvalidateTranslatorChoiceOptionQueries";
 
 type DisplayTranslatedNonTranslatedCommandTypes = {
   languageToTranslate: CurrentlyAvailableLanguagesTypes;
+  prevTranslateFromLanguage: CurrentlyAvailableLanguagesTypes;
+  prevTranslateToLanguage: CurrentlyAvailableLanguagesTypes;
   translateFromLanguage: CurrentlyAvailableLanguagesTypes;
-} & CombinedTranslatedAndNonTranslatedPlotTypes;
+  topologyBlockId: string;
+} & CombinedTranslatedAndNonTranslatedChoiceTypes;
 
 export default function DisplayTranslatedNonTranslatedChoice({
   nonTranslated,
   translated,
   languageToTranslate,
   translateFromLanguage,
+  topologyBlockId,
+  prevTranslateFromLanguage,
+  prevTranslateToLanguage,
 }: DisplayTranslatedNonTranslatedCommandTypes) {
+  useInvalidateTranslatorChoiceOptionQueries({
+    prevTranslateFromLanguage,
+    prevTranslateToLanguage,
+    translateToLanguage: languageToTranslate,
+    plotFieldCommandChoiceId: translated?.commandId || "",
+  });
+
+  const [initialTranslatedCommandName, setInitialTranslatedCommandName] =
+    useState("");
   const [translatedCommandName, setTranslatedCommandName] = useState("");
-  const [commandType, setCommandType] =
-    useState<TranslationTextFieldNameCommandTypes>(
-      "" as TranslationTextFieldNameCommandTypes
-    );
+
+  const [initialCommandName, setInitialCommandName] = useState("");
   const [commandName, setCommandName] = useState("");
   const [commandId, setCommandId] = useState("");
-  const [dynamicCommandName, setDynamicCommandName] =
-    useState<CommandDynamicBodyNameVariationsTypes>(
-      "" as CommandDynamicBodyNameVariationsTypes
-    );
-  const [dynamicCommandEndPoint, setDynamicCommandEndPoint] =
-    useState<CommandEndPointVariationsTypes>(
-      "" as CommandEndPointVariationsTypes
-    );
-
-  const hasMounted = useRef(false);
 
   useEffect(() => {
     if (translated) {
       setCommandId(translated.commandId);
-      setTranslatedCommandName(translated.text);
-      setDynamicCommandName("choiceQuestion");
-      setDynamicCommandEndPoint("choices");
-      setCommandType("choiceQuestion");
+      setTranslatedCommandName((translated.translations || [])[0]?.text || "");
+      setInitialTranslatedCommandName(
+        (translated.translations || [])[0]?.text || ""
+      );
     }
   }, [translated]);
 
   useEffect(() => {
     if (nonTranslated) {
-      setCommandName(nonTranslated.text);
+      setCommandName((nonTranslated.translations || [])[0]?.text || "");
+      setInitialCommandName((nonTranslated.translations || [])[0]?.text || "");
     } else {
       setCommandName("");
+      setInitialCommandName("");
     }
   }, [nonTranslated, languageToTranslate]);
 
@@ -63,20 +67,22 @@ export default function DisplayTranslatedNonTranslatedChoice({
     delay: 500,
   });
 
-  const updateCharacterTranslationTranslated = useUpdateCommandTranslation({
+  const updateCharacterTranslationTranslated = useUpdateChoiceTranslation({
     language: translateFromLanguage,
     commandId,
-    commandEndPoint: dynamicCommandEndPoint,
-    dynamicCommandName,
+    topologyBlockId,
   });
 
   useEffect(() => {
-    if (hasMounted.current && translatedDebouncedName?.trim().length) {
+    if (
+      initialTranslatedCommandName !== translatedDebouncedName &&
+      translatedDebouncedName?.trim().length
+    ) {
       updateCharacterTranslationTranslated.mutate({
-        commandText: translatedDebouncedName,
+        text: translatedDebouncedName,
+        textFieldName:
+          TranslationTextFieldName.ChoiceQuestion as TranslationTextFieldNameChoiceTypes,
       });
-    } else {
-      hasMounted.current = true;
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [translatedDebouncedName]);
@@ -86,26 +92,30 @@ export default function DisplayTranslatedNonTranslatedChoice({
     delay: 500,
   });
 
-  const updateCharacterTranslation = useUpdateCommandTranslation({
+  const updateCharacterTranslation = useUpdateChoiceTranslation({
     language: languageToTranslate,
     commandId,
-    commandEndPoint: dynamicCommandEndPoint,
-    dynamicCommandName,
+    topologyBlockId,
   });
 
   useEffect(() => {
-    if (hasMounted.current && debouncedName?.trim().length) {
+    if (initialCommandName !== debouncedName && debouncedName?.trim().length) {
       updateCharacterTranslation.mutate({
-        commandText: debouncedName,
+        text: debouncedName,
+        textFieldName:
+          TranslationTextFieldName.ChoiceQuestion as TranslationTextFieldNameChoiceTypes,
       });
-    } else {
-      hasMounted.current = true;
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [debouncedName]);
 
-  const { data: allOptions } = useGetAllChoiceOptionsByChoiceId({
+  const { data: allTranslatedOptions } = useGetAllChoiceOptionsByChoiceId({
     plotFieldCommandChoiceId: commandId,
+    language: translateFromLanguage,
+  });
+  const { data: allNonTranslatedOptions } = useGetAllChoiceOptionsByChoiceId({
+    plotFieldCommandChoiceId: commandId,
+    language: languageToTranslate,
   });
 
   return (
@@ -126,10 +136,10 @@ export default function DisplayTranslatedNonTranslatedChoice({
             onChange={(e) => setTranslatedCommandName(e.target.value)}
           />
           <div className="flex gap-[1rem] w-full flex-wrap">
-            {allOptions?.map((o) => (
+            {allTranslatedOptions?.map((o) => (
               <DisplayTranslatedNonTranslatedChoiceOption
                 key={o._id + `-${translateFromLanguage}`}
-                language={translateFromLanguage}
+                currentLanguage={translateFromLanguage}
                 {...o}
               />
             ))}
@@ -146,15 +156,19 @@ export default function DisplayTranslatedNonTranslatedChoice({
           <input
             type="text"
             value={commandName}
-            placeholder={commandType}
+            placeholder="Вопрос"
             className="w-full border-dotted border-gray-600 border-[2px] text-[1.6rem] font-medium text-gray-700 outline-none rounded-md px-[1rem] py-[.5rem] bg-white"
             onChange={(e) => setCommandName(e.target.value)}
           />
           <div className="flex gap-[1rem] w-full flex-wrap">
-            {allOptions?.map((o) => (
+            {allNonTranslatedOptions?.map((o, i) => (
               <DisplayTranslatedNonTranslatedChoiceOption
                 key={o._id + `-${languageToTranslate}`}
-                language={languageToTranslate}
+                currentLanguage={languageToTranslate}
+                currentChoiceId={
+                  (allTranslatedOptions || [])[i].plotFieldCommandChoiceId
+                }
+                currentType={(allTranslatedOptions || [])[i].type}
                 {...o}
               />
             ))}

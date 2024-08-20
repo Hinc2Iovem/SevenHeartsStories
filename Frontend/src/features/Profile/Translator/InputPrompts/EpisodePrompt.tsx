@@ -36,8 +36,9 @@ export default function EpisodePrompt({
   useEffect(() => {
     if (debouncedValue?.trim().length) {
       setEpisodeId(
-        episodesSearch?.find((cs) => cs.text === debouncedValue)?.episodeId ||
-          ""
+        episodesSearch?.find(
+          (cs) => cs.translations[0]?.text === debouncedValue
+        )?.episodeId || ""
       );
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -48,6 +49,7 @@ export default function EpisodePrompt({
       setEpisodeValue(episodeBackupValue);
     }
   }, [showEpisodes, episodeValue, episodeBackupValue]);
+
   return (
     <form
       className="bg-white rounded-md shadow-md relative"
@@ -59,7 +61,9 @@ export default function EpisodePrompt({
         placeholder="Название Эпизода"
         onClick={(e) => {
           e.stopPropagation();
-          setEpisodeBackupValue(episodeValue);
+          if (episodeValue?.trim().length) {
+            setEpisodeBackupValue(episodeValue);
+          }
           setEpisodeValue("");
           setShowEpisodes(true);
         }}
@@ -84,12 +88,12 @@ export default function EpisodePrompt({
                 type="button"
                 onClick={() => {
                   setEpisodeId(s.episodeId);
-                  setEpisodeValue(s.text);
+                  setEpisodeValue(s.translations[0]?.text || "");
                   setShowEpisodes(false);
                 }}
                 className="text-[1.4rem] outline-gray-300 text-gray-600 text-start hover:bg-primary-pastel-blue hover:text-white rounded-md px-[1rem] py-[.5rem] hover:shadow-md"
               >
-                {s.text}
+                {s.translations[0]?.text || ""}
               </button>
             ))
           ) : (

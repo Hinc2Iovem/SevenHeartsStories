@@ -1,13 +1,16 @@
 import { useEffect, useState } from "react";
+import { TranslationTextFieldName } from "../../../../../../const/TRANSLATION_TEXT_FIELD_NAMES";
+import useUpdateEpisodeTranslation from "../../../../../../hooks/Patching/Translation/useUpdateEpisodeTranslation";
 import useDebounce from "../../../../../../hooks/utilities/useDebounce";
 import { CurrentlyAvailableLanguagesTypes } from "../../../../../../types/Additional/CURRENTLY_AVAILABEL_LANGUAGES";
+import { TranslationTextFieldNameEpisodeTypes } from "../../../../../../types/Additional/TRANSLATION_TEXT_FIELD_NAMES";
 import { CombinedTranslatedAndNonTranslatedEpisodeTypes } from "../../Filters/FiltersEverythingStoryForEpisode";
-import useUpdateEpisodeTranslation from "../../../../../../hooks/Patching/Translation/useUpdateEpisodeTranslation";
 import "../../../../../Editor/Flowchart/FlowchartStyles.css";
 
 type DisplayTranslatedNonTranslatedEpisodeTypes = {
   languageToTranslate: CurrentlyAvailableLanguagesTypes;
   translateFromLanguage: CurrentlyAvailableLanguagesTypes;
+  seasonId: string;
 } & CombinedTranslatedAndNonTranslatedEpisodeTypes;
 
 export default function DisplayTranslatedNonTranslatedEpisode({
@@ -15,23 +18,34 @@ export default function DisplayTranslatedNonTranslatedEpisode({
   translated,
   languageToTranslate,
   translateFromLanguage,
+  seasonId,
 }: DisplayTranslatedNonTranslatedEpisodeTypes) {
+  const [translatedBackUpEpisodeName, setTranslatedBackUpEpisodeName] =
+    useState("");
+  const [
+    translatedBackUpEpisodeDescription,
+    setTranslatedBackUpEpisodeDescription,
+  ] = useState("");
   const [translatedEpisodeName, setTranslatedEpisodeName] = useState("");
   const [translatedEpisodeDescription, setTranslatedEpisodeDescription] =
     useState("");
 
+  const [backUpEpisodeName, setBackUpEpisodeName] = useState("");
+  const [backUpEpisodeDescription, setBackUpEpisodeDescription] = useState("");
   const [episodeName, setEpisodeName] = useState("");
   const [episodeDescription, setEpisodeDescription] = useState("");
   const [episodeId, setEpisodeId] = useState("");
 
   useEffect(() => {
     if (translated) {
-      translated.map((t) => {
-        setEpisodeId(t.episodeId);
-        if (t.textFieldName === "episodeName") {
-          setTranslatedEpisodeName(t.text);
-        } else if (t.textFieldName === "episodeDescription") {
-          setTranslatedEpisodeDescription(t.text);
+      setEpisodeId(translated.episodeId);
+      translated.translations.map((tt) => {
+        if (tt.textFieldName === "episodeName") {
+          setTranslatedEpisodeName(tt.text);
+          setTranslatedBackUpEpisodeName(tt.text);
+        } else if (tt.textFieldName === "episodeDescription") {
+          setTranslatedEpisodeDescription(tt.text);
+          setTranslatedBackUpEpisodeDescription(tt.text);
         }
       });
     }
@@ -39,11 +53,13 @@ export default function DisplayTranslatedNonTranslatedEpisode({
 
   useEffect(() => {
     if (nonTranslated) {
-      nonTranslated.map((nt) => {
+      nonTranslated.translations.map((nt) => {
         if (nt.textFieldName === "episodeName") {
           setEpisodeName(nt.text);
+          setBackUpEpisodeName(nt.text);
         } else if (nt.textFieldName === "episodeDescription") {
           setEpisodeDescription(nt.text);
+          setBackUpEpisodeDescription(nt.text);
         }
       });
     } else {
@@ -65,21 +81,32 @@ export default function DisplayTranslatedNonTranslatedEpisode({
   const updateCharacterTranslationTranslated = useUpdateEpisodeTranslation({
     language: translateFromLanguage,
     episodeId,
+    seasonId,
   });
 
   useEffect(() => {
-    if (debouncedNameTranslated?.trim().length) {
+    if (
+      debouncedNameTranslated !== translatedBackUpEpisodeName &&
+      debouncedNameTranslated?.trim().length
+    ) {
       updateCharacterTranslationTranslated.mutate({
-        episodeName: debouncedNameTranslated,
+        text: debouncedNameTranslated,
+        textFieldName:
+          TranslationTextFieldName.EpisodeName as TranslationTextFieldNameEpisodeTypes,
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [debouncedNameTranslated]);
 
   useEffect(() => {
-    if (debouncedDescriptionTranslated?.trim().length) {
+    if (
+      debouncedDescriptionTranslated !== translatedBackUpEpisodeDescription &&
+      debouncedDescriptionTranslated?.trim().length
+    ) {
       updateCharacterTranslationTranslated.mutate({
-        description: debouncedDescriptionTranslated,
+        text: debouncedDescriptionTranslated,
+        textFieldName:
+          TranslationTextFieldName.EpisodeDescription as TranslationTextFieldNameEpisodeTypes,
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -98,21 +125,29 @@ export default function DisplayTranslatedNonTranslatedEpisode({
   const updateCharacterTranslation = useUpdateEpisodeTranslation({
     language: languageToTranslate,
     episodeId,
+    seasonId,
   });
 
   useEffect(() => {
-    if (debouncedName?.trim().length) {
+    if (debouncedName !== backUpEpisodeName && debouncedName?.trim().length) {
       updateCharacterTranslation.mutate({
-        episodeName: debouncedName,
+        text: debouncedName,
+        textFieldName:
+          TranslationTextFieldName.EpisodeName as TranslationTextFieldNameEpisodeTypes,
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [debouncedName]);
 
   useEffect(() => {
-    if (debouncedDescription?.trim().length) {
+    if (
+      debouncedDescription !== backUpEpisodeDescription &&
+      debouncedDescription?.trim().length
+    ) {
       updateCharacterTranslation.mutate({
-        description: debouncedDescription,
+        text: debouncedDescription,
+        textFieldName:
+          TranslationTextFieldName.EpisodeDescription as TranslationTextFieldNameEpisodeTypes,
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

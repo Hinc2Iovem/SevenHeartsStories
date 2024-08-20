@@ -8,7 +8,6 @@ import { CombinedTranslatedAndNonTranslatedCharacterTypes } from "../../Filters/
 
 type DisplayTranslatedNonTranslatedCharacterTypes = {
   characterTypeFilter: string;
-  characterIdFilter: string;
   languageToTranslate: CurrentlyAvailableLanguagesTypes;
   translateFromLanguage: CurrentlyAvailableLanguagesTypes;
 } & CombinedTranslatedAndNonTranslatedCharacterTypes;
@@ -17,7 +16,6 @@ export default function DisplayTranslatedNonTranslatedCharacter({
   nonTranslated,
   translated,
   characterTypeFilter,
-  characterIdFilter,
   languageToTranslate,
   translateFromLanguage,
 }: DisplayTranslatedNonTranslatedCharacterTypes) {
@@ -200,189 +198,97 @@ export default function DisplayTranslatedNonTranslatedCharacter({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [debouncedDescription]);
 
-  const isCharacterIdMatched =
-    characterIdFilter?.trim().length && characterIdFilter === characterId;
-
   return (
-    <>
-      {isCharacterIdMatched ? (
-        <div
-          className={`${
-            characterTypeFilter === "Обычный Персонаж" ||
-            characterTypeFilter === "Главный Персонаж"
-              ? "h-fit flex-col"
-              : "min-h-[24rem] sm:flex-row flex-col"
-          } w-full flex gap-[.5rem] bg-primary-pastel-blue p-[.5rem] rounded-md`}
+    <div
+      className={`${
+        characterTypeFilter === "Обычный Персонаж" ||
+        characterTypeFilter === "Главный Персонаж"
+          ? "h-fit flex-col"
+          : "min-h-[24rem] sm:flex-row flex-col"
+      } ${
+        characterTypeFilterToEng?.trim().length &&
+        translated?.characterType === characterTypeFilterToEng
+          ? ""
+          : !characterTypeFilter?.trim().length
+          ? ""
+          : "hidden"
+      }  w-full flex gap-[.5rem] bg-primary-pastel-blue p-[.5rem] rounded-md`}
+    >
+      <div
+        className={`h-full ${
+          characterTypeFilter === "Обычный Персонаж" ||
+          characterTypeFilter === "Главный Персонаж"
+            ? "w-full"
+            : "w-full sm:w-[calc(50%)]"
+        } rounded-md shadow-md shadow-gray-400 bg-white`}
+      >
+        <form
+          className="flex flex-col gap-[.5rem] p-[1rem] w-full"
+          onSubmit={(e) => e.preventDefault()}
         >
-          <div
-            className={`h-full ${
-              characterTypeFilter === "Обычный Персонаж" ||
-              characterTypeFilter === "Главный Персонаж"
-                ? "w-full"
-                : "w-full sm:w-[calc(50%)]"
-            } rounded-md shadow-md shadow-gray-400 bg-white`}
-          >
-            <form
-              className="flex flex-col gap-[.5rem] p-[1rem] w-full"
-              onSubmit={(e) => e.preventDefault()}
-            >
+          <input
+            type="text"
+            value={translatedCharacterName}
+            className="w-full border-dotted border-gray-600 border-[2px] text-[1.6rem] font-medium text-gray-700 outline-none rounded-md px-[1rem] py-[.5rem] bg-white"
+            onChange={(e) => setTranslatedCharacterName(e.target.value)}
+          />
+          {translated?.characterType === "minorcharacter" ? (
+            <>
               <input
                 type="text"
-                value={translatedCharacterName}
+                value={translatedUnknownName}
                 className="w-full border-dotted border-gray-600 border-[2px] text-[1.6rem] font-medium text-gray-700 outline-none rounded-md px-[1rem] py-[.5rem] bg-white"
-                onChange={(e) => setTranslatedCharacterName(e.target.value)}
+                onChange={(e) => setTranslatedUnknownName(e.target.value)}
               />
-              {translated?.characterType === "minorcharacter" ? (
-                <>
-                  <input
-                    type="text"
-                    value={translatedUnknownName}
-                    className="w-full border-dotted border-gray-600 border-[2px] text-[1.6rem] font-medium text-gray-700 outline-none rounded-md px-[1rem] py-[.5rem] bg-white"
-                    onChange={(e) => setTranslatedUnknownName(e.target.value)}
-                  />
-                  <textarea
-                    rows={5}
-                    value={translatedDescription}
-                    className="max-h-[12.5rem] w-full border-dotted border-gray-600 border-[2px] text-[1.5rem] font-medium text-gray-700 outline-none rounded-md px-[1rem] py-[.5rem] bg-white | containerScroll"
-                    onChange={(e) => setTranslatedDescription(e.target.value)}
-                  />
-                </>
-              ) : null}
-            </form>
-          </div>
-          <div
-            className={`h-full ${
-              characterTypeFilter === "Обычный Персонаж" ||
-              characterTypeFilter === "Главный Персонаж"
-                ? "w-full"
-                : "w-full sm:w-[calc(50%)] "
-            } rounded-md shadow-md shadow-gray-400 bg-white`}
-          >
-            <form
-              className="flex flex-col gap-[.5rem] p-[1rem] w-full"
-              onSubmit={(e) => e.preventDefault()}
-            >
-              <input
-                type="text"
-                value={characterName}
-                placeholder="Имя персонажа"
-                className="w-full border-dotted border-gray-600 border-[2px] text-[1.6rem] font-medium text-gray-700 outline-none rounded-md px-[1rem] py-[.5rem] bg-white"
-                onChange={(e) => setCharacterName(e.target.value)}
+              <textarea
+                value={translatedDescription}
+                rows={5}
+                className="max-h-[12.5rem] w-full border-dotted border-gray-600 border-[2px] text-[1.5rem] font-medium text-gray-700 outline-none rounded-md px-[1rem] py-[.5rem] bg-white | containerScroll"
+                onChange={(e) => setTranslatedDescription(e.target.value)}
               />
-              {translated?.characterType === "minorcharacter" ? (
-                <>
-                  <input
-                    type="text"
-                    value={unknownName}
-                    placeholder="Неивестное имя персонажа"
-                    className="w-full border-dotted border-gray-600 border-[2px] text-[1.6rem] font-medium text-gray-700 outline-none rounded-md px-[1rem] py-[.5rem] bg-white"
-                    onChange={(e) => setUnknownName(e.target.value)}
-                  />
-                  <textarea
-                    placeholder="Описание персонажа"
-                    rows={5}
-                    className="max-h-[12.5rem] w-full border-dotted border-gray-600 border-[2px] text-[1.5rem] font-medium text-gray-700 outline-none rounded-md px-[1rem] py-[.5rem] bg-white | containerScroll"
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)}
-                  />
-                </>
-              ) : null}
-            </form>
-          </div>
-        </div>
-      ) : (
-        <div
-          className={`${
-            characterTypeFilter === "Обычный Персонаж" ||
-            characterTypeFilter === "Главный Персонаж"
-              ? "h-fit flex-col"
-              : "min-h-[24rem] sm:flex-row flex-col"
-          } ${
-            characterTypeFilterToEng?.trim().length &&
-            translated?.characterType === characterTypeFilterToEng
-              ? ""
-              : !characterTypeFilter?.trim().length
-              ? ""
-              : "hidden"
-          }  w-full flex gap-[.5rem] bg-primary-pastel-blue p-[.5rem] rounded-md`}
+            </>
+          ) : null}
+        </form>
+      </div>
+      <div
+        className={`h-full ${
+          characterTypeFilter === "Обычный Персонаж" ||
+          characterTypeFilter === "Главный Персонаж"
+            ? "w-full"
+            : "w-full sm:w-[calc(50%)] "
+        } rounded-md shadow-md shadow-gray-400 bg-white`}
+      >
+        <form
+          className="flex flex-col gap-[.5rem] p-[1rem] w-full"
+          onSubmit={(e) => e.preventDefault()}
         >
-          <div
-            className={`h-full ${
-              characterTypeFilter === "Обычный Персонаж" ||
-              characterTypeFilter === "Главный Персонаж"
-                ? "w-full"
-                : "w-full sm:w-[calc(50%)]"
-            } rounded-md shadow-md shadow-gray-400 bg-white`}
-          >
-            <form
-              className="flex flex-col gap-[.5rem] p-[1rem] w-full"
-              onSubmit={(e) => e.preventDefault()}
-            >
+          <input
+            type="text"
+            value={characterName}
+            placeholder="Имя персонажа"
+            className="w-full border-dotted border-gray-600 border-[2px] text-[1.6rem] font-medium text-gray-700 outline-none rounded-md px-[1rem] py-[.5rem] bg-white"
+            onChange={(e) => setCharacterName(e.target.value)}
+          />
+          {translated?.characterType === "minorcharacter" ? (
+            <>
               <input
                 type="text"
-                value={translatedCharacterName}
+                value={unknownName}
+                placeholder="Неивестное имя персонажа"
                 className="w-full border-dotted border-gray-600 border-[2px] text-[1.6rem] font-medium text-gray-700 outline-none rounded-md px-[1rem] py-[.5rem] bg-white"
-                onChange={(e) => setTranslatedCharacterName(e.target.value)}
+                onChange={(e) => setUnknownName(e.target.value)}
               />
-              {translated?.characterType === "minorcharacter" ? (
-                <>
-                  <input
-                    type="text"
-                    value={translatedUnknownName}
-                    className="w-full border-dotted border-gray-600 border-[2px] text-[1.6rem] font-medium text-gray-700 outline-none rounded-md px-[1rem] py-[.5rem] bg-white"
-                    onChange={(e) => setTranslatedUnknownName(e.target.value)}
-                  />
-                  <textarea
-                    value={translatedDescription}
-                    rows={5}
-                    className="max-h-[12.5rem] w-full border-dotted border-gray-600 border-[2px] text-[1.5rem] font-medium text-gray-700 outline-none rounded-md px-[1rem] py-[.5rem] bg-white | containerScroll"
-                    onChange={(e) => setTranslatedDescription(e.target.value)}
-                  />
-                </>
-              ) : null}
-            </form>
-          </div>
-          <div
-            className={`h-full ${
-              characterTypeFilter === "Обычный Персонаж" ||
-              characterTypeFilter === "Главный Персонаж"
-                ? "w-full"
-                : "w-full sm:w-[calc(50%)] "
-            } rounded-md shadow-md shadow-gray-400 bg-white`}
-          >
-            <form
-              className="flex flex-col gap-[.5rem] p-[1rem] w-full"
-              onSubmit={(e) => e.preventDefault()}
-            >
-              <input
-                type="text"
-                value={characterName}
-                placeholder="Имя персонажа"
-                className="w-full border-dotted border-gray-600 border-[2px] text-[1.6rem] font-medium text-gray-700 outline-none rounded-md px-[1rem] py-[.5rem] bg-white"
-                onChange={(e) => setCharacterName(e.target.value)}
+              <textarea
+                value={description}
+                placeholder="Описание персонажа"
+                rows={5}
+                className="max-h-[12.5rem] w-full border-dotted border-gray-600 border-[2px] text-[1.5rem] font-medium text-gray-700 outline-none rounded-md px-[1rem] py-[.5rem] bg-white | containerScroll"
+                onChange={(e) => setDescription(e.target.value)}
               />
-              {translated?.characterType === "minorcharacter" ? (
-                <>
-                  <input
-                    type="text"
-                    value={unknownName}
-                    placeholder="Неивестное имя персонажа"
-                    className="w-full border-dotted border-gray-600 border-[2px] text-[1.6rem] font-medium text-gray-700 outline-none rounded-md px-[1rem] py-[.5rem] bg-white"
-                    onChange={(e) => setUnknownName(e.target.value)}
-                  />
-                  <textarea
-                    value={description}
-                    placeholder="Описание персонажа"
-                    rows={5}
-                    className="max-h-[12.5rem] w-full border-dotted border-gray-600 border-[2px] text-[1.5rem] font-medium text-gray-700 outline-none rounded-md px-[1rem] py-[.5rem] bg-white | containerScroll"
-                    onChange={(e) => setDescription(e.target.value)}
-                  />
-                </>
-              ) : null}
-            </form>
-          </div>
-        </div>
-      )}
-    </>
+            </>
+          ) : null}
+        </form>
+      </div>
+    </div>
   );
 }

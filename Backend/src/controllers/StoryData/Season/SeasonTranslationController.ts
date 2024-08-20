@@ -1,10 +1,10 @@
 import { RequestHandler } from "express";
 import {
+  getAllSeasonsTranslationsAndSearchService,
+  getAllSeasonsTranslationsByStoryIdAndLanguageService,
+  getSeasonByIdAndLanguageService,
   seasonCreateService,
   seasonTranslationUpdateService,
-  getAllSeasonsTranslationsByTypeAndSearchService,
-  getSeasonByIdAndLanguageService,
-  getAllSeasonsTranslationsByStoryIdAndLanguageService,
 } from "../../../services/StoryData/Season/SeasonTranslationService";
 
 type GetSeasonsBySeasonIdParams = {
@@ -72,14 +72,14 @@ type GetAllAssignedSeasonsTranslationQuery = {
 };
 // @route GET http://localhost:3500/seasons/stories/search/translations
 // @access Private
-export const getAllSeasonsTranslationsByTypeAndSearchController: RequestHandler<
+export const getAllSeasonsTranslationsAndSearchController: RequestHandler<
   unknown,
   unknown,
   unknown,
   GetAllAssignedSeasonsTranslationQuery
 > = async (req, res, next) => {
   try {
-    const seasonInfo = await getAllSeasonsTranslationsByTypeAndSearchService({
+    const seasonInfo = await getAllSeasonsTranslationsAndSearchService({
       currentLanguage: req.query.currentLanguage,
       text: req.query.text,
       storyId: req.query.storyId,

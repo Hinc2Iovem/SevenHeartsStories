@@ -9,6 +9,7 @@ export default function StorySinglePageMain() {
   const { storyId } = useParams();
   const { data: allSeasonsIds } = useGetSeasonsByStoryId({
     storyId: storyId ?? "",
+    language: "russian",
   });
 
   const [title, setTitle] = useState("");
@@ -17,6 +18,7 @@ export default function StorySinglePageMain() {
   const createNewEpisode = useCreateNewSeason({
     storyId: storyId ?? "",
     title,
+    currentLanguage: "russian",
   });
 
   const handleSubmit = async (e: React.FormEvent) => {

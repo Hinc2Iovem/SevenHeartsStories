@@ -1,12 +1,12 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import assignBlack from "../../../assets/images/Profile/assignBlack.svg";
+import useGetDecodedJWTValues from "../../../hooks/Auth/useGetDecodedJWTValues";
 import useGetAllScriptwriters from "../../../hooks/Fetching/Staff/useGetAllScriptwriters";
 import useAssignWorker from "../../../hooks/Patching/Story/useAssignWorker";
 import useOutOfModal from "../../../hooks/UI/useOutOfModal";
 import { EpisodeStatusTypes } from "../../../types/StoryData/Episode/EpisodeTypes";
 import "../../Editor/Flowchart/FlowchartStyles.css";
 import ButtonHoverPromptModal from "../../shared/ButtonAsideHoverPromptModal/ButtonHoverPromptModal";
-import useGetDecodedJWTValues from "../../../hooks/Auth/useGetDecodedJWTValues";
 
 type AssignScriptwriterModalTypes = {
   setCharacterIds: React.Dispatch<React.SetStateAction<string[]>>;
@@ -15,6 +15,8 @@ type AssignScriptwriterModalTypes = {
   openedStoryId: string;
   storyTitle: string;
   storyId: string;
+  showScriptwriters: boolean;
+  setShowScriptwriters: React.Dispatch<React.SetStateAction<boolean>>;
   assignedWorkers?:
     | {
         staffId: string;
@@ -31,9 +33,10 @@ export default function AssignScriptwriterModal({
   setCharacterIds,
   characterIds,
   assignedWorkers,
+  setShowScriptwriters,
+  showScriptwriters,
 }: AssignScriptwriterModalTypes) {
   const { userId } = useGetDecodedJWTValues();
-  const [showScriptwriters, setShowScriptwriters] = useState(false);
   const modalRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -47,23 +50,19 @@ export default function AssignScriptwriterModal({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [showScriptwriters, assignedWorkers]);
 
-  useOutOfModal({
-    modalRef,
-    setShowModal: setShowScriptwriters,
-    showModal: showScriptwriters,
-  });
-
   const { data: allScriptwriters } = useGetAllScriptwriters({
     showModal: showScriptwriters,
   });
 
-  useEffect(() => {
-    if (storyId === openedStoryId) {
-      setShowScriptwriters(true);
-    } else {
-      setShowScriptwriters(false);
-    }
-  }, [storyId, openedStoryId]);
+  console.log(showScriptwriters);
+
+  // useEffect(() => {
+  //   if (storyId === openedStoryId) {
+  //     setShowScriptwriters(true);
+  //   } else {
+  //     setShowScriptwriters(false);
+  //   }
+  // }, [storyId, openedStoryId]);
 
   const assignWorker = useAssignWorker({
     storyId,
@@ -75,6 +74,12 @@ export default function AssignScriptwriterModal({
       characterIds.map((c) => assignWorker.mutate({ staffId: c }));
     }
   };
+
+  useOutOfModal({
+    modalRef,
+    setShowModal: setShowScriptwriters,
+    showModal: showScriptwriters,
+  });
 
   return (
     <>
@@ -91,8 +96,8 @@ export default function AssignScriptwriterModal({
               setOpenedStoryId("");
             } else {
               setCharacterIds([""]);
-              setOpenedStoryId(storyId);
             }
+            setShowScriptwriters((prev) => !prev);
           }}
         >
           <img
