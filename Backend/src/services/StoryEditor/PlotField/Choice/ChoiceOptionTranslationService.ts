@@ -48,7 +48,7 @@ export const getAllChoiceOptionsTranslationByChoiceIdService = async ({
   checkCurrentLanguage({ currentLanguage });
 
   const existingItem = await TranslationChoiceOption.find({
-    plotFieldCommandChoiceId: choiceId,
+    commandId: choiceId,
     language: currentLanguage,
   }).lean();
 
@@ -76,11 +76,12 @@ export const choiceOptionUpdateTranslationService = async ({
   choiceOptionId,
   type,
 }: UpdateChoiceOptionTypes) => {
-  validateMongoId({ value: choiceId, valueName: "ChoiceOption" });
+  validateMongoId({ value: choiceId, valueName: "Choice" });
+  validateMongoId({ value: choiceOptionId, valueName: "ChoiceOption" });
 
   const existingChoice = await TranslationChoiceOption.findOne({
-    plotFieldCommandChoiceId: choiceId,
     language: currentLanguage,
+    choiceOptionId,
   }).exec();
 
   if (existingChoice) {
@@ -102,7 +103,7 @@ export const choiceOptionUpdateTranslationService = async ({
     return await TranslationChoiceOption.create({
       language: currentLanguage,
       type: type || "common",
-      plotFieldCommandChoiceId: choiceId,
+      commandId: choiceId,
       choiceOptionId,
       translations: [
         {

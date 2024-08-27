@@ -9,7 +9,6 @@ type DisplayTranslatedNonTranslatedCharacteristicTypes = {
   translateFromLanguage: CurrentlyAvailableLanguagesTypes;
   translated: TranslationCharacterCharacteristicTypes | null;
   nonTranslated: TranslationCharacterCharacteristicTypes | null;
-  storyId: string;
 };
 
 export default function DisplayTranslatedNonTranslatedCharacteristic({
@@ -17,7 +16,6 @@ export default function DisplayTranslatedNonTranslatedCharacteristic({
   nonTranslated,
   languageToTranslate,
   translateFromLanguage,
-  storyId,
 }: DisplayTranslatedNonTranslatedCharacteristicTypes) {
   const [
     translatedBackUpCharacterCharacteristic,
@@ -76,8 +74,9 @@ export default function DisplayTranslatedNonTranslatedCharacteristic({
   const updateCharacterTranslationTranslated =
     useUpdateCharacteristicTranslation({
       language: translateFromLanguage,
-      characterCharacteristicId,
-      storyId,
+      characterCharacteristicId:
+        characterCharacteristicId || nonTranslated?.characteristicId || "",
+      storyId: translated?.storyId || nonTranslated?.storyId || "",
     });
 
   useEffect(() => {
@@ -99,8 +98,9 @@ export default function DisplayTranslatedNonTranslatedCharacteristic({
 
   const updateCharacterTranslation = useUpdateCharacteristicTranslation({
     language: languageToTranslate,
-    characterCharacteristicId,
-    storyId,
+    characterCharacteristicId:
+      characterCharacteristicId || nonTranslated?.characteristicId || "",
+    storyId: translated?.storyId || nonTranslated?.storyId || "",
   });
 
   useEffect(() => {

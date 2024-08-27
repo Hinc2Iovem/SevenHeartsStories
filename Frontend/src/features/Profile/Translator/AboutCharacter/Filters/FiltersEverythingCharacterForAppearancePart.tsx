@@ -88,9 +88,6 @@ export default function FiltersEverythingCharacterForAppearancePart({
     return combinedArray;
   }, [translatedAppearancePart, nonTranslatedAppearancePart]);
 
-  console.log(memoizedCombinedTranslations);
-  console.log("characterId: ", characterId);
-
   return (
     <>
       <div className="flex w-full gap-[1rem] bg-neutral-alabaster px-[.5rem] py-[.5rem] rounded-md shadow-sm">

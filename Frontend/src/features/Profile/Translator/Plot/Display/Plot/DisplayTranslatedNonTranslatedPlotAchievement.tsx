@@ -60,9 +60,10 @@ export default function DisplayTranslatedNonTranslatedPlotAchievement({
 
   const updateCharacterTranslationTranslated = useUpdateAchievementTranslation({
     language: translateFromLanguage,
-    commandId: itemId,
-    topologyBlockId: translated?.topologyBlockId || "",
-    storyId: translated?.storyId || "",
+    commandId: itemId || nonTranslated?.commandId || "",
+    topologyBlockId:
+      translated?.topologyBlockId || nonTranslated?.topologyBlockId || "",
+    storyId: translated?.storyId || nonTranslated?.storyId || "",
   });
 
   useEffect(() => {
@@ -86,9 +87,10 @@ export default function DisplayTranslatedNonTranslatedPlotAchievement({
 
   const updateCharacterTranslation = useUpdateAchievementTranslation({
     language: languageToTranslate,
-    commandId: itemId,
-    topologyBlockId: translated?.topologyBlockId || "",
-    storyId: translated?.storyId || "",
+    commandId: itemId || nonTranslated?.commandId || "",
+    topologyBlockId:
+      translated?.topologyBlockId || nonTranslated?.topologyBlockId || "",
+    storyId: translated?.storyId || nonTranslated?.storyId || "",
   });
 
   useEffect(() => {

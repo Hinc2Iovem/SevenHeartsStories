@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import useOutOfModal from "../../../../../../hooks/UI/useOutOfModal";
 import useCreateCharacterBlank from "../hooks/Character/useCreateCharacterBlank";
-import useCreateSayCharacterCommand from "../hooks/Say/useCreateSayCharacterCommand";
+import useCreateSayCommand from "../hooks/Say/useCreateSayCommand";
 import useUpdateCommandName from "../hooks/useUpdateCommandName";
 
 type PlotFieldBlankCreateCharacterTypes = {
@@ -38,7 +38,7 @@ export default function PlotFieldBlankCreateCharacter({
   }, [showModal]);
 
   const createCharacter = useCreateCharacterBlank({
-    characterType: "MinorCharacter",
+    characterType: "minorcharacter",
     name: characterName,
     storyId: storyId ?? "",
   });
@@ -49,14 +49,14 @@ export default function PlotFieldBlankCreateCharacter({
     }
   }, [createCharacter]);
 
-  const createSayCharacterCommand = useCreateSayCharacterCommand({
-    characterId: createCharacter.data?._id ?? "",
+  const createSayCharacterCommand = useCreateSayCommand({
     plotFieldCommandId,
+    topologyBlockId,
   });
 
   useEffect(() => {
     if (characterId?.trim().length) {
-      createSayCharacterCommand.mutate({ type: "character" });
+      createSayCharacterCommand.mutate({ type: "character", characterId });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [characterId]);

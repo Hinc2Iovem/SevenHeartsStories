@@ -1,95 +1,64 @@
 import createHttpError from "http-errors";
-import {
-  CharacterTypes,
-  CharacterTypesWithAll,
-} from "../../consts/CHARACTER_TYPES";
-import { TranslationTextFieldName } from "../../consts/TRANSLATION_TEXT_FIELD_NAMES";
-import {
-  AllPossibleCharacterTypes,
-  CharacterTypeAlias,
-} from "../../controllers/StoryData/CharacterController";
-import Character from "../../models/StoryData/Character";
-import CharacterEmotion from "../../models/StoryData/CharacterEmotion";
-import Translation from "../../models/StoryData/Translation/Translation";
-import { checkCurrentLanguage } from "../../utils/checkCurrentLanguage";
-import { validateMongoId } from "../../utils/validateMongoId";
-import TranslationCharacter from "../../models/StoryData/Translation/TranslationCharacter";
+import { CharacterTypes } from "../../../consts/CHARACTER_TYPES";
+import { TranslationTextFieldName } from "../../../consts/TRANSLATION_TEXT_FIELD_NAMES";
+import Character from "../../../models/StoryData/Character";
+import TranslationCharacter from "../../../models/StoryData/Translation/TranslationCharacter";
+import { checkCurrentLanguage } from "../../../utils/checkCurrentLanguage";
+import { validateMongoId } from "../../../utils/validateMongoId";
+import { subDays, subHours, subMinutes } from "date-fns";
 
-type GetSingleCharacterByIdTypes = {
-  characterId: string;
+type GetByUpdatedAtAndLanguageTypes = {
+  currentLanguage: string | undefined;
+  updatedAt: string | undefined;
 };
 
-export const getSingleCharacterByIdService = async ({
-  characterId,
-}: GetSingleCharacterByIdTypes) => {
-  validateMongoId({ value: characterId, valueName: "Character" });
-  const existingCharacter = await Character.findById(characterId).exec();
-  if (!existingCharacter) {
-    return null;
+export const getCharacterTranslationUpdatedAtAndLanguageService = async ({
+  currentLanguage,
+  updatedAt,
+}: GetByUpdatedAtAndLanguageTypes) => {
+  if (!currentLanguage?.trim().length) {
+    throw createHttpError(400, "Language is required");
   }
 
-  return existingCharacter;
-};
+  checkCurrentLanguage({ currentLanguage });
 
-type GetAllCharacterNameTagsTypes = {
-  storyId: string;
-};
+  let startDate: Date | undefined;
+  let endDate = new Date();
 
-export const getAllCharacterNameTagsService = async ({
-  storyId,
-}: GetAllCharacterNameTagsTypes) => {
-  validateMongoId({ value: storyId, valueName: "Story" });
-  const existingCharacters = await Character.find({ storyId }).exec();
-  if (existingCharacters.length) {
-    const allNameTags: string[] = [];
-    existingCharacters.map((c) => {
-      if (c.nameTag) {
-        if (!allNameTags.includes(c.nameTag)) {
-          allNameTags.push(c.nameTag);
-        }
-      }
-    });
-    return allNameTags;
-  }
-  return [];
-};
-
-type GetCharactersByStoryIdAmdType = {
-  storyId: string;
-  type: AllPossibleCharacterTypes;
-};
-
-export const characterGetAllByStoryIdAndTypeService = async ({
-  storyId,
-  type,
-}: GetCharactersByStoryIdAmdType) => {
-  validateMongoId({ value: storyId, valueName: "Story" });
-
-  if (!type.trim().length) {
-    throw createHttpError(400, "Type is required");
+  switch (updatedAt) {
+    case "30min":
+      startDate = subMinutes(endDate, 30);
+      break;
+    case "1hr":
+      startDate = subHours(endDate, 1);
+      break;
+    case "5hr":
+      startDate = subHours(endDate, 5);
+      break;
+    case "1d":
+      startDate = subDays(endDate, 1);
+      break;
+    case "3d":
+      startDate = subDays(endDate, 3);
+      break;
+    case "7d":
+      startDate = subDays(endDate, 7);
+      break;
+    default:
+      throw createHttpError(400, "Invalid updatedAt value");
   }
 
-  if (!CharacterTypesWithAll.includes(type.toLowerCase())) {
-    throw createHttpError(
-      400,
-      `Type: ${type} is not supported, possible types are: ${CharacterTypesWithAll.map(
-        (c) => c
-      )}`
-    );
-  }
-  let existingCharacters;
-  if (type === "all") {
-    existingCharacters = await Character.find({ storyId }).exec();
-  } else {
-    existingCharacters = await Character.find({
-      storyId,
-      type: type.toLowerCase(),
-    }).exec();
-  }
-  if (!existingCharacters.length) {
+  const existingTranslations = await TranslationCharacter.find({
+    updatedAt: { $gte: startDate, $lt: endDate },
+    language: currentLanguage,
+  })
+    .lean()
+    .exec();
+
+  if (!existingTranslations.length) {
     return [];
   }
-  return existingCharacters;
+  return existingTranslations;
 };
 
 type GetAllTranslationCharactersByStoryIdTypes = {
@@ -170,61 +139,24 @@ export const characterGetAllByLanguageAndStoryIdSearchService = async ({
 
   return filteredCharacters;
 };
-type GetCharactersByStoryId = {
-  storyId: string;
-};
-
-export const characterGetAllByStoryIdService = async ({
-  storyId,
-}: GetCharactersByStoryId) => {
-  validateMongoId({ value: storyId, valueName: "Story" });
-
-  const existingCharacters = await Character.find({ storyId }).exec();
-  if (!existingCharacters.length) {
-    return [];
-  }
-  return existingCharacters;
-};
-
-type GetCharactersByStoryIdAndNameTypes = {
-  storyId: string;
-  name: string | undefined;
-};
-
-export const characterGetByStoryIdAndNameService = async ({
-  storyId,
-  name,
-}: GetCharactersByStoryIdAndNameTypes) => {
-  validateMongoId({ value: storyId, valueName: "Story" });
-  if (!name?.trim().length) {
-    throw createHttpError(400, "Name is required");
-  }
-
-  const existingCharacter = await Translation.findOne({
-    textFieldName: TranslationTextFieldName.CharacterName,
-    text: name,
-  })
-    .collation({ locale: "en", strength: 2 })
-    .lean()
-    .exec();
-  if (!existingCharacter) {
-    return null;
-  }
-
-  return existingCharacter;
-};
 
 type GetCharacterTranslationByCharacterIdTypes = {
   characterId: string;
+  currentLanguage?: string;
 };
 
 export const getCharacterTranslationByCharacterIdService = async ({
   characterId,
+  currentLanguage,
 }: GetCharacterTranslationByCharacterIdTypes) => {
+  if (!currentLanguage?.trim().length) {
+    throw createHttpError(400, "CurrentLanguage is required");
+  }
   validateMongoId({ value: characterId, valueName: "Character" });
 
   const existingCharacter = await TranslationCharacter.findOne({
     characterId,
+    language: currentLanguage,
   }).lean();
   if (!existingCharacter) {
     return null;
@@ -239,7 +171,7 @@ type CharacterCreateTypes = {
   unknownName: string | undefined;
   description: string | undefined;
   nameTag: string | undefined;
-  type: CharacterTypeAlias | undefined;
+  type: string | undefined;
   img: string | undefined;
   currentLanguage: string | undefined;
 };
@@ -384,7 +316,7 @@ export const characterCreateService = async ({
 type CharacterCreateBlankTypes = {
   storyId: string;
   name: string | undefined;
-  type: CharacterTypeAlias | undefined;
+  type: string | undefined;
   currentLanguage: string | undefined;
 };
 
@@ -433,53 +365,6 @@ export const characterCreateBlankService = async ({
     storyId,
   });
   return character;
-};
-
-type UpdateCharacterTypes = {
-  characterId: string;
-  nameTag: string | undefined;
-  type: CharacterTypeAlias | undefined;
-  img: string | undefined;
-};
-
-export const characterUpdateService = async ({
-  img,
-  nameTag,
-  type,
-  characterId,
-}: UpdateCharacterTypes) => {
-  validateMongoId({ value: characterId, valueName: "Character" });
-
-  const existingCharacter = await Character.findById(characterId).exec();
-  if (!existingCharacter) {
-    throw createHttpError(400, "Character with such id doesn't exist");
-  }
-
-  if (img?.trim().length) {
-    existingCharacter.img = img;
-  }
-  if (nameTag?.trim().length) {
-    existingCharacter.nameTag = nameTag;
-  }
-  if (type?.trim().length) {
-    if (!CharacterTypes.includes(type.toLowerCase())) {
-      throw createHttpError(
-        400,
-        "type may only be equal to (maincharacter, minorcharacter or emptycharacter)"
-      );
-    }
-    if (
-      existingCharacter.type.toLowerCase() === "maincharacter" &&
-      type.toLowerCase() !== "maincharacter"
-    ) {
-      existingCharacter.isMainCharacter = false;
-    } else if (type.toLowerCase() === "maincharacter") {
-      existingCharacter.isMainCharacter = true;
-    }
-    existingCharacter.type = type.toLowerCase();
-  }
-
-  return await existingCharacter.save();
 };
 
 type UpdateCharacterTranslationTypes = {
@@ -535,55 +420,4 @@ export const characterUpdateTranslationService = async ({
       ],
     });
   }
-};
-
-type UpdateCharacterImgTypes = {
-  characterId: string;
-  imgUrl: string | undefined;
-};
-
-export const characterUpdateImgService = async ({
-  imgUrl,
-  characterId,
-}: UpdateCharacterImgTypes) => {
-  validateMongoId({ value: characterId, valueName: "Character" });
-
-  const existingCharacter = await Character.findById(characterId).exec();
-  if (!existingCharacter) {
-    throw createHttpError(400, "Character with such id doesn't exist");
-  }
-
-  if (!imgUrl?.trim().length) {
-    throw createHttpError(400, "Img is required");
-  }
-
-  existingCharacter.img = imgUrl;
-
-  return await existingCharacter.save();
-};
-
-type DeleteCharacterTypes = {
-  characterId: string;
-};
-
-export const characterDeleteService = async ({
-  characterId,
-}: DeleteCharacterTypes) => {
-  validateMongoId({ value: characterId, valueName: "Character" });
-
-  const existingCharacter = await Character.findById(characterId).exec();
-  if (!existingCharacter) {
-    throw createHttpError(400, "Character with such id doesn't exist");
-  }
-
-  const existingCharacterEmotions = await CharacterEmotion.find({
-    characterId,
-  }).exec();
-  for (const c of existingCharacterEmotions) {
-    await c.deleteOne();
-  }
-
-  await existingCharacter.deleteOne();
-
-  return `Character with id ${characterId} was removed`;
 };

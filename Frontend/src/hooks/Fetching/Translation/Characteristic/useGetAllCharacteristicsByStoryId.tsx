@@ -8,7 +8,7 @@ export default function useGetAllCharacteristicsByStoryId({
   language = "russian",
 }: {
   storyId: string;
-  language?: CurrentlyAvailableLanguagesTypes;
+  language: CurrentlyAvailableLanguagesTypes;
 }) {
   return useQuery({
     queryKey: ["translation", language, "story", storyId, "characteristic"],

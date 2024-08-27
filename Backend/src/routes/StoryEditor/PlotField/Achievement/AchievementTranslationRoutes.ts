@@ -5,10 +5,15 @@ import {
   achievementUpdateTranslationController,
   getAllAchievementsTranslationByTopologyBlockIdController,
   getAllAchievementsTranslationByStoryIdController,
+  getAchievementTranslationUpdatedAtAndLanguageController,
 } from "../../../../controllers/StoryEditor/PlotField/Achievement/AchievementTranslationController";
 
 // Default route === /achievements
 export const achievementTranslationsRoute = express.Router();
+
+achievementTranslationsRoute
+  .route("/recent/translations")
+  .get(getAchievementTranslationUpdatedAtAndLanguageController);
 
 achievementTranslationsRoute
   .route("/:plotFieldCommandId/translations")

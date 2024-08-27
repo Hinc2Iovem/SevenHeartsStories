@@ -13,11 +13,11 @@ export default function useGetTranslationAppearancePart({
   language = "russian",
 }: GetTranslationAppearancePart) {
   return useQuery({
-    queryKey: ["translation", "appearancePart", appearancePartId],
+    queryKey: ["translation", language, "appearancePart", appearancePartId],
     queryFn: async () =>
       await axiosCustomized
         .get<TranslationAppearancePartTypes>(
-          `/translations/appearanceParts/${appearancePartId}?currentLanguage=${language}`
+          `/appearanceParts/${appearancePartId}/translations?currentLanguage=${language}`
         )
         .then((r) => r.data),
   });

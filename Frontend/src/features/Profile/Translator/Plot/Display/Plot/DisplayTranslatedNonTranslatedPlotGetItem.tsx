@@ -97,8 +97,9 @@ export default function DisplayTranslatedNonTranslatedPlotGetItem({
 
   const updateCharacterTranslationTranslated = useUpdateGetItemTranslation({
     language: translateFromLanguage,
-    commandId: itemId,
-    topologyBlockId: translated?.topologyBlockId || "",
+    commandId: itemId || nonTranslated?.commandId || "",
+    topologyBlockId:
+      translated?.topologyBlockId || nonTranslated?.topologyBlockId || "",
   });
 
   useEffect(() => {
@@ -158,8 +159,9 @@ export default function DisplayTranslatedNonTranslatedPlotGetItem({
 
   const updateCharacterTranslation = useUpdateGetItemTranslation({
     language: languageToTranslate,
-    commandId: itemId,
-    topologyBlockId: translated?.topologyBlockId || "",
+    commandId: itemId || nonTranslated?.commandId || "",
+    topologyBlockId:
+      translated?.topologyBlockId || nonTranslated?.topologyBlockId || "",
   });
 
   useEffect(() => {

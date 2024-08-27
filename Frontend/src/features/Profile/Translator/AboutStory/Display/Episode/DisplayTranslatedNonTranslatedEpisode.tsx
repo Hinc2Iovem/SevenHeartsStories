@@ -10,7 +10,6 @@ import "../../../../../Editor/Flowchart/FlowchartStyles.css";
 type DisplayTranslatedNonTranslatedEpisodeTypes = {
   languageToTranslate: CurrentlyAvailableLanguagesTypes;
   translateFromLanguage: CurrentlyAvailableLanguagesTypes;
-  seasonId: string;
 } & CombinedTranslatedAndNonTranslatedEpisodeTypes;
 
 export default function DisplayTranslatedNonTranslatedEpisode({
@@ -18,7 +17,6 @@ export default function DisplayTranslatedNonTranslatedEpisode({
   translated,
   languageToTranslate,
   translateFromLanguage,
-  seasonId,
 }: DisplayTranslatedNonTranslatedEpisodeTypes) {
   const [translatedBackUpEpisodeName, setTranslatedBackUpEpisodeName] =
     useState("");
@@ -80,8 +78,8 @@ export default function DisplayTranslatedNonTranslatedEpisode({
 
   const updateCharacterTranslationTranslated = useUpdateEpisodeTranslation({
     language: translateFromLanguage,
-    episodeId,
-    seasonId,
+    episodeId: episodeId || nonTranslated?.episodeId || "",
+    seasonId: translated?.seasonId || nonTranslated?.seasonId || "",
   });
 
   useEffect(() => {
@@ -124,8 +122,8 @@ export default function DisplayTranslatedNonTranslatedEpisode({
 
   const updateCharacterTranslation = useUpdateEpisodeTranslation({
     language: languageToTranslate,
-    episodeId,
-    seasonId,
+    episodeId: episodeId || nonTranslated?.episodeId || "",
+    seasonId: translated?.seasonId || nonTranslated?.seasonId || "",
   });
 
   useEffect(() => {

@@ -58,6 +58,7 @@ import {
   choiceTranslationsRoute,
   choiceOptionTranslationsRoute,
   characteristicTranslationRoute,
+  characterTranslationRoute,
 } from "./routes/index";
 import { verifyJWT } from "./middlewares/verifyJWT";
 
@@ -89,6 +90,7 @@ app.use("/appearanceParts", verifyJWT, appearancePartTranslationsRoute);
 app.use("/characterCharacteristics", verifyJWT, characterCharacteristicRoute);
 app.use("/characteristics", verifyJWT, characteristicTranslationRoute);
 app.use("/characters", verifyJWT, characterRoute);
+app.use("/characters", verifyJWT, characterTranslationRoute);
 app.use("/characterEmotions", verifyJWT, characterEmotionRoute);
 app.use("/commandLibraries", verifyJWT, commandLibraryRoute);
 app.use("/episodes", verifyJWT, episodeRoute);

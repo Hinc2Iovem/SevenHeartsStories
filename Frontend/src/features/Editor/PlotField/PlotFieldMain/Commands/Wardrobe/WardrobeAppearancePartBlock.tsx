@@ -23,7 +23,9 @@ export default function WardrobeAppearancePartBlock({
 
   useEffect(() => {
     if (appearancePartTranslated) {
-      setAppearancePartName(appearancePartTranslated.text);
+      setAppearancePartName(
+        appearancePartTranslated.translations[0]?.text || ""
+      );
     }
   }, [appearancePartTranslated]);
 
@@ -47,6 +49,7 @@ export default function WardrobeAppearancePartBlock({
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [imagePreview]);
+
   return (
     <div
       className={`${
@@ -57,15 +60,15 @@ export default function WardrobeAppearancePartBlock({
         <img
           src={(appearancePartImg as string) || ""}
           alt="AppearancePartImg"
-          className="w-full object-contain h-[7rem]"
+          className="w-full object-contain h-[7rem] translate-y-[.5rem]"
         />
       ) : (
         <PreviewImageSmallIcons
           imagePreview={imagePreview}
-          imgClasses="w-full object-contain h-[7rem]"
+          imgClasses="w-full object-contain h-full translate-y-[.5rem]"
           setPreview={setPreview}
-          divClasses="relative w-full"
-          imgNotExistingClasses="absolute w-[50%] left-1/2 -translate-x-1/2 top-[.5rem] rounded-md"
+          divClasses="relative w-full h-[7rem]"
+          imgNotExistingClasses="w-[50%] translate-x-1/2 translate-y-[.5rem] top-[.5rem] rounded-md h-full object-contain"
         />
       )}
       <h4
@@ -74,7 +77,7 @@ export default function WardrobeAppearancePartBlock({
             setShowFullName(true);
           }
         }}
-        className="text-[1.2rem] whitespace-nowrap px-[.2rem]"
+        className="text-[1.3rem] whitespace-nowrap px-[1rem]"
       >
         {appearancePartName?.trim().length > 13
           ? appearancePartName.substring(0, 13) + "..."

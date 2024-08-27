@@ -87,11 +87,11 @@ export const choiceOptionUpdateTranslationController: RequestHandler<
 > = async (req, res, next) => {
   try {
     const choiceOption = await choiceOptionUpdateTranslationService({
+      choiceId: req.params.choiceId,
+      choiceOptionId: req.params.choiceOptionId,
       text: req.body.text,
       textFieldName: req.body.textFieldName,
       currentLanguage: req.body.currentLanguage,
-      choiceId: req.params.choiceId,
-      choiceOptionId: req.params.choiceOptionId,
       type: req.body.type,
     });
     if (choiceOption) {

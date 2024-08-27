@@ -2,23 +2,32 @@ import useGetAllChoiceOptionsByChoiceId from "../../hooks/Choice/ChoiceOption/us
 import ChoiceOptionBlock from "./ChoiceOptionBlock";
 
 type ChoiceOptionBlockTypes = {
-  choiceId: string;
+  currentTopologyBlockId: string;
+  plotFieldCommandId: string;
 };
 
 export default function ChoiceOptionBlocksList({
-  choiceId,
+  currentTopologyBlockId,
+  plotFieldCommandId,
 }: ChoiceOptionBlockTypes) {
   const { data: allChoiceOptionBlocks } = useGetAllChoiceOptionsByChoiceId({
-    plotFieldCommandChoiceId: choiceId,
+    plotFieldCommandChoiceId: plotFieldCommandId,
+    language: "russian",
   });
+
   return (
     <section
       className={`${
         allChoiceOptionBlocks?.length ? "" : "hidden"
-      } w-full grid grid-cols-[repeat(auto-fill,minmax(20rem,1fr))] gap-[1rem] bg-neutral-magnolia rounded-md shadow-md p-[.5rem] items-center`}
+      }  w-full grid grid-cols-[repeat(auto-fill,minmax(20rem,1fr))] gap-[1rem] bg-neutral-magnolia rounded-md shadow-md p-[.5rem] items-center`}
     >
       {allChoiceOptionBlocks?.map((co) => (
-        <ChoiceOptionBlock key={co._id} {...co} />
+        <ChoiceOptionBlock
+          plotFieldCommandId={plotFieldCommandId}
+          currentTopologyBlockId={currentTopologyBlockId}
+          key={co._id}
+          {...co}
+        />
       ))}
     </section>
   );

@@ -1,25 +1,25 @@
 import { useQuery } from "@tanstack/react-query";
 import { axiosCustomized } from "../../../../../../../api/axios";
-import { TranslationCommandTypes } from "../../../../../../../types/Additional/TranslationTypes";
 import { CurrentlyAvailableLanguagesTypes } from "../../../../../../../types/Additional/CURRENTLY_AVAILABEL_LANGUAGES";
+import { TranslationCommandWardrobeTypes } from "../../../../../../../types/Additional/TranslationTypes";
 
 type GetCommandWardrobeTypes = {
-  commandWardrobeId: string;
+  commandId: string;
   language?: CurrentlyAvailableLanguagesTypes;
 };
 
 export default function useGetCommandWardrobeTranslation({
-  commandWardrobeId,
+  commandId,
   language = "russian",
 }: GetCommandWardrobeTypes) {
   return useQuery({
-    queryKey: ["translation", "command", "wardrobe", commandWardrobeId],
+    queryKey: ["translation", language, "wardrobe", commandId],
     queryFn: async () =>
       await axiosCustomized
-        .get<TranslationCommandTypes[]>(
-          `/translations/plotFieldCommands/wardrobes/${commandWardrobeId}?currentLanguage=${language}`
+        .get<TranslationCommandWardrobeTypes>(
+          `/commandWardrobes/${commandId}/translations?currentLanguage=${language}`
         )
         .then((r) => r.data),
-    enabled: !!commandWardrobeId,
+    enabled: !!commandId && !!language,
   });
 }

@@ -5,8 +5,38 @@ import {
   createAppearancePartTranslationService,
   getAllAppearancePartsTranslationByCharacterIdAndTypeService,
   getAllAppearancePartsTranslationByCharacterIdService,
+  getAppearancePartTranslationUpdatedAtAndLanguageService,
 } from "../../../services/StoryData/AppearancePart/AppearancePartTranslationService";
 import { AppearancePartsTypes } from "../../../consts/APPEARANCE_PARTS";
+
+type GetUpdatedAtAndLanguageQuery = {
+  currentLanguage: string | undefined;
+  updatedAt: string | undefined;
+};
+
+// @route GET http://localhost:3500/appearanceParts/recent/translations
+// @access Private
+export const getAppearancePartTranslationUpdatedAtAndLanguageController: RequestHandler<
+  unknown,
+  unknown,
+  unknown,
+  GetUpdatedAtAndLanguageQuery
+> = async (req, res, next) => {
+  try {
+    const textFieldName =
+      await getAppearancePartTranslationUpdatedAtAndLanguageService({
+        currentLanguage: req.query.currentLanguage,
+        updatedAt: req.query.updatedAt,
+      });
+    if (textFieldName) {
+      return res.status(201).json(textFieldName);
+    } else {
+      return res.status(400).json({ message: "Something went wrong" });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
 
 type AppearancePartByAppearancePartIdParams = {
   appearancePartId: string;

@@ -60,8 +60,9 @@ export default function DisplayTranslatedNonTranslatedPlotSay({
 
   const updateCharacterTranslationTranslated = useUpdateSayTranslation({
     language: translateFromLanguage,
-    commandId: itemId,
-    topologyBlockId: translated?.topologyBlockId || "",
+    commandId: itemId || nonTranslated?.commandId || "",
+    topologyBlockId:
+      translated?.topologyBlockId || nonTranslated?.topologyBlockId || "",
   });
 
   useEffect(() => {
@@ -85,8 +86,9 @@ export default function DisplayTranslatedNonTranslatedPlotSay({
 
   const updateCharacterTranslation = useUpdateSayTranslation({
     language: languageToTranslate,
-    commandId: itemId,
-    topologyBlockId: translated?.topologyBlockId || "",
+    commandId: itemId || nonTranslated?.commandId || "",
+    topologyBlockId:
+      translated?.topologyBlockId || nonTranslated?.topologyBlockId || "",
   });
 
   useEffect(() => {

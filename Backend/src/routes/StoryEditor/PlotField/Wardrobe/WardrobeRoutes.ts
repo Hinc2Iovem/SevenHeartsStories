@@ -13,7 +13,9 @@ export const wardrobeRoute = express.Router();
 
 wardrobeRoute
   .route("/wardrobes/:commandWardrobeId")
-  .get(getCommandWardrobeByAppearancePartIdAndCommandWardrobeIdController);
+  .get(getCommandWardrobeByAppearancePartIdAndCommandWardrobeIdController)
+  .patch(updateCommandWardrobeController)
+  .delete(deleteCommandWardrobeController);
 
 wardrobeRoute
   .route("/:plotFieldCommandId/wardrobes")
@@ -23,8 +25,3 @@ wardrobeRoute
 wardrobeRoute
   .route("/wardrobes/:commandWardrobeId/appearanceParts/:appearancePartId")
   .post(createCommandWardrobeAppearancePartController);
-
-wardrobeRoute
-  .route("/wardrobes/:commandWardrobeId")
-  .patch(updateCommandWardrobeController)
-  .delete(deleteCommandWardrobeController);

@@ -1,6 +1,9 @@
-import useGetAllCharacteristics from "../../../../../../../hooks/Fetching/CharacterCharacteristic/useGetAllCharacteristics";
+import { useParams } from "react-router-dom";
+import useGetAllCharacteristicsByStoryId from "../../../../../../../hooks/Fetching/Translation/Characteristic/useGetAllCharacteristicsByStoryId";
 import PlotfieldCharacteristicsPrompt from "./PlotfieldCharacteristicsPrompt";
 import "../promptStyles.css";
+import useOutOfModal from "../../../../../../../hooks/UI/useOutOfModal";
+import { useRef } from "react";
 
 type PlotfieldCharacteristicPromptMainTypes = {
   setCharacteristicName: React.Dispatch<React.SetStateAction<string>>;
@@ -15,15 +18,27 @@ export default function PlotfieldCharacteristicPromptMain({
   setShowCharacteristicModal,
   showCharacteristicModal,
 }: PlotfieldCharacteristicPromptMainTypes) {
-  const { data: allCharacteristics } = useGetAllCharacteristics();
+  const { storyId } = useParams();
+  const { data: allCharacteristics } = useGetAllCharacteristicsByStoryId({
+    storyId: storyId || "",
+    language: "russian",
+  });
 
+  const modalRef = useRef<HTMLDivElement>(null);
+
+  useOutOfModal({
+    modalRef,
+    setShowModal: setShowCharacteristicModal,
+    showModal: showCharacteristicModal,
+  });
   return (
     <aside
+      ref={modalRef}
       className={`${
         showCharacteristicModal ? "" : "hidden"
-      } translate-y-[1.5rem] right-0 absolute top-1/2 z-[10] p-[1rem] min-w-fit w-full max-h-[10rem] overflow-y-auto bg-white shadow-md rounded-md flex flex-col gap-[1rem] | scrollBar`}
+      } translate-y-[.5rem] right-0 absolute z-[10] p-[1rem] min-w-fit w-full max-h-[10rem] overflow-y-auto bg-white shadow-md rounded-md flex flex-col gap-[1rem] | scrollBar`}
     >
-      {allCharacteristics &&
+      {allCharacteristics?.length ? (
         allCharacteristics?.map((c) => (
           <PlotfieldCharacteristicsPrompt
             key={c._id}
@@ -32,7 +47,18 @@ export default function PlotfieldCharacteristicPromptMain({
             setShowCharacteristicModal={setShowCharacteristicModal}
             {...c}
           />
-        ))}
+        ))
+      ) : (
+        <button
+          type="button"
+          onClick={() => {
+            setShowCharacteristicModal(false);
+          }}
+          className="whitespace-nowrap w-full flex-wrap text-start text-[1.3rem] px-[.5rem] py-[.2rem] hover:bg-primary-light-blue hover:text-white transition-all rounded-md"
+        >
+          Пусто
+        </button>
+      )}
     </aside>
   );
 }

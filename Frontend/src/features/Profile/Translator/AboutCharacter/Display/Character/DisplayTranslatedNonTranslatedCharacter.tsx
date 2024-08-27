@@ -116,7 +116,7 @@ export default function DisplayTranslatedNonTranslatedCharacter({
 
   const updateCharacterTranslationTranslated = useUpdateCharacterTranslation({
     language: translateFromLanguage,
-    characterId,
+    characterId: characterId || nonTranslated?.characterId || "",
   });
 
   useEffect(() => {
@@ -159,7 +159,7 @@ export default function DisplayTranslatedNonTranslatedCharacter({
 
   const updateCharacterTranslation = useUpdateCharacterTranslation({
     language: languageToTranslate,
-    characterId,
+    characterId: characterId || nonTranslated?.characterId || "",
   });
   useEffect(() => {
     if (

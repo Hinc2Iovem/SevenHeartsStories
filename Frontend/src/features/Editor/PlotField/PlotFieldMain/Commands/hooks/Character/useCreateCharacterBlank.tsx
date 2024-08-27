@@ -1,8 +1,10 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { axiosCustomized } from "../../../../../../../api/axios";
 import { CurrentlyAvailableLanguagesTypes } from "../../../../../../../types/Additional/CURRENTLY_AVAILABEL_LANGUAGES";
-import { CharacterGetTypes } from "../../../../../../../types/StoryData/Character/CharacterTypes";
-import { CharacterTypes } from "../../../../../../Character/CharacterListPage";
+import {
+  CharacterGetTypes,
+  CharacterTypes,
+} from "../../../../../../../types/StoryData/Character/CharacterTypes";
 
 type CreateCharacterTypes = {
   storyId: string;
@@ -17,7 +19,7 @@ export default function useCreateCharacterBlank({
   characterType,
   language = "russian",
 }: CreateCharacterTypes) {
-  //   const queryClient = useQueryClient();
+  const queryClient = useQueryClient();
 
   return useMutation({
     mutationKey: ["story", storyId, "new", "character", name],
@@ -29,12 +31,17 @@ export default function useCreateCharacterBlank({
           type: characterType.toLowerCase(),
         })
         .then((r) => r.data),
-    // onSuccess: () => {
-    //   queryClient.invalidateQueries({
-    //     queryKey: ["story", storyId, "characters", searchCharacterType],
-    //     exact: true,
-    //     type: "active",
-    //   });
-    // },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["translation", language, "character", "story", storyId],
+        exact: true,
+        type: "active",
+      });
+      // queryClient.invalidateQueries({
+      //   queryKey: ["plotfieldComamnd", plotFieldCommandId, "say"],
+      //   exact: true,
+      //   type: "active",
+      // });
+    },
   });
 }

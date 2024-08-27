@@ -3,9 +3,39 @@ import {
   achievementTranslationByCommandIdService,
   achievementUpdateTranslationService,
   createAchievementTranslationService,
+  getAchievementTranslationUpdatedAtAndLanguageService,
   getAllAchievementsTranslationByStoryIdService,
   getAllAchievementsTranslationByTopologyBlockIdService,
 } from "../../../../services/StoryEditor/PlotField/Achievement/AchievementTranslationService";
+
+type GetUpdatedAtAndLanguageQuery = {
+  currentLanguage: string | undefined;
+  updatedAt: string | undefined;
+};
+
+// @route GET http://localhost:3500/achievements/recent/translations
+// @access Private
+export const getAchievementTranslationUpdatedAtAndLanguageController: RequestHandler<
+  unknown,
+  unknown,
+  unknown,
+  GetUpdatedAtAndLanguageQuery
+> = async (req, res, next) => {
+  try {
+    const textFieldName =
+      await getAchievementTranslationUpdatedAtAndLanguageService({
+        currentLanguage: req.query.currentLanguage,
+        updatedAt: req.query.updatedAt,
+      });
+    if (textFieldName) {
+      return res.status(201).json(textFieldName);
+    } else {
+      return res.status(400).json({ message: "Something went wrong" });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
 
 type AchievementByPlotFieldCommandIdParams = {
   plotFieldCommandId: string;

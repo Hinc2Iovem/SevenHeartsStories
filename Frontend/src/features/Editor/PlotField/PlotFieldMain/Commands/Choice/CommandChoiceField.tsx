@@ -91,12 +91,13 @@ export default function CommandChoiceField({
           isAuthor ? "text-white bg-green-300" : "bg-white text-gray-700"
         } ${
           disabledBtn ? "cursor-not-allowed" : ""
-        } shadow-md text-[1.3rem] px-[1rem] py-[.5rem]`}
+        } flex-grow shadow-md text-[1.3rem] px-[1rem] py-[.5rem] outline-gray-300`}
       >
         Автор
       </button>
       <ChoiceQuestionField
         topologyBlockId={topologyBlockId}
+        plotFieldCommandId={plotFieldCommandId}
         characterEmotionId={commandChoice?.characterEmotionId || ""}
         characterId={characterId}
         setCharacterId={setCharacterId}
@@ -104,7 +105,10 @@ export default function CommandChoiceField({
         choiceId={commandChoice?._id || ""}
       />
 
-      <ChoiceOptionBlocksList choiceId={commandChoiceId} />
+      <ChoiceOptionBlocksList
+        plotFieldCommandId={plotFieldCommandId}
+        currentTopologyBlockId={topologyBlockId}
+      />
     </div>
   );
 }

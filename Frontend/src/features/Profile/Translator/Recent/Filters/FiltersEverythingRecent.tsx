@@ -2,17 +2,17 @@ import { useState } from "react";
 import { CurrentlyAvailableLanguagesTypes } from "../../../../../types/Additional/CURRENTLY_AVAILABEL_LANGUAGES";
 import { TranslationCommandTypes } from "../../../../../types/Additional/TranslationTypes";
 import PeriodPrompt from "../../InputPrompts/PeriodPrompt";
-import DisplayTranslatedNonTranslatedRecentAppearancePart from "../Display/DisplayTranslatedNonTranslatedRecentAppearancePart";
-import DisplayTranslatedNonTranslatedRecentCharacter from "../Display/DisplayTranslatedNonTranslatedRecentCharacter";
-import DisplayTranslatedNonTranslatedRecentCharacteristic from "../Display/DisplayTranslatedNonTranslatedRecentCharacteristic";
-import DisplayTranslatedNonTranslatedRecentChoice from "../Display/DisplayTranslatedNonTranslatedRecentChoice";
-import DisplayTranslatedNonTranslatedRecentEpisode from "../Display/DisplayTranslatedNonTranslatedRecentEpisode";
-import DisplayTranslatedNonTranslatedRecentGetItem from "../Display/DisplayTranslatedNonTranslatedRecentGetItem";
-import DisplayTranslatedNonTranslatedRecentOneLiners from "../Display/DisplayTranslatedNonTranslatedRecentOneLiners";
-import DisplayTranslatedNonTranslatedRecentSeason from "../Display/DisplayTranslatedNonTranslatedRecentSeason";
-import DisplayTranslatedNonTranslatedRecentStory from "../Display/DisplayTranslatedNonTranslatedRecentStory";
-import useMemoizeRefinedTranslations from "./useMemoizeRefinedTranslations";
-import useInvalidateTranslatorQueries from "../../../../../hooks/helpers/Profile/Translator/useInvalidateTranslatorQueries";
+import FiltersEverythingCharacterForAppearancePartRecent from "./AboutCharacter/FiltersEverythingCharacterForAppearancePartRecent";
+import FiltersEverythingCharacterForCharacterRecent from "./AboutCharacter/FiltersEverythingCharacterForCharacterRecent";
+import FiltersEverythingCharacterForCharacteristicRecent from "./AboutCharacter/FiltersEverythingCharacterForCharacteristicRecent";
+import FiltersEverythingStoryForEpisodeRecent from "./AboutStory/FiltersEverythingStoryForEpisodeRecent";
+import FiltersEverythingStoryForSeasonRecent from "./AboutStory/FiltersEverythingStoryForSeasonRecent";
+import FiltersEverythingStoryForStoryRecent from "./AboutStory/FiltersEverythingStoryForStoryRecent";
+import FiltersEverythingPlotAchievementRecent from "./Plot/FiltersEverythingPlotAchievementRecent";
+import FiltersEverythingPlotChoiceRecent from "./Plot/FiltersEverythingPlotChoiceRecent";
+import FiltersEverythingPlotGetItemRecent from "./Plot/FiltersEverythingPlotGetItemRecent";
+import FiltersEverythingPlotSayRecent from "./Plot/FiltersEverythingPlotSayRecent";
+import FiltersEverythingPlotCommandWardrobeRecent from "./Plot/FiltersEverythingPlotCommandWardrobeRecent";
 
 type FiltersEverythingCharacterForRecentTypes = {
   translateFromLanguage: CurrentlyAvailableLanguagesTypes;
@@ -40,21 +40,9 @@ export default function FiltersEverythingRecent({
   prevTranslateFromLanguage,
   prevTranslateToLanguage,
 }: FiltersEverythingCharacterForRecentTypes) {
-  useInvalidateTranslatorQueries({
-    prevTranslateFromLanguage,
-    prevTranslateToLanguage,
-    queryKey: "updatedAt",
-    translateToLanguage,
-  });
   const [period, setPeriod] = useState<UpdatedAtPossibleVariationTypes>(
     "" as UpdatedAtPossibleVariationTypes
   );
-
-  const memoizedCombinedMultipleCommandsTranslations =
-    useMemoizeRefinedTranslations({
-      period,
-      translateFromLanguage,
-    });
 
   return (
     <>
@@ -62,161 +50,83 @@ export default function FiltersEverythingRecent({
         <PeriodPrompt setPeriod={setPeriod} period={period} />
       </div>
       <main className="w-full flex flex-col gap-[1rem]">
-        {memoizedCombinedMultipleCommandsTranslations.oneLiners.translated
-          .length > 0 ? (
-          <div
-            className={`grid grid-cols-[repeat(auto-fill,minmax(30rem,1fr))] sm:grid-cols-[repeat(auto-fill,minmax(50rem,1fr))] gap-[1rem] w-full`}
-          >
-            {memoizedCombinedMultipleCommandsTranslations.oneLiners.translated.map(
-              (t) => (
-                <DisplayTranslatedNonTranslatedRecentOneLiners
-                  key={t._id}
-                  translated={t}
-                  languageToTranslate={translateToLanguage}
-                  translateFromLanguage={translateFromLanguage}
-                />
-              )
-            )}
-          </div>
-        ) : null}
-        {memoizedCombinedMultipleCommandsTranslations.choice.translated.length >
-        0 ? (
-          <div
-            className={`grid grid-cols-[repeat(auto-fill,minmax(30rem,1fr))] sm:grid-cols-[repeat(auto-fill,minmax(50rem,1fr))] gap-[1rem] w-full`}
-          >
-            {memoizedCombinedMultipleCommandsTranslations.choice.translated.map(
-              (t) => (
-                <DisplayTranslatedNonTranslatedRecentChoice
-                  key={t._id}
-                  translated={t}
-                  languageToTranslate={translateToLanguage}
-                  translateFromLanguage={translateFromLanguage}
-                />
-              )
-            )}
-          </div>
-        ) : null}
-        {memoizedCombinedMultipleCommandsTranslations.getItem.translated
-          .length > 0 ? (
-          <div
-            className={`grid grid-cols-[repeat(auto-fill,minmax(30rem,1fr))] sm:grid-cols-[repeat(auto-fill,minmax(50rem,1fr))] gap-[1rem] w-full`}
-          >
-            {memoizedCombinedMultipleCommandsTranslations.getItem.translated.map(
-              (t, i) => (
-                <DisplayTranslatedNonTranslatedRecentGetItem
-                  key={t?.getItemGrouped[i]?._id}
-                  translated={t.getItemGrouped}
-                  languageToTranslate={translateToLanguage}
-                  translateFromLanguage={translateFromLanguage}
-                />
-              )
-            )}
-          </div>
-        ) : null}
-        {memoizedCombinedMultipleCommandsTranslations.characteristic.translated
-          .length > 0 ? (
-          <div
-            className={`grid grid-cols-[repeat(auto-fill,minmax(25rem,1fr))] gap-[1rem] w-full`}
-          >
-            {memoizedCombinedMultipleCommandsTranslations.characteristic.translated.map(
-              (t) => (
-                <DisplayTranslatedNonTranslatedRecentCharacteristic
-                  key={t._id + "-ctCharacteristic"}
-                  languageToTranslate={translateToLanguage}
-                  translateFromLanguage={translateFromLanguage}
-                  translated={t}
-                />
-              )
-            )}
-          </div>
-        ) : null}
-        {memoizedCombinedMultipleCommandsTranslations.story.translated.length >
-        0 ? (
-          <div
-            className={`grid grid-cols-[repeat(auto-fill,minmax(30rem,1fr))] sm:grid-cols-[repeat(auto-fill,minmax(50rem,1fr))] gap-[1rem] w-full`}
-          >
-            {memoizedCombinedMultipleCommandsTranslations.story.translated.map(
-              (ct, i) => (
-                <DisplayTranslatedNonTranslatedRecentStory
-                  key={(ct.storyGrouped[i]?._id || i) + "-ctStory"}
-                  languageToTranslate={translateToLanguage}
-                  translateFromLanguage={translateFromLanguage}
-                  translated={ct.storyGrouped}
-                />
-              )
-            )}
-          </div>
-        ) : null}
-        {memoizedCombinedMultipleCommandsTranslations.episode.translated
-          .length > 0 ? (
-          <div
-            className={`grid grid-cols-[repeat(auto-fill,minmax(30rem,1fr))] sm:grid-cols-[repeat(auto-fill,minmax(50rem,1fr))] gap-[1rem] w-full`}
-          >
-            {memoizedCombinedMultipleCommandsTranslations.episode.translated.map(
-              (ct, i) => (
-                <DisplayTranslatedNonTranslatedRecentEpisode
-                  key={(ct.episodeGrouped[i]?._id || i) + "-ctEpisode"}
-                  languageToTranslate={translateToLanguage}
-                  translated={ct.episodeGrouped}
-                  translateFromLanguage={translateFromLanguage}
-                />
-              )
-            )}
-          </div>
-        ) : null}
-        {memoizedCombinedMultipleCommandsTranslations.season.translated.length >
-        0 ? (
-          <div
-            className={`grid grid-cols-[repeat(auto-fill,minmax(30rem,1fr))] gap-[1rem] w-full`}
-          >
-            {memoizedCombinedMultipleCommandsTranslations.season.translated.map(
-              (ct, i) => (
-                <DisplayTranslatedNonTranslatedRecentSeason
-                  key={(ct._id || i) + "-ctSeason"}
-                  languageToTranslate={translateToLanguage}
-                  translated={ct}
-                  translateFromLanguage={translateFromLanguage}
-                />
-              )
-            )}
-          </div>
-        ) : null}
-
-        {memoizedCombinedMultipleCommandsTranslations.appearancePart.translated
-          .length > 0 ? (
-          <div
-            className={`grid grid-cols-[repeat(auto-fill,minmax(25rem,1fr))] gap-[1rem] w-full`}
-          >
-            {memoizedCombinedMultipleCommandsTranslations.appearancePart.translated.map(
-              (ct, i) => (
-                <DisplayTranslatedNonTranslatedRecentAppearancePart
-                  key={(ct._id || i) + "-ctAppearancePart"}
-                  languageToTranslate={translateToLanguage}
-                  translateFromLanguage={translateFromLanguage}
-                  translated={ct}
-                />
-              )
-            )}
-          </div>
-        ) : null}
-        {memoizedCombinedMultipleCommandsTranslations.character.translated
-          .length > 0 ? (
-          <div
-            className={`grid grid-cols-[repeat(auto-fill,minmax(30rem,1fr))] sm:grid-cols-[repeat(auto-fill,minmax(50rem,1fr))] gap-[1rem] w-full`}
-          >
-            {memoizedCombinedMultipleCommandsTranslations.character.translated.map(
-              (ct, i) => (
-                <DisplayTranslatedNonTranslatedRecentCharacter
-                  key={(ct?.characterGrouped[i]?._id || i) + "-ct"}
-                  languageToTranslate={translateToLanguage}
-                  translated={ct.characterGrouped}
-                  translateFromLanguage={translateFromLanguage}
-                  characterTypeFilter=""
-                />
-              )
-            )}
-          </div>
-        ) : null}
+        <FiltersEverythingCharacterForAppearancePartRecent
+          prevTranslateFromLanguage={prevTranslateFromLanguage}
+          prevTranslateToLanguage={prevTranslateToLanguage}
+          translateFromLanguage={translateFromLanguage}
+          translateToLanguage={translateToLanguage}
+          updatedAt={period}
+        />
+        <FiltersEverythingCharacterForCharacterRecent
+          prevTranslateFromLanguage={prevTranslateFromLanguage}
+          prevTranslateToLanguage={prevTranslateToLanguage}
+          translateFromLanguage={translateFromLanguage}
+          translateToLanguage={translateToLanguage}
+          updatedAt={period}
+        />
+        <FiltersEverythingCharacterForCharacteristicRecent
+          prevTranslateFromLanguage={prevTranslateFromLanguage}
+          prevTranslateToLanguage={prevTranslateToLanguage}
+          translateFromLanguage={translateFromLanguage}
+          translateToLanguage={translateToLanguage}
+          updatedAt={period}
+        />
+        <FiltersEverythingStoryForEpisodeRecent
+          prevTranslateFromLanguage={prevTranslateFromLanguage}
+          prevTranslateToLanguage={prevTranslateToLanguage}
+          translateFromLanguage={translateFromLanguage}
+          translateToLanguage={translateToLanguage}
+          updatedAt={period}
+        />
+        <FiltersEverythingStoryForSeasonRecent
+          prevTranslateFromLanguage={prevTranslateFromLanguage}
+          prevTranslateToLanguage={prevTranslateToLanguage}
+          translateFromLanguage={translateFromLanguage}
+          translateToLanguage={translateToLanguage}
+          updatedAt={period}
+        />
+        <FiltersEverythingStoryForStoryRecent
+          prevTranslateFromLanguage={prevTranslateFromLanguage}
+          prevTranslateToLanguage={prevTranslateToLanguage}
+          translateFromLanguage={translateFromLanguage}
+          translateToLanguage={translateToLanguage}
+          updatedAt={period}
+        />
+        <FiltersEverythingPlotAchievementRecent
+          prevTranslateFromLanguage={prevTranslateFromLanguage}
+          prevTranslateToLanguage={prevTranslateToLanguage}
+          translateFromLanguage={translateFromLanguage}
+          translateToLanguage={translateToLanguage}
+          updatedAt={period}
+        />
+        <FiltersEverythingPlotChoiceRecent
+          prevTranslateFromLanguage={prevTranslateFromLanguage}
+          prevTranslateToLanguage={prevTranslateToLanguage}
+          translateFromLanguage={translateFromLanguage}
+          translateToLanguage={translateToLanguage}
+          updatedAt={period}
+        />
+        <FiltersEverythingPlotGetItemRecent
+          prevTranslateFromLanguage={prevTranslateFromLanguage}
+          prevTranslateToLanguage={prevTranslateToLanguage}
+          translateFromLanguage={translateFromLanguage}
+          translateToLanguage={translateToLanguage}
+          updatedAt={period}
+        />
+        <FiltersEverythingPlotSayRecent
+          prevTranslateFromLanguage={prevTranslateFromLanguage}
+          prevTranslateToLanguage={prevTranslateToLanguage}
+          translateFromLanguage={translateFromLanguage}
+          translateToLanguage={translateToLanguage}
+          updatedAt={period}
+        />
+        <FiltersEverythingPlotCommandWardrobeRecent
+          prevTranslateFromLanguage={prevTranslateFromLanguage}
+          prevTranslateToLanguage={prevTranslateToLanguage}
+          translateFromLanguage={translateFromLanguage}
+          translateToLanguage={translateToLanguage}
+          updatedAt={period}
+        />
       </main>
     </>
   );

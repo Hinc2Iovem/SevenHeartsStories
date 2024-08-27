@@ -2,9 +2,9 @@ import mongoose, { InferSchemaType, model } from "mongoose";
 
 export const translationChoiceOptionSchema = new mongoose.Schema(
   {
-    plotFieldCommandChoiceId: {
+    commandId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "PlotFieldCommandChoice",
+      ref: "PlotFieldCommand",
     },
     choiceOptionId: {
       type: mongoose.Schema.Types.ObjectId,

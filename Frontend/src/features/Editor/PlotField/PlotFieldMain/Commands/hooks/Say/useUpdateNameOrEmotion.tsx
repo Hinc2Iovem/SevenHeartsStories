@@ -4,9 +4,8 @@ import { axiosCustomized } from "../../../../../../../api/axios";
 type UpdateNameOrEmotionTypes = {
   plotFieldCommandId: string;
   plotFieldCommandSayId: string;
-  characterId: string;
-  characterEmotionId: string;
-  prevEmotionId: string;
+  characterId?: string;
+  characterEmotionId?: string;
 };
 
 export default function useUpdateNameOrEmotion({
@@ -14,7 +13,6 @@ export default function useUpdateNameOrEmotion({
   plotFieldCommandSayId,
   characterEmotionId,
   characterId,
-  prevEmotionId,
 }: UpdateNameOrEmotionTypes) {
   const queryClient = useQueryClient();
 
@@ -33,11 +31,11 @@ export default function useUpdateNameOrEmotion({
         exact: true,
         type: "active",
       });
-      queryClient.invalidateQueries({
-        queryKey: ["character", "emotion", prevEmotionId],
-        exact: true,
-        type: "active",
-      });
+      // queryClient.invalidateQueries({
+      //   queryKey: ["character", "emotion", prevEmotionId],
+      //   exact: true,
+      //   type: "active",
+      // });
     },
   });
 }

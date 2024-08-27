@@ -3,17 +3,21 @@ import { axiosCustomized } from "../../../../../../../api/axios";
 
 type UpdateWardrobeCurrentDressedTypes = {
   commandWardrobeId: string;
-  isCurrentDressed: boolean;
-  characterId: string;
+};
+
+type UpdateWardrobeCurrentDressedOnMutationTypes = {
+  characterId?: string;
+  isCurrentDressed?: boolean;
 };
 
 export default function useUpdateWardrobeCurrentDressedAndCharacterId({
   commandWardrobeId,
-  characterId,
-  isCurrentDressed,
 }: UpdateWardrobeCurrentDressedTypes) {
   return useMutation({
-    mutationFn: async () =>
+    mutationFn: async ({
+      characterId,
+      isCurrentDressed,
+    }: UpdateWardrobeCurrentDressedOnMutationTypes) =>
       await axiosCustomized.patch(
         `/plotFieldCommands/wardrobes/${commandWardrobeId}`,
         {

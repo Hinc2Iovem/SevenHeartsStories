@@ -3,15 +3,15 @@ import { useParams } from "react-router-dom";
 import useOutOfModal from "../../../../../../../../../hooks/UI/useOutOfModal";
 import useCreateCharacterBlank from "../../../../hooks/Character/useCreateCharacterBlank";
 import useUpdateNameOrEmotionOnCondition from "../../../../hooks/Say/useUpdateNameOrEmotionOnCondition";
+import { EmotionsTypes } from "../../../../../../../../../types/StoryData/Character/CharacterTypes";
 
 type CommandSayCreateCharacterFieldTypes = {
   setShowModal: React.Dispatch<React.SetStateAction<boolean>>;
-  setEmotionValue: React.Dispatch<React.SetStateAction<string>>;
+  setEmotionValue: React.Dispatch<React.SetStateAction<EmotionsTypes | null>>;
   showModal: boolean;
   characterName: string;
   plotFieldCommandId: string;
   commandSayId: string;
-  prevEmotionId: string;
 };
 
 export default function CommandSayCreateCharacterFieldModal({
@@ -20,19 +20,12 @@ export default function CommandSayCreateCharacterFieldModal({
   characterName,
   plotFieldCommandId,
   commandSayId,
-  prevEmotionId,
   setEmotionValue,
 }: CommandSayCreateCharacterFieldTypes) {
   const { storyId } = useParams();
   const modalRef = useRef<HTMLDivElement | null>(null);
   const cursorRef = useRef<HTMLButtonElement | null>(null);
   const [characterId, setCharacterId] = useState("");
-
-  useOutOfModal({
-    setShowModal,
-    showModal,
-    modalRef,
-  });
 
   useEffect(() => {
     if (showModal) {
@@ -41,14 +34,13 @@ export default function CommandSayCreateCharacterFieldModal({
   }, [showModal]);
 
   const createCharacter = useCreateCharacterBlank({
-    characterType: "MinorCharacter",
+    characterType: "minorcharacter",
     name: characterName,
     storyId: storyId ?? "",
   });
 
   const updateNameOrEmotion = useUpdateNameOrEmotionOnCondition({
     plotFieldCommandId,
-    prevEmotionId: prevEmotionId ?? "",
   });
 
   useEffect(() => {
@@ -58,7 +50,7 @@ export default function CommandSayCreateCharacterFieldModal({
         characterId,
         plotFieldCommandSayId: commandSayId,
       });
-      setEmotionValue("");
+      setEmotionValue(null);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [characterId]);
@@ -69,14 +61,17 @@ export default function CommandSayCreateCharacterFieldModal({
     }
   }, [createCharacter]);
 
-  console.log(characterId);
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     createCharacter.mutate();
-
     setShowModal(false);
   };
+
+  useOutOfModal({
+    setShowModal,
+    showModal,
+    modalRef,
+  });
 
   return (
     <aside

@@ -26,8 +26,6 @@ export default function OptionPremiumBlock({
     choiceOptionId,
   });
 
-  console.log(priceAmethysts);
-
   useEffect(() => {
     if (priceAmethysts) {
       updateOptionPremium.mutate({ priceAmethysts: +priceAmethysts });

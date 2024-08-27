@@ -1,11 +1,14 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { axiosCustomized } from "../../../../../../../../api/axios";
 import { ChoiceOptionVariationsTypes } from "../../../../../../../../types/StoryEditor/PlotField/Choice/ChoiceTypes";
+import { CurrentlyAvailableLanguagesTypes } from "../../../../../../../../types/Additional/CURRENTLY_AVAILABEL_LANGUAGES";
 
 type CreateChoiceOptionTypes = {
   plotFieldCommandChoiceId: string;
+  plotFieldCommandId: string;
   episodeId: string;
   topologyBlockId: string;
+  language?: CurrentlyAvailableLanguagesTypes;
 };
 type CreateChoiceOptionOnMutationTypes = {
   type: ChoiceOptionVariationsTypes;
@@ -14,20 +17,28 @@ type CreateChoiceOptionOnMutationTypes = {
 export default function useCreateChoiceOption({
   episodeId,
   plotFieldCommandChoiceId,
+  plotFieldCommandId,
   topologyBlockId,
+  language = "russian",
 }: CreateChoiceOptionTypes) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async ({ type }: CreateChoiceOptionOnMutationTypes) =>
       await axiosCustomized.post(
-        `/plotFieldCommands/choices/${plotFieldCommandChoiceId}/options/episodes/${episodeId}/topologyBlocks/${topologyBlockId}`,
+        `/plotFieldCommands/${plotFieldCommandId}/choices/${plotFieldCommandChoiceId}/options/episodes/${episodeId}/topologyBlocks/${topologyBlockId}`,
         {
           type,
         }
       ),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["choice", plotFieldCommandChoiceId, "option"],
+        queryKey: [
+          "choice",
+          plotFieldCommandId,
+          "translation",
+          language,
+          "option",
+        ],
         exact: true,
         type: "active",
       });

@@ -6,13 +6,20 @@ import { useCoordinates } from "./Context/useCoordinates";
 import FlowchartTopologyBlockDrag from "./FlowchartTopologyBlockDrag";
 import "./FlowchartStyles.css";
 
+type FlowchartTopologyBlockTypes = {
+  setCurrentTopologyBlockId: React.Dispatch<React.SetStateAction<string>>;
+  currentTopologyBlockId: string;
+} & TopologyBlockTypes;
+
 export default function FlowchartTopologyBlock({
   _id,
   coordinatesX,
   coordinatesY,
   episodeId,
   name,
-}: TopologyBlockTypes) {
+  setCurrentTopologyBlockId,
+  currentTopologyBlockId,
+}: FlowchartTopologyBlockTypes) {
   const {
     setCoordinates: setCoordinatesGlobal,
     coordinatesX: currentCoordinatesX,
@@ -81,7 +88,14 @@ export default function FlowchartTopologyBlock({
           <div
             onClick={(e) => {
               e.stopPropagation();
-              localStorage.setItem("topologyBlockId", _id);
+              localStorage.setItem(`${episodeId}-topologyBlockId`, _id);
+              setCurrentTopologyBlockId((prev) => {
+                if (prev !== _id) {
+                  return _id;
+                } else {
+                  return prev;
+                }
+              });
               if (clicked) {
                 setShowAllTopologyBlocks(true);
                 setClicked(false);
@@ -93,9 +107,11 @@ export default function FlowchartTopologyBlock({
               }
             }}
             ref={topologyBlockRef}
-            className={`${
-              showAllTopologyBlocks ? "z-[2]" : "z-[1]"
-            } w-[10rem] text-[2rem] rounded-md shadow-md absolute bg-white px-[1rem] py-[.5rem] active:cursor-move cursor-default whitespace-nowrap min-w-fit`}
+            className={`${showAllTopologyBlocks ? "z-[2]" : "z-[1]"} ${
+              currentTopologyBlockId === _id
+                ? "bg-green-300 text-white"
+                : "bg-white "
+            } w-[10rem] text-[2rem] rounded-md shadow-md absolute px-[1rem] py-[.5rem] active:cursor-move cursor-default whitespace-nowrap min-w-fit`}
           >
             <FlowchartTopologyBlockDrag
               _id={_id}

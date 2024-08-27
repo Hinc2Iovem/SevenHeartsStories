@@ -1,12 +1,12 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
-import useEscapeOfModal from "../../../../../../hooks/UI/useEscapeOfModal";
+import useOutOfModal from "../../../../../../hooks/UI/useOutOfModal";
 import {
   ChoiceVariations,
   ChoiceVariationsTypes,
 } from "../../../../../../types/StoryEditor/PlotField/Choice/ChoiceTypes";
-import useUpdateChoiceText from "../hooks/Choice/useUpdateChoiceText";
-import useGetAllTopologyBlocksByIdId from "../hooks/TopologyBlock/useGetAllTopologyBlocksByEpisodeId";
+import useUpdateChoice from "../hooks/Choice/useUpdateChoice";
+import useGetAllTopologyBlocksByEpisodeId from "../hooks/TopologyBlock/useGetAllTopologyBlocksByEpisodeId";
 import useGetTopologyBlockById from "../hooks/TopologyBlock/useGetTopologyBlockById";
 
 type ChoiceVariationTypeBlockTypes = {
@@ -31,8 +31,9 @@ export default function ChoiceVariationTypeBlock({
   setChoiceVariationTypes,
 }: ChoiceVariationTypeBlockTypes) {
   const { episodeId } = useParams();
-
-  const { data: allTopologyBlocks } = useGetAllTopologyBlocksByIdId({
+  const choiceVariationRef = useRef<HTMLDivElement>(null);
+  const choiceVariationMultipleRef = useRef<HTMLDivElement>(null);
+  const { data: allTopologyBlocks } = useGetAllTopologyBlocksByEpisodeId({
     episodeId: episodeId ?? "",
   });
   const { data: currentTopologyBlock } = useGetTopologyBlockById({
@@ -50,16 +51,7 @@ export default function ChoiceVariationTypeBlock({
     useState(false);
   const [showChoiceMultipleModal, setShowChoiceMultipleModal] = useState(false);
 
-  useEscapeOfModal({
-    setValue: setShowChoiceVariationTypesModal,
-    value: showChoiceVariationTypesModal,
-  });
-  useEscapeOfModal({
-    setValue: setShowChoiceMultipleModal,
-    value: showChoiceMultipleModal,
-  });
-
-  const updateChoice = useUpdateChoiceText({ choiceId });
+  const updateChoice = useUpdateChoice({ choiceId });
 
   useEffect(() => {
     if (timeLimit) {
@@ -71,11 +63,22 @@ export default function ChoiceVariationTypeBlock({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [timeLimit]);
 
+  useOutOfModal({
+    modalRef: choiceVariationRef,
+    setShowModal: setShowChoiceVariationTypesModal,
+    showModal: showChoiceVariationTypesModal,
+  });
+  useOutOfModal({
+    modalRef: choiceVariationMultipleRef,
+    setShowModal: setShowChoiceMultipleModal,
+    showModal: showChoiceMultipleModal,
+  });
   return (
     <>
       <div className="relative flex-grow">
         <button
-          onClick={() => {
+          onClick={(e) => {
+            e.stopPropagation();
             setShowChoiceMultipleModal(false);
             setShowChoiceVariationTypesModal((prev) => !prev);
           }}
@@ -85,9 +88,10 @@ export default function ChoiceVariationTypeBlock({
         </button>
 
         <aside
+          ref={choiceVariationRef}
           className={`${
             showChoiceVariationTypesModal ? "" : "hidden"
-          } absolute flex flex-col gap-[1rem] bg-primary-light-blue rounded-md shadow-md z-[10] min-w-fit w-full p-[.5rem]`}
+          } translate-y-[.5rem] absolute flex flex-col gap-[1rem] bg-primary-light-blue rounded-md shadow-md z-[10] min-w-fit w-full p-[.5rem]`}
         >
           {ChoiceVariations.map((cv) => (
             <button
@@ -128,7 +132,8 @@ export default function ChoiceVariationTypeBlock({
         />
         <button
           type="button"
-          onClick={() => {
+          onClick={(e) => {
+            e.stopPropagation();
             setShowChoiceVariationTypesModal(false);
             setShowChoiceMultipleModal((prev) => !prev);
           }}
@@ -141,29 +146,43 @@ export default function ChoiceVariationTypeBlock({
             : "Повторная Ветка"}
         </button>
         <aside
+          ref={choiceVariationMultipleRef}
           className={`${
             showChoiceMultipleModal ? "" : "hidden"
-          } absolute z-10 flex flex-col gap-[1rem] bg-primary-light-blue rounded-md shadow-md translate-y-[] w-full p-[.5rem]`}
+          } translate-y-[.5rem] absolute z-10 flex flex-col gap-[1rem] bg-primary-light-blue rounded-md shadow-md w-full min-w-fit p-[.5rem]`}
         >
-          {allTopologyBlocks?.map((atb) => (
+          {(exitBlockId && (allTopologyBlocks?.length || 0) > 1) ||
+          (!exitBlockId && allTopologyBlocks?.length) ? (
+            allTopologyBlocks?.map((atb) => (
+              <button
+                key={atb._id}
+                className={`${
+                  atb._id === exitBlockId ? "hidden" : ""
+                } text-start outline-gray-400 whitespace-nowrap text-[1.3rem] rounded-md shadow-md bg-white text-gray-700 px-[1rem] py-[.5rem]`}
+                onClick={() => {
+                  setExitBlockId(atb._id);
+                  setShowChoiceVariationTypesModal(false);
+                  setShowChoiceMultipleModal(false);
+                  updateChoice.mutate({
+                    choiceType: choiceVariationTypes || "multiple",
+                    exitBlockId: atb._id,
+                  });
+                }}
+              >
+                {atb.name}
+              </button>
+            ))
+          ) : (
             <button
-              key={atb._id}
-              className={`${
-                atb._id === exitBlockId ? "hidden" : ""
-              } text-start outline-gray-400 text-[1.3rem] rounded-md shadow-md bg-white text-gray-700 px-[1rem] py-[.5rem]`}
+              className={`text-start outline-gray-400 text-[1.3rem] rounded-md shadow-md bg-white text-gray-700 px-[1rem] py-[.5rem]`}
               onClick={() => {
-                setExitBlockId(atb._id);
                 setShowChoiceVariationTypesModal(false);
                 setShowChoiceMultipleModal(false);
-                updateChoice.mutate({
-                  choiceType: choiceVariationTypes || "multiple",
-                  exitBlockId: atb._id,
-                });
               }}
             >
-              {atb.name}
+              Пусто
             </button>
-          ))}
+          )}
         </aside>
       </form>
     </>

@@ -15,5 +15,6 @@ export default function useGetCommandSay({
       await axiosCustomized
         .get<SayTypes>(`/plotFieldCommands/${plotFieldCommandId}/say`)
         .then((r) => r.data),
+    enabled: !!plotFieldCommandId,
   });
 }

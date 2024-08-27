@@ -45,6 +45,8 @@ export default function FiltersEverythingStoryForEpisode({
     language: translateToLanguage,
   });
 
+  console.log("seasonId: ", seasonId);
+
   const memoizedCombinedTranslations = useMemo(() => {
     const combinedArray: CombinedTranslatedAndNonTranslatedEpisodeTypes[] = [];
     const episodeMap: {
@@ -95,7 +97,6 @@ export default function FiltersEverythingStoryForEpisode({
           <DisplayTranslatedNonTranslatedEpisode
             key={(ct.translated?._id || i) + "-ctEpisode"}
             languageToTranslate={translateToLanguage}
-            seasonId={seasonId}
             translateFromLanguage={translateFromLanguage}
             {...ct}
           />

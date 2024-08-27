@@ -1,10 +1,9 @@
 import { useEffect, useState } from "react";
-import useGetCommandSuit from "../hooks/Suit/useGetCommandSuit";
-import useDebounce from "../../../../../../hooks/utilities/useDebounce";
-import useUpdateSuitText from "../hooks/Suit/useUpdateSuitText";
 import useGetCharacterById from "../../../../../../hooks/Fetching/Character/useGetCharacterById";
-import useGetTranslationCharacterEnabled from "../hooks/Character/useGetTranslationCharacterEnabled";
-import useEscapeOfModal from "../../../../../../hooks/UI/useEscapeOfModal";
+import useGetTranslationCharacterById from "../../../../../../hooks/Fetching/Translation/Characters/useGetTranslationCharacterById";
+import useDebounce from "../../../../../../hooks/utilities/useDebounce";
+import useGetCommandSuit from "../hooks/Suit/useGetCommandSuit";
+import useUpdateSuitText from "../hooks/Suit/useUpdateSuitText";
 import PlotfieldCharacterPromptMain from "../Prompts/Characters/PlotfieldCharacterPromptMain";
 
 type CommandSuitFieldTypes = {
@@ -31,9 +30,9 @@ export default function CommandSuitField({
   const { data: character } = useGetCharacterById({
     characterId: commandSuit?.characterId ?? "",
   });
-  const { data: translatedCharacter } = useGetTranslationCharacterEnabled({
+  const { data: translatedCharacter } = useGetTranslationCharacterById({
     characterId: commandSuit?.characterId ?? "",
-    commandSayType: "character",
+    language: "russian",
   });
 
   useEffect(() => {
@@ -44,7 +43,7 @@ export default function CommandSuitField({
 
   useEffect(() => {
     if (translatedCharacter) {
-      translatedCharacter.map((tc) => {
+      translatedCharacter.translations?.map((tc) => {
         if (tc.textFieldName === "characterName") {
           setCurrentCharacterName(tc.text ?? "");
         }
@@ -80,44 +79,55 @@ export default function CommandSuitField({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [debouncedValue, currentCharacterImg]);
 
-  useEscapeOfModal({
-    setValue: setShowCharacterList,
-    value: showCharacterList,
+  const characterDebouncedValue = useDebounce({
+    value: currentCharacterName,
+    delay: 500,
   });
   return (
-    <div className="flex flex-wrap gap-[1rem] w-full bg-primary-light-blue rounded-md p-[.5rem] sm:flex-row flex-col relative">
+    <div className="flex flex-wrap gap-[.5rem] w-full bg-primary-light-blue rounded-md p-[.5rem] sm:flex-row flex-col relative">
       <div className="sm:w-[20%] min-w-[10rem] flex-grow w-full relative">
         <h3 className="text-[1.3rem] text-start outline-gray-300 w-full capitalize px-[1rem] py-[.5rem] rounded-md shadow-md bg-white cursor-default">
           {nameValue}
         </h3>
       </div>
-      <button
-        onClick={() => setShowCharacterList((prev) => !prev)}
-        className={`bg-white rounded-md ${
-          currentCharacterImg ? "pl-[1rem]" : "px-[1rem]"
-        }  text-gray-600 hover:scale-[1.01] active:scale-[.99] flex items-center gap-[1rem] flex-grow justify-between`}
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          setShowCharacterList(false);
+        }}
+        className="w-full relative flex gap-[.5rem] items-center"
       >
-        <p className="text-[1.4rem]">
-          {currentCharacterName || (
-            <span className="text-gray-600 text-[1.3rem]">Пусто</span>
-          )}
-        </p>
-        <img
-          className={`${
-            currentCharacterImg ? "" : "hidden"
-          } w-[3rem] rounded-md object-cover self-end block`}
-          src={currentCharacterImg}
-          alt="CharacterIcon"
+        <input
+          onClick={(e) => {
+            e.stopPropagation();
+            setShowCharacterList(true);
+          }}
+          value={currentCharacterName}
+          onChange={(e) => {
+            setShowCharacterList(true);
+            setCurrentCharacterName(e.target.value);
+          }}
+          placeholder="Имя Персонажа"
+          className="flex-grow text-[1.4rem] outline-gray-300 bg-white rounded-md px-[1rem] py-[.5rem] shadow-md"
         />
-      </button>
-      <PlotfieldCharacterPromptMain
-        characterName={currentCharacterName}
-        setCharacterImg={setCurrentCharacterImg}
-        setCharacterId={setCurrentCharacterId}
-        setCharacterName={setCurrentCharacterName}
-        setShowCharacterModal={setShowCharacterList}
-        showCharacterModal={showCharacterList}
-      />
+
+        <img
+          src={currentCharacterImg}
+          alt="CharacterImg"
+          className={`${
+            currentCharacterImg?.trim().length ? "" : "hidden"
+          } w-[3rem] object-cover rounded-md self-end`}
+        />
+        <PlotfieldCharacterPromptMain
+          characterDebouncedValue={characterDebouncedValue}
+          setCharacterId={setCurrentCharacterId}
+          setCharacterName={setCurrentCharacterName}
+          setShowCharacterModal={setShowCharacterList}
+          showCharacterModal={showCharacterList}
+          setCharacterImg={setCurrentCharacterImg}
+        />
+      </form>
+
       <form
         onSubmit={(e) => e.preventDefault()}
         className="sm:w-[77%] flex-grow w-full"
@@ -126,7 +136,7 @@ export default function CommandSuitField({
           value={textValue}
           type="text"
           className=" w-full outline-gray-300 text-gray-600 text-[1.6rem] px-[1rem] py-[.5rem] rounded-md shadow-md sm:max-h-[20rem] max-h-[40rem]"
-          placeholder="Such a lovely day"
+          placeholder="Костюм"
           onChange={(e) => setTextValue(e.target.value)}
         />
       </form>

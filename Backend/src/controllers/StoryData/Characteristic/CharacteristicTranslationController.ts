@@ -5,7 +5,37 @@ import {
   getCharacteristicByIdAndLanguageService,
   getAllCharacteristicsTranslationsByStoryIdAndLanguageService,
   getAllCharacteristicsTranslationsByCharacteristicIdAndLanguageService,
+  getCharacteristicTranslationUpdatedAtAndLanguageService,
 } from "../../../services/StoryData/Characteristic/CharacteristicTranslationService";
+
+type GetUpdatedAtAndLanguageQuery = {
+  currentLanguage: string | undefined;
+  updatedAt: string | undefined;
+};
+
+// @route GET http://localhost:3500/characteristics/recent/translations
+// @access Private
+export const getCharacteristicTranslationUpdatedAtAndLanguageController: RequestHandler<
+  unknown,
+  unknown,
+  unknown,
+  GetUpdatedAtAndLanguageQuery
+> = async (req, res, next) => {
+  try {
+    const textFieldName =
+      await getCharacteristicTranslationUpdatedAtAndLanguageService({
+        currentLanguage: req.query.currentLanguage,
+        updatedAt: req.query.updatedAt,
+      });
+    if (textFieldName) {
+      return res.status(201).json(textFieldName);
+    } else {
+      return res.status(400).json({ message: "Something went wrong" });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
 
 type GetCharacteristicsByCharacteristicIdParams = {
   characteristicId: string;

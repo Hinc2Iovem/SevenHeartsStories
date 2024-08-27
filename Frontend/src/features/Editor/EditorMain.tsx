@@ -1,14 +1,12 @@
-import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { axiosCustomized } from "../../api/axios";
 import useCheckKeysCombinationExpandFlowchart from "../../hooks/helpers/useCheckKeysCombinationExpandFlowchart";
 import useCheckKeysCombinationExpandPlotField from "../../hooks/helpers/useCheckKeysCombinationExpandPlotField";
-import { TopologyBlockTypes } from "../../types/TopologyBlock/TopologyBlockTypes";
 import Flowchart from "./Flowchart/Flowchart";
 import FlowchartExpanded from "./Flowchart/FlowchartExpanded";
 import PlotField from "./PlotField/PlotField";
 import useCreateTopologyBlock from "./PlotField/PlotFieldMain/Commands/hooks/TopologyBlock/useCreateTopologyBlock";
+import useGetFirstTopologyBlock from "./PlotField/PlotFieldMain/Commands/hooks/TopologyBlock/useGetFirstTopologyBlock";
 import "./Flowchart/FlowchartStyles.css";
 
 export default function EditorMain() {
@@ -20,18 +18,12 @@ export default function EditorMain() {
 
   const [scale, setScale] = useState(1);
 
-  const { data: firstTopologyBlock } = useQuery({
-    queryKey: ["editor", "episode", episodeId, "firstTopologyBlock"],
-    queryFn: async () =>
-      await axiosCustomized
-        .get<TopologyBlockTypes>(
-          `/topologyBlocks/episodes/${episodeId}/firstBlock`
-        )
-        .then((r) => r.data),
+  const { data: firstTopologyBlock } = useGetFirstTopologyBlock({
+    episodeId: episodeId || "",
   });
 
   const [localTopologyBlockId] = useState(
-    localStorage.getItem("topologyBlockId")
+    localStorage.getItem(`${episodeId}-topologyBlockId`)
   );
 
   const [currentTopologyBlockId, setCurrentTopologyBlockId] = useState(
@@ -81,7 +73,12 @@ export default function EditorMain() {
             {(scale * 100).toFixed(0)}%
           </div>
 
-          <FlowchartExpanded scale={scale} setScale={setScale} />
+          <FlowchartExpanded
+            currentTopologyBlockId={currentTopologyBlockId}
+            setCurrentTopologyBlockId={setCurrentTopologyBlockId}
+            scale={scale}
+            setScale={setScale}
+          />
 
           <button
             onClick={() => createTopologyBlock.mutate()}
@@ -101,7 +98,12 @@ export default function EditorMain() {
             {(scale * 100).toFixed(0)}%
           </div>
 
-          <Flowchart scale={scale} setScale={setScale} />
+          <Flowchart
+            currentTopologyBlockId={currentTopologyBlockId}
+            setCurrentTopologyBlockId={setCurrentTopologyBlockId}
+            scale={scale}
+            setScale={setScale}
+          />
 
           <button
             onClick={() => createTopologyBlock.mutate()}

@@ -60,14 +60,14 @@ export const createNameController: RequestHandler<
 
 type UpdateNameParams = {
   nameId: string;
-  characterId: string;
 };
 
 type UpdateNameBody = {
   newName: string | undefined;
+  characterId: string;
 };
 
-// @route PATCH http://localhost:3500/plotFieldCommands/characters/:characterId/names/:nameId
+// @route PATCH http://localhost:3500/plotFieldCommands/characters/names/:nameId
 // @access Private
 export const updateNameController: RequestHandler<
   UpdateNameParams,
@@ -79,7 +79,7 @@ export const updateNameController: RequestHandler<
     const name = await updateNameService({
       newName: req.body.newName,
       nameId: req.params.nameId,
-      characterId: req.params.characterId,
+      characterId: req.body.characterId,
     });
     if (name) {
       return res.status(201).json(name);

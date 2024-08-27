@@ -1,38 +1,32 @@
-import { useEffect, useState } from "react";
-import useGetTranslationAppearancePart from "../../../../../../../hooks/Fetching/Translation/useGetTranslationAppearancePart";
-import { AppearancePartTypes } from "../../../../../../../types/StoryData/AppearancePart/AppearancePartTypes";
+import { useState } from "react";
+import useGetAppearancePartById from "../../../../../../../hooks/Fetching/AppearancePart/useGetAppearancePartById";
+import { TranslationAppearancePartTypes } from "../../../../../../../types/Additional/TranslationTypes";
 
 type EmotionAppearancePartNameTypes = {
   setAppearancePartName?: React.Dispatch<React.SetStateAction<string>>;
   setAppearancePartId?: React.Dispatch<React.SetStateAction<string>>;
   setAppearancePartImg?: React.Dispatch<React.SetStateAction<string>>;
   setShowAppearancePartModal: React.Dispatch<React.SetStateAction<boolean>>;
-} & AppearancePartTypes;
+} & TranslationAppearancePartTypes;
 
 export default function PlotfieldAppearancePartsPrompt({
-  _id,
-  img,
+  appearancePartId,
+  translations,
   setAppearancePartName,
   setAppearancePartId,
   setShowAppearancePartModal,
   setAppearancePartImg,
 }: EmotionAppearancePartNameTypes) {
-  const { data: translationAppearancePart } = useGetTranslationAppearancePart({
-    appearancePartId: _id,
+  const { data: appearancePart } = useGetAppearancePartById({
+    appearancePartId,
   });
-
-  const [currentAppearancePartName, setCurrentAppearancePartName] =
-    useState("");
-
-  useEffect(() => {
-    if (translationAppearancePart) {
-      setCurrentAppearancePartName(translationAppearancePart.text);
-    }
-  }, [translationAppearancePart]);
+  const [currentAppearancePartName] = useState(
+    (translations || [])[0]?.text || ""
+  );
 
   return (
     <>
-      {img ? (
+      {appearancePart?.img ? (
         <button
           type="button"
           onClick={() => {
@@ -40,14 +34,14 @@ export default function PlotfieldAppearancePartsPrompt({
               setAppearancePartName(currentAppearancePartName);
             }
             if (setAppearancePartId) {
-              setAppearancePartId(_id);
+              setAppearancePartId(appearancePartId);
             }
             setShowAppearancePartModal(false);
             if (setAppearancePartImg) {
-              setAppearancePartImg(img);
+              setAppearancePartImg(appearancePart?.img || "");
             }
           }}
-          className="rounded-md flex px-[.5rem] py-[.2rem] items-center justify-between hover:bg-primary-light-blue hover:text-white transition-all "
+          className={`rounded-md outline-gray-300 flex px-[1rem] py-[.5rem] items-center justify-between hover:bg-primary-light-blue hover:text-white transition-all `}
         >
           <p className="text-[1.3rem] rounded-md">
             {currentAppearancePartName.length > 20
@@ -55,7 +49,7 @@ export default function PlotfieldAppearancePartsPrompt({
               : currentAppearancePartName}
           </p>
           <img
-            src={img}
+            src={appearancePart?.img || ""}
             alt="AppearancePartImg"
             className="w-[3rem] rounded-md"
           />
@@ -68,14 +62,14 @@ export default function PlotfieldAppearancePartsPrompt({
               setAppearancePartName(currentAppearancePartName);
             }
             if (setAppearancePartId) {
-              setAppearancePartId(_id);
+              setAppearancePartId(appearancePartId);
             }
             setShowAppearancePartModal(false);
             if (setAppearancePartImg) {
               setAppearancePartImg("");
             }
           }}
-          className="text-start text-[1.3rem] px-[.5rem] py-[.2rem] hover:bg-primary-light-blue hover:text-white transition-all rounded-md"
+          className={`text-start outline-gray-300 text-[1.3rem] px-[1rem] py-[.5rem] hover:bg-primary-light-blue hover:text-white transition-all rounded-md`}
         >
           {currentAppearancePartName.length > 20
             ? currentAppearancePartName.substring(0, 20) + "..."

@@ -17,12 +17,6 @@ export default function SeasonPrompt({
   const [seasonBackupValue, setSeasonBackupValue] = useState("");
   const modalSeasonsRef = useRef<HTMLDivElement>(null);
 
-  useOutOfModal({
-    modalRef: modalSeasonsRef,
-    setShowModal: setShowSeasons,
-    showModal: showSeasons,
-  });
-
   const debouncedValue = useDebounce({ value: seasonValue, delay: 500 });
 
   const { data: seasonsSearch, isLoading } =
@@ -51,6 +45,12 @@ export default function SeasonPrompt({
   useEffect(() => {
     setSeasonValue("");
   }, [storyId]);
+
+  useOutOfModal({
+    modalRef: modalSeasonsRef,
+    setShowModal: setShowSeasons,
+    showModal: showSeasons,
+  });
   return (
     <form
       className="bg-white rounded-md shadow-md relative"

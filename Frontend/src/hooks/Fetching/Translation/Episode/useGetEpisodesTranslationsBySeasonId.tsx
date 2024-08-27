@@ -5,10 +5,10 @@ import { TranslationEpisodeTypes } from "../../../../types/Additional/Translatio
 
 export default function useGetEpisodesTranslationsBySeasonId({
   seasonId,
-  language = "russian",
+  language,
 }: {
   seasonId: string;
-  language?: CurrentlyAvailableLanguagesTypes;
+  language: CurrentlyAvailableLanguagesTypes;
 }) {
   return useQuery({
     queryKey: ["translation", language, "season", seasonId, "episode"],

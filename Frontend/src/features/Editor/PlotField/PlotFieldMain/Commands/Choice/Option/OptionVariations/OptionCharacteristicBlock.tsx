@@ -3,7 +3,6 @@ import useGetTranslationCharacteristic from "../../../../../../../../hooks/Fetch
 import useUpdateChoiceOption from "../../../hooks/Choice/ChoiceOption/useUpdateChoiceOption";
 import useGetCharacteristicOption from "../../../hooks/Choice/ChoiceOptionVariation/useGetCharacteristicOption";
 import PlotfieldCharacteristicPromptMain from "../../../Prompts/Characteristics/PlotfieldCharacteristicPromptMain";
-import useEscapeOfModal from "../../../../../../../../hooks/UI/useEscapeOfModal";
 
 type OptionCharacteristicBlockTypes = {
   choiceOptionId: string;
@@ -24,7 +23,8 @@ export default function OptionCharacteristicBlock({
   }, [optionCharacteristic]);
 
   const { data: translatedCharacteristic } = useGetTranslationCharacteristic({
-    characterCharacteristicId: characteristicId,
+    characteristicId,
+    language: "russian",
   });
 
   const [characteristicName, setCharacteristicName] = useState("");
@@ -32,7 +32,7 @@ export default function OptionCharacteristicBlock({
 
   useEffect(() => {
     if (translatedCharacteristic) {
-      translatedCharacteristic.map((tc) => {
+      translatedCharacteristic.translations.map((tc) => {
         if (tc.textFieldName === "characterCharacteristic") {
           setCharacteristicName(tc.text);
         }
@@ -70,15 +70,14 @@ export default function OptionCharacteristicBlock({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [characteristicId]);
 
-  useEscapeOfModal({
-    value: showAllCharacteristics,
-    setValue: setShowAllCharacteristics,
-  });
   return (
     <div className="self-end sm:w-fit w-full px-[.5rem] flex gap-[1rem] flex-grow flex-wrap">
       <div className="relative flex-grow">
         <button
-          onClick={() => setShowAllCharacteristics((prev) => !prev)}
+          onClick={(e) => {
+            e.stopPropagation();
+            setShowAllCharacteristics((prev) => !prev);
+          }}
           className="w-full outline-gray-300 text-[1.3rem] px-[1rem] py-[.5rem] rounded-md shadow-md"
           type="button"
         >

@@ -7,7 +7,7 @@ import { TranslationAppearancePartTypes } from "../../../../../../types/Addition
 
 type DisplayTranslatedNonTranslatedAppearancePartTypes = {
   languageToTranslate: CurrentlyAvailableLanguagesTypes;
-  filteredAppearanceType: TranslationTextFieldNameAppearancePartsTypes;
+  filteredAppearanceType?: TranslationTextFieldNameAppearancePartsTypes;
   translated: TranslationAppearancePartTypes | null;
   nonTranslated: TranslationAppearancePartTypes | null;
   translateFromLanguage: CurrentlyAvailableLanguagesTypes;
@@ -66,8 +66,9 @@ export default function DisplayTranslatedNonTranslatedAppearancePart({
   const updateCharacterTranslationTranslated =
     useUpdateAppearancePartTranslation({
       language: translateFromLanguage,
-      appearancePartId,
-      characterId: translated?.characterId || "",
+      appearancePartId:
+        appearancePartId || nonTranslated?.appearancePartId || "",
+      characterId: translated?.characterId || nonTranslated?.characterId || "",
     });
 
   useEffect(() => {
@@ -92,8 +93,8 @@ export default function DisplayTranslatedNonTranslatedAppearancePart({
 
   const updateCharacterTranslation = useUpdateAppearancePartTranslation({
     language: languageToTranslate,
-    appearancePartId,
-    characterId: translated?.characterId || "",
+    appearancePartId: appearancePartId || nonTranslated?.appearancePartId || "",
+    characterId: translated?.characterId || nonTranslated?.characterId || "",
   });
 
   useEffect(() => {

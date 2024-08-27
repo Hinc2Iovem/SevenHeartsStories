@@ -1,14 +1,65 @@
 import createHttpError from "http-errors";
+import mongoose from "mongoose";
 import { TranslationTextFieldName } from "../../../consts/TRANSLATION_TEXT_FIELD_NAMES";
 import Season from "../../../models/StoryData/Season";
-import Story from "../../../models/StoryData/Story";
 import TranslationSeason from "../../../models/StoryData/Translation/TranslationSeason";
-import PlotFieldCommand from "../../../models/StoryEditor/PlotField/PlotFieldCommand";
-import TopologyBlock from "../../../models/StoryEditor/Topology/TopologyBlock";
-import TopologyBlockInfo from "../../../models/StoryEditor/Topology/TopologyBlockInfo";
 import { checkCurrentLanguage } from "../../../utils/checkCurrentLanguage";
 import { validateMongoId } from "../../../utils/validateMongoId";
-import mongoose from "mongoose";
+import { subDays, subHours, subMinutes } from "date-fns";
+
+type GetByUpdatedAtAndLanguageTypes = {
+  currentLanguage: string | undefined;
+  updatedAt: string | undefined;
+};
+
+export const getSeasonTranslationUpdatedAtAndLanguageService = async ({
+  currentLanguage,
+  updatedAt,
+}: GetByUpdatedAtAndLanguageTypes) => {
+  if (!currentLanguage?.trim().length) {
+    throw createHttpError(400, "Language is required");
+  }
+
+  checkCurrentLanguage({ currentLanguage });
+
+  let startDate: Date | undefined;
+  let endDate = new Date();
+
+  switch (updatedAt) {
+    case "30min":
+      startDate = subMinutes(endDate, 30);
+      break;
+    case "1hr":
+      startDate = subHours(endDate, 1);
+      break;
+    case "5hr":
+      startDate = subHours(endDate, 5);
+      break;
+    case "1d":
+      startDate = subDays(endDate, 1);
+      break;
+    case "3d":
+      startDate = subDays(endDate, 3);
+      break;
+    case "7d":
+      startDate = subDays(endDate, 7);
+      break;
+    default:
+      throw createHttpError(400, "Invalid updatedAt value");
+  }
+
+  const existingTranslations = await TranslationSeason.find({
+    updatedAt: { $gte: startDate, $lt: endDate },
+    language: currentLanguage,
+  })
+    .lean()
+    .exec();
+
+  if (!existingTranslations.length) {
+    return [];
+  }
+  return existingTranslations;
+};
 
 type GetAllSeasonsByLanguageTypes = {
   currentLanguage?: string;

@@ -1,16 +1,18 @@
 import { useEffect, useState } from "react";
+import useGetTranslationCharacterById from "../../../../../../hooks/Fetching/Translation/Characters/useGetTranslationCharacterById";
 import { CommandSayVariationTypes } from "../../../../../../types/StoryEditor/PlotField/Say/SayTypes";
-import useGetTranslationCharacterEnabled from "../hooks/Character/useGetTranslationCharacterEnabled";
 import useGetCommandSay from "../hooks/Say/useGetCommandSay";
 import CommandSayCharacterFieldItem from "./CommandSayFieldItem/Character/CommandSayCharacterFieldItem";
 import CommandSayFieldItem from "./CommandSayFieldItem/Other/CommandSayFieldItem";
 
 type CommandSayFieldTypes = {
   plotFieldCommandId: string;
+  topologyBlockId: string;
 };
 
 export default function CommandSayField({
   plotFieldCommandId,
+  topologyBlockId,
 }: CommandSayFieldTypes) {
   const { data: commandSay } = useGetCommandSay({ plotFieldCommandId });
   const [commandSayType, setCommandSayType] =
@@ -25,19 +27,19 @@ export default function CommandSayField({
     }
   }, [commandSay]);
 
-  const { data: translatedCharacter } = useGetTranslationCharacterEnabled({
+  const { data: translatedCharacter } = useGetTranslationCharacterById({
     characterId: commandSay?.characterId ?? "",
-    commandSayType,
+    language: "russian",
   });
 
   useEffect(() => {
     if (commandSayType === "character") {
       if (translatedCharacter) {
-        translatedCharacter.forEach((tc) => {
-          if (tc.textFieldName === "characterName") {
-            setNameValue(tc.text);
-          }
-        });
+        setNameValue(
+          translatedCharacter.translations?.find(
+            (tc) => tc.textFieldName === "characterName"
+          )?.text || ""
+        );
       }
     } else if (commandSayType === "author") {
       setNameValue("author");
@@ -52,28 +54,32 @@ export default function CommandSayField({
     <>
       {commandSayType === "author" ? (
         <CommandSayFieldItem
+          topologyBlockId={topologyBlockId}
           plotFieldCommandId={plotFieldCommandId}
           plotFieldCommandSayId={commandSayId}
           nameValue={nameValue}
         />
       ) : commandSayType === "character" ? (
         <CommandSayCharacterFieldItem
-          characterId={commandSay?.characterId ?? ""}
+          topologyBlockId={topologyBlockId}
+          characterId={commandSay?.characterId || ""}
           plotFieldCommandId={plotFieldCommandId}
           plotFieldCommandSayId={commandSayId}
-          characterEmotionId={commandSay?.characterEmotionId ?? ""}
+          characterEmotionId={commandSay?.characterEmotionId || ""}
           commandSayType={commandSayType}
           nameValue={nameValue}
           setNameValue={setNameValue}
         />
       ) : commandSayType === "notify" ? (
         <CommandSayFieldItem
+          topologyBlockId={topologyBlockId}
           plotFieldCommandId={plotFieldCommandId}
           plotFieldCommandSayId={commandSayId}
           nameValue={nameValue}
         />
       ) : (
         <CommandSayFieldItem
+          topologyBlockId={topologyBlockId}
           plotFieldCommandId={plotFieldCommandId}
           plotFieldCommandSayId={commandSayId}
           nameValue={nameValue}

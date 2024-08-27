@@ -1,5 +1,5 @@
-import { useState } from "react";
-import useEscapeOfModal from "../../../../../../hooks/UI/useEscapeOfModal";
+import { useRef, useState } from "react";
+import useOutOfModal from "../../../../../../hooks/UI/useOutOfModal";
 import useUpdateConditionBlockOrderOfExecution from "../hooks/Condition/ConditionBlock/useUpdateConditionBlockOrderOfExecution";
 
 type DisplayOrderOfIfsModalTypes = {
@@ -20,6 +20,7 @@ export default function DisplayOrderOfIfsModal({
   allUsedOrderNumbers,
   commandConditionId,
 }: DisplayOrderOfIfsModalTypes) {
+  const modalRef = useRef<HTMLDivElement>(null);
   const [showAllOrders, setShowAllOrders] = useState(false);
 
   const updateExecutionOrder = useUpdateConditionBlockOrderOfExecution({
@@ -27,17 +28,25 @@ export default function DisplayOrderOfIfsModal({
     commandConditionId,
   });
 
-  useEscapeOfModal({ setValue: setShowAllOrders, value: showAllOrders });
+  useOutOfModal({
+    setShowModal: setShowAllOrders,
+    showModal: showAllOrders,
+    modalRef,
+  });
   return (
     <div className="relative flex-grow">
       <button
-        onClick={() => setShowAllOrders((prev) => !prev)}
+        onClick={(e) => {
+          e.stopPropagation();
+          setShowAllOrders((prev) => !prev);
+        }}
         className="w-full flex-grow text-[1.4rem] outline-gray-300 text-gray-700 shadow-md rounded-md px-[1rem] py-[.5rem]"
         type="button"
       >
         {currentOrder || "Порядок выполнения"}
       </button>
       <aside
+        ref={modalRef}
         className={`${
           showAllOrders ? "" : "hidden"
         } z-[10] flex flex-col gap-[1rem] p-[.5rem] absolute min-w-fit rounded-md shadow-md bg-white right-[0rem] translate-y-[.5rem]`}

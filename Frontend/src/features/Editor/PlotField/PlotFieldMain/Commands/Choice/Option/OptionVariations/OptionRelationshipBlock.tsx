@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
+import useGetCharacterById from "../../../../../../../../hooks/Fetching/Character/useGetCharacterById";
+import useGetTranslationCharacterById from "../../../../../../../../hooks/Fetching/Translation/Characters/useGetTranslationCharacterById";
 import useUpdateChoiceOption from "../../../hooks/Choice/ChoiceOption/useUpdateChoiceOption";
 import useGetRelationshipOption from "../../../hooks/Choice/ChoiceOptionVariation/useGetRelationshipOption";
-import useEscapeOfModal from "../../../../../../../../hooks/UI/useEscapeOfModal";
-import useGetTranslationCharacterEnabled from "../../../hooks/Character/useGetTranslationCharacterEnabled";
 import PlotfieldCharacterPromptMain from "../../../Prompts/Characters/PlotfieldCharacterPromptMain";
-import useGetCharacterById from "../../../../../../../../hooks/Fetching/Character/useGetCharacterById";
+import useDebounce from "../../../../../../../../hooks/utilities/useDebounce";
 
 type OptionRelationshipBlockTypes = {
   choiceOptionId: string;
@@ -27,16 +27,16 @@ export default function OptionRelationshipBlock({
       setCharacterImg(character?.img || "");
     }
   }, [character]);
-  const { data: translatedCharacter } = useGetTranslationCharacterEnabled({
+  const { data: translatedCharacter } = useGetTranslationCharacterById({
     characterId,
-    commandSayType: "character",
+    language: "russian",
   });
 
   useEffect(() => {
     if (translatedCharacter) {
-      translatedCharacter.map((tc) => {
+      translatedCharacter.translations?.map((tc) => {
         if (tc.textFieldName === "characterName") {
-          setCharacterName(tc.text);
+          setCharacterName(tc?.text || "");
         }
       });
     }
@@ -80,36 +80,49 @@ export default function OptionRelationshipBlock({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [characterId]);
 
-  useEscapeOfModal({
-    value: showAllCharacters,
-    setValue: setShowAllCharacters,
+  const characterDebouncedValue = useDebounce({
+    value: characterName,
+    delay: 500,
   });
   return (
-    <div className="self-end w-full px-[.5rem] flex gap-[1rem] flex-grow flex-wrap">
-      <div className="relative flex-grow">
-        <button
-          onClick={() => setShowAllCharacters((prev) => !prev)}
-          className="w-full outline-gray-300 px-[1rem] py-[.5rem] rounded-md shadow-md flex justify-between items-center"
-          type="button"
-        >
-          <h4 className="text-[1.4rem]">{characterName || "Персонажи"}</h4>
-          <img
-            src={characterImg}
-            alt="CharacterIcon"
-            className={`${
-              characterImg ? "" : "hidden"
-            } rounded-md w-[3.5rem] object-contain`}
-          />
-        </button>
+    <div className="self-end w-full px-[.5rem] flex gap-[1rem] flex-grow flex-wrap mt-[.5rem]">
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          setShowAllCharacters(false);
+        }}
+        className="w-full relative flex gap-[.5rem] items-center"
+      >
+        <input
+          onClick={(e) => {
+            e.stopPropagation();
+            setShowAllCharacters(true);
+          }}
+          value={characterName}
+          onChange={(e) => {
+            setShowAllCharacters(true);
+            setCharacterName(e.target.value);
+          }}
+          placeholder="Имя Персонажа"
+          className="flex-grow text-[1.4rem] outline-gray-300 bg-white rounded-md px-[1rem] py-[.5rem] shadow-md"
+        />
+
+        <img
+          src={characterImg}
+          alt="CharacterImg"
+          className={`${
+            characterImg?.trim().length ? "" : "hidden"
+          } w-[3rem] object-cover rounded-md self-end`}
+        />
         <PlotfieldCharacterPromptMain
-          characterName={characterName}
+          characterDebouncedValue={characterDebouncedValue}
           setCharacterId={setCharacterId}
           setCharacterName={setCharacterName}
           setShowCharacterModal={setShowAllCharacters}
           showCharacterModal={showAllCharacters}
           setCharacterImg={setCharacterImg}
         />
-      </div>
+      </form>
       <input
         type="text"
         placeholder="Очки характеристики"

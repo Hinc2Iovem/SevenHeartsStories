@@ -1,9 +1,10 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import useGetCommandCall from "../hooks/Call/useGetCommandCall";
 import useUpdateCallText from "../hooks/Call/useUpdateCallText";
 import useGetTopologyBlockById from "../hooks/TopologyBlock/useGetTopologyBlockById";
 import useGetAllTopologyBlocksByEpisodeId from "../hooks/TopologyBlock/useGetAllTopologyBlocksByEpisodeId";
 import { useParams } from "react-router-dom";
+import useOutOfModal from "../../../../../../hooks/UI/useOutOfModal";
 
 type CommandCallFieldTypes = {
   plotFieldCommandId: string;
@@ -17,6 +18,7 @@ export default function CommandCallField({
   command,
 }: CommandCallFieldTypes) {
   const { episodeId } = useParams();
+  const modalRef = useRef<HTMLDivElement>(null);
   const [nameValue] = useState<string>(command ?? "Call");
 
   const { data: commandCall } = useGetCommandCall({
@@ -62,6 +64,12 @@ export default function CommandCallField({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [targetBlockId]);
 
+  useOutOfModal({
+    modalRef,
+    setShowModal: setShowAllTopologyBlocks,
+    showModal: showAllTopologyBlocks,
+  });
+
   return (
     <div className="flex flex-wrap gap-[1rem] w-full bg-primary-light-blue rounded-md p-[.5rem] sm:flex-row flex-col">
       <div className="sm:w-[20%] min-w-[10rem] flex-grow w-full relative">
@@ -72,14 +80,18 @@ export default function CommandCallField({
       <div className="relative">
         <button
           className="text-[1.3rem] bg-white rounded-md shadow-md text-gray-700 px-[1rem] py-[.5rem]"
-          onClick={() => setShowAllTopologyBlocks((prev) => !prev)}
+          onClick={(e) => {
+            e.stopPropagation();
+            setShowAllTopologyBlocks((prev) => !prev);
+          }}
         >
-          {currentTopologyBlockName}
+          {currentTopologyBlockName || "Блок"}
         </button>
         <aside
+          ref={modalRef}
           className={`${
             showAllTopologyBlocks ? "" : "hidden"
-          } z-[10] flex flex-col gap-[1rem] p-[.5rem] absolute min-w-fit w-full rounded-md shadow-md bg-white right-[0rem] translate-y-[.5rem]`}
+          } z-[10] flex flex-col gap-[1rem] p-[.5rem] max-h-[15rem] overflow-y-auto absolute min-w-fit w-full rounded-md shadow-md bg-white right-[0rem] translate-y-[.5rem] | containerScroll`}
         >
           {allTopologyBlocks?.map((tb) => (
             <button
@@ -91,7 +103,7 @@ export default function CommandCallField({
                 setCurrentTopologyBlockName(tb?.name || "");
               }}
               className={`${topologyBlockId === tb._id ? "hidden" : ""} ${
-                tb.isStartingTopologyBlock ? "hidden" : ""
+                tb._id === targetBlockId ? "hidden" : ""
               } px-[1rem] py-[.5rem] whitespace-nowrap text-[1.3rem] outline-gray-300 text-gray-700 hover:bg-primary-light-blue hover:text-white shadow-md transition-all rounded-md`}
             >
               {tb.name}

@@ -5,14 +5,16 @@ import useCreateChoiceOption from "../../hooks/Choice/ChoiceOption/useCreateChoi
 
 type CreateChoiceOptionTypeModalTypes = {
   topologyBlockId: string;
-  choiceId: string;
+  plotFieldCommandId: string;
+  plotFieldCommandChoiceId: string;
   showCreateChoiceOptionModal: boolean;
   setShowCreateChoiceOptionModal: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 export default function CreateChoiceOptionTypeModal({
   topologyBlockId,
-  choiceId,
+  plotFieldCommandChoiceId,
+  plotFieldCommandId,
   showCreateChoiceOptionModal,
   setShowCreateChoiceOptionModal,
 }: CreateChoiceOptionTypeModalTypes) {
@@ -20,7 +22,8 @@ export default function CreateChoiceOptionTypeModal({
 
   const createChoiceOption = useCreateChoiceOption({
     episodeId: episodeId ?? "",
-    plotFieldCommandChoiceId: choiceId,
+    plotFieldCommandChoiceId: plotFieldCommandChoiceId,
+    plotFieldCommandId,
     topologyBlockId,
   });
 
@@ -32,7 +35,7 @@ export default function CreateChoiceOptionTypeModal({
     <aside
       className={`${
         showCreateChoiceOptionModal ? "" : "hidden"
-      } absolute right-1/2 z-[10] flex flex-col min-w-fit w-full rounded-md shadow-md p-[.5rem] bg-white`}
+      } absolute right-0 z-[10] flex flex-col min-w-fit w-full rounded-md shadow-md p-[.5rem] bg-white`}
     >
       {ChoiceOptionVariations.map((cov) => (
         <button
@@ -41,7 +44,7 @@ export default function CreateChoiceOptionTypeModal({
             setShowCreateChoiceOptionModal(false);
             createChoiceOption.mutate({ type: cov });
           }}
-          className={`hover:bg-primary-light-blue hover:text-white transition-all text-[1.4rem] whitespace-nowrap text-gray-700 px-[1rem] py-[.5rem] rounded-md`}
+          className={`hover:bg-primary-light-blue outline-gray-300 hover:text-white transition-all text-[1.4rem] whitespace-nowrap text-gray-700 px-[1rem] py-[.5rem] rounded-md`}
         >
           {cov}
         </button>

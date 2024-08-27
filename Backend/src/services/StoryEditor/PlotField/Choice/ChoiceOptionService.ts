@@ -17,6 +17,29 @@ import { validateMongoId } from "../../../../utils/validateMongoId";
 import OptionPremium from "../../../../models/StoryEditor/PlotField/Choice/OptionPremium";
 import TranslationChoiceOption from "../../../../models/StoryData/Translation/TranslationChoiceOption";
 
+type GetChoiceOptionByIdTypes = {
+  choiceOptionId: string;
+};
+
+export const getChoiceOptionByIdService = async ({
+  choiceOptionId,
+}: GetChoiceOptionByIdTypes) => {
+  validateMongoId({
+    value: choiceOptionId,
+    valueName: "ChoiceOption",
+  });
+
+  const existingChoiceOption = await ChoiceOption.findById(
+    choiceOptionId
+  ).lean();
+
+  if (!existingChoiceOption) {
+    return null;
+  }
+
+  return existingChoiceOption;
+};
+
 type GetAllChoiceOptionsByChoiceIdTypes = {
   plotFieldCommandChoiceId: string;
 };
@@ -79,6 +102,7 @@ export const updateChoiceOptionTopologyBlockService = async ({
 
 type CreateChoiceOptionTypes = {
   plotFieldCommandChoiceId: string;
+  plotFieldCommandId: string;
   episodeId: string;
   topologyBlockId: string;
   type: ChoiceOptionType | undefined;
@@ -86,6 +110,7 @@ type CreateChoiceOptionTypes = {
 
 export const createChoiceOptionService = async ({
   plotFieldCommandChoiceId,
+  plotFieldCommandId,
   type,
   episodeId,
   topologyBlockId,
@@ -93,6 +118,10 @@ export const createChoiceOptionService = async ({
   validateMongoId({
     value: plotFieldCommandChoiceId,
     valueName: "PlotFieldCommandChoice",
+  });
+  validateMongoId({
+    value: plotFieldCommandId,
+    valueName: "PlotFieldCommand",
   });
 
   checkChoiceOptionType({ type });
@@ -117,6 +146,8 @@ export const createChoiceOptionService = async ({
     sourceBlockId: topologyBlockId,
   }).lean();
   const topologyBlockNumber = topologyBlocks.length || 1;
+
+  console.log("topologyBlockNumber: ", topologyBlockNumber);
 
   const newTopologyBlock = await createTopologyBlock({
     coordinatesX: (existingCurrentTopologyBlock.coordinatesX ?? 0) + 50,
@@ -160,7 +191,7 @@ export const createChoiceOptionService = async ({
   }
   await TranslationChoiceOption.create({
     language: "russian",
-    plotFieldCommandChoiceId,
+    commandId: plotFieldCommandId,
     translations: [],
     type: type ?? "common",
     choiceOptionId: newChoiceOption._id,

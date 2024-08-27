@@ -66,6 +66,7 @@ export const updateMusicService = async ({
     .collation({ locale: "en", strength: 2 })
     .lean()
     .exec();
+
   const musicCommand = await CommandMusic.findById(commandMusicId).exec();
 
   if (!musicLibrary) {

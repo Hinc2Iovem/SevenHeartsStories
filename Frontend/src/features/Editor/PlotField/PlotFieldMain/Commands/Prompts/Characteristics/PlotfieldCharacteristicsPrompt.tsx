@@ -1,42 +1,38 @@
 import { useEffect, useState } from "react";
-import { CharacterCharacteristicTypes } from "../../../../../../../types/StoryData/Characteristic/Characteristic";
-import useGetTranslationCharacteristic from "../../../../../../../hooks/Fetching/Translation/useGetTranslationCharacteristic";
+import { TranslationCharacterCharacteristicTypes } from "../../../../../../../types/Additional/TranslationTypes";
 
 type EmotionCharacteristicNameTypes = {
   setCharacteristicName: React.Dispatch<React.SetStateAction<string>>;
   setCharacteristicId: React.Dispatch<React.SetStateAction<string>>;
   setShowCharacteristicModal: React.Dispatch<React.SetStateAction<boolean>>;
-} & CharacterCharacteristicTypes;
+} & TranslationCharacterCharacteristicTypes;
 
 export default function PlotfieldCharacteristicsPrompt({
-  _id,
+  characteristicId,
   setCharacteristicName,
   setCharacteristicId,
   setShowCharacteristicModal,
+  translations,
 }: EmotionCharacteristicNameTypes) {
-  const { data: translationCharacteristic } = useGetTranslationCharacteristic({
-    characterCharacteristicId: _id,
-  });
-
   const [currentCharacteristicName, setCurrentCharacteristicName] =
     useState("");
 
   useEffect(() => {
-    if (translationCharacteristic) {
-      translationCharacteristic.map((tc) => {
+    if (translations) {
+      translations.map((tc) => {
         if (tc.textFieldName === "characterCharacteristic") {
           setCurrentCharacteristicName(tc.text);
         }
       });
     }
-  }, [translationCharacteristic]);
+  }, [translations]);
 
   return (
     <button
       type="button"
       onClick={() => {
         setCharacteristicName(currentCharacteristicName);
-        setCharacteristicId(_id);
+        setCharacteristicId(characteristicId);
         setShowCharacteristicModal(false);
       }}
       className="whitespace-nowrap w-full flex-wrap text-start text-[1.3rem] px-[.5rem] py-[.2rem] hover:bg-primary-light-blue hover:text-white transition-all rounded-md"

@@ -5,7 +5,37 @@ import {
   episodeTranslationUpdateService,
   getAllEpisodesTranslationsByTypeAndSearchService,
   getEpisodeByIdAndLanguageService,
+  getEpisodeTranslationUpdatedAtAndLanguageService,
 } from "../../../services/StoryData/Episode/EpisodeTranslationService";
+
+type GetUpdatedAtAndLanguageQuery = {
+  currentLanguage: string | undefined;
+  updatedAt: string | undefined;
+};
+
+// @route GET http://localhost:3500/episodes/recent/translations
+// @access Private
+export const getEpisodeTranslationUpdatedAtAndLanguageController: RequestHandler<
+  unknown,
+  unknown,
+  unknown,
+  GetUpdatedAtAndLanguageQuery
+> = async (req, res, next) => {
+  try {
+    const textFieldName =
+      await getEpisodeTranslationUpdatedAtAndLanguageService({
+        currentLanguage: req.query.currentLanguage,
+        updatedAt: req.query.updatedAt,
+      });
+    if (textFieldName) {
+      return res.status(201).json(textFieldName);
+    } else {
+      return res.status(400).json({ message: "Something went wrong" });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
 
 type GetEpisodesBySeasonIdParams = {
   seasonId: string;

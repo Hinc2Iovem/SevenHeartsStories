@@ -4,10 +4,15 @@ import {
   createGetItemTranslationController,
   getItemUpdateTranslationController,
   getAllItemTranslationByTopologyBlockIdController,
+  getGetItemTranslationUpdatedAtAndLanguageController,
 } from "../../../../controllers/StoryEditor/PlotField/GetItem/GetItemTranslationController";
 
 // Default route === /getItems
 export const getItemTranslationsRoute = express.Router();
+
+getItemTranslationsRoute
+  .route("/recent/translations")
+  .get(getGetItemTranslationUpdatedAtAndLanguageController);
 
 getItemTranslationsRoute
   .route("/:plotFieldCommandId/translations")

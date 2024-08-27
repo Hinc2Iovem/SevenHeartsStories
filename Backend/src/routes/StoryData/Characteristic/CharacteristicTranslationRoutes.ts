@@ -5,12 +5,17 @@ import {
   characteristicTranslationUpdateController,
   getAllCharacteristicsTranslationsByStoryIdAndLanguageController,
   getAllCharacteristicsTranslationsByCharacteristicIdAndLanguageController,
+  getCharacteristicTranslationUpdatedAtAndLanguageController,
 } from "../../../controllers/StoryData/Characteristic/CharacteristicTranslationController";
 import { verifyHeadScriptwriter } from "../../../middlewares/verifyHeadScriptwriter";
 import { verifyJWT } from "../../../middlewares/verifyJWT";
 
 // Default route === /characteristics
 export const characteristicTranslationRoute = express.Router();
+
+characteristicTranslationRoute
+  .route("/recent/translations")
+  .get(verifyJWT, getCharacteristicTranslationUpdatedAtAndLanguageController);
 
 characteristicTranslationRoute
   .route("/:characteristicId/translations")

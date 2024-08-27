@@ -1,17 +1,17 @@
 import { useEffect, useState } from "react";
 import plus from "../../../../../../assets/images/shared/add.png";
 import useGetCharacterById from "../../../../../../hooks/Fetching/Character/useGetCharacterById";
-import useEscapeOfModal from "../../../../../../hooks/UI/useEscapeOfModal";
+import useGetTranslationCharacterById from "../../../../../../hooks/Fetching/Translation/Characters/useGetTranslationCharacterById";
 import useDebounce from "../../../../../../hooks/utilities/useDebounce";
 import ButtonHoverPromptModal from "../../../../../shared/ButtonAsideHoverPromptModal/ButtonHoverPromptModal";
-import useGetTranslationCharacterEnabled from "../hooks/Character/useGetTranslationCharacterEnabled";
 import useGetCommandChoiceTranslation from "../hooks/Choice/useGetCommandChoiceTranslation";
-import useUpdateChoiceText from "../hooks/Choice/useUpdateChoiceText";
-import useUpdateChoiceTranslationText from "../hooks/Choice/useUpdateChoiceTranslationText";
-import useGetEmotionEnabled from "../hooks/Emotion/useGetEmotionEnabled";
+import useUpdateChoice from "../hooks/Choice/useUpdateChoice";
 import PlotfieldCharacterPromptMain from "../Prompts/Characters/PlotfieldCharacterPromptMain";
 import PlotfieldEmotionPromptMain from "../Prompts/Emotions/PlotfieldEmotionPromptMain";
 import CreateChoiceOptionTypeModal from "./Option/CreateChoiceOptionTypeModal";
+import useUpdateChoiceTranslation from "../../../../../../hooks/Patching/Translation/PlotfieldCoomands/useUpdateChoiceTranslation";
+import { TranslationTextFieldName } from "../../../../../../const/TRANSLATION_TEXT_FIELD_NAMES";
+import { TranslationTextFieldNameChoiceTypes } from "../../../../../../types/Additional/TRANSLATION_TEXT_FIELD_NAMES";
 
 type ChoiceQuestionFieldTypes = {
   characterId: string;
@@ -19,6 +19,7 @@ type ChoiceQuestionFieldTypes = {
   isAuthor: boolean;
   setCharacterId: React.Dispatch<React.SetStateAction<string>>;
   choiceId: string;
+  plotFieldCommandId: string;
   topologyBlockId: string;
 };
 
@@ -29,21 +30,27 @@ export default function ChoiceQuestionField({
   choiceId,
   setCharacterId,
   topologyBlockId,
+  plotFieldCommandId,
 }: ChoiceQuestionFieldTypes) {
+  const [initialCharacterId] = useState(characterId);
+  const [initialCharacterEmotionId] = useState(characterEmotionId);
+  const [initialQuestion, setInitialQuestion] = useState("");
+
   const [showCreateChoiceOptionModal, setShowCreateChoiceOptionModal] =
     useState(false);
 
   const { data: translatedQuestion } = useGetCommandChoiceTranslation({
-    choiceId,
+    commandId: plotFieldCommandId,
   });
 
   const [question, setQuestion] = useState("");
 
   useEffect(() => {
     if (translatedQuestion) {
-      translatedQuestion.map((tq) => {
+      translatedQuestion.translations?.map((tq) => {
         if (tq.textFieldName === "choiceQuestion") {
           setQuestion(tq.text);
+          setInitialQuestion(tq.text);
         }
       });
     }
@@ -51,18 +58,17 @@ export default function ChoiceQuestionField({
 
   const [showAllCharacters, setShowAllCharacters] = useState(false);
   const [characterName, setCharacterName] = useState("");
-
   const [characterImg, setCharacterImg] = useState<string>("");
 
-  const { data: translatedCharacter } = useGetTranslationCharacterEnabled({
-    commandSayType: "character",
+  const { data: translatedCharacter } = useGetTranslationCharacterById({
     characterId,
+    language: "russian",
   });
   const { data: currentCharacter } = useGetCharacterById({ characterId });
 
   useEffect(() => {
     if (translatedCharacter) {
-      translatedCharacter.map((tc) => {
+      translatedCharacter.translations?.map((tc) => {
         if (tc.textFieldName === "characterName") {
           setCharacterName(tc.text || "");
         }
@@ -81,56 +87,54 @@ export default function ChoiceQuestionField({
   const [emotionId, setEmotionId] = useState("");
   const [emotionImg, setEmotionImg] = useState<string>("");
 
-  const { data: currentEmotion } = useGetEmotionEnabled({
-    characterEmotionId,
-    commandSayType: "character",
-  });
-
   useEffect(() => {
-    if (currentEmotion) {
-      setEmotionName(currentEmotion.emotionName);
+    if (currentCharacter) {
+      const currentEmotion = currentCharacter.emotions.find(
+        (e) => e._id === characterEmotionId
+      );
+      setEmotionName(currentEmotion?.emotionName || "");
       setEmotionImg(currentEmotion?.imgUrl || "");
     }
-  }, [currentEmotion]);
+  }, [currentCharacter, characterEmotionId]);
 
-  const updateChoice = useUpdateChoiceText({ choiceId });
+  const updateChoice = useUpdateChoice({ choiceId });
 
-  const updateChoiceTranslation = useUpdateChoiceTranslationText({
-    choiceId,
-    choiceQuestion: question,
+  const updateChoiceTranslation = useUpdateChoiceTranslation({
+    commandId: plotFieldCommandId,
+    language: "russian",
+    topologyBlockId,
   });
 
   const debouncedValue = useDebounce({ value: question, delay: 700 });
 
   useEffect(() => {
-    if (debouncedValue?.trim().length) {
-      updateChoiceTranslation.mutate();
+    if (initialQuestion !== debouncedValue && debouncedValue?.trim().length) {
+      updateChoiceTranslation.mutate({
+        text: question,
+        textFieldName:
+          TranslationTextFieldName.ChoiceQuestion as TranslationTextFieldNameChoiceTypes,
+      });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [debouncedValue]);
 
   useEffect(() => {
-    if (characterId?.trim().length) {
+    if (initialCharacterId !== characterId && characterId?.trim().length) {
       updateChoice.mutate({ characterId });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [characterId]);
 
   useEffect(() => {
-    if (emotionId?.trim().length) {
+    if (initialCharacterEmotionId !== emotionId && emotionId?.trim().length) {
       updateChoice.mutate({ characterEmotionId: emotionId });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [emotionId]);
 
-  useEscapeOfModal({
-    setValue: setShowAllCharacters,
-    value: showAllCharacters,
-  });
-
-  useEscapeOfModal({
-    setValue: setShowAllEmotions,
-    value: showAllEmotions,
+  const characterDebouncedValue = useDebounce({
+    value: characterName,
+    delay: 500,
   });
   return (
     <div className="w-full flex-grow flex gap-[1rem] bg-neutral-magnolia rounded-md shadow-md p-[.5rem] flex-wrap items-center">
@@ -140,46 +144,52 @@ export default function ChoiceQuestionField({
         </div>
       ) : (
         <>
-          <div className="relative flex-grow ">
-            <button
-              onClick={() => {
-                setShowAllEmotions(false);
-                setShowAllCharacters((prev) => !prev);
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              setShowAllCharacters(false);
+            }}
+            className="w-full relative flex gap-[.5rem] items-center"
+          >
+            <input
+              onClick={(e) => {
+                e.stopPropagation();
+                setShowAllCharacters(true);
               }}
-              className="outline-gray-400 text-[1.3rem] w-full bg-white rounded-md shadow-md px-[1rem] py-[.5rem]"
-            >
-              {characterName?.trim().length ? (
-                <div className="flex gap-[1rem] justify-between items-center">
-                  <h4 className="text-[1.5rem]">{characterName}</h4>
-                  <img
-                    src={characterImg}
-                    alt="CharacterIcon"
-                    className={`${
-                      characterImg ? "" : "hidden"
-                    } w-[3.5rem] rounded-md object-contain`}
-                  />
-                </div>
-              ) : (
-                "Имя Персонажа"
-              )}
-            </button>
+              value={characterName}
+              onChange={(e) => {
+                setShowAllCharacters(true);
+                setCharacterName(e.target.value);
+              }}
+              placeholder="Имя Персонажа"
+              className="flex-grow text-[1.4rem] outline-gray-300 bg-white rounded-md px-[1rem] py-[.5rem] shadow-md"
+            />
+
+            <img
+              src={characterImg}
+              alt="CharacterImg"
+              className={`${
+                characterImg?.trim().length ? "" : "hidden"
+              } w-[3rem] object-cover rounded-md self-end`}
+            />
             <PlotfieldCharacterPromptMain
-              characterName={characterName}
+              characterDebouncedValue={characterDebouncedValue}
               setCharacterId={setCharacterId}
               setCharacterName={setCharacterName}
               setShowCharacterModal={setShowAllCharacters}
               showCharacterModal={showAllCharacters}
               setCharacterImg={setCharacterImg}
             />
-          </div>
+          </form>
 
           <div className="relative flex-grow">
             <button
-              onClick={() => {
+              onClick={(e) => {
+                e.stopPropagation();
                 setShowAllCharacters(false);
                 setShowAllEmotions((prev) => !prev);
               }}
-              className="outline-gray-400 text-[1.3rem] w-full bg-white rounded-md shadow-md px-[1rem] py-[.5rem]"
+              className="outline-gray-300 text-[1.3rem] w-full bg-white rounded-md shadow-md px-[1rem] py-[.5rem]"
             >
               {emotionName?.trim().length ? (
                 <div className="flex gap-[1rem] justify-between items-center">
@@ -197,8 +207,7 @@ export default function ChoiceQuestionField({
               )}
             </button>
             <PlotfieldEmotionPromptMain
-              characterId={characterId}
-              emotionName={emotionName}
+              allEmotions={currentCharacter?.emotions}
               setEmotionImg={setEmotionImg}
               setEmotionName={setEmotionName}
               setEmotionId={setEmotionId}
@@ -232,7 +241,8 @@ export default function ChoiceQuestionField({
         </ButtonHoverPromptModal>
 
         <CreateChoiceOptionTypeModal
-          choiceId={choiceId}
+          plotFieldCommandId={plotFieldCommandId}
+          plotFieldCommandChoiceId={choiceId}
           setShowCreateChoiceOptionModal={setShowCreateChoiceOptionModal}
           showCreateChoiceOptionModal={showCreateChoiceOptionModal}
           topologyBlockId={topologyBlockId}

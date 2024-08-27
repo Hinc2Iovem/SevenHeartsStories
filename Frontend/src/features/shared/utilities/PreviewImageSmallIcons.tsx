@@ -60,7 +60,7 @@ export default function PreviewImageSmallIcons({
           <img
             src={imagePreview ? (imagePreview as string) : plus}
             alt="addImage"
-            className={`${imgClasses} object-cover w-full h-full rounded-md`}
+            className={`${imgClasses} object-cover rounded-md`}
           />
           {children ? children : ""}
         </div>

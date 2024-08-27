@@ -40,7 +40,10 @@ export default function CommandEffectField({
   });
 
   useEffect(() => {
-    if (debouncedValue?.trim().length) {
+    if (
+      commandEffect?.effectName !== debouncedValue &&
+      debouncedValue?.trim().length
+    ) {
       updateEffectText.mutate();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

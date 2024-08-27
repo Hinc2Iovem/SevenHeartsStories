@@ -1,55 +1,50 @@
 import { useEffect, useState } from "react";
-import useGetCommandAchievement from "../hooks/Achievement/useGetCommandAchievement";
-import useGetTranslationAchievementEnabled from "../hooks/Achievement/useGetTranslationAchievementEnabled";
+import { useParams } from "react-router-dom";
 import useDebounce from "../../../../../../hooks/utilities/useDebounce";
+import useGetTranslationAchievementEnabled from "../hooks/Achievement/useGetTranslationAchievementEnabled";
 import useUpdateAchievementText from "../hooks/Achievement/useUpdateAchievementText";
 
 type CommandAchievementFieldTypes = {
   plotFieldCommandId: string;
   command: string;
+  topologyBlockId: string;
 };
 
 export default function CommandAchievementField({
   plotFieldCommandId,
+  topologyBlockId,
   command,
 }: CommandAchievementFieldTypes) {
+  const { storyId } = useParams();
   const [nameValue] = useState(command ?? "achievement");
+  const [initialTextValue, setInitialTextValue] = useState("");
   const [textValue, setTextValue] = useState("");
 
-  const { data: commandAchievement } = useGetCommandAchievement({
-    plotFieldCommandId,
-  });
-  const [commandAchievementId, setCommandAchievementId] = useState("");
-
-  useEffect(() => {
-    if (commandAchievement) {
-      setCommandAchievementId(commandAchievement._id);
-    }
-  }, [commandAchievement]);
-
   const { data: translatedAchievement } = useGetTranslationAchievementEnabled({
-    achievementId: commandAchievementId,
+    commandId: plotFieldCommandId,
   });
 
   useEffect(() => {
     if (translatedAchievement) {
-      translatedAchievement.forEach((ac) => {
-        if (ac.textFieldName === "achievementName") {
-          setTextValue(ac.text);
-        }
-      });
+      setTextValue((translatedAchievement.translations || [])[0]?.text || "");
+      setInitialTextValue(
+        (translatedAchievement.translations || [])[0]?.text || ""
+      );
     }
   }, [translatedAchievement]);
 
   const debouncedValue = useDebounce({ value: textValue, delay: 500 });
 
   const updateAchievementText = useUpdateAchievementText({
-    achievementId: commandAchievementId,
+    commandId: plotFieldCommandId,
     achievementName: debouncedValue,
+    storyId: storyId || "",
+    topologyBlockId,
+    language: "russian",
   });
 
   useEffect(() => {
-    if (debouncedValue?.trim().length) {
+    if (initialTextValue !== debouncedValue && debouncedValue?.trim().length) {
       updateAchievementText.mutate();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

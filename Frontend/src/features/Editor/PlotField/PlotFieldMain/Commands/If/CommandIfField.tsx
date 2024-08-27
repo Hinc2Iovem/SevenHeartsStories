@@ -120,9 +120,9 @@ export default function CommandIfField({
           </h3>
           <ButtonHoverPromptModal
             contentName="Создать строку"
-            positionByAbscissa="left"
+            positionByAbscissa="right"
             className="shadow-sm shadow-gray-400 active:scale-[.99] relative bg-green-200"
-            asideClasses="text-[1.3rem] translate-x-1/4 -translate-y-2/3"
+            asideClasses="text-[1.3rem] -translate-y-1/3"
             onClick={() => createCommandinsideIf.mutate()}
             variant="rectangle"
           >
@@ -164,9 +164,9 @@ export default function CommandIfField({
         </h3>
         <ButtonHoverPromptModal
           contentName="Создать строку"
-          positionByAbscissa="left"
+          positionByAbscissa="right"
           className="shadow-sm shadow-gray-400 active:scale-[.99] relative bg-neutral-magnolia z-[2]"
-          asideClasses="text-[1.3rem] translate-x-1/4 -translate-y-2/3"
+          asideClasses="text-[1.3rem] -translate-y-1/3"
           onClick={() => createCommandInsideElse.mutate()}
           variant="rectangle"
         >

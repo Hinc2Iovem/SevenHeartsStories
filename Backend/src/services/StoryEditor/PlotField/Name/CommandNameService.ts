@@ -57,11 +57,6 @@ export const updateNameService = async ({
   characterId,
 }: UpdateNameTypes) => {
   validateMongoId({ value: nameId, valueName: "Name" });
-  validateMongoId({ value: characterId, valueName: "Character" });
-
-  if (!newName?.trim().length) {
-    throw createHttpError(400, "Name is required");
-  }
 
   const existingName = await Name.findById(nameId).exec();
 
@@ -69,8 +64,13 @@ export const updateNameService = async ({
     throw createHttpError(400, "No such Name Command");
   }
 
-  existingName.name = newName;
-  existingName.characterId = new Types.ObjectId(characterId);
+  if (newName?.trim().length) {
+    existingName.name = newName;
+  }
+  if (characterId?.trim().length) {
+    validateMongoId({ value: characterId, valueName: "Character" });
+    existingName.characterId = new Types.ObjectId(characterId);
+  }
   return await existingName.save();
 };
 

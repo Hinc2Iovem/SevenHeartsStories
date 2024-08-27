@@ -16,6 +16,7 @@ type CommandConditionFieldTypes = {
 export default function CommandConditionField({
   plotFieldCommandId,
   command,
+  topologyBlockId,
 }: CommandConditionFieldTypes) {
   const [nameValue] = useState<string>(command ?? "Condition");
 
@@ -74,9 +75,9 @@ export default function CommandConditionField({
         </h3>
         <ButtonHoverPromptModal
           contentName="Создать Блок"
-          positionByAbscissa="left"
+          positionByAbscissa="right"
           className="shadow-sm shadow-gray-400 active:scale-[.99] relative bg-white z-[2]"
-          asideClasses="text-[1.3rem] translate-x-1/4 -translate-y-2/3"
+          asideClasses="text-[1.3rem] -translate-y-1/3"
           onClick={() => createCommandinsideCondition.mutate()}
           variant="rectangle"
         >
@@ -92,6 +93,7 @@ export default function CommandConditionField({
         {memoizedConditionBlocksWithoutElse?.map((p) => (
           <ConditionBlockItem
             key={p._id}
+            currentTopologyBlockId={topologyBlockId}
             allUsedOrderNumbers={allUsedOrderNumbers}
             amountOfIfBlocks={amountOfIfBlocks}
             {...p}
@@ -104,7 +106,13 @@ export default function CommandConditionField({
         </h3>
         {conditionBlocks?.map((p) => {
           if (p.isElse) {
-            return <ConditionBlockItem key={p._id} {...p} />;
+            return (
+              <ConditionBlockItem
+                key={p._id}
+                currentTopologyBlockId={topologyBlockId}
+                {...p}
+              />
+            );
           }
         })}
       </div>

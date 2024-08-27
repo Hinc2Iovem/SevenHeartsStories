@@ -40,7 +40,10 @@ export default function CommandCutSceneField({
   });
 
   useEffect(() => {
-    if (debouncedValue?.trim().length) {
+    if (
+      commandCutScene?.cutSceneName !== debouncedValue &&
+      debouncedValue?.trim().length
+    ) {
       updateCutSceneText.mutate();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

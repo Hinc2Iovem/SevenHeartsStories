@@ -1,16 +1,16 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
-import { axiosCustomized } from "../../../../../../../../api/axios";
 import useOutOfModal from "../../../../../../../../hooks/UI/useOutOfModal";
-import { CommandSayVariationTypes } from "../../../../../../../../types/StoryEditor/PlotField/Say/SayTypes";
-import useUpdateCommandSayText from "../../../hooks/Say/useUpdateCommandSayText";
-import { TranslationCommandTypes } from "../../../../../../../../types/Additional/TranslationTypes";
 import useDebounce from "../../../../../../../../hooks/utilities/useDebounce";
+import { CommandSayVariationTypes } from "../../../../../../../../types/StoryEditor/PlotField/Say/SayTypes";
+import useGetTranslationSay from "../../../hooks/Say/useGetTranslationSay";
+import useUpdateCommandSayText from "../../../hooks/Say/useUpdateCommandSayText";
+import useUpdateCommandSayType from "../../../hooks/Say/useUpdateCommandSayType";
 
 type CommandSayFieldItemTypes = {
   nameValue: string;
   plotFieldCommandId: string;
   plotFieldCommandSayId: string;
+  topologyBlockId: string;
 };
 
 const CommandSayPossibleUpdateVariations = ["author", "hint", "notify"];
@@ -19,71 +19,50 @@ export default function CommandSayFieldItem({
   nameValue,
   plotFieldCommandId,
   plotFieldCommandSayId,
+  topologyBlockId,
 }: CommandSayFieldItemTypes) {
-  const [textValue, setTextValue] = useState("");
-
-  const debouncedValue = useDebounce({ value: textValue, delay: 500 });
-
-  const { data: commandSayText } = useQuery({
-    queryKey: ["translation", "command", "say", plotFieldCommandSayId, "text"],
-    queryFn: async () =>
-      await axiosCustomized
-        .get<TranslationCommandTypes[]>(
-          `/translations/plotFieldCommands/say/${plotFieldCommandSayId}?currentLanguage=russian`
-        )
-        .then((r) => r.data),
-    enabled: !!plotFieldCommandSayId,
+  const { data: commandSayText } = useGetTranslationSay({
+    commandId: plotFieldCommandId,
+    language: "russian",
   });
+
+  const [initialTextValue, setInitialTextValue] = useState("");
+  const [textValue, setTextValue] = useState("");
+  const debouncedValue = useDebounce({ value: textValue, delay: 500 });
 
   useEffect(() => {
     if (commandSayText) {
-      commandSayText.map((cst) => {
-        if (cst.textFieldName === "sayText") {
-          setTextValue(cst.text);
-        }
-      });
+      setTextValue((commandSayText.translations || [])[0]?.text || "");
+      setInitialTextValue((commandSayText.translations || [])[0]?.text || "");
     }
   }, [commandSayText]);
 
-  const queryClient = useQueryClient();
   const [showUpdateNameModal, setShowUpdateNameModal] = useState(false);
 
   const updateNameModalRef = useRef<HTMLDivElement | null>(null);
-  const updateCommandSayNameValue = useMutation({
-    mutationFn: async (type: CommandSayVariationTypes) =>
-      await axiosCustomized.patch(
-        `/plotFieldCommands/say/${plotFieldCommandSayId}/type`,
-        {
-          type,
-        }
-      ),
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ["plotfieldComamnd", plotFieldCommandId, "say"],
-        exact: true,
-        type: "active",
-      });
-    },
+  const updateCommandSayNameValue = useUpdateCommandSayType({
+    plotFieldCommandId,
+    plotFieldCommandSayId,
   });
+
+  const updateCommandSayText = useUpdateCommandSayText({
+    commandId: plotFieldCommandId,
+    textValue,
+    topologyBlockId,
+  });
+
+  useEffect(() => {
+    if (initialTextValue !== debouncedValue && debouncedValue?.trim().length) {
+      updateCommandSayText.mutate();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [debouncedValue]);
 
   useOutOfModal({
     modalRef: updateNameModalRef,
     setShowModal: setShowUpdateNameModal,
     showModal: showUpdateNameModal,
   });
-
-  const updateCommandSayText = useUpdateCommandSayText({
-    commandSayId: plotFieldCommandSayId,
-    textValue,
-  });
-
-  useEffect(() => {
-    if (debouncedValue?.trim().length) {
-      updateCommandSayText.mutate();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [debouncedValue]);
-
   return (
     <div className="flex flex-wrap gap-[1rem] w-full bg-primary-light-blue rounded-md p-[.5rem] sm:flex-row flex-col">
       <div className="sm:w-[20%] min-w-[10rem] flex-grow w-full relative">

@@ -83,11 +83,6 @@ export default function FiltersEverythingCharacterForCharacteristic({
     return combinedArray;
   }, [translatedCharacteristics, nonTranslatedCharacteristics]);
 
-  console.log("trans: ", translatedCharacteristics);
-  console.log("nonTrans: ", nonTranslatedCharacteristics);
-
-  console.log(memoizedCombinedTranslations);
-
   return (
     <>
       <div className="flex w-full gap-[1rem] bg-neutral-alabaster px-[.5rem] py-[.5rem] rounded-md shadow-sm">
@@ -101,7 +96,6 @@ export default function FiltersEverythingCharacterForCharacteristic({
             key={(ct?.translated?._id || i) + "-ctCharacteristic"}
             languageToTranslate={translateToLanguage}
             translateFromLanguage={translateFromLanguage}
-            storyId={storyId}
             {...ct}
           />
         ))}

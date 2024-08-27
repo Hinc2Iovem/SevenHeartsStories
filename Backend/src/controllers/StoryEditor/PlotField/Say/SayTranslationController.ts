@@ -2,10 +2,39 @@ import { RequestHandler } from "express";
 import {
   createSayTranslationService,
   getAllSayTranslationByTopologyBlockIdService,
+  getSayTranslationUpdatedAtAndLanguageService,
   sayTranslationByCommandIdService,
   sayUpdateTranslationService,
 } from "../../../../services/StoryEditor/PlotField/Say/SayTranslationService";
 import { SayType } from "./SayController";
+
+type GetUpdatedAtAndLanguageQuery = {
+  currentLanguage: string | undefined;
+  updatedAt: string | undefined;
+};
+
+// @route GET http://localhost:3500/says/recent/translations
+// @access Private
+export const getSayTranslationUpdatedAtAndLanguageController: RequestHandler<
+  unknown,
+  unknown,
+  unknown,
+  GetUpdatedAtAndLanguageQuery
+> = async (req, res, next) => {
+  try {
+    const textFieldName = await getSayTranslationUpdatedAtAndLanguageService({
+      currentLanguage: req.query.currentLanguage,
+      updatedAt: req.query.updatedAt,
+    });
+    if (textFieldName) {
+      return res.status(201).json(textFieldName);
+    } else {
+      return res.status(400).json({ message: "Something went wrong" });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
 
 type SayByPlotFieldCommandIdParams = {
   plotFieldCommandId: string;

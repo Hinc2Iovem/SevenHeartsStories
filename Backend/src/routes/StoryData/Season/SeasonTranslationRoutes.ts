@@ -5,12 +5,17 @@ import {
   seasonTranslationUpdateController,
   getAllSeasonsTranslationsAndSearchController,
   getAllSeasonsTranslationsByStoryIdAndLanguageController,
+  getSeasonTranslationUpdatedAtAndLanguageController,
 } from "../../../controllers/StoryData/Season/SeasonTranslationController";
 import { verifyHeadScriptwriter } from "../../../middlewares/verifyHeadScriptwriter";
 import { verifyJWT } from "../../../middlewares/verifyJWT";
 
 // Default route === /seasons
 export const seasonTranslationRoute = express.Router();
+
+seasonTranslationRoute
+  .route("/recent/translations")
+  .get(getSeasonTranslationUpdatedAtAndLanguageController);
 
 seasonTranslationRoute
   .route("/stories/search/translations")

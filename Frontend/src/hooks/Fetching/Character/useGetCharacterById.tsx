@@ -8,7 +8,7 @@ export default function useGetCharacterById({
   characterId: string;
 }) {
   return useQuery({
-    queryKey: ["characters", characterId],
+    queryKey: ["character", characterId],
     queryFn: async () =>
       await axiosCustomized
         .get<CharacterGetTypes>(`/characters/${characterId}`)

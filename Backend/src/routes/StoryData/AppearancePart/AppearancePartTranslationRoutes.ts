@@ -5,10 +5,15 @@ import {
   appearancePartTranslationByAppearancePartIdController,
   getAllAppearancePartsTranslationByCharacterIdAndTypeController,
   getAllAppearancePartsTranslationByCharacterIdController,
+  getAppearancePartTranslationUpdatedAtAndLanguageController,
 } from "../../../controllers/StoryData/AppearancePart/AppearancePartTranslationController";
 
 // Default route === /appearanceParts
 export const appearancePartTranslationsRoute = express.Router();
+
+appearancePartTranslationsRoute
+  .route("/recent/translations")
+  .get(getAppearancePartTranslationUpdatedAtAndLanguageController);
 
 appearancePartTranslationsRoute
   .route("/:appearancePartId/translations")

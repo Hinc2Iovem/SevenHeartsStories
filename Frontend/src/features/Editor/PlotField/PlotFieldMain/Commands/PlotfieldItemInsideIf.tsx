@@ -28,7 +28,6 @@ type PlotFieldItemTypes = {
 export default function PlotfieldItemInsideIf({
   _id,
   command,
-  commandOrder,
   topologyBlockId,
   commandIfId,
   provided,
@@ -49,9 +48,16 @@ export default function PlotfieldItemInsideIf({
           topologyBlockId={topologyBlockId}
         />
       ) : command === "say" ? (
-        <CommandSayField plotFieldCommandId={_id} />
+        <CommandSayField
+          topologyBlockId={topologyBlockId}
+          plotFieldCommandId={_id}
+        />
       ) : command === "achievement" ? (
-        <CommandAchievementField command={command} plotFieldCommandId={_id} />
+        <CommandAchievementField
+          topologyBlockId={topologyBlockId}
+          command={command}
+          plotFieldCommandId={_id}
+        />
       ) : command === "ambient" ? (
         <CommandAmbientField command={command} plotFieldCommandId={_id} />
       ) : command === "cutscene" ? (
@@ -75,7 +81,11 @@ export default function PlotfieldItemInsideIf({
       ) : command === "background" ? (
         <CommandBackgroundField command={command} plotFieldCommandId={_id} />
       ) : command === "getitem" ? (
-        <CommandGetItemField command={command} plotFieldCommandId={_id} />
+        <CommandGetItemField
+          topologyBlockId={topologyBlockId}
+          command={command}
+          plotFieldCommandId={_id}
+        />
       ) : command === "if" ? (
         <CommandIfField
           topologyBlockId={topologyBlockId}
@@ -83,7 +93,11 @@ export default function PlotfieldItemInsideIf({
           plotFieldCommandId={_id}
         />
       ) : command === "wardrobe" ? (
-        <CommandWardrobeField command={command} plotFieldCommandId={_id} />
+        <CommandWardrobeField
+          topologyBlockId={topologyBlockId}
+          command={command}
+          plotFieldCommandId={_id}
+        />
       ) : command === "choice" ? (
         <CommandChoiceField
           command={command}

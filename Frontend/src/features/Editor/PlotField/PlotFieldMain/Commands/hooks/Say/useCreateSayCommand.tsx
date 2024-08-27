@@ -5,22 +5,30 @@ import { CommandSayVariationTypes } from "../../../../../../../types/StoryEditor
 type CreateSayCommandTypes = {
   plotFieldCommandId: string;
   topologyBlockId: string;
+};
+
+type CreateSayCommandOnMutationTypes = {
   characterId?: string;
+  type: CommandSayVariationTypes;
 };
 
 export default function useCreateSayCommand({
   plotFieldCommandId,
   topologyBlockId,
-  characterId,
 }: CreateSayCommandTypes) {
   return useMutation({
-    mutationFn: async ({ type }: { type: CommandSayVariationTypes }) =>
+    mutationFn: async ({
+      type,
+      characterId,
+    }: CreateSayCommandOnMutationTypes) => {
+      console.log("sending characterId: ", characterId);
       await axiosCustomized.post(
         `/says/${plotFieldCommandId}/topologyBlocks/${topologyBlockId}/translations`,
         {
           type,
           characterId,
         }
-      ),
+      );
+    },
   });
 }

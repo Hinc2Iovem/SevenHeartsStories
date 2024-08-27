@@ -61,8 +61,9 @@ export default function DisplayTranslatedNonTranslatedPlotCommandWardrobe({
   const updateCharacterTranslationTranslated =
     useUpdateCommandWardrobeTranslation({
       language: translateFromLanguage,
-      commandId: itemId,
-      topologyBlockId: translated?.topologyBlockId || "",
+      commandId: itemId || nonTranslated?.commandId || "",
+      topologyBlockId:
+        translated?.topologyBlockId || nonTranslated?.topologyBlockId || "",
     });
 
   useEffect(() => {
@@ -86,8 +87,9 @@ export default function DisplayTranslatedNonTranslatedPlotCommandWardrobe({
 
   const updateCharacterTranslation = useUpdateCommandWardrobeTranslation({
     language: languageToTranslate,
-    commandId: itemId,
-    topologyBlockId: translated?.topologyBlockId || "",
+    commandId: itemId || nonTranslated?.commandId || "",
+    topologyBlockId:
+      translated?.topologyBlockId || nonTranslated?.topologyBlockId || "",
   });
 
   useEffect(() => {

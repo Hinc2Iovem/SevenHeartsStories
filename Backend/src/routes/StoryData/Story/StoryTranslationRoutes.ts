@@ -6,12 +6,17 @@ import {
   storyCreateController,
   storyGetByIdController,
   storyTranslationUpdateController,
+  getStoryTranslationUpdatedAtAndLanguageController,
 } from "../../../controllers/StoryData/Story/StoryTranslationController";
 import { verifyHeadScriptwriter } from "../../../middlewares/verifyHeadScriptwriter";
 import { verifyJWT } from "../../../middlewares/verifyJWT";
 
 // Default route === /stories
 export const storyTranslationRoute = express.Router();
+
+storyTranslationRoute
+  .route("/recent/translations")
+  .get(getStoryTranslationUpdatedAtAndLanguageController);
 
 storyTranslationRoute
   .route("/translations")

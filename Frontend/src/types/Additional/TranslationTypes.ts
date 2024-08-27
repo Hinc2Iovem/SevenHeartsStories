@@ -214,7 +214,7 @@ export type TranslationStoryTypes = {
   createdAt: string;
 };
 
-type ChoiceOptionTranslationsTypes = {
+export type ChoiceOptionTranslationsTypes = {
   text: string;
   _id: string;
   amountOfWords: number;

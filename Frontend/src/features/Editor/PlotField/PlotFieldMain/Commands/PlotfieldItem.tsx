@@ -39,7 +39,7 @@ export default function PlotfieldItem({
       ref={provided.innerRef}
       className={`${
         commandIfId ? "ml-[1rem] pr-[1rem]" : ""
-      } w-full flex gap-[1rem]`}
+      } w-full flex gap-[1rem] outline-gray-300`}
     >
       {!command ? (
         <PlotfieldBlank
@@ -48,9 +48,16 @@ export default function PlotfieldItem({
           topologyBlockId={topologyBlockId}
         />
       ) : command === "say" ? (
-        <CommandSayField plotFieldCommandId={_id} />
+        <CommandSayField
+          topologyBlockId={topologyBlockId}
+          plotFieldCommandId={_id}
+        />
       ) : command === "achievement" ? (
-        <CommandAchievementField command={command} plotFieldCommandId={_id} />
+        <CommandAchievementField
+          topologyBlockId={topologyBlockId}
+          command={command}
+          plotFieldCommandId={_id}
+        />
       ) : command === "ambient" ? (
         <CommandAmbientField command={command} plotFieldCommandId={_id} />
       ) : command === "cutscene" ? (
@@ -74,7 +81,11 @@ export default function PlotfieldItem({
       ) : command === "background" ? (
         <CommandBackgroundField command={command} plotFieldCommandId={_id} />
       ) : command === "getitem" ? (
-        <CommandGetItemField command={command} plotFieldCommandId={_id} />
+        <CommandGetItemField
+          topologyBlockId={topologyBlockId}
+          command={command}
+          plotFieldCommandId={_id}
+        />
       ) : command === "if" ? (
         <CommandIfField
           topologyBlockId={topologyBlockId}
@@ -82,7 +93,11 @@ export default function PlotfieldItem({
           plotFieldCommandId={_id}
         />
       ) : command === "wardrobe" ? (
-        <CommandWardrobeField command={command} plotFieldCommandId={_id} />
+        <CommandWardrobeField
+          topologyBlockId={topologyBlockId}
+          command={command}
+          plotFieldCommandId={_id}
+        />
       ) : command === "choice" ? (
         <CommandChoiceField
           command={command}

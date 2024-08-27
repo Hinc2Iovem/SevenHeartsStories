@@ -14,9 +14,7 @@ type UpdateChoiceOnMutationTypes = {
   timeLimit?: number;
 };
 
-export default function useUpdateChoiceText({
-  choiceId,
-}: UpdateChoiceTextTypes) {
+export default function useUpdateChoice({ choiceId }: UpdateChoiceTextTypes) {
   return useMutation({
     mutationFn: async ({
       characterEmotionId,

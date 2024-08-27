@@ -4,10 +4,15 @@ import {
   createChoiceTranslationController,
   choiceUpdateTranslationController,
   getAllChoicesTranslationByTopologyBlockIdController,
+  getChoiceTranslationUpdatedAtAndLanguageController,
 } from "../../../../controllers/StoryEditor/PlotField/Choice/ChoiceTranslationController";
 
 // Default route === /choices
 export const choiceTranslationsRoute = express.Router();
+
+choiceTranslationsRoute
+  .route("/recent/translations")
+  .get(getChoiceTranslationUpdatedAtAndLanguageController);
 
 choiceTranslationsRoute
   .route("/:plotFieldCommandId/translations")

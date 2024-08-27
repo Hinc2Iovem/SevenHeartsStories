@@ -1,36 +1,29 @@
 import { useEffect, useRef, useState } from "react";
 import useCreateEmotion from "../../../../../../../../../hooks/Posting/Emotion/useCreateEmotion";
 import useOutOfModal from "../../../../../../../../../hooks/UI/useOutOfModal";
-import useUpdateNameOrEmotionOnCondition from "../../../../hooks/Say/useUpdateNameOrEmotionOnCondition";
+import { EmotionsTypes } from "../../../../../../../../../types/StoryData/Character/CharacterTypes";
+import useUpdateNameOrEmotion from "../../../../hooks/Say/useUpdateNameOrEmotion";
 
 type CommandSayCreateEmotionFieldModalTypes = {
   setShowModal: React.Dispatch<React.SetStateAction<boolean>>;
   showModal: boolean;
-  emotionName: string;
-  plotFieldCommandId: string;
-  commandSayId: string;
+  emotionName: EmotionsTypes | null;
   characterId: string;
-  prevCharacterEmotionId: string;
+  plotFieldCommandId: string;
+  plotFieldCommandSayId: string;
 };
 
 export default function CommandSayCreateEmotionFieldModal({
   setShowModal,
   showModal,
   emotionName,
-  plotFieldCommandId,
-  commandSayId,
   characterId,
-  prevCharacterEmotionId,
+  plotFieldCommandId,
+  plotFieldCommandSayId,
 }: CommandSayCreateEmotionFieldModalTypes) {
   const modalRef = useRef<HTMLDivElement | null>(null);
   const cursorRef = useRef<HTMLButtonElement | null>(null);
-  const [emotionId, setEmotionId] = useState("");
-
-  useOutOfModal({
-    setShowModal,
-    showModal,
-    modalRef,
-  });
+  const [newEmotionId, setNewEmotionId] = useState("");
 
   useEffect(() => {
     if (showModal) {
@@ -39,31 +32,9 @@ export default function CommandSayCreateEmotionFieldModal({
   }, [showModal]);
 
   const createEmotion = useCreateEmotion({
-    emotionName,
+    emotionName: emotionName?.emotionName || "",
     characterId,
   });
-
-  const updateNameOrEmotion = useUpdateNameOrEmotionOnCondition({
-    plotFieldCommandId,
-    prevEmotionId: prevCharacterEmotionId,
-  });
-
-  useEffect(() => {
-    if (emotionId?.trim().length) {
-      updateNameOrEmotion.mutate({
-        characterEmotionId: emotionId,
-        characterId: "",
-        plotFieldCommandSayId: commandSayId,
-      });
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [emotionId]);
-
-  useEffect(() => {
-    if (createEmotion.data) {
-      setEmotionId(createEmotion.data._id);
-    }
-  }, [createEmotion]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -71,6 +42,32 @@ export default function CommandSayCreateEmotionFieldModal({
     setShowModal(false);
   };
 
+  useEffect(() => {
+    if (createEmotion.data) {
+      const lastEmotion = createEmotion.data.emotions.length;
+      setNewEmotionId(createEmotion.data.emotions[lastEmotion - 1]._id || "");
+    }
+  }, [createEmotion]);
+
+  const updateNameOrEmotion = useUpdateNameOrEmotion({
+    characterEmotionId: newEmotionId,
+    plotFieldCommandId,
+    plotFieldCommandSayId,
+    characterId,
+  });
+
+  useEffect(() => {
+    if (newEmotionId?.trim().length) {
+      updateNameOrEmotion.mutate();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [newEmotionId]);
+
+  useOutOfModal({
+    setShowModal,
+    showModal,
+    modalRef,
+  });
   return (
     <aside
       ref={modalRef}

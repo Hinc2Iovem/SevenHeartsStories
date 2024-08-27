@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
-import useEscapeOfModal from "../../../../../../hooks/UI/useEscapeOfModal";
+import useOutOfModal from "../../../../../../hooks/UI/useOutOfModal";
 import { ConditionBlockTypes } from "../../../../../../types/StoryEditor/PlotField/Condition/ConditionTypes";
 import useUpdateConditionBlockTopologyBlockId from "../hooks/Condition/ConditionBlock/useUpdateConditionBlockTopologyBlockId";
 import useGetConditionValueByConditionBlockId from "../hooks/Condition/ConditionValue/useGetAllConditionValuesByConditionBlockId";
@@ -12,6 +12,7 @@ import DisplayOrderOfIfsModal from "./DisplayOrderOfIfsModal";
 type ConditionBlockItemTypes = {
   amountOfIfBlocks?: number;
   allUsedOrderNumbers?: number[];
+  currentTopologyBlockId: string;
 } & ConditionBlockTypes;
 
 export default function ConditionBlockItem({
@@ -22,8 +23,10 @@ export default function ConditionBlockItem({
   orderOfExecution,
   conditionId,
   allUsedOrderNumbers,
+  currentTopologyBlockId,
 }: ConditionBlockItemTypes) {
   const { episodeId } = useParams();
+  const modalRef = useRef<HTMLDivElement>(null);
   const [currentOrder, setCurrentOrder] = useState(orderOfExecution || null);
 
   const { data: topologyBlock } = useGetTopologyBlockById({
@@ -31,7 +34,9 @@ export default function ConditionBlockItem({
   });
   const [showAllTopologyBlocks, setShowAllTopologyBlocks] = useState(false);
   const [currentTopologyBlockName, setCurrentTopologyBlockName] = useState("");
-  const [newTopologyBlockId, setNewTopologyBlockId] = useState("");
+  const [newTopologyBlockId, setNewTopologyBlockId] = useState(
+    targetBlockId || ""
+  );
 
   useEffect(() => {
     if (topologyBlock) {
@@ -41,11 +46,6 @@ export default function ConditionBlockItem({
 
   const { data: allTopologyBlocks } = useGetAllTopologyBlocksByEpisodeId({
     episodeId: episodeId ?? "",
-  });
-
-  useEscapeOfModal({
-    setValue: setShowAllTopologyBlocks,
-    value: showAllTopologyBlocks,
   });
 
   const { data: conditionValues } = useGetConditionValueByConditionBlockId({
@@ -63,6 +63,15 @@ export default function ConditionBlockItem({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [newTopologyBlockId]);
 
+  useEffect(() => {
+    setCurrentOrder(orderOfExecution || null);
+  }, [orderOfExecution]);
+
+  useOutOfModal({
+    setShowModal: setShowAllTopologyBlocks,
+    showModal: showAllTopologyBlocks,
+    modalRef,
+  });
   return (
     <>
       {!isElse ? (
@@ -83,7 +92,10 @@ export default function ConditionBlockItem({
               amountOfIfBlocks={amountOfIfBlocks || 0}
             />
             <button
-              onClick={() => setShowAllTopologyBlocks((prev) => !prev)}
+              onClick={(e) => {
+                e.stopPropagation();
+                setShowAllTopologyBlocks((prev) => !prev);
+              }}
               className="flex-grow text-[1.4rem] outline-gray-300 text-gray-700 shadow-md rounded-md px-[1rem] py-[.5rem]"
               type="button"
             >
@@ -103,8 +115,10 @@ export default function ConditionBlockItem({
                     setCurrentTopologyBlockName(tb?.name || "");
                     setNewTopologyBlockId(tb._id);
                   }}
-                  className={`${targetBlockId === tb._id ? "hidden" : ""} ${
-                    tb.isStartingTopologyBlock ? "hidden" : ""
+                  className={`${
+                    currentTopologyBlockId === tb._id ? "hidden" : ""
+                  } ${
+                    tb._id === newTopologyBlockId ? "hidden" : ""
                   } px-[1rem] py-[.5rem] whitespace-nowrap text-[1.3rem] outline-gray-300 text-gray-700 hover:bg-primary-light-blue hover:text-white shadow-md transition-all rounded-md`}
                 >
                   {tb.name}
@@ -119,13 +133,17 @@ export default function ConditionBlockItem({
         >
           <div className="relative self-end w-full flex-grow">
             <button
-              onClick={() => setShowAllTopologyBlocks((prev) => !prev)}
+              onClick={(e) => {
+                e.stopPropagation();
+                setShowAllTopologyBlocks((prev) => !prev);
+              }}
               className="w-full flex-grow text-[1.4rem] outline-gray-300 text-gray-700 shadow-md rounded-md px-[1rem] py-[.5rem]"
               type="button"
             >
               {currentTopologyBlockName || "Текущая Ветка"}
             </button>
             <aside
+              ref={modalRef}
               className={`${
                 showAllTopologyBlocks ? "" : "hidden"
               } z-[10] flex flex-col gap-[1rem] p-[.5rem] absolute min-w-fit w-full rounded-md shadow-md bg-white right-[0rem] translate-y-[.5rem]`}
@@ -139,8 +157,10 @@ export default function ConditionBlockItem({
                     setCurrentTopologyBlockName(tb?.name || "");
                     setNewTopologyBlockId(tb._id);
                   }}
-                  className={`${targetBlockId === tb._id ? "hidden" : ""} ${
-                    tb.isStartingTopologyBlock ? "hidden" : ""
+                  className={`${
+                    currentTopologyBlockId === tb._id ? "hidden" : ""
+                  } ${
+                    tb._id === newTopologyBlockId ? "hidden" : ""
                   } px-[1rem] py-[.5rem] whitespace-nowrap text-[1.3rem] outline-gray-300 text-gray-700 hover:bg-primary-light-blue hover:text-white shadow-md transition-all rounded-md`}
                 >
                   {tb.name}

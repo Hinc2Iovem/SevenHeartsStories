@@ -9,7 +9,6 @@ type DisplayTranslatedNonTranslatedSeasonTypes = {
   translated: TranslationSeasonTypes | null;
   translateFromLanguage: CurrentlyAvailableLanguagesTypes;
   nonTranslated: TranslationSeasonTypes | null;
-  storyId: string;
 };
 
 export default function DisplayTranslatedNonTranslatedSeason({
@@ -17,7 +16,6 @@ export default function DisplayTranslatedNonTranslatedSeason({
   translated,
   languageToTranslate,
   translateFromLanguage,
-  storyId,
 }: DisplayTranslatedNonTranslatedSeasonTypes) {
   const [translatedBackUpSeasonName, setTranslatedBackUpSeasonName] =
     useState("");
@@ -53,8 +51,8 @@ export default function DisplayTranslatedNonTranslatedSeason({
 
   const updateCharacterTranslationTranslated = useUpdateSeasonTranslation({
     language: translateFromLanguage,
-    seasonId,
-    storyId,
+    storyId: translated?.storyId || nonTranslated?.storyId || "",
+    seasonId: seasonId || nonTranslated?.seasonId || "",
   });
 
   useEffect(() => {
@@ -76,8 +74,8 @@ export default function DisplayTranslatedNonTranslatedSeason({
 
   const updateCharacterTranslation = useUpdateSeasonTranslation({
     language: languageToTranslate,
-    seasonId,
-    storyId,
+    storyId: translated?.storyId || nonTranslated?.storyId || "",
+    seasonId: seasonId || nonTranslated?.seasonId || "",
   });
 
   useEffect(() => {

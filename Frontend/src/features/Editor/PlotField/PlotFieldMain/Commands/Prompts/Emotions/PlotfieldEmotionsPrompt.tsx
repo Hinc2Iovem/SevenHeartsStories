@@ -1,11 +1,11 @@
-import { CharacterEmotionTypes } from "../../../../../../../types/StoryData/Emotion/CharacterEmotion";
+import { EmotionsTypes } from "../../../../../../../types/StoryData/Character/CharacterTypes";
 
 type EmotionEmotionNameTypes = {
   setEmotionName: React.Dispatch<React.SetStateAction<string>>;
   setEmotionId: React.Dispatch<React.SetStateAction<string>>;
   setEmotionImg?: React.Dispatch<React.SetStateAction<string>>;
   setShowEmotionModal: React.Dispatch<React.SetStateAction<boolean>>;
-} & CharacterEmotionTypes;
+} & EmotionsTypes;
 
 export default function PlotfieldEmotionsPrompt({
   _id,

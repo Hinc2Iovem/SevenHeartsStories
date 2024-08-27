@@ -93,7 +93,6 @@ export default function FiltersEverythingStoryForSeason({
             key={(ct.translated?._id || i) + "-ctSeason"}
             languageToTranslate={translateToLanguage}
             translateFromLanguage={translateFromLanguage}
-            storyId={storyId}
             {...ct}
           />
         ))}

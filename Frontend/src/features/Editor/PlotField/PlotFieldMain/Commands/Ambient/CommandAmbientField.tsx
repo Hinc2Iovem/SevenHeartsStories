@@ -40,7 +40,10 @@ export default function CommandAmbientField({
   });
 
   useEffect(() => {
-    if (debouncedValue?.trim().length) {
+    if (
+      commandAmbient?.ambientName !== debouncedValue &&
+      debouncedValue?.trim().length
+    ) {
       updateAmbientText.mutate();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

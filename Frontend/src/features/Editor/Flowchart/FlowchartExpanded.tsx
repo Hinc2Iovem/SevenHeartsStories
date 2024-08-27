@@ -13,13 +13,21 @@ import useGetAllTopologyBlockConnectionsByEpisodeId from "../PlotField/PlotField
 import "./FlowchartStyles.css";
 
 type FlowChartTypes = {
+  setCurrentTopologyBlockId: React.Dispatch<React.SetStateAction<string>>;
   setScale: React.Dispatch<React.SetStateAction<number>>;
+  currentTopologyBlockId: string;
+
   scale: number;
 };
 
 export const SCROLLBAR_WIDTH = 17;
 
-export default function FlowchartExpanded({ scale, setScale }: FlowChartTypes) {
+export default function FlowchartExpanded({
+  scale,
+  setScale,
+  setCurrentTopologyBlockId,
+  currentTopologyBlockId,
+}: FlowChartTypes) {
   const { episodeId } = useParams();
 
   const { data: allTopologyBlocks } = useGetAllTopologyBlocksByEpisodeId({
@@ -62,7 +70,12 @@ export default function FlowchartExpanded({ scale, setScale }: FlowChartTypes) {
     >
       {allTopologyBlocks
         ? allTopologyBlocks.map((tb) => (
-            <FlowchartTopologyBlockRemake key={tb._id} {...tb} />
+            <FlowchartTopologyBlockRemake
+              currentTopologyBlockId={currentTopologyBlockId}
+              setCurrentTopologyBlockId={setCurrentTopologyBlockId}
+              key={tb._id}
+              {...tb}
+            />
           ))
         : null}
       {allConnections

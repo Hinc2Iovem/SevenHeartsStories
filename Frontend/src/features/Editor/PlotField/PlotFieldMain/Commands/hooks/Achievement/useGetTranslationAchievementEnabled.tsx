@@ -1,25 +1,25 @@
 import { useQuery } from "@tanstack/react-query";
 import { axiosCustomized } from "../../../../../../../api/axios";
-import { TranslationCommandTypes } from "../../../../../../../types/Additional/TranslationTypes";
 import { CurrentlyAvailableLanguagesTypes } from "../../../../../../../types/Additional/CURRENTLY_AVAILABEL_LANGUAGES";
+import { TranslationAchievementTypes } from "../../../../../../../types/Additional/TranslationTypes";
 
 type GetTranslationAchievementEnabledTypes = {
-  achievementId: string;
+  commandId: string;
   language?: CurrentlyAvailableLanguagesTypes;
 };
 
 export default function useGetTranslationAchievementEnabled({
-  achievementId,
+  commandId,
   language = "russian",
 }: GetTranslationAchievementEnabledTypes) {
   return useQuery({
-    queryKey: ["translation", "command", "achievement", achievementId],
+    queryKey: ["translation", language, "achievement", commandId],
     queryFn: async () =>
       await axiosCustomized
-        .get<TranslationCommandTypes[]>(
-          `/translations/plotFieldCommands/achievements/${achievementId}?currentLanguage=${language}`
+        .get<TranslationAchievementTypes>(
+          `/achievements/${commandId}/translations?currentLanguage=${language}`
         )
         .then((r) => r.data),
-    enabled: !!achievementId,
+    enabled: !!commandId,
   });
 }

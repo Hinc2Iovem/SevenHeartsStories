@@ -1,25 +1,25 @@
 import { useQuery } from "@tanstack/react-query";
 import { axiosCustomized } from "../../../../../../../api/axios";
-import { TranslationCommandTypes } from "../../../../../../../types/Additional/TranslationTypes";
 import { CurrentlyAvailableLanguagesTypes } from "../../../../../../../types/Additional/CURRENTLY_AVAILABEL_LANGUAGES";
+import { TranslationChoiceTypes } from "../../../../../../../types/Additional/TranslationTypes";
 
 type GetCommandChoiceTypes = {
-  choiceId: string;
+  commandId: string;
   language?: CurrentlyAvailableLanguagesTypes;
 };
 
 export default function useGetCommandChoiceTranslation({
-  choiceId,
+  commandId,
   language = "russian",
 }: GetCommandChoiceTypes) {
   return useQuery({
-    queryKey: ["translation", "command", "choice", choiceId],
+    queryKey: ["translation", language, "choice", commandId],
     queryFn: async () =>
       await axiosCustomized
-        .get<TranslationCommandTypes[]>(
-          `/translations/plotFieldCommands/choices/${choiceId}?currentLanguage=${language}`
+        .get<TranslationChoiceTypes>(
+          `/choices/${commandId}/translations?currentLanguage=${language}`
         )
         .then((r) => r.data),
-    enabled: !!choiceId,
+    enabled: !!commandId,
   });
 }

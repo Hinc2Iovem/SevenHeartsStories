@@ -43,8 +43,6 @@ export default function CommandWaitField({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [waitValue]);
 
-  console.log("waitValue: ", waitValue);
-
   return (
     <div className="flex flex-wrap gap-[1rem] w-full bg-primary-light-blue rounded-md p-[.5rem] sm:flex-row flex-col">
       <div className="sm:w-[20%] min-w-[10rem] flex-grow w-full relative">
@@ -60,7 +58,7 @@ export default function CommandWaitField({
           value={waitValue || ""}
           type="text"
           className=" w-full outline-gray-300 text-gray-600 text-[1.6rem] px-[1rem] py-[.5rem] rounded-md shadow-md sm:max-h-[20rem] max-h-[40rem]"
-          placeholder="Such a lovely day"
+          placeholder="Ожидание"
           onChange={(e) => setWaitValue(+e.target.value)}
         />
       </form>

@@ -76,6 +76,8 @@ export default function PlotfieldBlank({
   });
   const promptRef = useRef<HTMLDivElement>(null);
   const [showPromptValues, setShowPromptValues] = useState(false);
+  const [value, setValue] = useState("");
+
   const allPromptValues = useMemo(() => {
     const res = [...AllCommands];
     if (translatedCharacters) {
@@ -91,8 +93,30 @@ export default function PlotfieldBlank({
     return res;
   }, [translatedCharacters]);
 
-  const [characterId, setCharacterId] = useState("");
-  const [value, setValue] = useState("");
+  const allCharacterNames = useMemo(() => {
+    const res: string[] = [];
+    if (translatedCharacters) {
+      translatedCharacters.map((tc) => {
+        const characterName = tc.translations?.find(
+          (t) => t.textFieldName === "characterName"
+        )?.text;
+        if (characterName) {
+          res.push(characterName.toLowerCase());
+        }
+      });
+    }
+    return res;
+  }, [translatedCharacters]);
+
+  const filteredPromptValues = useMemo(() => {
+    if (value?.trim().length) {
+      return allPromptValues.filter((pv) =>
+        pv.toLowerCase().includes(value.toLowerCase())
+      );
+    } else {
+      return allPromptValues;
+    }
+  }, [allPromptValues, value]);
 
   const currentInput = useRef<HTMLInputElement | null>(null);
 
@@ -112,23 +136,7 @@ export default function PlotfieldBlank({
   const createSayCommand = useCreateSayCommand({
     plotFieldCommandId,
     topologyBlockId,
-    characterId,
   });
-
-  const handleSetCharacterId = (index: number) => {
-    const allIds: string[] = [];
-    // for (const t of translatedCharacters) {
-    //   t.data?.map((tp) => {
-    //     if (tp.textFieldName === "characterName") {
-    //       allIds.push(tp.characterId);
-    //     }
-    //   });
-    // }
-    if (allIds) {
-      setCharacterId(allIds[index]);
-      return;
-    }
-  };
 
   const createCommandAchievement = useCreateAchievement({
     plotFieldCommandId,
@@ -169,13 +177,20 @@ export default function PlotfieldBlank({
     submittedByCharacter: boolean;
     type?: CommandSayVariationTypes;
   }) => {
-    if (submittedByCharacter) {
-      if (type) {
-        // if (type === "character") {
-        //   createSayCharacterCommand.mutate({ type });
-        // } else {
+    if (submittedByCharacter && type) {
+      if (type === "character") {
+        translatedCharacters?.map((tc) => {
+          tc.translations?.map((tct) => {
+            if (
+              tct.textFieldName === "characterName" &&
+              tct.text.toLowerCase() === value.toLowerCase()
+            ) {
+              createSayCommand.mutate({ type, characterId: tc.characterId });
+            }
+          });
+        });
+      } else {
         createSayCommand.mutate({ type });
-        // }
       }
       updateCommandName.mutate({ valueForSay: true });
     } else if (!submittedByCharacter) {
@@ -229,20 +244,19 @@ export default function PlotfieldBlank({
       return;
     }
     let submittedByCharacter = false;
+    // if it's say command whether it's hint, author, notify or some character name which already exists
+
     if (
-      // allNames.includes(value.toLowerCase()) ||
+      allCharacterNames.includes(value.toLowerCase()) ||
       AllPossibleSayPlotFieldCommands.includes(value.toLowerCase())
     ) {
       let type: CommandSayVariationTypes = "" as CommandSayVariationTypes;
-      let index = -1;
       if (
         value.toLowerCase() !== "hint" &&
         value.toLowerCase() !== "author" &&
         value.toLowerCase() !== "notify"
       ) {
         type = "character";
-        // index = translatedCharacters?.forEach((v) => v.translations?.findIndex(vt => vt.text === value.toLowerCase()));
-        handleSetCharacterId(index);
       } else {
         type = value as CommandSayVariationTypes;
       }
@@ -250,9 +264,11 @@ export default function PlotfieldBlank({
       submittedByCharacter = true;
       handleSubmit({ submittedByCharacter, type });
     } else if (AllPossiblePlotFieldCommands.includes(value.toLowerCase())) {
+      // if it's any another existing command beside say and it's variations
       submittedByCharacter = false;
       handleSubmit({ submittedByCharacter });
     } else {
+      // if it's not any command and if there's no such character, it suggests to create a new one
       setShowCreateCharacterModal(true);
       return;
     }
@@ -278,24 +294,45 @@ export default function PlotfieldBlank({
             setShowPromptValues((prev) => !prev);
           }}
           placeholder="author"
-          onChange={(e) => setValue(e.target.value)}
+          onChange={(e) => {
+            setValue(e.target.value);
+            if (!showPromptValues) {
+              setShowPromptValues(true);
+            }
+          }}
           className="outline-none text-[1.5rem] text-gray-600 w-full"
         />
         <aside
           ref={promptRef}
           className={`${showPromptValues ? "" : "hidden"} 
-        w-full bg-white shadow-md rounded-md absolute left-0 max-h-[20rem] translate-y-[1rem] overflow-auto | containerScroll
+        z-[2] w-full bg-white shadow-md rounded-md absolute left-0 max-h-[20rem] translate-y-[1rem] overflow-auto | containerScroll
         `}
         >
           <ul className="flex flex-col gap-[1rem]  p-[1rem]">
-            {allPromptValues.map((pv) => (
-              <li
-                className="w-full hover:bg-primary-light-blue hover:text-white text-[1.4rem] px-[1rem] py-[.5rem] rounded-md transition-all"
-                key={pv}
+            {filteredPromptValues.length > 0 ? (
+              filteredPromptValues.map((pv) => (
+                <button
+                  key={pv}
+                  onClick={() => {
+                    setValue(pv);
+                    setShowPromptValues(false);
+                  }}
+                  className="outline-gray-300 text-start w-full hover:bg-primary-light-blue hover:text-white text-[1.4rem] px-[1rem] py-[.5rem] rounded-md transition-all"
+                >
+                  {pv}
+                </button>
+              ))
+            ) : (
+              <button
+                type="button"
+                onClick={() => {
+                  setShowPromptValues(false);
+                }}
+                className="outline-gray-300 text-start w-full hover:bg-primary-light-blue hover:text-white text-[1.4rem] px-[1rem] py-[.5rem] rounded-md transition-all"
               >
-                {pv}
-              </li>
-            ))}
+                Такой команды или персонажа не существует
+              </button>
+            )}
           </ul>
         </aside>
       </form>

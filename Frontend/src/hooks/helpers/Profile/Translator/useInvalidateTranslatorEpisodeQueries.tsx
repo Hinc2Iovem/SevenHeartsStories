@@ -16,7 +16,6 @@ export default function useInvalidateTranslatorEpisodeQueries({
   seasonId,
 }: InvalidateTranslatorQueriesTypes) {
   const queryClient = useQueryClient();
-
   useEffect(() => {
     if (prevTranslateFromLanguage) {
       queryClient.invalidateQueries({

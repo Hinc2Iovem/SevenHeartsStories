@@ -98,7 +98,7 @@ export default function DisplayTranslatedNonTranslatedStory({
 
   const updateCharacterTranslationTranslated = useUpdateStoryTranslation({
     language: translateFromLanguage,
-    storyId,
+    storyId: storyId || nonTranslated?.storyId || "",
   });
 
   useEffect(() => {
@@ -157,7 +157,7 @@ export default function DisplayTranslatedNonTranslatedStory({
 
   const updateCharacterTranslation = useUpdateStoryTranslation({
     language: languageToTranslate,
-    storyId,
+    storyId: storyId || nonTranslated?.storyId || "",
   });
 
   useEffect(() => {

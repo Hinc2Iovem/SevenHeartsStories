@@ -40,7 +40,7 @@ export default function CommandKeyField({
   });
 
   useEffect(() => {
-    if (debouncedValue?.trim().length) {
+    if (commandKey?.text !== debouncedValue && debouncedValue?.trim().length) {
       updateKeyText.mutate();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

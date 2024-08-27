@@ -50,14 +50,20 @@ export default function CommandBackgroundField({
   });
 
   useEffect(() => {
-    if (debouncedNameValue?.trim().length) {
+    if (
+      commandBackground?.backgroundName !== debouncedNameValue &&
+      debouncedNameValue?.trim().length
+    ) {
       updateBackgroundText.mutate();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [backgroundName]);
 
   useEffect(() => {
-    if (pointOfMovement?.trim().length) {
+    if (
+      commandBackground?.pointOfMovement !== pointOfMovement &&
+      pointOfMovement?.trim().length
+    ) {
       if (regexCheckDecimalNumberBetweenZeroAndOne.test(pointOfMovement)) {
         setShowNotificationModal(false);
         updateBackgroundText.mutate();

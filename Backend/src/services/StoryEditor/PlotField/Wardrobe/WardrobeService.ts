@@ -89,7 +89,7 @@ export const updateCommandWardrobeService = async ({
     throw createHttpError(400, "CommandWardrobe with such id wasn't found");
   }
 
-  if (isCurrentDressed) {
+  if (isCurrentDressed === false || isCurrentDressed) {
     existingCommandWardrobe.isCurrentDressed = isCurrentDressed;
   }
 

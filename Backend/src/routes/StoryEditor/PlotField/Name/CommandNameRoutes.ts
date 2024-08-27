@@ -14,8 +14,6 @@ commandNameRoute
   .get(getNameByPlotFieldCommandIdController)
   .post(createNameController);
 
-commandNameRoute
-  .route("/characters/:characterId/names/:nameId")
-  .patch(updateNameController);
+commandNameRoute.route("/characters/names/:nameId").patch(updateNameController);
 
 commandNameRoute.route("names/:nameId").delete(deleteNameController);

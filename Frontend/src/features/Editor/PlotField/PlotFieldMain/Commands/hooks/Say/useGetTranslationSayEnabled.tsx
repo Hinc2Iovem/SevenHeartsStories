@@ -1,27 +1,25 @@
 import { useQuery } from "@tanstack/react-query";
 import { axiosCustomized } from "../../../../../../../api/axios";
-import { TranslationCommandTypes } from "../../../../../../../types/Additional/TranslationTypes";
 import { CurrentlyAvailableLanguagesTypes } from "../../../../../../../types/Additional/CURRENTLY_AVAILABEL_LANGUAGES";
+import { TranslationSayTypes } from "../../../../../../../types/Additional/TranslationTypes";
 
 type GetTranslationSayEnabledTypes = {
-  characterId: string;
-  commandSayId: string;
+  commandId: string;
   language?: CurrentlyAvailableLanguagesTypes;
 };
 
 export default function useGetTranslationSayEnabled({
-  characterId,
-  commandSayId,
+  commandId,
   language = "russian",
 }: GetTranslationSayEnabledTypes) {
   return useQuery({
-    queryKey: ["translation", "command", "say", characterId],
+    queryKey: ["translation", "command", "say", commandId],
     queryFn: async () =>
       await axiosCustomized
-        .get<TranslationCommandTypes[]>(
-          `/translations/plotFieldCommands/say/${commandSayId}?currentLanguage=${language}`
+        .get<TranslationSayTypes>(
+          `/says/${commandId}/translations?currentLanguage=${language}`
         )
         .then((r) => r.data),
-    enabled: !!commandSayId,
+    enabled: !!commandId,
   });
 }

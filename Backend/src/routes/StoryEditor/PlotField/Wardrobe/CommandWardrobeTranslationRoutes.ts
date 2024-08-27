@@ -4,10 +4,15 @@ import {
   createCommandWardrobeTranslationController,
   commandWardrobeUpdateTranslationController,
   getAllCommandWardrobesTranslationByTopologyBlockIdController,
+  getCommandWardrobeTranslationUpdatedAtAndLanguageController,
 } from "../../../../controllers/StoryEditor/PlotField/Wardrobe/CommandWardrobeTranslationController";
 
 // Default route === /commandWardrobes
 export const commandWardrobeTranslationsRoute = express.Router();
+
+commandWardrobeTranslationsRoute
+  .route("/recent/translations")
+  .get(getCommandWardrobeTranslationUpdatedAtAndLanguageController);
 
 commandWardrobeTranslationsRoute
   .route("/:plotFieldCommandId/translations")

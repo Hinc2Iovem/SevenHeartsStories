@@ -42,7 +42,6 @@ export default function CommandMoveField({
   useEffect(() => {
     if (moveValue.trim().length) {
       if (regexCheckDecimalNumberBetweenZeroAndOne.test(moveValue)) {
-        console.log("working");
         setShowNotificationModal(false);
         updateMoveText.mutate();
       } else {
@@ -51,8 +50,6 @@ export default function CommandMoveField({
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [moveValue]);
-
-  console.log("moveValue: ", moveValue);
 
   return (
     <div className="flex flex-wrap gap-[1rem] w-full bg-primary-light-blue rounded-md p-[.5rem] sm:flex-row flex-col relative">

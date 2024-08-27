@@ -1,21 +1,20 @@
 import { useEffect, useState } from "react";
+import { TranslationTextFieldName } from "../../../../../../const/TRANSLATION_TEXT_FIELD_NAMES";
+import useInvalidateTranslatorChoiceOptionQueries from "../../../../../../hooks/helpers/Profile/Translator/useInvalidateTranslatorChoiceOptionQueries";
+import useUpdateChoiceTranslation from "../../../../../../hooks/Patching/Translation/PlotfieldCoomands/useUpdateChoiceTranslation";
 import useDebounce from "../../../../../../hooks/utilities/useDebounce";
 import { CurrentlyAvailableLanguagesTypes } from "../../../../../../types/Additional/CURRENTLY_AVAILABEL_LANGUAGES";
-import useGetAllChoiceOptionsByChoiceId from "../../../../../Editor/PlotField/PlotFieldMain/Commands/hooks/Choice/ChoiceOption/useGetChoiceAllChoiceOptionsByChoiceId";
-import { CombinedTranslatedAndNonTranslatedChoiceTypes } from "../../Filters/FiltersEverythingPlotChoice";
-import DisplayTranslatedNonTranslatedChoiceOption from "./DisplayTranslatedNonTranslatedChoiceOption";
-import useUpdateChoiceTranslation from "../../../../../../hooks/Patching/Translation/PlotfieldCoomands/useUpdateChoiceTranslation";
-import { TranslationTextFieldName } from "../../../../../../const/TRANSLATION_TEXT_FIELD_NAMES";
 import { TranslationTextFieldNameChoiceTypes } from "../../../../../../types/Additional/TRANSLATION_TEXT_FIELD_NAMES";
 import "../../../../../Editor/Flowchart/FlowchartStyles.css";
-import useInvalidateTranslatorChoiceOptionQueries from "../../../../../../hooks/helpers/Profile/Translator/useInvalidateTranslatorChoiceOptionQueries";
+import useMemoizeChoiceOptions from "../../../../../Editor/PlotField/PlotFieldMain/Commands/hooks/Choice/ChoiceOption/useMemoizeChoiceOptions";
+import { CombinedTranslatedAndNonTranslatedChoiceTypes } from "../../Filters/FiltersEverythingPlotChoice";
+import DisplayTranslatedNonTranslatedChoiceOption from "./DisplayTranslatedNonTranslatedChoiceOption";
 
 type DisplayTranslatedNonTranslatedCommandTypes = {
   languageToTranslate: CurrentlyAvailableLanguagesTypes;
   prevTranslateFromLanguage: CurrentlyAvailableLanguagesTypes;
   prevTranslateToLanguage: CurrentlyAvailableLanguagesTypes;
   translateFromLanguage: CurrentlyAvailableLanguagesTypes;
-  topologyBlockId: string;
 } & CombinedTranslatedAndNonTranslatedChoiceTypes;
 
 export default function DisplayTranslatedNonTranslatedChoice({
@@ -23,7 +22,6 @@ export default function DisplayTranslatedNonTranslatedChoice({
   translated,
   languageToTranslate,
   translateFromLanguage,
-  topologyBlockId,
   prevTranslateFromLanguage,
   prevTranslateToLanguage,
 }: DisplayTranslatedNonTranslatedCommandTypes) {
@@ -69,8 +67,9 @@ export default function DisplayTranslatedNonTranslatedChoice({
 
   const updateCharacterTranslationTranslated = useUpdateChoiceTranslation({
     language: translateFromLanguage,
-    commandId,
-    topologyBlockId,
+    commandId: commandId || nonTranslated?.commandId || "",
+    topologyBlockId:
+      translated?.topologyBlockId || nonTranslated?.topologyBlockId || "",
   });
 
   useEffect(() => {
@@ -94,8 +93,9 @@ export default function DisplayTranslatedNonTranslatedChoice({
 
   const updateCharacterTranslation = useUpdateChoiceTranslation({
     language: languageToTranslate,
-    commandId,
-    topologyBlockId,
+    commandId: commandId || nonTranslated?.commandId || "",
+    topologyBlockId:
+      translated?.topologyBlockId || nonTranslated?.topologyBlockId || "",
   });
 
   useEffect(() => {
@@ -109,13 +109,10 @@ export default function DisplayTranslatedNonTranslatedChoice({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [debouncedName]);
 
-  const { data: allTranslatedOptions } = useGetAllChoiceOptionsByChoiceId({
-    plotFieldCommandChoiceId: commandId,
-    language: translateFromLanguage,
-  });
-  const { data: allNonTranslatedOptions } = useGetAllChoiceOptionsByChoiceId({
-    plotFieldCommandChoiceId: commandId,
-    language: languageToTranslate,
+  const memoizedChoiceOptions = useMemoizeChoiceOptions({
+    commandId,
+    languageToTranslate,
+    translateFromLanguage,
   });
 
   return (
@@ -136,11 +133,14 @@ export default function DisplayTranslatedNonTranslatedChoice({
             onChange={(e) => setTranslatedCommandName(e.target.value)}
           />
           <div className="flex gap-[1rem] w-full flex-wrap">
-            {allTranslatedOptions?.map((o) => (
+            {memoizedChoiceOptions?.map((t, i) => (
               <DisplayTranslatedNonTranslatedChoiceOption
-                key={o._id + `-${translateFromLanguage}`}
+                key={(t.translated?._id || i) + `-${translateFromLanguage}`}
                 currentLanguage={translateFromLanguage}
-                {...o}
+                providedChoiceOptionId={t.choiceOptionId}
+                providedType={t.type}
+                plotFieldCommandId={commandId}
+                {...t.translated}
               />
             ))}
           </div>
@@ -161,15 +161,14 @@ export default function DisplayTranslatedNonTranslatedChoice({
             onChange={(e) => setCommandName(e.target.value)}
           />
           <div className="flex gap-[1rem] w-full flex-wrap">
-            {allNonTranslatedOptions?.map((o, i) => (
+            {memoizedChoiceOptions?.map((o, i) => (
               <DisplayTranslatedNonTranslatedChoiceOption
-                key={o._id + `-${languageToTranslate}`}
+                key={(o.nonTranslated?._id || i) + `-${languageToTranslate}`}
+                providedChoiceOptionId={o.choiceOptionId}
+                providedType={o.type}
                 currentLanguage={languageToTranslate}
-                currentChoiceId={
-                  (allTranslatedOptions || [])[i].plotFieldCommandChoiceId
-                }
-                currentType={(allTranslatedOptions || [])[i].type}
-                {...o}
+                plotFieldCommandId={commandId}
+                {...o.nonTranslated}
               />
             ))}
           </div>
@@ -178,5 +177,3 @@ export default function DisplayTranslatedNonTranslatedChoice({
     </div>
   );
 }
-
-// /stories/6688f3748d53bb51df96603b

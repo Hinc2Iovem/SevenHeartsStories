@@ -4,10 +4,15 @@ import {
   createSayTranslationController,
   sayUpdateTranslationController,
   getAllSayTranslationByTopologyBlockIdController,
+  getSayTranslationUpdatedAtAndLanguageController,
 } from "../../../../controllers/StoryEditor/PlotField/Say/SayTranslationController";
 
 // Default route === /says
 export const sayTranslationsRoute = express.Router();
+
+sayTranslationsRoute
+  .route("/recent/translations")
+  .get(getSayTranslationUpdatedAtAndLanguageController);
 
 sayTranslationsRoute
   .route("/:plotFieldCommandId/translations")

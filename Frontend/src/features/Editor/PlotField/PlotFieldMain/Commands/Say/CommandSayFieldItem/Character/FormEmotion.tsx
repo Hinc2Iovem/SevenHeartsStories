@@ -1,66 +1,56 @@
-import { useEffect, useState } from "react";
-import useGetAllEmotionsByCharacterId from "../../../../../../../../hooks/Fetching/CharacterEmotion/useGetAllEmotionsByCharacterId";
+import { useEffect, useMemo, useRef, useState } from "react";
+import useOutOfModal from "../../../../../../../../hooks/UI/useOutOfModal";
+import { EmotionsTypes } from "../../../../../../../../types/StoryData/Character/CharacterTypes";
 import { CommandSayVariationTypes } from "../../../../../../../../types/StoryEditor/PlotField/Say/SayTypes";
-import useGetEmotionEnabled from "../../../hooks/Emotion/useGetEmotionEnabled";
 import useUpdateNameOrEmotion from "../../../hooks/Say/useUpdateNameOrEmotion";
 import CommandSayCreateEmotionFieldModal from "./ModalCreateEmotion/CommandSayCreateEmotionFieldModal";
+import "../../../../../../Flowchart/FlowchartStyles.css";
 
 type FormEmotionTypes = {
-  characterEmotionId: string;
   plotFieldCommandSayId: string;
   plotFieldCommandId: string;
   setShowCreateEmotionModal: React.Dispatch<React.SetStateAction<boolean>>;
   characterId: string;
   showCreateEmotionModal: boolean;
-  setEmotionValue: React.Dispatch<React.SetStateAction<string>>;
-  emotionValue: string;
+  setEmotionValue: React.Dispatch<React.SetStateAction<EmotionsTypes | null>>;
+  emotionValue: EmotionsTypes | null;
   commandSayType: CommandSayVariationTypes;
+  emotions: EmotionsTypes[];
 };
 
 export default function FormEmotion({
-  characterEmotionId,
   plotFieldCommandId,
   plotFieldCommandSayId,
   characterId,
   setShowCreateEmotionModal,
   showCreateEmotionModal,
-  commandSayType,
   emotionValue,
   setEmotionValue,
+  emotions,
 }: FormEmotionTypes) {
   const [newEmotionId, setNewEmotionId] = useState("");
+  const emotionsRef = useRef<HTMLDivElement>(null);
+  const [showAllEmotions, setShowAllEmotions] = useState(false);
 
-  const { data: emotion } = useGetEmotionEnabled({
-    characterEmotionId,
-    commandSayType,
-  });
-
-  useEffect(() => {
-    if (emotion) {
-      setEmotionValue(emotion.emotionName ?? "");
+  const allEmotions = useMemo(() => {
+    const res = [...emotions];
+    if (emotionValue?.emotionName) {
+      const ems = res.filter((r) =>
+        r.emotionName
+          .toLowerCase()
+          .includes(emotionValue?.emotionName.toLowerCase() || "")
+      );
+      return ems.map((e) => e.emotionName.toLowerCase());
+    } else {
+      return res.map((r) => r.emotionName.toLowerCase());
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [emotion]);
-
-  const { data: emotions } = useGetAllEmotionsByCharacterId({ characterId });
-
-  const [allEmotions, setAllEmotions] = useState<string[]>([]);
+  }, [emotions, emotionValue?.emotionName]);
 
   const updateNameOrEmotion = useUpdateNameOrEmotion({
     characterEmotionId: newEmotionId,
-    characterId: "",
     plotFieldCommandId,
     plotFieldCommandSayId,
-    prevEmotionId: characterEmotionId,
   });
-
-  useEffect(() => {
-    if (emotions) {
-      const allEms: string[] = [];
-      emotions.map((em) => allEms.push(em.emotionName.toLowerCase()));
-      setAllEmotions(allEms);
-    }
-  }, [emotions]);
 
   useEffect(() => {
     if (newEmotionId?.trim().length) {
@@ -69,40 +59,40 @@ export default function FormEmotion({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [newEmotionId]);
 
-  const handleSetEmotionId = (index: number) => {
-    const allIds: string[] = [];
-    if (emotions) {
-      for (const e of emotions) {
-        allIds.push(e._id);
-      }
-      if (allIds) {
-        setNewEmotionId(allIds[index]);
-        return;
-      }
-    } else {
-      console.log("Нету эмоций");
-      return;
-    }
-  };
-
-  const handleEmotionFormSubmit = (e: React.FormEvent) => {
+  const handleEmotionFormSubmit = (e: React.FormEvent, em?: string) => {
     e.preventDefault();
-    if (!emotionValue.trim().length) {
+    if (!emotionValue?.emotionName?.trim().length && !em?.trim().length) {
       console.log("Заполните поле");
       return;
     }
-    if (allEmotions.includes(emotionValue.toLowerCase())) {
-      if (emotions) {
-        const index = emotions.findIndex(
-          (e) => e.emotionName.toLowerCase() === emotionValue.toLowerCase()
-        );
-        handleSetEmotionId(index);
-      }
+    if (
+      allEmotions.includes(emotionValue?.emotionName.toLowerCase() || "") ||
+      (em && allEmotions.includes(em.toLowerCase()))
+    ) {
+      const currentEmotion = emotions.find(
+        (e) =>
+          e.emotionName.toLowerCase() ===
+            emotionValue?.emotionName.toLowerCase() ||
+          (em && e.emotionName.toLowerCase() === em.toLowerCase())
+      );
+
+      setNewEmotionId(currentEmotion?._id || "");
+      setEmotionValue({
+        emotionName: currentEmotion?.emotionName || "",
+        _id: currentEmotion?._id || "",
+        imgUrl: currentEmotion?.imgUrl || "",
+      });
     } else {
       setShowCreateEmotionModal(true);
       return;
     }
   };
+
+  useOutOfModal({
+    modalRef: emotionsRef,
+    setShowModal: setShowAllEmotions,
+    showModal: showAllEmotions,
+  });
 
   return (
     <>
@@ -110,22 +100,79 @@ export default function FormEmotion({
         onSubmit={handleEmotionFormSubmit}
         className="sm:w-[20%] flex-grow w-full"
       >
-        <input
-          type="text"
-          value={emotionValue}
-          placeholder="Эмоция"
-          className="text-[1.3rem] w-full outline-gray-300 capitalize px-[1rem] py-[.5rem] rounded-md shadow-md"
-          onChange={(e) => setEmotionValue(e.target.value)}
-        />
+        <div className="w-full relative">
+          <input
+            type="text"
+            value={emotionValue?.emotionName || ""}
+            placeholder="Эмоция"
+            onClick={(e) => {
+              e.stopPropagation();
+              setShowAllEmotions((prev) => !prev);
+            }}
+            className="text-[1.3rem] w-full outline-gray-300 px-[1rem] py-[.5rem] rounded-md shadow-md"
+            onChange={(e) => {
+              setEmotionValue({
+                emotionName: e.target.value,
+                _id: "",
+                imgUrl: "",
+              });
+              setShowAllEmotions(true);
+            }}
+          />
+
+          <aside
+            ref={emotionsRef}
+            className={`absolute ${
+              showAllEmotions ? "" : "hidden"
+            } bg-white rounded-md shadow-md translate-y-[.5rem] w-full max-h-[15rem] overflow-y-auto | containerScroll `}
+          >
+            <ul className="flex flex-col gap-[1rem]">
+              {allEmotions.length ? (
+                allEmotions.map((em, i) => {
+                  return (
+                    <li key={em + "-" + i} className="flex justify-between">
+                      <button
+                        onClick={(event) => {
+                          setEmotionValue({
+                            emotionName: em,
+                            _id: "",
+                            imgUrl: "",
+                          });
+                          handleEmotionFormSubmit(event, em);
+                          setShowAllEmotions(false);
+                        }}
+                        className="text-start outline-gray-300 w-full text-[1.4rem] hover:text-white hover:bg-green-300 text-black bg-white rounded-md px-[1rem] py-[.5rem]"
+                      >
+                        {em}
+                      </button>
+                      {emotionValue?.imgUrl ? (
+                        <img
+                          src={emotionValue?.imgUrl || ""}
+                          alt={"EmotionImg"}
+                          className="w-[3rem] rounded-md object-cover"
+                        />
+                      ) : null}
+                    </li>
+                  );
+                })
+              ) : !emotionValue?.emotionName?.trim().length ? (
+                <li>
+                  <button className="text-start outline-gray-300 w-full text-[1.4rem] hover:text-white hover:bg-green-300 text-black bg-white rounded-md px-[1rem] py-[.5rem]">
+                    Пусто
+                  </button>
+                </li>
+              ) : null}
+            </ul>
+          </aside>
+        </div>
       </form>
       <CommandSayCreateEmotionFieldModal
         characterId={characterId}
-        commandSayId={plotFieldCommandSayId}
         emotionName={emotionValue}
-        plotFieldCommandId={plotFieldCommandId}
-        prevCharacterEmotionId={characterEmotionId}
         setShowModal={setShowCreateEmotionModal}
         showModal={showCreateEmotionModal}
+        plotFieldCommandId={plotFieldCommandId}
+        plotFieldCommandSayId={plotFieldCommandSayId}
       />
     </>
   );

@@ -4,6 +4,61 @@ import TranslationChoice from "../../../../models/StoryData/Translation/Translat
 import PlotFieldCommand from "../../../../models/StoryEditor/PlotField/PlotFieldCommand";
 import { checkCurrentLanguage } from "../../../../utils/checkCurrentLanguage";
 import Choice from "../../../../models/StoryEditor/PlotField/Choice/Choice";
+import { subDays, subHours, subMinutes } from "date-fns";
+
+type GetByUpdatedAtAndLanguageTypes = {
+  currentLanguage: string | undefined;
+  updatedAt: string | undefined;
+};
+
+export const getChoiceTranslationUpdatedAtAndLanguageService = async ({
+  currentLanguage,
+  updatedAt,
+}: GetByUpdatedAtAndLanguageTypes) => {
+  if (!currentLanguage?.trim().length) {
+    throw createHttpError(400, "Language is required");
+  }
+
+  checkCurrentLanguage({ currentLanguage });
+
+  let startDate: Date | undefined;
+  let endDate = new Date();
+
+  switch (updatedAt) {
+    case "30min":
+      startDate = subMinutes(endDate, 30);
+      break;
+    case "1hr":
+      startDate = subHours(endDate, 1);
+      break;
+    case "5hr":
+      startDate = subHours(endDate, 5);
+      break;
+    case "1d":
+      startDate = subDays(endDate, 1);
+      break;
+    case "3d":
+      startDate = subDays(endDate, 3);
+      break;
+    case "7d":
+      startDate = subDays(endDate, 7);
+      break;
+    default:
+      throw createHttpError(400, "Invalid updatedAt value");
+  }
+
+  const existingTranslations = await TranslationChoice.find({
+    updatedAt: { $gte: startDate, $lt: endDate },
+    language: currentLanguage,
+  })
+    .lean()
+    .exec();
+
+  if (!existingTranslations.length) {
+    return [];
+  }
+  return existingTranslations;
+};
 
 type ChoiceByPlotFieldCommandIdTypes = {
   plotFieldCommandId: string;

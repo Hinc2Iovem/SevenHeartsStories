@@ -14,11 +14,13 @@ import "../Prompts/promptStyles.css";
 type CommandWardrobeFieldTypes = {
   plotFieldCommandId: string;
   command: string;
+  topologyBlockId: string;
 };
 
 export default function CommandWardrobeField({
   plotFieldCommandId,
   command,
+  topologyBlockId,
 }: CommandWardrobeFieldTypes) {
   const [nameValue] = useState<string>(command ?? "Wardrobe");
   const [wardrobeTitle, setWardrobeTitle] = useState("");
@@ -33,23 +35,25 @@ export default function CommandWardrobeField({
   });
 
   const { data: translatedWardrobe } = useGetCommandWardrobeTranslation({
-    commandWardrobeId: commandWardrobeId ?? "",
+    commandId: plotFieldCommandId || "",
   });
 
   const { data: allAppearancePartBlocks } =
     useGetAllWardrobeAppearancePartBlocks({ commandWardrobeId });
 
+  console.log(commandWardrobe);
+
   useEffect(() => {
     if (commandWardrobe) {
       setCommandWardrobeId(commandWardrobe._id);
-      setIsCurrentlyDressed(commandWardrobe?.isCurrentDressed ?? false);
-      setCharacterId(commandWardrobe?.characterId ?? "");
+      setIsCurrentlyDressed(commandWardrobe?.isCurrentDressed || false);
+      setCharacterId(commandWardrobe?.characterId || "");
     }
   }, [commandWardrobe]);
 
   useEffect(() => {
     if (translatedWardrobe) {
-      translatedWardrobe.map((tw) => {
+      translatedWardrobe.translations?.map((tw) => {
         if (tw.textFieldName === "commandWardrobeTitle") {
           setWardrobeTitle(tw.text);
         }
@@ -58,16 +62,11 @@ export default function CommandWardrobeField({
   }, [translatedWardrobe]);
 
   const updateWardrobeTranslatedTitle = useUpdateWardrobeTranslationText({
-    commandWardrobeId,
+    commandId: plotFieldCommandId,
     title: wardrobeTitle,
+    topologyBlockId,
+    language: "russian",
   });
-
-  const updateWardrobeIsCurrentlyDressedAndCharacterId =
-    useUpdateWardrobeCurrentDressedAndCharacterId({
-      commandWardrobeId,
-      characterId,
-      isCurrentDressed: isCurrentlyDressed,
-    });
 
   const debouncedValue = useDebounce({ value: wardrobeTitle, delay: 500 });
 
@@ -78,21 +77,16 @@ export default function CommandWardrobeField({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [debouncedValue]);
 
-  const handleUpdateCurrentlyDressed = () => {
-    updateWardrobeIsCurrentlyDressedAndCharacterId.mutate();
-  };
-
-  useEffect(() => {
-    if (characterId?.trim().length) {
-      updateWardrobeIsCurrentlyDressedAndCharacterId.mutate();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [characterId]);
+  const updateWardrobeIsCurrentlyDressed =
+    useUpdateWardrobeCurrentDressedAndCharacterId({
+      commandWardrobeId,
+    });
 
   useEscapeOfModal({
     value: showAllAppearancePartBlocks,
     setValue: setShowAllAppearancePartBlocks,
   });
+
   return (
     <>
       {showAllAppearancePartBlocks ? (
@@ -103,7 +97,7 @@ export default function CommandWardrobeField({
           >
             <img src={rejectImg} alt="X" className="w-full" />
           </button>
-          <div className="grid grid-cols-[repeat(auto-fill,minmax(10rem,1fr))] gap-[1rem] w-full h-[13rem] overflow-y-auto p-[.5rem] pl-[0] | scrollBar">
+          <div className="grid grid-cols-[repeat(auto-fill,minmax(10rem,1fr))] gap-[1rem] w-full h-[13rem] overflow-y-auto p-[.5rem] | containerScroll">
             {allAppearancePartBlocks?.map((a) => (
               <WardrobeAppearancePartBlock key={a._id} {...a} />
             ))}
@@ -131,13 +125,15 @@ export default function CommandWardrobeField({
               type="button"
               onClick={() => {
                 setIsCurrentlyDressed((prev) => !prev);
-                handleUpdateCurrentlyDressed();
+                updateWardrobeIsCurrentlyDressed.mutate({
+                  isCurrentDressed: !isCurrentlyDressed,
+                });
               }}
               className={`text-[1.4rem] rounded-md shadow-md ${
                 isCurrentlyDressed
                   ? "bg-green-300 text-white"
                   : "bg-white text-black"
-              } px-[1rem] whitespace-nowrap`}
+              } px-[1rem] whitespace-nowrap outline-gray-300`}
             >
               {isCurrentlyDressed ? "Надето" : "Не надето"}
             </button>
@@ -152,7 +148,7 @@ export default function CommandWardrobeField({
           <div className="w-full flex flex-col">
             <button
               onClick={() => setShowAllAppearancePartBlocks(true)}
-              className="w-fit text-[1.3rem] self-end px-[1rem] bg-white rounded-md shadow-md py-[.5rem]"
+              className="w-fit outline-gray-300 text-[1.3rem] self-end px-[1rem] bg-white rounded-md shadow-md py-[.5rem]"
             >
               Посмотреть Одежду
             </button>

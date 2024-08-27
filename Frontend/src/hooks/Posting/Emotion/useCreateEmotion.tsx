@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { axiosCustomized } from "../../../api/axios";
-import { CharacterEmotionTypes } from "../../../types/StoryData/Emotion/CharacterEmotion";
+import { CharacterGetTypes } from "../../../types/StoryData/Character/CharacterTypes";
 
 type CreateEmotionTypes = {
   characterId: string;
@@ -16,7 +16,7 @@ export default function useCreateEmotion({
     mutationKey: ["new", "emotion", emotionName],
     mutationFn: async () =>
       await axiosCustomized
-        .post<CharacterEmotionTypes>(
+        .post<CharacterGetTypes>(
           `/characterEmotions/characters/${characterId}`,
           {
             emotionName,
@@ -25,10 +25,24 @@ export default function useCreateEmotion({
         .then((r) => r.data),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["emotions", "character", characterId],
+        queryKey: ["character", characterId],
         exact: true,
         type: "active",
       });
     },
   });
 }
+
+// onSuccess: (data) => {
+//   queryClient.setQueryData(
+//     ["character", characterId],
+//     (oldData: CharacterGetTypes | undefined) => {
+//       if (!oldData) return data;
+
+//       return {
+//         ...oldData,
+//         emotions: [...oldData.emotions, ...data.emotions],
+//       };
+//     }
+//   );
+// },

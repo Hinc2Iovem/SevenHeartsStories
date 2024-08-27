@@ -4,9 +4,38 @@ import {
   getAllStoriesTranslationsByLanguageService,
   getAllStoriesTranslationsByTypeAndSearchService,
   getStoryByIdAndLanguageService,
+  getStoryTranslationUpdatedAtAndLanguageService,
   storyCreateService,
   storyTranslationUpdateService,
 } from "../../../services/StoryData/Story/StoryTranslationService";
+
+type GetUpdatedAtAndLanguageQuery = {
+  currentLanguage: string | undefined;
+  updatedAt: string | undefined;
+};
+
+// @route GET http://localhost:3500/stories/recent/translations
+// @access Private
+export const getStoryTranslationUpdatedAtAndLanguageController: RequestHandler<
+  unknown,
+  unknown,
+  unknown,
+  GetUpdatedAtAndLanguageQuery
+> = async (req, res, next) => {
+  try {
+    const textFieldName = await getStoryTranslationUpdatedAtAndLanguageService({
+      currentLanguage: req.query.currentLanguage,
+      updatedAt: req.query.updatedAt,
+    });
+    if (textFieldName) {
+      return res.status(201).json(textFieldName);
+    } else {
+      return res.status(400).json({ message: "Something went wrong" });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
 
 type GetAllStoriesByLanguageAndStaffIdParams = {
   staffId: string;

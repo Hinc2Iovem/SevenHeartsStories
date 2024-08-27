@@ -15,6 +15,8 @@ type AuthProviderTypes = {
   children: React.ReactNode;
 };
 
+let refreshTokenPromise: Promise<any> | null = null;
+// TODO will need to check if this actually works
 export default function AuthProvider({ children }: AuthProviderTypes) {
   const [token, setToken] = useState({ accessToken: "" });
 
@@ -22,8 +24,8 @@ export default function AuthProvider({ children }: AuthProviderTypes) {
     const authInterceptor = axiosCustomized.interceptors.request.use(
       (config) => {
         config.headers.Authorization =
-          !config._retry && token
-            ? `Bearer ${token}`
+          !config._retry && token.accessToken
+            ? `Bearer ${token.accessToken}`
             : config.headers.Authorization;
         return config;
       }
@@ -38,28 +40,42 @@ export default function AuthProvider({ children }: AuthProviderTypes) {
     const refreshInterceptor = axiosCustomized.interceptors.response.use(
       (response) => response,
       async (error: AxiosError) => {
-        const originalRequset = error.config;
-        if (error.response?.status === 403) {
+        const originalRequest = error.config;
+
+        if (error.response?.status === 403 && !originalRequest?._retry) {
+          if (!refreshTokenPromise) {
+            refreshTokenPromise = (async () => {
+              try {
+                const response = await axiosCustomized.get(`/auth/refresh`);
+                setToken({ accessToken: response.data.accessToken });
+                return response.data.accessToken;
+              } catch (error) {
+                setToken({ accessToken: "" });
+                throw error;
+              } finally {
+                refreshTokenPromise = null;
+              }
+            })();
+          }
+
           try {
-            const response = await axiosCustomized.get(`/auth/refresh`);
-
-            setToken({ accessToken: response.data.accessToken });
-
-            if (originalRequset) {
-              originalRequset.headers.Authorization = `Bearer ${response.data.accessToken}`;
-              originalRequset._retry = true;
-
-              return axiosCustomized(originalRequset);
+            const newAccessToken = await refreshTokenPromise;
+            if (originalRequest) {
+              originalRequest._retry = true;
+              originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+              return axiosCustomized(originalRequest);
             }
           } catch (error) {
-            setToken({ accessToken: "" });
+            return Promise.reject(error);
           }
         }
+
         return Promise.reject(error);
       }
     );
+
     return () => {
-      axiosCustomized.interceptors.request.eject(refreshInterceptor);
+      axiosCustomized.interceptors.response.eject(refreshInterceptor);
     };
   }, [token]);
 

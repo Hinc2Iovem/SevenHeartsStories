@@ -9,10 +9,8 @@ type UpdateNameOrEmotionTypes = {
 
 export default function useUpdateNameOrEmotionOnCondition({
   plotFieldCommandId,
-  prevEmotionId,
 }: {
   plotFieldCommandId: string;
-  prevEmotionId: string;
 }) {
   const queryClient = useQueryClient();
 
@@ -35,11 +33,11 @@ export default function useUpdateNameOrEmotionOnCondition({
         exact: true,
         type: "active",
       });
-      queryClient.invalidateQueries({
-        queryKey: ["character", "emotion", prevEmotionId],
-        exact: true,
-        type: "all",
-      });
+      // queryClient.invalidateQueries({
+      //   queryKey: ["character", characterId],
+      //   exact: true,
+      //   type: "all",
+      // });
     },
   });
 }

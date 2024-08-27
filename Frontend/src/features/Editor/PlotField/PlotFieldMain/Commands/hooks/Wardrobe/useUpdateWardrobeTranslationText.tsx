@@ -1,25 +1,29 @@
 import { useMutation } from "@tanstack/react-query";
 import { axiosCustomized } from "../../../../../../../api/axios";
 import { CurrentlyAvailableLanguagesTypes } from "../../../../../../../types/Additional/CURRENTLY_AVAILABEL_LANGUAGES";
+import { TranslationTextFieldName } from "../../../../../../../const/TRANSLATION_TEXT_FIELD_NAMES";
 
 type UpdateWardrobeTextTypes = {
-  commandWardrobeId: string;
+  commandId: string;
   title: string;
+  topologyBlockId: string;
   language?: CurrentlyAvailableLanguagesTypes;
 };
 
 export default function useUpdateWardrobeTranslationText({
-  commandWardrobeId,
+  commandId,
   title,
+  topologyBlockId,
   language = "russian",
 }: UpdateWardrobeTextTypes) {
   return useMutation({
     mutationFn: async () =>
       await axiosCustomized.patch(
-        `/translations/plotFieldCommands/wardrobes/${commandWardrobeId}`,
+        `/commandWardrobes/${commandId}/topologyBlocks/${topologyBlockId}/translations`,
         {
           currentLanguage: language,
-          title,
+          text: title,
+          textFieldName: TranslationTextFieldName.CommandWardrobeTitle,
         }
       ),
   });

@@ -3,9 +3,40 @@ import {
   getAllSeasonsTranslationsAndSearchService,
   getAllSeasonsTranslationsByStoryIdAndLanguageService,
   getSeasonByIdAndLanguageService,
+  getSeasonTranslationUpdatedAtAndLanguageService,
   seasonCreateService,
   seasonTranslationUpdateService,
 } from "../../../services/StoryData/Season/SeasonTranslationService";
+
+type GetUpdatedAtAndLanguageQuery = {
+  currentLanguage: string | undefined;
+  updatedAt: string | undefined;
+};
+
+// @route GET http://localhost:3500/seasons/recent/translations
+// @access Private
+export const getSeasonTranslationUpdatedAtAndLanguageController: RequestHandler<
+  unknown,
+  unknown,
+  unknown,
+  GetUpdatedAtAndLanguageQuery
+> = async (req, res, next) => {
+  try {
+    const textFieldName = await getSeasonTranslationUpdatedAtAndLanguageService(
+      {
+        currentLanguage: req.query.currentLanguage,
+        updatedAt: req.query.updatedAt,
+      }
+    );
+    if (textFieldName) {
+      return res.status(201).json(textFieldName);
+    } else {
+      return res.status(400).json({ message: "Something went wrong" });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
 
 type GetSeasonsBySeasonIdParams = {
   storyId: string;

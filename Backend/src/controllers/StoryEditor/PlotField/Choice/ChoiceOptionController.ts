@@ -1,13 +1,39 @@
 import { RequestHandler } from "express";
 import {
+  choiceOptionUpdateSexualOrientationsService,
   createChoiceOptionService,
   deleteChoiceOptionService,
-  updateChoiceOptionService,
-  choiceOptionUpdateSexualOrientationsService,
-  updateChoiceOptionTopologyBlockService,
   getAllChoiceOptionsByChoiceIdService,
+  getChoiceOptionByIdService,
+  updateChoiceOptionService,
+  updateChoiceOptionTopologyBlockService,
 } from "../../../../services/StoryEditor/PlotField/Choice/ChoiceOptionService";
 
+type GetChoiceOptionByIdParams = {
+  choiceOptionId: string;
+};
+
+// @route GET http://localhost:3500/plotFieldCommands/choices/options/:choiceOptionId
+// @access Private
+export const getChoiceOptionByIdController: RequestHandler<
+  GetChoiceOptionByIdParams,
+  unknown,
+  unknown,
+  unknown
+> = async (req, res, next) => {
+  try {
+    const choiceOption = await getChoiceOptionByIdService({
+      choiceOptionId: req.params.choiceOptionId,
+    });
+    if (choiceOption) {
+      return res.status(201).json(choiceOption);
+    } else {
+      return res.status(400).json({ message: "Something went wrong" });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
 type GetAllChoiceOptionsByChoiceIdParams = {
   plotFieldCommandChoiceId: string;
 };
@@ -36,6 +62,7 @@ export const getAllChoiceOptionsByChoiceIdController: RequestHandler<
 
 type CreateChoiceOptionParams = {
   plotFieldCommandChoiceId: string;
+  plotFieldCommandId: string;
   topologyBlockId: string;
   episodeId: string;
 };
@@ -51,7 +78,7 @@ type CreateChoiceOptionBody = {
 };
 
 // TODO KAKAYTA ZALUPA
-// @route POST http://localhost:3500/plotFieldCommands/choices/:plotFieldCommandChoiceId/options/episodes/:episodeId/topologyBlocks/:topologyBlockId
+// @route POST http://localhost:3500/plotFieldCommands/:plotFieldCommandId/choices/:plotFieldCommandChoiceId/options/episodes/:episodeId/topologyBlocks/:topologyBlockId
 // @access Private
 export const createChoiceOptionController: RequestHandler<
   CreateChoiceOptionParams,
@@ -61,10 +88,11 @@ export const createChoiceOptionController: RequestHandler<
 > = async (req, res, next) => {
   try {
     const choiceOption = await createChoiceOptionService({
-      type: req.body.type,
       plotFieldCommandChoiceId: req.params.plotFieldCommandChoiceId,
+      plotFieldCommandId: req.params.plotFieldCommandId,
       topologyBlockId: req.params.topologyBlockId,
       episodeId: req.params.episodeId,
+      type: req.body.type,
     });
     if (choiceOption) {
       return res.status(201).json(choiceOption);

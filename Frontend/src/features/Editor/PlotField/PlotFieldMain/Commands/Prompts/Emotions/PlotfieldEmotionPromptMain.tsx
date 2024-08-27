@@ -1,35 +1,37 @@
-import useGetAllEmotionsByCharacterId from "../../../../../../../hooks/Fetching/CharacterEmotion/useGetAllEmotionsByCharacterId";
+import { useRef } from "react";
+import useOutOfModal from "../../../../../../../hooks/UI/useOutOfModal";
+import { EmotionsTypes } from "../../../../../../../types/StoryData/Character/CharacterTypes";
 import PlotfieldEmotionsPrompt from "./PlotfieldEmotionsPrompt";
-import "../promptStyles.css";
 
 type PlotfieldEmotionPromptMainTypes = {
-  emotionName: string;
   setEmotionName: React.Dispatch<React.SetStateAction<string>>;
   setEmotionId: React.Dispatch<React.SetStateAction<string>>;
   setShowEmotionModal: React.Dispatch<React.SetStateAction<boolean>>;
   setEmotionImg?: React.Dispatch<React.SetStateAction<string>>;
   showEmotionModal: boolean;
-  characterId: string;
+  allEmotions: EmotionsTypes[] | undefined;
 };
 
 export default function PlotfieldEmotionPromptMain({
-  emotionName,
   setEmotionName,
   setEmotionId,
   setEmotionImg,
   setShowEmotionModal,
   showEmotionModal,
-  characterId,
+  allEmotions,
 }: PlotfieldEmotionPromptMainTypes) {
-  const { data: allEmotions } = useGetAllEmotionsByCharacterId({
-    characterId: characterId ?? "",
+  const emotionsRef = useRef<HTMLDivElement>(null);
+  useOutOfModal({
+    modalRef: emotionsRef,
+    setShowModal: setShowEmotionModal,
+    showModal: showEmotionModal,
   });
-
   return (
     <aside
-      className={`${showEmotionModal ? "" : "hidden"} ${
-        emotionName ? "translate-y-[1rem]" : "translate-y-[2rem]"
-      } absolute top-1/2 z-[10] p-[1rem] min-w-fit w-full max-h-[10rem] overflow-y-auto bg-white shadow-md rounded-md flex flex-col gap-[1rem] | scrollBar`}
+      ref={emotionsRef}
+      className={`${
+        showEmotionModal ? "" : "hidden"
+      } translate-y-[.5rem] right-0 absolute z-[10] p-[1rem] min-w-fit w-full max-h-[10rem] overflow-y-auto bg-white shadow-md rounded-md flex flex-col gap-[1rem] | containerScroll`}
     >
       {allEmotions &&
         allEmotions?.map((c) => (
