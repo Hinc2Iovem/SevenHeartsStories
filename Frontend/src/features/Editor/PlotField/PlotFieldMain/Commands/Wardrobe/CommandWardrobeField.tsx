@@ -41,8 +41,6 @@ export default function CommandWardrobeField({
   const { data: allAppearancePartBlocks } =
     useGetAllWardrobeAppearancePartBlocks({ commandWardrobeId });
 
-  console.log(commandWardrobe);
-
   useEffect(() => {
     if (commandWardrobe) {
       setCommandWardrobeId(commandWardrobe._id);

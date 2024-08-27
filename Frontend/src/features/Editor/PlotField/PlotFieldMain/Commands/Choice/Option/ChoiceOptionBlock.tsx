@@ -72,10 +72,7 @@ export default function ChoiceOptionBlock({
     <div
       className={`w-full bg-white min-h-[10rem] h-full rounded-md shadow-md`}
     >
-      <form
-        className="w-full flex justify-between flex-col h-full"
-        onSubmit={(e) => e.preventDefault()}
-      >
+      <div className="w-full flex justify-between flex-col h-full">
         <input
           type="text"
           value={optionText}
@@ -123,7 +120,7 @@ export default function ChoiceOptionBlock({
             </div>
           </div>
         </div>
-      </form>
+      </div>
     </div>
   );
 }

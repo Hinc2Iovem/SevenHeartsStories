@@ -59,7 +59,7 @@ export default function CharacterPrompt({
     >
       <input
         type="text"
-        className="w-full rounded-md shadow-md bg-white text-[1.3rem] px-[1rem] py-[.5rem] text-gray-700 outline-none"
+        className="w-full rounded-md bg-white text-[1.3rem] px-[1rem] py-[.5rem] text-gray-700 outline-none"
         placeholder="Имя Персонажа"
         onClick={(e) => {
           e.stopPropagation();

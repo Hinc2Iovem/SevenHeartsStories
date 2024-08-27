@@ -36,7 +36,7 @@ export default function PlotfieldCharacteristicPromptMain({
       ref={modalRef}
       className={`${
         showCharacteristicModal ? "" : "hidden"
-      } translate-y-[.5rem] right-0 absolute z-[10] p-[1rem] min-w-fit w-full max-h-[10rem] overflow-y-auto bg-white shadow-md rounded-md flex flex-col gap-[1rem] | scrollBar`}
+      } translate-y-[.5rem] right-0 absolute z-[20] p-[1rem] min-w-fit w-full max-h-[10rem] overflow-y-auto bg-white shadow-md rounded-md flex flex-col gap-[1rem] | scrollBar`}
     >
       {allCharacteristics?.length ? (
         allCharacteristics?.map((c) => (

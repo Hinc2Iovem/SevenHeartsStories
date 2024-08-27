@@ -48,7 +48,7 @@ export default function OptionSelectSexualOrientationBlock({
       onMouseLeave={() => {
         setShowAllSexualOrientationBlocks(false);
       }}
-      className="relative w-fit translate-y-[2.5rem] hover:translate-y-[0] transition-all"
+      className="relative w-fit translate-y-[2.5rem] hover:translate-y-[0] transition-all z-[10]"
     >
       <button
         onClick={(e) => {
@@ -58,7 +58,7 @@ export default function OptionSelectSexualOrientationBlock({
         className="text-[1.3rem] text-white outline-gray-300 shadow-md rounded-md px-[1rem] py-[.5rem] | rainbowBtn"
         type="button"
       >
-        {currentSexualOrientationBlockName ?? "Текущая Ветка"}
+        {currentSexualOrientationBlockName || "Текущая Ветка"}
       </button>
       <aside
         ref={modalRef}

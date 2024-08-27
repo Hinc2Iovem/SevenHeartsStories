@@ -155,6 +155,7 @@ export default function ChoiceQuestionField({
               onClick={(e) => {
                 e.stopPropagation();
                 setShowAllCharacters(true);
+                setShowAllEmotions(false);
               }}
               value={characterName}
               onChange={(e) => {
@@ -207,12 +208,14 @@ export default function ChoiceQuestionField({
               )}
             </button>
             <PlotfieldEmotionPromptMain
+              emotionName={emotionName}
               allEmotions={currentCharacter?.emotions}
               setEmotionImg={setEmotionImg}
               setEmotionName={setEmotionName}
               setEmotionId={setEmotionId}
               setShowEmotionModal={setShowAllEmotions}
               showEmotionModal={showAllEmotions}
+              modalPosition="left-0"
             />
           </div>
         </>

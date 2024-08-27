@@ -16,6 +16,7 @@ export default function SeasonPrompt({
   const [seasonValue, setSeasonValue] = useState("");
   const [seasonBackupValue, setSeasonBackupValue] = useState("");
   const modalSeasonsRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const debouncedValue = useDebounce({ value: seasonValue, delay: 500 });
 
@@ -27,16 +28,6 @@ export default function SeasonPrompt({
     });
 
   useEffect(() => {
-    if (debouncedValue?.trim().length) {
-      setSeasonId(
-        seasonsSearch?.find((cs) => cs.translations[0]?.text === debouncedValue)
-          ?.seasonId || ""
-      );
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [debouncedValue, seasonsSearch]);
-
-  useEffect(() => {
     if (!showSeasons && !seasonValue && seasonBackupValue) {
       setSeasonValue(seasonBackupValue);
     }
@@ -46,6 +37,20 @@ export default function SeasonPrompt({
     setSeasonValue("");
   }, [storyId]);
 
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!seasonValue.trim().length) {
+      console.log("Заполните Поле");
+      return;
+    }
+    setSeasonId(
+      seasonsSearch?.find((cs) => cs.translations[0]?.text === seasonValue)
+        ?.seasonId || ""
+    );
+    setShowSeasons(false);
+    inputRef?.current?.blur();
+  };
+
   useOutOfModal({
     modalRef: modalSeasonsRef,
     setShowModal: setShowSeasons,
@@ -54,10 +59,11 @@ export default function SeasonPrompt({
   return (
     <form
       className="bg-white rounded-md shadow-md relative"
-      onSubmit={(e) => e.preventDefault()}
+      onSubmit={handleSubmit}
     >
       <input
         type="text"
+        ref={inputRef}
         className="w-full rounded-md shadow-md bg-white text-[1.3rem] px-[1rem] py-[.5rem] text-gray-700 outline-none"
         placeholder="Название Сезона"
         onClick={(e) => {

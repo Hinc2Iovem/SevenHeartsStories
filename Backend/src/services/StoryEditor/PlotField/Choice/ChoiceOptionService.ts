@@ -145,9 +145,9 @@ export const createChoiceOptionService = async ({
   const topologyBlocks = await TopologyBlockConnection.find({
     sourceBlockId: topologyBlockId,
   }).lean();
-  const topologyBlockNumber = topologyBlocks.length || 1;
-
-  console.log("topologyBlockNumber: ", topologyBlockNumber);
+  const topologyBlockNumber = topologyBlocks.length
+    ? topologyBlocks.length + 1
+    : 1;
 
   const newTopologyBlock = await createTopologyBlock({
     coordinatesX: (existingCurrentTopologyBlock.coordinatesX ?? 0) + 50,

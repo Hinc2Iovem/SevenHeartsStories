@@ -89,14 +89,14 @@ export default function FlowchartTopologyBlock({
             onClick={(e) => {
               e.stopPropagation();
               localStorage.setItem(`${episodeId}-topologyBlockId`, _id);
-              setCurrentTopologyBlockId((prev) => {
-                if (prev !== _id) {
-                  return _id;
-                } else {
-                  return prev;
-                }
-              });
               if (clicked) {
+                setCurrentTopologyBlockId((prev) => {
+                  if (prev !== _id) {
+                    return _id;
+                  } else {
+                    return prev;
+                  }
+                });
                 setShowAllTopologyBlocks(true);
                 setClicked(false);
               } else {

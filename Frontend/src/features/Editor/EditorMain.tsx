@@ -9,7 +9,11 @@ import useCreateTopologyBlock from "./PlotField/PlotFieldMain/Commands/hooks/Top
 import useGetFirstTopologyBlock from "./PlotField/PlotFieldMain/Commands/hooks/TopologyBlock/useGetFirstTopologyBlock";
 import "./Flowchart/FlowchartStyles.css";
 
-export default function EditorMain() {
+type EditorMainTypes = {
+  setShowHeader: React.Dispatch<React.SetStateAction<boolean>>;
+};
+
+export default function EditorMain({ setShowHeader }: EditorMainTypes) {
   const { episodeId } = useParams();
   const keyCombinationToExpandPlotField =
     useCheckKeysCombinationExpandPlotField();
@@ -53,6 +57,7 @@ export default function EditorMain() {
       {keyCombinationToExpandPlotField ? (
         <main className={`flex w-full min-h-[calc(100vh-7rem)] justify-center`}>
           <PlotField
+            setShowHeader={setShowHeader}
             expandPlotField={
               keyCombinationToExpandPlotField === "expandPlotField"
             }
@@ -91,7 +96,10 @@ export default function EditorMain() {
         <main
           className={`flex w-full min-h-[calc(100vh-7rem)] justify-center relative`}
         >
-          <PlotField topologyBlockId={currentTopologyBlockId} />
+          <PlotField
+            setShowHeader={setShowHeader}
+            topologyBlockId={currentTopologyBlockId}
+          />
           <div
             className={`fixed top-[1rem] active:scale-[0.98] text-[1.3rem] transition-all bg-white hover:bg-primary-light-blue hover:text-white text-gray-700 shadow-md px-[1rem] py-[.5rem] rounded-md translate-x-[calc(50%+1rem)] z-[10]`}
           >
