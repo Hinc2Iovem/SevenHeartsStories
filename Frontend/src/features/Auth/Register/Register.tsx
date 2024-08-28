@@ -1,11 +1,13 @@
+import axios from "axios";
+import { jwtDecode } from "jwt-decode";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { axiosCustomized } from "../../../api/axios";
+import useAuth from "../../../hooks/Auth/useAuth";
+import { DecodedTypes } from "../RequireAuth";
 import Sidebar from "../Sidebar";
 import RegisterFormFirstPage from "./RegisterFormFirstPage";
 import RegisterFormSecondPage from "./RegisterFormSecondPage";
-import axios from "axios";
-import { useLocation, useNavigate } from "react-router-dom";
-import { axiosCustomized } from "../../../api/axios";
-import useAuth from "../../../hooks/Auth/useAuth";
 
 export default function Register() {
   const { setToken } = useAuth();
@@ -14,9 +16,7 @@ export default function Register() {
   const [secretKey, setSecretKey] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [role, setRole] = useState("scriptwriter");
-  const location = useLocation();
   const navigate = useNavigate();
-  const from = location.state?.pathname || "/stories";
 
   const canSubmit = [login, password, secretKey].every(Boolean);
 
@@ -35,7 +35,10 @@ export default function Register() {
           roles: role,
         })
         .then((r) => r.data);
-      navigate(from, { replace: true });
+      const decoded = res.accessToken
+        ? jwtDecode<DecodedTypes>(res.accessToken)
+        : undefined;
+      navigate(`/profile/${decoded?.StaffInfo.userId}`, { replace: true });
       setToken({ accessToken: res.accessToken });
     } catch (error: unknown) {
       if (axios.isAxiosError(error)) {

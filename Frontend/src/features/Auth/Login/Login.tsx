@@ -1,11 +1,13 @@
-import { useState } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
-import Sidebar from "../Sidebar";
-import visibility from "../../../assets/images/Auth/eyeOn.png";
-import visibilityOff from "../../../assets/images/Auth/eyeOff.png";
-import { axiosCustomized } from "../../../api/axios";
-import useAuth from "../../../hooks/Auth/useAuth";
 import axios from "axios";
+import { jwtDecode } from "jwt-decode";
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { axiosCustomized } from "../../../api/axios";
+import visibilityOff from "../../../assets/images/Auth/eyeOff.png";
+import visibility from "../../../assets/images/Auth/eyeOn.png";
+import useAuth from "../../../hooks/Auth/useAuth";
+import { DecodedTypes } from "../RequireAuth";
+import Sidebar from "../Sidebar";
 
 export default function Login() {
   const { setToken } = useAuth();
@@ -13,9 +15,7 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
-  const location = useLocation();
   const navigate = useNavigate();
-  const from = location.state?.pathname || "/stories";
 
   const canSubmit = [login, password].every(Boolean);
 
@@ -32,7 +32,10 @@ export default function Login() {
           password,
         })
         .then((r) => r.data);
-      navigate(from, { replace: true });
+      const decoded = res.accessToken
+        ? jwtDecode<DecodedTypes>(res.accessToken)
+        : undefined;
+      navigate(`/profile/${decoded?.StaffInfo.userId}`, { replace: true });
       setToken({ accessToken: res.accessToken });
     } catch (error: unknown) {
       if (axios.isAxiosError(error)) {
