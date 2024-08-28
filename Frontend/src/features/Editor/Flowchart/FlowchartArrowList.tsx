@@ -1,18 +1,14 @@
 import { useEffect, useState } from "react";
-import { useCoordinates } from "./Context/useCoordinates";
 import { TopologyBlockConnectionTypes } from "../../../types/TopologyBlock/TopologyBlockTypes";
 import useGetTopologyBlockById from "../PlotField/PlotFieldMain/Commands/hooks/TopologyBlock/useGetTopologyBlockById";
 import { FlowchartArrow } from "./FlowchartArrow";
+import useCoordinates from "./Context/useCoordinates";
 
 export default function FlowchartArrowList({
   sourceBlockId,
   targetBlockId,
 }: TopologyBlockConnectionTypes) {
-  const {
-    _id: currentId,
-    coordinatesX: currentCoordinatesX,
-    coordinatesY: currentCoordinatesY,
-  } = useCoordinates();
+  const { coordinates } = useCoordinates();
 
   const { data: sourceBlock } = useGetTopologyBlockById({
     topologyBlockId: sourceBlockId,
@@ -37,19 +33,13 @@ export default function FlowchartArrowList({
         coordinatesY: sourceBlock.coordinatesY,
       });
     }
-    if (currentId === sourceBlockId) {
+    if (coordinates._id === sourceBlockId) {
       setSourceCoordinates({
-        coordinatesX: currentCoordinatesX,
-        coordinatesY: currentCoordinatesY,
+        coordinatesX: coordinates.coordinatesX,
+        coordinatesY: coordinates.coordinatesY,
       });
     }
-  }, [
-    sourceBlock,
-    currentId,
-    currentCoordinatesX,
-    currentCoordinatesY,
-    sourceBlockId,
-  ]);
+  }, [sourceBlock, coordinates, sourceBlockId]);
 
   useEffect(() => {
     if (targetBlock) {
@@ -58,19 +48,13 @@ export default function FlowchartArrowList({
         coordinatesY: targetBlock.coordinatesY,
       });
     }
-    if (currentId === targetBlockId) {
+    if (coordinates._id === targetBlockId) {
       setTargetCoordinates({
-        coordinatesX: currentCoordinatesX,
-        coordinatesY: currentCoordinatesY,
+        coordinatesX: coordinates.coordinatesX,
+        coordinatesY: coordinates.coordinatesY,
       });
     }
-  }, [
-    targetBlock,
-    currentId,
-    currentCoordinatesX,
-    currentCoordinatesY,
-    targetBlockId,
-  ]);
+  }, [targetBlock, coordinates, targetBlockId]);
 
   return (
     <>

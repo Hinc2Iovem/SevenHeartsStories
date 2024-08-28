@@ -43,12 +43,18 @@ export default function WardrobeAppearancePartBlock({
     preview: imagePreview,
   });
 
+  const [isMounted, setIsMounted] = useState(false);
+
   useEffect(() => {
-    if (imagePreview) {
+    if (isMounted && imagePreview) {
       updateAppearancePartImg.mutate();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [imagePreview]);
+  }, [imagePreview, isMounted]);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   return (
     <div

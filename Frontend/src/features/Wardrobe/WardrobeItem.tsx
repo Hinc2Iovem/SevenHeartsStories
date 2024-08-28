@@ -22,12 +22,18 @@ export default function WardrobeItem({
     preview: imagePreview,
   });
 
+  const [isMounted, setIsMounted] = useState(false);
+
   useEffect(() => {
-    if (imagePreview) {
+    if (isMounted && imagePreview) {
       updateImg.mutate();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [imagePreview]);
+  }, [imagePreview, isMounted]);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   return (
     <article className="w-full min-h-[20rem] h-full rounded-md shadow-md shadow-gray-400 bg-white">

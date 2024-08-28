@@ -50,13 +50,18 @@ export default function ProfileRightSideItem({
     path: "/stories",
     preview: imagePreview,
   });
+  const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
-    if (imagePreview) {
+    if (isMounted && imagePreview) {
       uploadImgMutation.mutate();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [imagePreview]);
+  }, [imagePreview, isMounted]);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
   return (
     <article className="w-full h-[26rem] bg-white rounded-md shadow-sm relative flex flex-col justify-between">
       <div className="relative border-[3px] w-full max-h-[23rem] h-full border-white bg-white">

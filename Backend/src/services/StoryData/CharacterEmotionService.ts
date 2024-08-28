@@ -100,18 +100,19 @@ export const characterEmotionUpdateService = async ({
 
 type UpdateCharacterEmotionImgTypes = {
   imgUrl: string | undefined;
-  characterId: string;
-  emotionName: string | undefined;
+  id: string;
 };
 
 export const characterEmotionUpdateImgService = async ({
-  characterId,
   imgUrl,
-  emotionName,
+  id,
 }: UpdateCharacterEmotionImgTypes) => {
-  validateMongoId({ value: characterId, valueName: "Character" });
+  validateMongoId({ value: id, valueName: "CharacterEmotion" });
 
-  const existingCharacter = await Character.findById(characterId).exec();
+  const existingCharacter = await Character.findOne({
+    "emotions._id": id,
+  }).exec();
+
   if (!existingCharacter) {
     throw createHttpError(400, "Character with such id wasn't found");
   }
@@ -121,8 +122,7 @@ export const characterEmotionUpdateImgService = async ({
   }
 
   const currentEmotion = existingCharacter.emotions.find(
-    (e) =>
-      (e.emotionName || "").toLowerCase() === (emotionName || "").toLowerCase()
+    (e) => e._id?.toString() === id
   );
 
   if (currentEmotion) {

@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import PreviewImageSmallIcons from "../../../../../shared/utilities/PreviewImageSmallIcons";
 import useUpdateImg from "../../../../../../hooks/Patching/useUpdateImg";
 
@@ -23,12 +23,18 @@ export default function BackgroundNameAndImage({
     preview: imagePreview,
   });
 
+  const [isMounted, setIsMounted] = useState(false);
+
   useEffect(() => {
-    if (imagePreview) {
+    if (isMounted && imagePreview) {
       updateBackgroundImg.mutate();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [imagePreview]);
+  }, [imagePreview, isMounted]);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
   return (
     <form
       onSubmit={(e) => e.preventDefault()}

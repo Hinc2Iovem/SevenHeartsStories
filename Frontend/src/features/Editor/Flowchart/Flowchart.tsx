@@ -1,16 +1,17 @@
 import { useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
 import useGetAllTopologyBlocksByEpisodeId from "../PlotField/PlotFieldMain/Commands/hooks/TopologyBlock/useGetAllTopologyBlocksByEpisodeId";
-import "./FlowchartStyles.css";
 import FlowchartTopologyBlockRemake from "./FlowchartTopologyBlockRemake";
 import FlowchartArrowList from "./FlowchartArrowList";
 import useGetAllTopologyBlockConnectionsByEpisodeId from "../PlotField/PlotFieldMain/Commands/hooks/TopologyBlock/useGetAllTopologyBlockConnectionsByEpisodeId";
+import "./FlowchartStyles.css";
 
 type FlowChartTypes = {
   setCurrentTopologyBlockId: React.Dispatch<React.SetStateAction<string>>;
   setScale: React.Dispatch<React.SetStateAction<number>>;
   currentTopologyBlockId: string;
   scale: number;
+  expanded: boolean;
 };
 
 export const SCROLLBAR_WIDTH = 17;
@@ -20,6 +21,7 @@ export default function Flowchart({
   setScale,
   setCurrentTopologyBlockId,
   currentTopologyBlockId,
+  expanded,
 }: FlowChartTypes) {
   const { episodeId } = useParams();
   const { data: allTopologyBlocks } = useGetAllTopologyBlocksByEpisodeId({
@@ -55,7 +57,9 @@ export default function Flowchart({
       ref={boundsRef}
       className={`${
         scale >= 0.99 ? "" : "border-white border-[4px] border-dashed"
-      } w-1/2 overflow-auto rounded-md shadow-md relative bg-primary-light-blue | containerScroll`}
+      } ${
+        expanded ? "w-full" : "w-1/2"
+      } overflow-auto rounded-md shadow-md relative bg-primary-light-blue | containerScroll`}
     >
       <div
         style={{

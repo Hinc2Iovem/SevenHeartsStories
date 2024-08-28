@@ -1,29 +1,10 @@
-import { create } from "zustand";
-import { immer } from "zustand/middleware/immer";
+import { useContext } from "react";
+import { CoordinatesContext } from "./CoordinatesContext";
 
-type CoordinatesTypes = {
-  _id: string;
-  coordinatesX: number;
-  coordinatesY: number;
-};
-
-type CoordinatesActionTypes = {
-  setCoordinates: (coordinates: CoordinatesTypes) => void;
-};
-
-export const useCoordinates = create<
-  CoordinatesTypes & CoordinatesActionTypes
->()(
-  immer((set) => ({
-    _id: "",
-    coordinatesX: 0,
-    coordinatesY: 0,
-    setCoordinates: (coordinates) => {
-      set((state) => {
-        state._id = coordinates._id;
-        state.coordinatesX = coordinates.coordinatesX;
-        state.coordinatesY = coordinates.coordinatesY;
-      });
-    },
-  }))
-);
+export default function useCoordinates() {
+  const context = useContext(CoordinatesContext);
+  if (!context) {
+    throw new Error("useCoordinates must be used within a CoordinatesProvider");
+  }
+  return context;
+}

@@ -53,12 +53,18 @@ export default function CharacterItemMainHero({
     preview: imagePreview,
   });
 
+  const [isMounted, setIsMounted] = useState(false);
+
   useEffect(() => {
-    if (imagePreview) {
+    if (isMounted && imagePreview) {
       uploadImgMutation.mutate();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [imagePreview]);
+  }, [imagePreview, isMounted]);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   return (
     <>

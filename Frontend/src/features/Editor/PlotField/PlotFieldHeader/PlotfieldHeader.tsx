@@ -57,7 +57,7 @@ export default function PlotfieldHeader({
         </ButtonHoverPromptModal>
       </div>
       <button
-        className="text-[1.6rem] px-[1rem] rounded-md shadow-md hover:bg-green-300 hover:text-white transition-all"
+        className="text-[1.6rem] px-[1rem] outline-gray-300 rounded-md shadow-md hover:bg-green-300 hover:text-white transition-all"
         onClick={(e) => {
           e.stopPropagation();
           setShowHeader(true);

@@ -56,6 +56,7 @@ export default function SeasonPrompt({
     setShowModal: setShowSeasons,
     showModal: showSeasons,
   });
+
   return (
     <form
       className="bg-white rounded-md shadow-md relative"

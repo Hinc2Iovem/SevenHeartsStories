@@ -1,5 +1,5 @@
 import { useParams } from "react-router-dom";
-import useGetAllCharactersByStoryId from "../../../hooks/Fetching/Character/useGetAllCharactersByStoryId";
+import useGetTranslationCharacters from "../../../hooks/Fetching/Translation/Characters/useGetTranslationCharacters";
 import useEscapeOfModal from "../../../hooks/UI/useEscapeOfModal";
 import EmotionHeaderCharacterNames from "./EmotionHeaderCharacterNames";
 
@@ -22,8 +22,9 @@ export default function EmotionHeaderCharacters({
 }: EmotionHeaderCharacterTypes) {
   const { storyId } = useParams();
 
-  const { data: characters } = useGetAllCharactersByStoryId({
+  const { data: characters } = useGetTranslationCharacters({
     storyId: storyId ?? "",
+    language: "russian",
   });
 
   useEscapeOfModal({

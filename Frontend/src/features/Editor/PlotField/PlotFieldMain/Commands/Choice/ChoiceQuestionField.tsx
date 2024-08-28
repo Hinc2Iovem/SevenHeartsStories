@@ -149,7 +149,7 @@ export default function ChoiceQuestionField({
               e.preventDefault();
               setShowAllCharacters(false);
             }}
-            className="w-full relative flex gap-[.5rem] items-center"
+            className="w-full relative flex gap-[.5rem] items-center bg-primary-light-blue rounded-md"
           >
             <input
               onClick={(e) => {
@@ -171,7 +171,7 @@ export default function ChoiceQuestionField({
               alt="CharacterImg"
               className={`${
                 characterImg?.trim().length ? "" : "hidden"
-              } w-[3rem] object-cover rounded-md self-end`}
+              } w-[4rem] object-cover rounded-md self-end`}
             />
             <PlotfieldCharacterPromptMain
               characterDebouncedValue={characterDebouncedValue}

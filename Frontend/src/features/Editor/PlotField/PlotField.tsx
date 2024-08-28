@@ -16,7 +16,7 @@ export default function PlotField({
     <section
       className={`${
         expandPlotField ? "w-full" : " w-1/2"
-      } flex-grow flex-shrink-0 bg-white rounded-md shadow-md min-h-[20rem] relative p-[1rem] h-fit`}
+      } flex-grow flex-shrink-0 bg-white rounded-md shadow-md min-h-[20rem] h-full relative p-[1rem]`}
     >
       <PlotfieldHeader
         setShowHeader={setShowHeader}

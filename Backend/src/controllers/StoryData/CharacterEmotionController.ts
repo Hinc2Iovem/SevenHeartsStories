@@ -121,14 +121,13 @@ export const characterEmotionUpdateController: RequestHandler<
 };
 
 type CharacterEmotionUpdateImgUrlParams = {
-  characterId: string;
+  id: string;
 };
 type CharacterEmotionUpdateImgUrlBody = {
   imgUrl: string | undefined;
-  emotionName: string | undefined;
 };
 
-// @route PATCH http://localhost:3500/characterEmotions/characters/:characterId/img
+// @route PATCH http://localhost:3500/characterEmotions/:id/img
 // @access Private
 export const characterEmotionUpdateImgUrlController: RequestHandler<
   CharacterEmotionUpdateImgUrlParams,
@@ -138,9 +137,8 @@ export const characterEmotionUpdateImgUrlController: RequestHandler<
 > = async (req, res, next) => {
   try {
     const characterEmotion = await characterEmotionUpdateImgService({
-      characterId: req.params.characterId,
+      id: req.params.id,
       imgUrl: req.body.imgUrl,
-      emotionName: req.body.emotionName,
     });
     if (characterEmotion) {
       return res.status(201).json(characterEmotion);

@@ -1,30 +1,36 @@
 import { useEffect, useState } from "react";
 import useUpdateImg from "../../hooks/Patching/useUpdateImg";
-import { CharacterEmotionTypes } from "../../types/StoryData/Emotion/CharacterEmotion";
 import PreviewImage from "../shared/utilities/PreviewImage";
+import { EmotionsTypes } from "../../types/StoryData/Character/CharacterTypes";
+import SyncLoad from "../shared/Loaders/SyncLoader";
 
 export default function EmotionItem({
   emotionName,
   imgUrl,
   _id,
-}: CharacterEmotionTypes) {
+}: EmotionsTypes) {
   const [imgPreview, setPreview] = useState<string | ArrayBuffer | null>(null);
+  const [isMounted, setIsMounted] = useState(false);
 
-  const updateImg = useUpdateImg({
+  const { mutate: updateImg, isPending } = useUpdateImg({
     id: _id,
     path: "/characterEmotions",
     preview: imgPreview,
   });
 
   useEffect(() => {
-    if (imgPreview) {
-      updateImg.mutate();
+    if (isMounted && imgPreview) {
+      updateImg();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [imgPreview]);
+  }, [imgPreview, isMounted]);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   return (
-    <article className="w-full min-h-[24rem] h-full rounded-md shadow-md shadow-gray-400 bg-white">
+    <article className="w-full min-h-[24rem] h-full rounded-md shadow-md shadow-gray-400 bg-white relative">
       <div className="relative border-[3px] w-full h-[20rem] border-white">
         {imgUrl ? (
           <img
@@ -45,6 +51,13 @@ export default function EmotionItem({
           {emotionName}
         </p>
       </div>
+      {isPending && (
+        <SyncLoad
+          conditionToLoading={!isPending}
+          conditionToStart={isPending}
+          className="top-[1rem] right-[1rem] "
+        />
+      )}
     </article>
   );
 }

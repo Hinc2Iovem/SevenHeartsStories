@@ -39,13 +39,18 @@ export default function ProfileLeftSide({
     preview: imagePreview,
   });
 
+  const [isMounted, setIsMounted] = useState(false);
+
   useEffect(() => {
-    if (imagePreview) {
+    if (isMounted && imagePreview) {
       updateImg.mutate();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [imagePreview]);
+  }, [imagePreview, isMounted]);
 
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
   return (
     <div
       className={`${

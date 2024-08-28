@@ -23,5 +23,5 @@ characterEmotionRoute
   .delete(characterEmotionDeleteController);
 
 characterEmotionRoute
-  .route("/characters/:characterId/img")
+  .route("/:id/img")
   .patch(characterEmotionUpdateImgUrlController);
