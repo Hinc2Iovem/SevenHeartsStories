@@ -189,14 +189,10 @@ export const getTopologyBlockByConnectionService = async ({
 
 type TopologyBlockCreateTypes = {
   episodeId: string;
-  coordinatesX: number | undefined;
-  coordinatesY: number | undefined;
 };
 
 export const unrelatedTopologyBlockCreateService = async ({
   episodeId,
-  coordinatesX,
-  coordinatesY,
 }: TopologyBlockCreateTypes) => {
   validateMongoId({ value: episodeId, valueName: "episode" });
 
@@ -205,18 +201,23 @@ export const unrelatedTopologyBlockCreateService = async ({
     throw createHttpError(400, "Such episode doesn't exist");
   }
 
-  if (!coordinatesX || !coordinatesY) {
-    throw createHttpError(400, "Coordinates are required");
-  }
-
   const amountOfTopologyBlockInEpisode = await TopologyBlock.find({
     episodeId,
   }).countDocuments();
 
+  const lastTopologyBlock = await TopologyBlock.findOne({
+    episodeId,
+  })
+    .sort({
+      createdAt: -1,
+    })
+    .limit(1)
+    .lean();
+
   const newTopologyBlock = await TopologyBlock.create({
     episodeId,
-    coordinatesX,
-    coordinatesY,
+    coordinatesX: lastTopologyBlock?.coordinatesX || 0,
+    coordinatesY: (lastTopologyBlock?.coordinatesY || 0) + 50 || 150,
     name: `Блок - ${amountOfTopologyBlockInEpisode}`,
   });
 

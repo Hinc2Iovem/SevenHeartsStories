@@ -18,7 +18,9 @@ conditionBlockRoute
   .post(addAnotherBlockConditionController);
 
 conditionBlockRoute
-  .route("/conditionBlocks/:conditionBlockId/topologyBlocks/:topologyBlockId")
+  .route(
+    "/conditionBlocks/:conditionBlockId/sourceBlocks/:sourceBlockId/targetBlocks/:targetBlockId"
+  )
   .patch(updateBlockConditionTopologyBlockController);
 
 conditionBlockRoute

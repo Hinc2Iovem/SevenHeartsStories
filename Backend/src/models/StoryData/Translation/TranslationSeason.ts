@@ -39,6 +39,8 @@ export const translationSeasonSchema = new mongoose.Schema(
   }
 );
 
+translationSeasonSchema.index({ updatedAt: -1 });
+
 type TranslationSeason = InferSchemaType<typeof translationSeasonSchema>;
 
 export default model<TranslationSeason>(

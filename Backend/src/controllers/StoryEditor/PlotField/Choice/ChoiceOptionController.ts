@@ -63,8 +63,6 @@ export const getAllChoiceOptionsByChoiceIdController: RequestHandler<
 type CreateChoiceOptionParams = {
   plotFieldCommandChoiceId: string;
   plotFieldCommandId: string;
-  topologyBlockId: string;
-  episodeId: string;
 };
 
 export type ChoiceOptionType =
@@ -78,7 +76,7 @@ type CreateChoiceOptionBody = {
 };
 
 // TODO KAKAYTA ZALUPA
-// @route POST http://localhost:3500/plotFieldCommands/:plotFieldCommandId/choices/:plotFieldCommandChoiceId/options/episodes/:episodeId/topologyBlocks/:topologyBlockId
+// @route POST http://localhost:3500/plotFieldCommands/:plotFieldCommandId/choices/:plotFieldCommandChoiceId/options
 // @access Private
 export const createChoiceOptionController: RequestHandler<
   CreateChoiceOptionParams,
@@ -90,8 +88,6 @@ export const createChoiceOptionController: RequestHandler<
     const choiceOption = await createChoiceOptionService({
       plotFieldCommandChoiceId: req.params.plotFieldCommandChoiceId,
       plotFieldCommandId: req.params.plotFieldCommandId,
-      topologyBlockId: req.params.topologyBlockId,
-      episodeId: req.params.episodeId,
       type: req.body.type,
     });
     if (choiceOption) {
@@ -106,10 +102,11 @@ export const createChoiceOptionController: RequestHandler<
 
 type UpdateChoiceOptionTopologyBlockParams = {
   choiceOptionId: string;
-  topologyBlockId: string;
+  targetBlockId: string;
+  sourceBlockId: string;
 };
 
-// @route PATCH http://localhost:3500/plotFieldCommands/choices/options/:choiceOptionId/topologyBlocks/:topologyBlockId
+// @route PATCH http://localhost:3500/plotFieldCommands/choices/options/:choiceOptionId/sourceBlocks/:sourceBlockId/targetBlocks/:targetBlockId
 // @access Private
 export const updateChoiceOptionTopologyBlockController: RequestHandler<
   UpdateChoiceOptionTopologyBlockParams,
@@ -120,7 +117,8 @@ export const updateChoiceOptionTopologyBlockController: RequestHandler<
   try {
     const choiceOption = await updateChoiceOptionTopologyBlockService({
       choiceOptionId: req.params.choiceOptionId,
-      topologyBlockId: req.params.topologyBlockId,
+      targetBlockId: req.params.targetBlockId,
+      sourceBlockId: req.params.sourceBlockId,
     });
     if (choiceOption) {
       return res.status(201).json(choiceOption);

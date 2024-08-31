@@ -248,7 +248,6 @@ export default function ChoiceQuestionField({
           plotFieldCommandChoiceId={choiceId}
           setShowCreateChoiceOptionModal={setShowCreateChoiceOptionModal}
           showCreateChoiceOptionModal={showCreateChoiceOptionModal}
-          topologyBlockId={topologyBlockId}
         />
       </div>
     </div>

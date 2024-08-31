@@ -65,20 +65,27 @@ export const getAllChoiceOptionsByChoiceIdService = async ({
 
 type UpdateChoiceOptionTopologyBlock = {
   choiceOptionId: string;
-  topologyBlockId: string;
+  targetBlockId: string;
+  sourceBlockId: string;
 };
 
 export const updateChoiceOptionTopologyBlockService = async ({
   choiceOptionId,
-  topologyBlockId,
+  targetBlockId,
+  sourceBlockId,
 }: UpdateChoiceOptionTopologyBlock) => {
   validateMongoId({
     value: choiceOptionId,
     valueName: "ChoiceOption",
   });
   validateMongoId({
-    value: topologyBlockId,
-    valueName: "TopologyBlock",
+    value: targetBlockId,
+    valueName: "TargetBlock",
+  });
+
+  validateMongoId({
+    value: sourceBlockId,
+    valueName: "SourceBlock",
   });
 
   const existingChoiceOption = await ChoiceOption.findById(
@@ -89,13 +96,33 @@ export const updateChoiceOptionTopologyBlockService = async ({
   }
 
   const existingTopologyBlock = await TopologyBlock.findById(
-    topologyBlockId
+    targetBlockId
   ).lean();
   if (!existingTopologyBlock) {
     throw createHttpError(400, "Such TopologyBlock does not exist");
   }
 
-  existingChoiceOption.topologyBlockId = new Types.ObjectId(topologyBlockId);
+  if (existingChoiceOption.topologyBlockId) {
+    const existingTopologyConnection = await TopologyBlockConnection.findOne({
+      sourceBlockId,
+      targetBlockId: existingChoiceOption.topologyBlockId,
+    }).exec();
+
+    if (existingTopologyConnection) {
+      existingTopologyConnection.targetBlockId = new Types.ObjectId(
+        targetBlockId
+      );
+      await existingTopologyConnection.save();
+    }
+  } else {
+    await TopologyBlockConnection.create({
+      sourceBlockId,
+      targetBlockId,
+      episodeId: existingTopologyBlock.episodeId,
+    });
+  }
+
+  existingChoiceOption.topologyBlockId = new Types.ObjectId(targetBlockId);
 
   return await existingChoiceOption.save();
 };
@@ -103,8 +130,6 @@ export const updateChoiceOptionTopologyBlockService = async ({
 type CreateChoiceOptionTypes = {
   plotFieldCommandChoiceId: string;
   plotFieldCommandId: string;
-  episodeId: string;
-  topologyBlockId: string;
   type: ChoiceOptionType | undefined;
 };
 
@@ -112,8 +137,6 @@ export const createChoiceOptionService = async ({
   plotFieldCommandChoiceId,
   plotFieldCommandId,
   type,
-  episodeId,
-  topologyBlockId,
 }: CreateChoiceOptionTypes) => {
   validateMongoId({
     value: plotFieldCommandChoiceId,
@@ -131,48 +154,47 @@ export const createChoiceOptionService = async ({
     throw createHttpError(400, "Choice with such id wasn't found");
   }
 
-  const existingCurrentTopologyBlock = await TopologyBlock.findById(
-    topologyBlockId
-  ).exec();
+  // const existingCurrentTopologyBlock = await TopologyBlock.findById(
+  //   topologyBlockId
+  // ).exec();
 
-  if (!existingCurrentTopologyBlock) {
-    throw createHttpError(
-      400,
-      "Something went wrong, current topology block doesn't exist"
-    );
-  }
+  // if (!existingCurrentTopologyBlock) {
+  //   throw createHttpError(
+  //     400,
+  //     "Something went wrong, current topology block doesn't exist"
+  //   );
+  // }
 
-  const topologyBlocks = await TopologyBlockConnection.find({
-    sourceBlockId: topologyBlockId,
-  }).lean();
-  const topologyBlockNumber = topologyBlocks.length
-    ? topologyBlocks.length + 1
-    : 1;
+  // const topologyBlocks = await TopologyBlockConnection.find({
+  //   sourceBlockId: topologyBlockId,
+  // }).lean();
+  // const topologyBlockNumber = topologyBlocks.length
+  //   ? topologyBlocks.length + 1
+  //   : 1;
 
-  const newTopologyBlock = await createTopologyBlock({
-    coordinatesX: (existingCurrentTopologyBlock.coordinatesX ?? 0) + 50,
-    coordinatesY: (existingCurrentTopologyBlock.coordinatesY ?? 0) + 50,
-    name: existingCurrentTopologyBlock.name + " " + topologyBlockNumber,
-    episodeId: new Types.ObjectId(episodeId),
-    sourceBlockId: new Types.ObjectId(topologyBlockId),
-    isStartingTopologyBlock: false,
-  });
+  // const newTopologyBlock = await createTopologyBlock({
+  //   coordinatesX: (existingCurrentTopologyBlock.coordinatesX ?? 0) + 50,
+  //   coordinatesY: (existingCurrentTopologyBlock.coordinatesY ?? 0) + 50,
+  //   name: existingCurrentTopologyBlock.name + " " + topologyBlockNumber,
+  //   episodeId: new Types.ObjectId(episodeId),
+  //   sourceBlockId: new Types.ObjectId(topologyBlockId),
+  //   isStartingTopologyBlock: false,
+  // });
 
-  const existingTopologyConnection = await TopologyBlockConnection.findOne({
-    sourceBlockId: topologyBlockId,
-    targetBlockId: newTopologyBlock._id,
-  }).exec();
+  // const existingTopologyConnection = await TopologyBlockConnection.findOne({
+  //   sourceBlockId: topologyBlockId,
+  //   targetBlockId: newTopologyBlock._id,
+  // }).exec();
 
-  if (!existingTopologyConnection) {
-    await createTopologyBlockConnection({
-      sourceBlockId: new Types.ObjectId(topologyBlockId),
-      targetBlockId: newTopologyBlock._id,
-    });
-  }
+  // if (!existingTopologyConnection) {
+  //   await createTopologyBlockConnection({
+  //     sourceBlockId: new Types.ObjectId(topologyBlockId),
+  //     targetBlockId: newTopologyBlock._id,
+  //   });
+  // }
 
   const newChoiceOption = await ChoiceOption.create({
     plotFieldCommandChoiceId,
-    topologyBlockId: newTopologyBlock._id,
     type: type ?? "common",
   });
 

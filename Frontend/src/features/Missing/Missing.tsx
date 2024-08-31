@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
 import DivBgColor from "../shared/utilities/DivBgColor";
 import { useNavigate } from "react-router-dom";
+import useGetDecodedJWTValues from "../../hooks/Auth/useGetDecodedJWTValues";
 
 export default function Missing() {
+  const { userId } = useGetDecodedJWTValues();
   const [seconds, setSeconds] = useState(5);
   const navigate = useNavigate();
 
@@ -16,9 +18,14 @@ export default function Missing() {
 
   useEffect(() => {
     if (seconds === 0) {
-      navigate("/stories", { replace: true });
+      if (userId) {
+        navigate(`/profile/${userId}`, { replace: true });
+      } else {
+        navigate("/auth/register");
+      }
     }
-  }, [seconds, navigate]);
+  }, [seconds, navigate, userId]);
+
   return (
     <article>
       <DivBgColor />

@@ -6,8 +6,6 @@ import { CurrentlyAvailableLanguagesTypes } from "../../../../../../../../types/
 type CreateChoiceOptionTypes = {
   plotFieldCommandChoiceId: string;
   plotFieldCommandId: string;
-  episodeId: string;
-  topologyBlockId: string;
   language?: CurrentlyAvailableLanguagesTypes;
 };
 type CreateChoiceOptionOnMutationTypes = {
@@ -15,17 +13,15 @@ type CreateChoiceOptionOnMutationTypes = {
 };
 
 export default function useCreateChoiceOption({
-  episodeId,
   plotFieldCommandChoiceId,
   plotFieldCommandId,
-  topologyBlockId,
   language = "russian",
 }: CreateChoiceOptionTypes) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async ({ type }: CreateChoiceOptionOnMutationTypes) =>
       await axiosCustomized.post(
-        `/plotFieldCommands/${plotFieldCommandId}/choices/${plotFieldCommandChoiceId}/options/episodes/${episodeId}/topologyBlocks/${topologyBlockId}`,
+        `/plotFieldCommands/${plotFieldCommandId}/choices/${plotFieldCommandChoiceId}/options`,
         {
           type,
         }

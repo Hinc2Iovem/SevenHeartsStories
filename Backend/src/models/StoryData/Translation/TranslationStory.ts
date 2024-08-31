@@ -39,6 +39,8 @@ export const translationStorySchema = new mongoose.Schema(
   }
 );
 
+translationStorySchema.index({ updatedAt: -1 });
+
 type TranslationStory = InferSchemaType<typeof translationStorySchema>;
 
 export default model<TranslationStory>(

@@ -53,7 +53,9 @@ export default function ConditionBlockItem({
   });
   const updateTopologyBlock = useUpdateConditionBlockTopologyBlockId({
     conditionBlockId: _id,
-    topologyBlockId: newTopologyBlockId,
+    targetBlockId: newTopologyBlockId,
+    sourceBlockId: currentTopologyBlockId,
+    episodeId: episodeId || "",
   });
 
   useEffect(() => {
@@ -72,6 +74,9 @@ export default function ConditionBlockItem({
     showModal: showAllTopologyBlocks,
     modalRef,
   });
+
+  console.log(allTopologyBlocks?.length);
+
   return (
     <>
       {!isElse ? (
@@ -82,15 +87,15 @@ export default function ConditionBlockItem({
             <ConditionValueItem key={cv._id} {...cv} />
           ))}
 
+          <DisplayOrderOfIfsModal
+            conditionBlockId={_id}
+            allUsedOrderNumbers={allUsedOrderNumbers || []}
+            commandConditionId={conditionId}
+            setCurrentOrder={setCurrentOrder}
+            currentOrder={currentOrder}
+            amountOfIfBlocks={amountOfIfBlocks || 0}
+          />
           <div className="relative w-full flex justify-between flex-wrap gap-[1rem]">
-            <DisplayOrderOfIfsModal
-              conditionBlockId={_id}
-              allUsedOrderNumbers={allUsedOrderNumbers || []}
-              commandConditionId={conditionId}
-              setCurrentOrder={setCurrentOrder}
-              currentOrder={currentOrder}
-              amountOfIfBlocks={amountOfIfBlocks || 0}
-            />
             <button
               onClick={(e) => {
                 e.stopPropagation();
@@ -106,24 +111,36 @@ export default function ConditionBlockItem({
                 showAllTopologyBlocks ? "" : "hidden"
               } z-[10] flex flex-col gap-[1rem] p-[.5rem] absolute min-w-fit w-full rounded-md shadow-md bg-white right-[0rem] translate-y-[.5rem]`}
             >
-              {allTopologyBlocks?.map((tb) => (
+              {(allTopologyBlocks?.length || 0) > 1 ? (
+                allTopologyBlocks?.map((tb) => (
+                  <button
+                    key={tb._id}
+                    type="button"
+                    onClick={() => {
+                      setShowAllTopologyBlocks(false);
+                      setCurrentTopologyBlockName(tb?.name || "");
+                      setNewTopologyBlockId(tb._id);
+                    }}
+                    className={`${
+                      currentTopologyBlockId === tb._id ? "hidden" : ""
+                    } ${
+                      tb._id === newTopologyBlockId ? "hidden" : ""
+                    } px-[1rem] py-[.5rem] whitespace-nowrap text-[1.3rem] outline-gray-300 text-gray-700 hover:bg-primary-light-blue hover:text-white shadow-md transition-all rounded-md`}
+                  >
+                    {tb.name}
+                  </button>
+                ))
+              ) : (
                 <button
-                  key={tb._id}
                   type="button"
                   onClick={() => {
                     setShowAllTopologyBlocks(false);
-                    setCurrentTopologyBlockName(tb?.name || "");
-                    setNewTopologyBlockId(tb._id);
                   }}
-                  className={`${
-                    currentTopologyBlockId === tb._id ? "hidden" : ""
-                  } ${
-                    tb._id === newTopologyBlockId ? "hidden" : ""
-                  } px-[1rem] py-[.5rem] whitespace-nowrap text-[1.3rem] outline-gray-300 text-gray-700 hover:bg-primary-light-blue hover:text-white shadow-md transition-all rounded-md`}
+                  className={`px-[1rem] py-[.5rem] whitespace-nowrap text-[1.3rem] outline-gray-300 text-gray-700 hover:bg-primary-light-blue hover:text-white shadow-md transition-all rounded-md`}
                 >
-                  {tb.name}
+                  Пусто
                 </button>
-              ))}
+              )}
             </aside>
           </div>
         </div>
@@ -148,24 +165,36 @@ export default function ConditionBlockItem({
                 showAllTopologyBlocks ? "" : "hidden"
               } z-[10] flex flex-col gap-[1rem] p-[.5rem] absolute min-w-fit w-full rounded-md shadow-md bg-white right-[0rem] translate-y-[.5rem]`}
             >
-              {allTopologyBlocks?.map((tb) => (
+              {(allTopologyBlocks?.length || 0) > 1 ? (
+                allTopologyBlocks?.map((tb) => (
+                  <button
+                    key={tb._id}
+                    type="button"
+                    onClick={() => {
+                      setShowAllTopologyBlocks(false);
+                      setCurrentTopologyBlockName(tb?.name || "");
+                      setNewTopologyBlockId(tb._id);
+                    }}
+                    className={`${
+                      currentTopologyBlockId === tb._id ? "hidden" : ""
+                    } ${
+                      tb._id === newTopologyBlockId ? "hidden" : ""
+                    } px-[1rem] py-[.5rem] whitespace-nowrap text-[1.3rem] outline-gray-300 text-gray-700 hover:bg-primary-light-blue hover:text-white shadow-md transition-all rounded-md`}
+                  >
+                    {tb.name}
+                  </button>
+                ))
+              ) : (
                 <button
-                  key={tb._id}
                   type="button"
                   onClick={() => {
                     setShowAllTopologyBlocks(false);
-                    setCurrentTopologyBlockName(tb?.name || "");
-                    setNewTopologyBlockId(tb._id);
                   }}
-                  className={`${
-                    currentTopologyBlockId === tb._id ? "hidden" : ""
-                  } ${
-                    tb._id === newTopologyBlockId ? "hidden" : ""
-                  } px-[1rem] py-[.5rem] whitespace-nowrap text-[1.3rem] outline-gray-300 text-gray-700 hover:bg-primary-light-blue hover:text-white shadow-md transition-all rounded-md`}
+                  className={`px-[1rem] py-[.5rem] whitespace-nowrap text-[1.3rem] outline-gray-300 text-gray-700 hover:bg-primary-light-blue hover:text-white shadow-md transition-all rounded-md`}
                 >
-                  {tb.name}
+                  Пусто
                 </button>
-              ))}
+              )}
             </aside>
           </div>
         </div>

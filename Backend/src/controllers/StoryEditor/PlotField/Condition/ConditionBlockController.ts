@@ -60,10 +60,11 @@ export const addAnotherBlockConditionController: RequestHandler<
 
 type UpdateConditionBlockTopologyBlockTypes = {
   conditionBlockId: string;
-  topologyBlockId: string;
+  targetBlockId: string;
+  sourceBlockId: string;
 };
 
-// @route POST http://localhost:3500/commandConditions/conditionBlocks/:conditionBlockId/topologyBlocks/:topologyBlockId
+// @route POST http://localhost:3500/commandConditions/conditionBlocks/:conditionBlockId/sourceBlocks/:sourceBlockId/targetBlocks/:targetBlockId
 // @access Private
 export const updateBlockConditionTopologyBlockController: RequestHandler<
   UpdateConditionBlockTopologyBlockTypes,
@@ -74,7 +75,8 @@ export const updateBlockConditionTopologyBlockController: RequestHandler<
   try {
     const condition = await updateBlockConditionTopologyBlockService({
       conditionBlockId: req.params.conditionBlockId,
-      topologyBlockId: req.params.topologyBlockId,
+      targetBlockId: req.params.targetBlockId,
+      sourceBlockId: req.params.sourceBlockId,
     });
     if (condition) {
       return res.status(201).json(condition);

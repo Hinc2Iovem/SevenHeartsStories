@@ -55,10 +55,14 @@ export default function CommandCallField({
     callId: commandCallId,
     sourceBlockId: topologyBlockId,
     targetBlockId,
+    episodeId: episodeId || "",
   });
 
   useEffect(() => {
-    if (targetBlockId?.trim().length) {
+    if (
+      commandCall?.targetBlockId !== targetBlockId &&
+      targetBlockId?.trim().length
+    ) {
       updateCallText.mutate();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

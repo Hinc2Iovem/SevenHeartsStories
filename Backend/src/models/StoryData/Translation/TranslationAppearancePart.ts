@@ -43,6 +43,8 @@ export const translationAppearancePartSchema = new mongoose.Schema(
   }
 );
 
+translationAppearancePartSchema.index({ updatedAt: -1 });
+
 type TranslationAppearancePart = InferSchemaType<
   typeof translationAppearancePartSchema
 >;

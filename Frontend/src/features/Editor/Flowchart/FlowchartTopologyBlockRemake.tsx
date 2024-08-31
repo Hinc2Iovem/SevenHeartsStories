@@ -2,7 +2,6 @@ import { useEffect, useRef, useState } from "react";
 import Draggable, { DraggableData, DraggableEvent } from "react-draggable";
 import { TopologyBlockTypes } from "../../../types/TopologyBlock/TopologyBlockTypes";
 import useUpdateTopologyBlockCoordinates from "../PlotField/PlotFieldMain/Commands/hooks/TopologyBlock/useUpdateTopologyBlockCoordinates";
-import FlowchartTopologyBlockDrag from "./FlowchartTopologyBlockDrag";
 import useCoordinates from "./Context/useCoordinates";
 import "./FlowchartStyles.css";
 
@@ -59,7 +58,6 @@ export default function FlowchartTopologyBlock({
   };
 
   const [clicked, setClicked] = useState(false);
-  const [showAllTopologyBlocks, setShowAllTopologyBlocks] = useState(false);
 
   return (
     <>
@@ -80,16 +78,9 @@ export default function FlowchartTopologyBlock({
           <div
             onClick={(e) => {
               e.stopPropagation();
-              localStorage.setItem(`${episodeId}-topologyBlockId`, _id);
               if (clicked) {
-                setCurrentTopologyBlockId((prev) => {
-                  if (prev !== _id) {
-                    return _id;
-                  } else {
-                    return prev;
-                  }
-                });
-                setShowAllTopologyBlocks(true);
+                localStorage.setItem(`${episodeId}-topologyBlockId`, _id);
+                setCurrentTopologyBlockId(_id);
                 setClicked(false);
               } else {
                 setClicked(true);
@@ -99,19 +90,13 @@ export default function FlowchartTopologyBlock({
               }
             }}
             ref={topologyBlockRef}
-            className={`${showAllTopologyBlocks ? "z-[2]" : "z-[1]"} ${
+            className={` ${
               currentTopologyBlockId === _id
                 ? "bg-green-300 text-white"
                 : "bg-white "
-            } w-[10rem] text-[2rem] rounded-md shadow-md absolute px-[1rem] py-[.5rem] active:cursor-move cursor-default whitespace-nowrap min-w-fit`}
+            } z-[10] w-[10rem] text-[2rem] rounded-md shadow-md absolute px-[1rem] py-[.5rem] active:cursor-move cursor-default whitespace-nowrap min-w-fit`}
           >
-            <FlowchartTopologyBlockDrag
-              _id={_id}
-              name={name}
-              episodeId={episodeId}
-              setShowAllTopologyBlocks={setShowAllTopologyBlocks}
-              showAllTopologyBlocks={showAllTopologyBlocks}
-            />
+            {name}
           </div>
         </Draggable>
       ) : null}

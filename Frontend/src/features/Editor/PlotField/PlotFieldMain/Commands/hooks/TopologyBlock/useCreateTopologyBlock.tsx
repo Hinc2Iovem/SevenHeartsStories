@@ -9,10 +9,7 @@ export default function useCreateTopologyBlock({
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async () =>
-      await axiosCustomized.post(`/topologyBlocks/episodes/${episodeId}`, {
-        coordinatesX: 10,
-        coordinatesY: 500,
-      }),
+      await axiosCustomized.post(`/topologyBlocks/episodes/${episodeId}`),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ["episode", episodeId, "topologyBlock"],

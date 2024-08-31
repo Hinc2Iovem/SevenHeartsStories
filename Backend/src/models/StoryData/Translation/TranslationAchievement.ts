@@ -43,6 +43,8 @@ export const translationAchievementSchema = new mongoose.Schema(
   }
 );
 
+translationAchievementSchema.index({ updatedAt: -1 });
+
 type TranslationAchievement = InferSchemaType<
   typeof translationAchievementSchema
 >;

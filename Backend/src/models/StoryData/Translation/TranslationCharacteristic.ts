@@ -39,6 +39,8 @@ export const translationCharacteristicSchema = new mongoose.Schema(
   }
 );
 
+translationCharacteristicSchema.index({ updatedAt: -1 });
+
 type TranslationCharacteristic = InferSchemaType<
   typeof translationCharacteristicSchema
 >;

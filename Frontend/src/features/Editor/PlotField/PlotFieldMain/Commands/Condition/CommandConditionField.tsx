@@ -84,7 +84,7 @@ export default function CommandConditionField({
           <img
             src={plus}
             alt="+"
-            className="w-[1.5rem] absolute translate-y-1/2 translate-x-1/2 right-[0rem] bottom-0"
+            className="w-[1.5rem] absolute translate-y-1/2 -translate-x-1/2 left-[0rem] bottom-0"
           />
           <img src={commandImg} alt="Commands" className="w-[3rem]" />
         </ButtonHoverPromptModal>

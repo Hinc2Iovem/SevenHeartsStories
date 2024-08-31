@@ -27,6 +27,7 @@ export default function ProfileRightSideScriptWriter({
     storiesType,
     debouncedValue: debouncedStory,
   });
+
   const { data: allAssignedTranslatedStories } =
     useGetAllAssignedStoryTranslationsSearch({
       language: "russian",
@@ -38,8 +39,6 @@ export default function ProfileRightSideScriptWriter({
       staffId: staffId || "",
       startFetching: storiesType === "all" ? false : true,
     });
-
-  console.log(allAssignedTranslatedStories);
 
   return (
     <div className="grid grid-cols-[repeat(auto-fill,minmax(20rem,1fr))] gap-[1rem] justify-items-center justify-center w-full">

@@ -17,9 +17,7 @@ choiceOptionRoute
   .get(getAllChoiceOptionsByChoiceIdController);
 
 choiceOptionRoute
-  .route(
-    "/:plotFieldCommandId/choices/:plotFieldCommandChoiceId/options/episodes/:episodeId/topologyBlocks/:topologyBlockId"
-  )
+  .route("/:plotFieldCommandId/choices/:plotFieldCommandChoiceId/options")
   .post(createChoiceOptionController);
 
 choiceOptionRoute
@@ -29,7 +27,9 @@ choiceOptionRoute
   .delete(deleteChoiceOptionController);
 
 choiceOptionRoute
-  .route("/choices/options/:choiceOptionId/topologyBlocks/:topologyBlockId")
+  .route(
+    "/choices/options/:choiceOptionId/sourceBlocks/:sourceBlockId/targetBlocks/:targetBlockId"
+  )
   .patch(updateChoiceOptionTopologyBlockController);
 
 choiceOptionRoute

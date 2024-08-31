@@ -5,13 +5,15 @@ import FlowchartTopologyBlockRemake from "./FlowchartTopologyBlockRemake";
 import FlowchartArrowList from "./FlowchartArrowList";
 import useGetAllTopologyBlockConnectionsByEpisodeId from "../PlotField/PlotFieldMain/Commands/hooks/TopologyBlock/useGetAllTopologyBlockConnectionsByEpisodeId";
 import "./FlowchartStyles.css";
+import useCreateTopologyBlock from "../PlotField/PlotFieldMain/Commands/hooks/TopologyBlock/useCreateTopologyBlock";
+import { PossibleCommandsCreatedByCombinationOfKeysTypes } from "../../../const/COMMANDS_CREATED_BY_KEY_COMBINATION";
 
 type FlowChartTypes = {
   setCurrentTopologyBlockId: React.Dispatch<React.SetStateAction<string>>;
   setScale: React.Dispatch<React.SetStateAction<number>>;
+  keyCombinationToExpandFlowChart: PossibleCommandsCreatedByCombinationOfKeysTypes;
   currentTopologyBlockId: string;
   scale: number;
-  expanded: boolean;
 };
 
 export const SCROLLBAR_WIDTH = 17;
@@ -21,14 +23,14 @@ export default function Flowchart({
   setScale,
   setCurrentTopologyBlockId,
   currentTopologyBlockId,
-  expanded,
+  keyCombinationToExpandFlowChart,
 }: FlowChartTypes) {
   const { episodeId } = useParams();
   const { data: allTopologyBlocks } = useGetAllTopologyBlocksByEpisodeId({
-    episodeId: episodeId ?? "",
+    episodeId: episodeId || "",
   });
   const { data: allConnections } = useGetAllTopologyBlockConnectionsByEpisodeId(
-    { episodeId: episodeId ?? "" }
+    { episodeId: episodeId || "" }
   );
 
   const boundsRef = useRef<HTMLDivElement>(null);
@@ -37,7 +39,13 @@ export default function Flowchart({
     if (event.ctrlKey || event.metaKey) {
       event.preventDefault();
       const delta = event.deltaY > 0 ? -0.1 : 0.1;
-      setScale((prevScale) => Math.min(Math.max(prevScale + delta, 0.1), 3));
+      if (delta < 0) {
+        setScale((prevScale) => Math.max(prevScale + delta, 0.1));
+      } else if (delta > 0 && scale <= 1.0) {
+        setScale((prevScale) => Math.min(prevScale + delta, 1.0));
+      } else {
+        console.log("Cannot zoom more than 100%");
+      }
     }
   };
 
@@ -52,13 +60,23 @@ export default function Flowchart({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const createTopologyBlock = useCreateTopologyBlock({
+    episodeId: episodeId || "",
+  });
   return (
     <section
       ref={boundsRef}
       className={`${
         scale >= 0.99 ? "" : "border-white border-[4px] border-dashed"
       } ${
-        expanded ? "w-full" : "w-1/2"
+        keyCombinationToExpandFlowChart === "expandFlowchart"
+          ? "w-full"
+          : "w-1/2"
+      } ${
+        keyCombinationToExpandFlowChart === "expandFlowchart" ||
+        !keyCombinationToExpandFlowChart
+          ? ""
+          : "hidden"
       } overflow-auto rounded-md shadow-md relative bg-primary-light-blue | containerScroll`}
     >
       <div
@@ -82,6 +100,16 @@ export default function Flowchart({
           ? allConnections.map((c) => <FlowchartArrowList key={c._id} {...c} />)
           : null}
       </div>
+      <button
+        onClick={() => createTopologyBlock.mutate()}
+        className={`fixed bottom-[1.5rem] ${
+          keyCombinationToExpandFlowChart !== "expandFlowchart"
+            ? "left-[calc(50%+.6rem)]"
+            : "left-[2rem]"
+        } z-[10] px-[1rem] py-[.5rem] bg-white rounded-md shadow-sm text-[1.4rem]`}
+      >
+        Создать Блок
+      </button>
 
       <div className="absolute top-0 bottom-0 right-0 left-0 min-w-[500rem] min-h-[500rem] z-[1]">
         <div className="absolute bg-white left-[calc(50%-.2rem)] h-full w-[.4rem]"></div>

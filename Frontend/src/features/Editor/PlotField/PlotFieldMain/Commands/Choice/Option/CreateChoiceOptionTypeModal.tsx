@@ -1,10 +1,8 @@
-import { useParams } from "react-router-dom";
 import useEscapeOfModal from "../../../../../../../hooks/UI/useEscapeOfModal";
 import { ChoiceOptionVariations } from "../../../../../../../types/StoryEditor/PlotField/Choice/ChoiceTypes";
 import useCreateChoiceOption from "../../hooks/Choice/ChoiceOption/useCreateChoiceOption";
 
 type CreateChoiceOptionTypeModalTypes = {
-  topologyBlockId: string;
   plotFieldCommandId: string;
   plotFieldCommandChoiceId: string;
   showCreateChoiceOptionModal: boolean;
@@ -12,19 +10,14 @@ type CreateChoiceOptionTypeModalTypes = {
 };
 
 export default function CreateChoiceOptionTypeModal({
-  topologyBlockId,
   plotFieldCommandChoiceId,
   plotFieldCommandId,
   showCreateChoiceOptionModal,
   setShowCreateChoiceOptionModal,
 }: CreateChoiceOptionTypeModalTypes) {
-  const { episodeId } = useParams();
-
   const createChoiceOption = useCreateChoiceOption({
-    episodeId: episodeId ?? "",
     plotFieldCommandChoiceId: plotFieldCommandChoiceId,
     plotFieldCommandId,
-    topologyBlockId,
   });
 
   useEscapeOfModal({

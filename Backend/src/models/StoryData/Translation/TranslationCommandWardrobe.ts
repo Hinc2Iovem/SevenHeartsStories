@@ -39,6 +39,8 @@ export const translationCommandWardrobeSchema = new mongoose.Schema(
   }
 );
 
+translationCommandWardrobeSchema.index({ updatedAt: -1 });
+
 type TranslationCommandWardrobe = InferSchemaType<
   typeof translationCommandWardrobeSchema
 >;

@@ -230,23 +230,16 @@ type TopologyBlockCreateParams = {
   episodeId: string;
 };
 
-type TopologyBlockCreateBody = {
-  coordinatesX: number | undefined;
-  coordinatesY: number | undefined;
-};
-
 // @route POST http://localhost:3500/topologyBlocks/episodes/:episodeId
 // @access Private
 export const unrelatedTopologyBlockControllerCreate: RequestHandler<
   TopologyBlockCreateParams,
   unknown,
-  TopologyBlockCreateBody,
+  unknown,
   unknown
 > = async (req, res, next) => {
   try {
     const topologyBlock = await unrelatedTopologyBlockCreateService({
-      coordinatesX: req.body.coordinatesX,
-      coordinatesY: req.body.coordinatesY,
       episodeId: req.params.episodeId,
     });
     if (topologyBlock) {

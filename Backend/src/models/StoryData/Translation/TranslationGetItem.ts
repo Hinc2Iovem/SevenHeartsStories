@@ -39,6 +39,8 @@ export const translationGetItemSchema = new mongoose.Schema(
   }
 );
 
+translationGetItemSchema.index({ updatedAt: -1 });
+
 type TranslationGetItem = InferSchemaType<typeof translationGetItemSchema>;
 
 export default model<TranslationGetItem>(

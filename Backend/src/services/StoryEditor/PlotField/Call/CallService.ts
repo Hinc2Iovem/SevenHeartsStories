@@ -62,13 +62,6 @@ export const updateCallService = async ({
   validateMongoId({ value: targetBlockId, valueName: "TargetBlock" });
   validateMongoId({ value: sourceBlockId, valueName: "SourceBlock" });
 
-  const existingSourceBlockId = await TopologyBlock.findById(
-    sourceBlockId
-  ).lean();
-  if (!existingSourceBlockId) {
-    throw createHttpError(400, "TopologyBlock with such id wasn't found");
-  }
-
   const existingCall = await Call.findById(callId).exec();
   if (!existingCall) {
     throw createHttpError(400, "Call with such id wasn't found");
@@ -80,22 +73,27 @@ export const updateCallService = async ({
     throw createHttpError(400, "TopologyBlock with such id wasn't found");
   }
 
-  const existingTopologyConnection = await TopologyBlockConnection.findOne({
-    sourceBlockId,
-    targetBlockId,
-  }).exec();
+  if (existingCall.targetBlockId) {
+    const existingTopologyConnection = await TopologyBlockConnection.findOne({
+      sourceBlockId,
+      targetBlockId: existingCall.targetBlockId,
+    }).exec();
 
-  if (existingTopologyConnection) {
-    existingTopologyConnection.targetBlockId = new Types.ObjectId(
-      targetBlockId
-    );
-    await existingTopologyConnection.save();
+    if (existingTopologyConnection) {
+      existingTopologyConnection.targetBlockId = new Types.ObjectId(
+        targetBlockId
+      );
+      await existingTopologyConnection.save();
+    }
   } else {
-    await TopologyBlockConnection.create({ sourceBlockId, targetBlockId });
+    await TopologyBlockConnection.create({
+      sourceBlockId,
+      targetBlockId,
+      episodeId: existingTargetBlock.episodeId,
+    });
   }
 
   existingCall.targetBlockId = new Types.ObjectId(targetBlockId);
-
   return await existingCall.save();
 };
 

@@ -43,6 +43,8 @@ export const translationCharacterSchema = new mongoose.Schema(
   }
 );
 
+translationCharacterSchema.index({ updatedAt: -1 });
+
 type TranslationCharacter = InferSchemaType<typeof translationCharacterSchema>;
 
 export default model<TranslationCharacter>(

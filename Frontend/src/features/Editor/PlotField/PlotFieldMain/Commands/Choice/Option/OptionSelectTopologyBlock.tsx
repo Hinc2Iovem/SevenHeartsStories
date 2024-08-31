@@ -38,6 +38,7 @@ export default function OptionSelectTopologyBlock({
   });
   const updateOptionTopologyBlock = useUpdateChoiceOptionTopologyBlock({
     choiceOptionId,
+    episodeId: episodeId || "",
   });
 
   useOutOfModal({
@@ -53,7 +54,7 @@ export default function OptionSelectTopologyBlock({
           e.stopPropagation();
           setShowAllTopologyBlocks((prev) => !prev);
         }}
-        className="text-[1.3rem] self-end outline-gray-300 text-gray-700 shadow-md rounded-md px-[1rem] py-[.5rem]"
+        className="text-[1.3rem] self-end outline-gray-300 text-gray-700 shadow-md rounded-md px-[1rem] py-[.5rem] whitespace-nowrap"
         type="button"
       >
         {currentTopologyBlockName || "Текущая Ветка"}
@@ -74,7 +75,10 @@ export default function OptionSelectTopologyBlock({
                 setShowAllTopologyBlocks(false);
                 setCurrentTopologyBlockName(tb?.name || "");
                 setTopologyBlockId(tb._id);
-                updateOptionTopologyBlock.mutate({ topologyBlockId: tb._id });
+                updateOptionTopologyBlock.mutate({
+                  targetBlockId: tb._id,
+                  sourceBlockId: currentTopologyBlockId,
+                });
               }}
               className={`${topologyBlockId === tb._id ? "hidden" : ""} ${
                 currentTopologyBlockId === tb._id ? "hidden" : ""

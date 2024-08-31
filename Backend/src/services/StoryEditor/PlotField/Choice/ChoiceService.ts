@@ -2,9 +2,8 @@ import createHttpError from "http-errors";
 import { Types } from "mongoose";
 import { AllChoiceVariations } from "../../../../consts/CHOICE_OPTION_TYPES";
 import { ChoiceType } from "../../../../controllers/StoryEditor/PlotField/Choice/ChoiceController";
-import { validateMongoId } from "../../../../utils/validateMongoId";
 import Choice from "../../../../models/StoryEditor/PlotField/Choice/Choice";
-import PlotFieldCommand from "../../../../models/StoryEditor/PlotField/PlotFieldCommand";
+import { validateMongoId } from "../../../../utils/validateMongoId";
 
 type GetChoiceByPlotFieldCommandIdTypes = {
   plotFieldCommandId: string;
