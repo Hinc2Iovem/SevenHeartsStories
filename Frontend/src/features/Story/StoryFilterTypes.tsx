@@ -1,4 +1,7 @@
+import { useQueryClient } from "@tanstack/react-query";
 import { StoryFilterTypes } from "./Story";
+import { getAllAssignedStories } from "../../hooks/Fetching/Story/useGetAllAssignedStoryTranslationsSearch";
+import useGetDecodedJWTValues from "../../hooks/Auth/useGetDecodedJWTValues";
 
 type StoryFilterTypesProps = {
   setStoriesType: React.Dispatch<React.SetStateAction<StoryFilterTypes>>;
@@ -11,10 +14,34 @@ export default function StoryFilterTypesHeader({
   setStoriesType,
   setLocalSearchValue,
 }: StoryFilterTypesProps) {
+  const queryClient = useQueryClient();
+  const { userId } = useGetDecodedJWTValues();
+  const prefetchAllAssignedStories = (storyStatus: string) => {
+    queryClient.prefetchQuery({
+      queryKey: [
+        "translation",
+        "assigned",
+        "stories",
+        storyStatus,
+        userId,
+        "search",
+        "",
+      ],
+      queryFn: () =>
+        getAllAssignedStories({
+          debouncedValue: "",
+          language: "russian",
+          staffId: userId || "",
+          storyStatus,
+        }),
+    });
+  };
   return (
     <ul className="flex flex-col gap-[1rem] bg-white rounded-md p-[1rem] shadow-sm">
       <li>
         <button
+          onMouseEnter={() => prefetchAllAssignedStories("")}
+          onFocus={() => prefetchAllAssignedStories("")}
           onClick={() => {
             setLocalSearchValue("");
             setStoriesType("allAssigned");
@@ -30,6 +57,8 @@ export default function StoryFilterTypesHeader({
       </li>
       <li>
         <button
+          onFocus={() => prefetchAllAssignedStories("done")}
+          onMouseEnter={() => prefetchAllAssignedStories("done")}
           onClick={() => {
             setLocalSearchValue("");
             setStoriesType("done");
@@ -45,6 +74,8 @@ export default function StoryFilterTypesHeader({
       </li>
       <li>
         <button
+          onFocus={() => prefetchAllAssignedStories("doing")}
+          onMouseEnter={() => prefetchAllAssignedStories("doing")}
           onClick={() => {
             setLocalSearchValue("");
             setStoriesType("doing");

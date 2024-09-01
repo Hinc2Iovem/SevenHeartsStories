@@ -3,6 +3,8 @@ import useGetDecodedJWTValues from "../../../../hooks/Auth/useGetDecodedJWTValue
 import { StoryFilterTypes } from "../../../Story/Story";
 import StoryFilterTypesHeader from "../../../Story/StoryFilterTypes";
 import CreateStory from "./CreateStory";
+import { useQueryClient } from "@tanstack/react-query";
+import { getAllTranslationStoriesSearch } from "../../../../hooks/Fetching/Story/useGetAllStoryTranslationsSearch";
 
 type ProfileLeftSideScriptwriterTypes = {
   setSearchValue: React.Dispatch<React.SetStateAction<string>>;
@@ -15,9 +17,21 @@ export default function ProfileLeftSideScriptwriter({
   storiesType,
   setStoriesType,
 }: ProfileLeftSideScriptwriterTypes) {
+  const queryClient = useQueryClient();
   const { roles } = useGetDecodedJWTValues();
   const [localSearchValue, setLocalSearchValue] = useState("");
   const [localAssignedSearchValue, setLocalAssignedSearchValue] = useState("");
+
+  const prefetchAllStories = () => {
+    queryClient.prefetchQuery({
+      queryKey: ["translation", "stories", "search", ""],
+      queryFn: () =>
+        getAllTranslationStoriesSearch({
+          debouncedValue: "",
+          language: "russian",
+        }),
+    });
+  };
   return (
     <div
       className={`${
@@ -54,6 +68,8 @@ export default function ProfileLeftSideScriptwriter({
         <ul className="flex flex-col gap-[1rem] bg-white rounded-md p-[1rem] shadow-sm">
           <li>
             <button
+              onMouseEnter={prefetchAllStories}
+              onFocus={prefetchAllStories}
               onClick={() => {
                 setStoriesType("all");
                 setLocalAssignedSearchValue("");

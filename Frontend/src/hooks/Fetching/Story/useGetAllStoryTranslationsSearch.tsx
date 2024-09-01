@@ -4,6 +4,20 @@ import { TranslationStoryTypes } from "../../../types/Additional/TranslationType
 import { CurrentlyAvailableLanguagesTypes } from "../../../types/Additional/CURRENTLY_AVAILABEL_LANGUAGES";
 import { StoryFilterTypes } from "../../../features/Story/Story";
 
+export const getAllTranslationStoriesSearch = async ({
+  language,
+  debouncedValue,
+}: {
+  language: CurrentlyAvailableLanguagesTypes;
+  debouncedValue: string;
+}): Promise<TranslationStoryTypes[]> => {
+  return await axiosCustomized
+    .get<TranslationStoryTypes[]>(
+      `/stories/storyStatus/search/translations?currentLanguage=${language}&text=${debouncedValue}`
+    )
+    .then((r) => r.data);
+};
+
 export default function useGetAllStoryTranslationsSearch({
   language,
   storiesType,
@@ -15,12 +29,7 @@ export default function useGetAllStoryTranslationsSearch({
 }) {
   return useQuery({
     queryKey: ["translation", "stories", "search", debouncedValue],
-    queryFn: async () =>
-      await axiosCustomized
-        .get<TranslationStoryTypes[]>(
-          `/stories/storyStatus/search/translations?currentLanguage=${language}&text=${debouncedValue}`
-        )
-        .then((r) => r.data),
+    queryFn: () => getAllTranslationStoriesSearch({ debouncedValue, language }),
     select: (data) =>
       data.sort(
         (a, b) =>

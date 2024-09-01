@@ -5,7 +5,18 @@ import { CurrentlyAvailableLanguagesTypes } from "../../../types/Additional/CURR
 
 type GetTranslationEpisodeTypes = {
   episodeId: string;
-  language?: CurrentlyAvailableLanguagesTypes;
+  language: CurrentlyAvailableLanguagesTypes;
+};
+
+export const getTranslationEpisode = async ({
+  episodeId,
+  language,
+}: GetTranslationEpisodeTypes) => {
+  return await axiosCustomized
+    .get<TranslationEpisodeTypes>(
+      `/episodes/${episodeId}/translations?currentLanguage=${language}`
+    )
+    .then((r) => r.data);
 };
 
 export default function useGetTranslationEpisode({
@@ -14,12 +25,7 @@ export default function useGetTranslationEpisode({
 }: GetTranslationEpisodeTypes) {
   return useQuery({
     queryKey: ["translation", language, "episode", episodeId],
-    queryFn: async () =>
-      await axiosCustomized
-        .get<TranslationEpisodeTypes>(
-          `/episodes/${episodeId}/translations?currentLanguage=${language}`
-        )
-        .then((r) => r.data),
+    queryFn: () => getTranslationEpisode({ episodeId, language }),
     enabled: !!episodeId,
   });
 }

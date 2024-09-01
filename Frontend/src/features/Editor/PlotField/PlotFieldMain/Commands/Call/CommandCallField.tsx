@@ -23,6 +23,7 @@ export default function CommandCallField({
 
   const { data: commandCall } = useGetCommandCall({
     plotFieldCommandId,
+    topologyBlockId,
   });
   const [commandCallId, setCommandCallId] = useState("");
   const [targetBlockId, setTargetBlockId] = useState("");

@@ -6,15 +6,20 @@ type GetTopologyBlocksTypes = {
   topologyBlockId: string;
 };
 
+export const getTopologyBlockById = async ({
+  topologyBlockId,
+}: GetTopologyBlocksTypes) => {
+  return await axiosCustomized
+    .get<TopologyBlockTypes>(`/topologyBlocks/${topologyBlockId}`)
+    .then((r) => r.data);
+};
+
 export default function useGetTopologyBlockById({
   topologyBlockId,
 }: GetTopologyBlocksTypes) {
   return useQuery({
     queryKey: ["topologyBlock", topologyBlockId],
-    queryFn: async () =>
-      await axiosCustomized
-        .get<TopologyBlockTypes>(`/topologyBlocks/${topologyBlockId}`)
-        .then((r) => r.data),
+    queryFn: async () => getTopologyBlockById({ topologyBlockId }),
     enabled: !!topologyBlockId,
   });
 }

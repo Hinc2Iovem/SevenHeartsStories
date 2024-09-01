@@ -6,6 +6,8 @@ import useUpdateImg from "../../../hooks/Patching/useUpdateImg";
 import { EpisodeStatusTypes } from "../../../types/StoryData/Episode/EpisodeTypes";
 import { StoryFilterTypes } from "../../Story/Story";
 import useGetDecodedJWTValues from "../../../hooks/Auth/useGetDecodedJWTValues";
+import { useQueryClient } from "@tanstack/react-query";
+import { getSeasonsByStoryId } from "../../../hooks/Fetching/Season/useGetSeasonsByStoryId";
 
 type ProfileRightSideItemTypes = {
   storiesType: StoryFilterTypes;
@@ -62,8 +64,20 @@ export default function ProfileRightSideItem({
   useEffect(() => {
     setIsMounted(true);
   }, []);
+
+  const queryClient = useQueryClient();
+  const prefetchSeason = () => {
+    queryClient.prefetchQuery({
+      queryKey: ["stories", storyId, "season", "language", "russian"],
+      queryFn: () => getSeasonsByStoryId({ language: "russian", storyId }),
+    });
+  };
   return (
-    <article className="w-full h-[26rem] bg-white rounded-md shadow-sm relative flex flex-col justify-between">
+    <article
+      onMouseEnter={prefetchSeason}
+      onFocus={prefetchSeason}
+      className="w-full h-[26rem] bg-white rounded-md shadow-sm relative flex flex-col justify-between"
+    >
       <div className="relative border-[3px] w-full max-h-[23rem] h-full border-white bg-white">
         {imgUrl ? (
           <img

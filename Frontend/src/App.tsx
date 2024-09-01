@@ -38,16 +38,16 @@ export default function App() {
               />
             }
           >
-            <Route element={<StoryLayout />} path="stories">
-              <Route path=":storyId" element={<StorySinglePage />} />
-              <Route path=":storyId/emotions" element={<Emotion />} />
-              <Route path=":storyId/wardrobes" element={<Wardrobe />} />
+            <Route element={<StoryLayout />}>
+              <Route path="stories/:storyId" element={<StorySinglePage />} />
+              <Route path="stories/:storyId/emotions" element={<Emotion />} />
+              <Route path="stories/:storyId/wardrobes" element={<Wardrobe />} />
               <Route
-                path=":storyId/characters"
+                path="stories/:storyId/characters"
                 element={<CharacterListPage />}
               />
               <Route
-                path=":storyId/editor/episodes/:episodeId"
+                path="stories/:storyId/editor/episodes/:episodeId"
                 element={<EpisodeEditor />}
               />
             </Route>

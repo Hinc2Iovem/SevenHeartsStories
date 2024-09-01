@@ -3,6 +3,24 @@ import { axiosCustomized } from "../../../api/axios";
 import { CurrentlyAvailableLanguagesTypes } from "../../../types/Additional/CURRENTLY_AVAILABEL_LANGUAGES";
 import { TranslationStoryTypes } from "../../../types/Additional/TranslationTypes";
 
+export const getAllAssignedStories = async ({
+  language,
+  debouncedValue,
+  storyStatus,
+  staffId,
+}: {
+  language: CurrentlyAvailableLanguagesTypes;
+  storyStatus: string;
+  debouncedValue: string;
+  staffId: string;
+}): Promise<TranslationStoryTypes[]> => {
+  return await axiosCustomized
+    .get<TranslationStoryTypes[]>(
+      `/stories/staff/${staffId}/search/translations?currentLanguage=${language}&text=${debouncedValue}&storyStatus=${storyStatus}`
+    )
+    .then((r) => r.data);
+};
+
 export default function useGetAllAssignedStoryTranslationsSearch({
   language,
   debouncedValue,
@@ -26,12 +44,13 @@ export default function useGetAllAssignedStoryTranslationsSearch({
       "search",
       debouncedValue,
     ],
-    queryFn: async () =>
-      await axiosCustomized
-        .get<TranslationStoryTypes[]>(
-          `/stories/staff/${staffId}/search/translations?currentLanguage=${language}&text=${debouncedValue}&storyStatus=${storyStatus}`
-        )
-        .then((r) => r.data),
+    queryFn: () =>
+      getAllAssignedStories({
+        debouncedValue,
+        language,
+        staffId,
+        storyStatus: storyStatus,
+      }),
     select: (data) =>
       data.sort(
         (a, b) =>

@@ -6,13 +6,16 @@ type GetMusicByIdTypes = {
   musicId: string;
 };
 
+export const getMusicById = async ({ musicId }: GetMusicByIdTypes) => {
+  return await axiosCustomized
+    .get<MusicTypes>(`/stories/music/${musicId}`)
+    .then((r) => r.data);
+};
+
 export default function useGetMusicById({ musicId }: GetMusicByIdTypes) {
   return useQuery({
     queryKey: ["stories", "music", musicId],
-    queryFn: async () =>
-      await axiosCustomized
-        .get<MusicTypes>(`/stories/music/${musicId}`)
-        .then((r) => r.data),
+    queryFn: async () => getMusicById({ musicId }),
     enabled: !!musicId,
   });
 }

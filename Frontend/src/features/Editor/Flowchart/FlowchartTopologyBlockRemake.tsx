@@ -4,6 +4,8 @@ import { TopologyBlockTypes } from "../../../types/TopologyBlock/TopologyBlockTy
 import useUpdateTopologyBlockCoordinates from "../PlotField/PlotFieldMain/Commands/hooks/TopologyBlock/useUpdateTopologyBlockCoordinates";
 import useCoordinates from "./Context/useCoordinates";
 import "./FlowchartStyles.css";
+import { useQueryClient } from "@tanstack/react-query";
+import { getAllPlotfieldCommands } from "../PlotField/PlotFieldMain/Commands/hooks/useGetAllPlotFieldCommands";
 
 type FlowchartTopologyBlockTypes = {
   setCurrentTopologyBlockId: React.Dispatch<React.SetStateAction<string>>;
@@ -59,6 +61,14 @@ export default function FlowchartTopologyBlock({
 
   const [clicked, setClicked] = useState(false);
 
+  const queryClient = useQueryClient();
+  const prefetchCommands = () => {
+    queryClient.prefetchQuery({
+      queryKey: ["plotfield", "topologyBlock", _id],
+      queryFn: () => getAllPlotfieldCommands({ topologyBlockId: _id }),
+    });
+  };
+
   return (
     <>
       {coordinates ? (
@@ -76,6 +86,8 @@ export default function FlowchartTopologyBlock({
           bounds="parent"
         >
           <div
+            onMouseEnter={prefetchCommands}
+            onFocus={prefetchCommands}
             onClick={(e) => {
               e.stopPropagation();
               if (clicked) {
