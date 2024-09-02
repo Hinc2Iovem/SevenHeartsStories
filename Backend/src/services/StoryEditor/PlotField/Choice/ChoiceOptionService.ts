@@ -149,54 +149,21 @@ export const createChoiceOptionService = async ({
 
   checkChoiceOptionType({ type });
 
-  const existingChoice = await Choice.findById(plotFieldCommandChoiceId).lean();
+  const existingChoice = await Choice.findById(plotFieldCommandChoiceId).exec();
   if (!existingChoice) {
     throw createHttpError(400, "Choice with such id wasn't found");
   }
 
-  // const existingCurrentTopologyBlock = await TopologyBlock.findById(
-  //   topologyBlockId
-  // ).exec();
-
-  // if (!existingCurrentTopologyBlock) {
-  //   throw createHttpError(
-  //     400,
-  //     "Something went wrong, current topology block doesn't exist"
-  //   );
-  // }
-
-  // const topologyBlocks = await TopologyBlockConnection.find({
-  //   sourceBlockId: topologyBlockId,
-  // }).lean();
-  // const topologyBlockNumber = topologyBlocks.length
-  //   ? topologyBlocks.length + 1
-  //   : 1;
-
-  // const newTopologyBlock = await createTopologyBlock({
-  //   coordinatesX: (existingCurrentTopologyBlock.coordinatesX ?? 0) + 50,
-  //   coordinatesY: (existingCurrentTopologyBlock.coordinatesY ?? 0) + 50,
-  //   name: existingCurrentTopologyBlock.name + " " + topologyBlockNumber,
-  //   episodeId: new Types.ObjectId(episodeId),
-  //   sourceBlockId: new Types.ObjectId(topologyBlockId),
-  //   isStartingTopologyBlock: false,
-  // });
-
-  // const existingTopologyConnection = await TopologyBlockConnection.findOne({
-  //   sourceBlockId: topologyBlockId,
-  //   targetBlockId: newTopologyBlock._id,
-  // }).exec();
-
-  // if (!existingTopologyConnection) {
-  //   await createTopologyBlockConnection({
-  //     sourceBlockId: new Types.ObjectId(topologyBlockId),
-  //     targetBlockId: newTopologyBlock._id,
-  //   });
-  // }
+  const optionOrder = existingChoice.amountOfOptions;
 
   const newChoiceOption = await ChoiceOption.create({
     plotFieldCommandChoiceId,
     type: type ?? "common",
+    optionOrder,
   });
+
+  existingChoice.amountOfOptions += 1;
+  await existingChoice.save();
 
   if (type === "characteristic") {
     await OptionCharacteristic.create({
@@ -211,6 +178,7 @@ export const createChoiceOptionService = async ({
       plotFieldCommandChoiceOptionId: newChoiceOption._id,
     });
   }
+
   await TranslationChoiceOption.create({
     language: "russian",
     commandId: plotFieldCommandId,
@@ -320,6 +288,50 @@ export const updateChoiceOptionService = async ({
 
     return await existingOptionRelationship.save();
   }
+};
+
+type ChoiceOptionUpdateOptionOrder = {
+  optionOrder?: number;
+  choiceOptionId: string;
+  choiceId: string;
+};
+
+export const choiceOptionUpdateOptionOrderService = async ({
+  optionOrder,
+  choiceOptionId,
+  choiceId,
+}: ChoiceOptionUpdateOptionOrder) => {
+  validateMongoId({ value: choiceId, valueName: "Choice" });
+  validateMongoId({ value: choiceOptionId, valueName: "choiceOption" });
+
+  const existingChoiceOption = await ChoiceOption.findById(
+    choiceOptionId
+  ).exec();
+  if (!existingChoiceOption) {
+    throw createHttpError(400, "Such choiceOption doesn't exist");
+  }
+
+  if (typeof optionOrder === "number") {
+    const optionDuplicateOrder = await ChoiceOption.findOne({
+      plotFieldCommandChoiceId: choiceId,
+      optionOrder,
+    }).exec();
+    if (optionDuplicateOrder) {
+      optionDuplicateOrder.optionOrder = null;
+      await optionDuplicateOrder.save();
+    }
+    existingChoiceOption.optionOrder = optionOrder;
+    const existingChoice = await Choice.findById(choiceId).exec();
+    if (
+      existingChoice &&
+      existingChoice.timeLimitDefaultOptionId?.equals(existingChoiceOption._id)
+    ) {
+      existingChoice.timeLimitDefaultOptionId = existingChoiceOption._id;
+      await existingChoice.save();
+    }
+  }
+
+  return await existingChoiceOption.save();
 };
 
 type ChoiceOptionUpdateSexualOrientations = {

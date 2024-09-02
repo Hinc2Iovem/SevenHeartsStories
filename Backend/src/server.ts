@@ -59,6 +59,7 @@ import {
   choiceOptionTranslationsRoute,
   characteristicTranslationRoute,
   characterTranslationRoute,
+  commentRoute,
 } from "./routes/index";
 import { verifyJWT } from "./middlewares/verifyJWT";
 
@@ -106,6 +107,7 @@ app.use("/stories", verifyJWT, soundRoute);
 app.use("/plotFieldCommands", verifyJWT, ambientRoute);
 app.use("/plotFieldCommands", verifyJWT, backgroundRoute);
 app.use("/plotFieldCommands", verifyJWT, callRoute);
+app.use("/plotFieldCommands", verifyJWT, commentRoute);
 app.use("/plotFieldCommands", verifyJWT, choiceOptionRoute);
 app.use("/choiceOptions", verifyJWT, choiceOptionTranslationsRoute);
 app.use("/plotFieldCommands", verifyJWT, choiceRoute);

@@ -11,6 +11,7 @@ type OptionSelecteTopologyBlockTypes = {
   choiceOptionId: string;
   showAllTopologyBlocks: boolean;
   setTopologyBlockId: React.Dispatch<React.SetStateAction<string>>;
+  setShowAllOrders: React.Dispatch<React.SetStateAction<boolean>>;
   currentTopologyBlockId: string;
 };
 
@@ -21,6 +22,7 @@ export default function OptionSelectTopologyBlock({
   showAllTopologyBlocks,
   setTopologyBlockId,
   currentTopologyBlockId,
+  setShowAllOrders,
 }: OptionSelecteTopologyBlockTypes) {
   const { episodeId } = useParams();
   const { data: topologyBlock } = useGetTopologyBlockById({ topologyBlockId });
@@ -48,11 +50,12 @@ export default function OptionSelectTopologyBlock({
   });
 
   return (
-    <div className="relative ml-auto pr-[.2rem] pb-[.2rem]">
+    <div className="relative self-end pr-[.2rem] pb-[.2rem]">
       <button
         onClick={(e) => {
           e.stopPropagation();
           setShowAllTopologyBlocks((prev) => !prev);
+          setShowAllOrders(false);
         }}
         className="text-[1.3rem] self-end outline-gray-300 text-gray-700 shadow-md rounded-md px-[1rem] py-[.5rem] whitespace-nowrap"
         type="button"

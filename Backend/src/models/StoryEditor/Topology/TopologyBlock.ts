@@ -21,6 +21,13 @@ export const topologyBlockSchema = new mongoose.Schema(
       type: Number,
       default: 50,
     },
+    topologyBlockInfo: {
+      amountOfCommands: {
+        type: Number,
+        default: 0,
+      },
+      default: {},
+    },
   },
   {
     timestamps: true,

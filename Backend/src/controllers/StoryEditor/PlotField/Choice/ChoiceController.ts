@@ -42,6 +42,7 @@ export type ChoiceType = "common" | "multiple" | "timelimit";
 type UpdateChoiceBody = {
   exitBlockId: string | undefined;
   characterEmotionId: string | undefined;
+  optionOrder: number | undefined;
   characterId: string | undefined;
   timeLimit: number | undefined;
   choiceType: ChoiceType | undefined;
@@ -61,6 +62,7 @@ export const updateChoiceController: RequestHandler<
       choiceType: req.body.choiceType,
       exitBlockId: req.body.exitBlockId,
       characterEmotionId: req.body.characterEmotionId,
+      optionOrder: req.body.optionOrder,
       characterId: req.body.characterId,
     });
     if (choice) {

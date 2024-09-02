@@ -15,5 +15,6 @@ export default function useGetChoiceOptionById({
           `/plotFieldCommands/choices/options/${choiceOptionId}`
         )
         .then((r) => r.data),
+    enabled: !!choiceOptionId,
   });
 }

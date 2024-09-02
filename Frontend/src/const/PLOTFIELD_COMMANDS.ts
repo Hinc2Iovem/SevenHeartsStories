@@ -16,6 +16,7 @@ export const AllPossiblePlotFieldCommands = [
   "sound",
   "suit",
   "wait",
+  "comment",
   "wardrobe",
 ];
 

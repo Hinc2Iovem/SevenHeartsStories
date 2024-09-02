@@ -22,6 +22,8 @@ export default function CommandChoiceField({
 
   const [nameValue] = useState<string>(command ?? "Choice");
   const [commandChoiceId, setCommandChoiceId] = useState("");
+  const [amountOfOptions, setAmountOfOptions] = useState<number>();
+  const [timeLimitDefaultOptionId, setTimeLimitDefaultOptionId] = useState("");
   const [characterId, setCharacterId] = useState("");
   const [isAuthor, setIsAuthor] = useState<boolean>();
   const [choiceVariationTypes, setChoiceVariationTypes] =
@@ -46,6 +48,10 @@ export default function CommandChoiceField({
       if (commandChoice.characterId) {
         setCharacterId(commandChoice.characterId);
       }
+      if (commandChoice.timeLimitDefaultOptionId) {
+        setTimeLimitDefaultOptionId(commandChoice.timeLimitDefaultOptionId);
+      }
+      setAmountOfOptions(commandChoice.amountOfOptions);
       setIsAuthor(commandChoice.isAuthor);
     }
   }, [commandChoice]);
@@ -63,7 +69,7 @@ export default function CommandChoiceField({
   }, [updateChoiceIsAuthor]);
 
   return (
-    <div className="flex gap-[1rem] w-full flex-wrap bg-primary-light-blue rounded-md p-[.5rem] sm:flex-row flex-col">
+    <div className="flex gap-[1rem] w-full flex-wrap bg-primary-light-blue rounded-md p-[.5rem] sm:flex-row flex-col sm:items-center">
       <div className="sm:w-[20%] min-w-[10rem] flex-grow w-full relative">
         <h3 className="text-[1.3rem] text-start outline-gray-300 w-full capitalize px-[1rem] py-[.5rem] rounded-md shadow-md bg-white cursor-default">
           {nameValue}
@@ -78,6 +84,8 @@ export default function CommandChoiceField({
         choiceId={commandChoiceId}
         exitBlockId={exitBlockId}
         timeLimit={timeLimit}
+        amountOfOptions={amountOfOptions || 0}
+        timeLimitDefaultOptionId={timeLimitDefaultOptionId}
       />
 
       <button
@@ -106,6 +114,7 @@ export default function CommandChoiceField({
       />
 
       <ChoiceOptionBlocksList
+        amountOfOptions={amountOfOptions || 0}
         plotFieldCommandId={plotFieldCommandId}
         currentTopologyBlockId={topologyBlockId}
       />

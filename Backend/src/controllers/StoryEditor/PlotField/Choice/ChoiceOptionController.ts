@@ -1,5 +1,6 @@
 import { RequestHandler } from "express";
 import {
+  choiceOptionUpdateOptionOrderService,
   choiceOptionUpdateSexualOrientationsService,
   createChoiceOptionService,
   deleteChoiceOptionService,
@@ -191,6 +192,39 @@ export const choiceOptionControllerUpdateSexualOrientation: RequestHandler<
     const choiceOption = await choiceOptionUpdateSexualOrientationsService({
       sexualOrientationType: req.body.sexualOrientationType,
       choiceOptionId: req.params.choiceOptionId,
+    });
+    if (choiceOption) {
+      return res.status(201).json(choiceOption);
+    } else {
+      return res.status(400).json({ message: "Something went wrong" });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
+type ChoiceOptionUpdateOptionOrderParams = {
+  choiceId: string;
+  choiceOptionId: string;
+};
+
+type ChoiceOptionUpdateOptionOrderBody = {
+  optionOrder?: number;
+};
+
+// @route PATCH http://localhost:3500/plotFieldCommands/choices/:choiceId/options/:choiceOptionId/optionOrder
+// @access Private
+export const choiceOptionControllerUpdateOptionOrder: RequestHandler<
+  ChoiceOptionUpdateOptionOrderParams,
+  unknown,
+  ChoiceOptionUpdateOptionOrderBody,
+  unknown
+> = async (req, res, next) => {
+  try {
+    const choiceOption = await choiceOptionUpdateOptionOrderService({
+      choiceOptionId: req.params.choiceOptionId,
+      choiceId: req.params.choiceId,
+      optionOrder: req.body.optionOrder,
     });
     if (choiceOption) {
       return res.status(201).json(choiceOption);

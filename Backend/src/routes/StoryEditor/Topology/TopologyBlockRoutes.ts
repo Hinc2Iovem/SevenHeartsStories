@@ -13,6 +13,7 @@ import {
   topologyBlockCreateConnectionController,
   topologyBlockUpdateConnectionController,
   unrelatedTopologyBlockControllerCreate,
+  topologyBlockControllerUpdateTopologyBlockInfo,
 } from "../../../controllers/StoryEditor/Topology/TopologyBlockController";
 
 // Default route === /topologyBlocks
@@ -65,3 +66,7 @@ topologyBlockRoute
 topologyBlockRoute
   .route("/:topologyBlockId/name")
   .patch(topologyBlockControllerUpdateName);
+
+topologyBlockRoute
+  .route("/:topologyBlockId/topologyBlockInfo")
+  .patch(topologyBlockControllerUpdateTopologyBlockInfo);

@@ -13,6 +13,7 @@ import {
   getSourceBlocksByTargetBlockIdService,
   getTargetBlocksBySourceBlockIdService,
   getTopologyBlockConnectionByEpisodeIdService,
+  topologyBlockUpdateTopologyBlockInfoService,
 } from "../../../services/StoryEditor/Topology/TopologyBlockService";
 
 type GetTopologyBlockConnectionsParams = {
@@ -331,6 +332,33 @@ export const topologyBlockControllerUpdateName: RequestHandler<
     const topologyBlock = await topologyBlockUpdateNameService({
       newName: req.body.newName,
       topologyBlockId: req.params.topologyBlockId,
+    });
+    if (topologyBlock) {
+      return res.status(201).json(topologyBlock);
+    } else {
+      return res.status(400).json({ message: "Something went wrong" });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
+type TopologyBlockUpdateTopologyBlockInfoBody = {
+  addOrMinusAmountOfCommand?: string;
+};
+
+// @route PATCH http://localhost:3500/topologyBlocks/:topologyBlockId/topologyBlockInfo
+// @access Private
+export const topologyBlockControllerUpdateTopologyBlockInfo: RequestHandler<
+  TopologyBlockUpdateParams,
+  unknown,
+  TopologyBlockUpdateTopologyBlockInfoBody,
+  unknown
+> = async (req, res, next) => {
+  try {
+    const topologyBlock = await topologyBlockUpdateTopologyBlockInfoService({
+      topologyBlockId: req.params.topologyBlockId,
+      addOrMinusAmountOfCommand: req.body.addOrMinusAmountOfCommand,
     });
     if (topologyBlock) {
       return res.status(201).json(topologyBlock);

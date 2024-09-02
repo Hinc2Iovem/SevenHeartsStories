@@ -29,6 +29,14 @@ export const plotFieldCommandChoiceSchema = new mongoose.Schema({
   timeLimit: {
     type: Number,
   },
+  timeLimitDefaultOptionId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "PlotFieldCommandChoiceOption",
+  },
+  amountOfOptions: {
+    type: Number,
+    default: 0,
+  },
 });
 
 type PlotFieldCommandChoice = InferSchemaType<

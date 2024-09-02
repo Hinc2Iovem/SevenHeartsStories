@@ -25,6 +25,7 @@ export * from "./StoryEditor/PlotField/Achievement/AchievementTranslationRoutes"
 export * from "./StoryEditor/PlotField/Ambient/AmbientRoutes";
 export * from "./StoryEditor/PlotField/Background/BackgroundRoutes";
 export * from "./StoryEditor/PlotField/Call/CallRoutes";
+export * from "./StoryEditor/PlotField/Comment/CommentRoutes";
 export * from "./StoryEditor/PlotField/Choice/ChoiceRoutes";
 export * from "./StoryEditor/PlotField/Choice/ChoiceTranslationRoutes";
 export * from "./StoryEditor/PlotField/Choice/ChoiceOptionRoutes";

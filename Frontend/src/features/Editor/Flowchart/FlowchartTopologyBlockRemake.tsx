@@ -86,10 +86,9 @@ export default function FlowchartTopologyBlock({
           bounds="parent"
         >
           <div
-            onMouseEnter={prefetchCommands}
-            onFocus={prefetchCommands}
             onClick={(e) => {
               e.stopPropagation();
+              prefetchCommands();
               if (clicked) {
                 localStorage.setItem(`${episodeId}-topologyBlockId`, _id);
                 setCurrentTopologyBlockId(_id);

@@ -7,6 +7,7 @@ import {
   getChoiceOptionByIdController,
   updateChoiceOptionController,
   updateChoiceOptionTopologyBlockController,
+  choiceOptionControllerUpdateOptionOrder,
 } from "../../../../controllers/StoryEditor/PlotField/Choice/ChoiceOptionController";
 
 // Default route === /plotFieldCommands
@@ -35,3 +36,7 @@ choiceOptionRoute
 choiceOptionRoute
   .route("/choices/options/:choiceOptionId/sexualOrientation")
   .patch(choiceOptionControllerUpdateSexualOrientation);
+
+choiceOptionRoute
+  .route("/choices/:choiceId/options/:choiceOptionId/optionOrder")
+  .patch(choiceOptionControllerUpdateOptionOrder);

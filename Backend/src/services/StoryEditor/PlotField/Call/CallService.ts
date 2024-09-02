@@ -93,55 +93,34 @@ export const updateCallService = async ({
     });
   }
 
+  existingCall.referencedCommandIndex = 0;
   existingCall.targetBlockId = new Types.ObjectId(targetBlockId);
   return await existingCall.save();
 };
 
-// type UpdateCallTargetBlockTypes = {
-//   callId: string;
-//   newTargetBlockId: string;
-// };
+type UpdateCallReferencedCommandIndexTypes = {
+  callId: string;
+  referencedCommandIndex?: number;
+};
 
-// export const updateCallTargetBlockIdService = async ({
-//   newTargetBlockId,
-//   callId,
-// }: UpdateCallTargetBlockTypes) => {
-//   validateMongoId({ value: newTargetBlockId, valueName: "TopologyBlock" });
-//   validateMongoId({ value: callId, valueName: "Call" });
+export const updateCallReferencedCommandIndexService = async ({
+  callId,
+  referencedCommandIndex,
+}: UpdateCallReferencedCommandIndexTypes) => {
+  validateMongoId({ value: callId, valueName: "Call" });
 
-//   const existingNewTargetBlockId = await TopologyBlock.findById(
-//     newTargetBlockId
-//   ).lean();
-//   if (!existingNewTargetBlockId) {
-//     throw createHttpError(400, "PlotFieldCommand with such id wasn't found");
-//   }
+  const existingCall = await Call.findById(callId).exec();
+  if (!existingCall) {
+    throw createHttpError(400, "Call with such id wasn't found");
+  }
 
-//   const existingCall = await Call.findById(callId).exec();
-//   if (!existingCall) {
-//     throw createHttpError(400, "PlotFieldCommand with such id wasn't found");
-//   }
-
-//   const currentPlotFieldCommand = await PlotFieldCommand.findById(
-//     existingCall.plotFieldCommandId
-//   ).lean();
-//   const sourceBlockId = currentPlotFieldCommand?.topologyBlockId;
-
-//   const existingTopologyConnection = await TopologyBlockConnection.findOne({
-//     sourceBlockId,
-//     targetBlockId: existingCall.targetBlockId,
-//   }).exec();
-
-//   if (existingTopologyConnection) {
-//     existingTopologyConnection.targetBlockId = new Types.ObjectId(
-//       newTargetBlockId
-//     );
-//     await existingTopologyConnection.save();
-//   }
-
-//   existingCall.targetBlockId = new Types.ObjectId(newTargetBlockId);
-
-//   return existingCall.save();
-// };
+  if (typeof referencedCommandIndex === "number") {
+    existingCall.referencedCommandIndex = referencedCommandIndex;
+    return await existingCall.save();
+  } else {
+    return existingCall;
+  }
+};
 
 type DeleteCallTypes = {
   callId: string;

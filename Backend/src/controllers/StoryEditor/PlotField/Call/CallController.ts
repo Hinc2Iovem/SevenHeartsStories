@@ -3,6 +3,7 @@ import {
   createCallService,
   deleteCallService,
   getCallByPlotFieldCommandIdService,
+  updateCallReferencedCommandIndexService,
   updateCallService,
 } from "../../../../services/StoryEditor/PlotField/Call/CallService";
 
@@ -88,33 +89,35 @@ export const updateCallController: RequestHandler<
   }
 };
 
-// type UpdateCallTargetBlockParams = {
-//   callId: string;
-//   newTargetBlockId: string;
-// };
+type UpdateCallReferencedCommandIndexParams = {
+  callId: string;
+};
+type UpdateCallReferencedCommandIndexBody = {
+  referencedCommandIndex?: number;
+};
 
-// // @route PATCH http://localhost:3500/plotFieldCommands/calls/:callId/targetBlocks/:newTargetBlockId/assingNewBlock
-// // @access Private
-// export const updateCallTargetBlockIdController: RequestHandler<
-//   UpdateCallTargetBlockParams,
-//   unknown,
-//   unknown,
-//   unknown
-// > = async (req, res, next) => {
-//   try {
-//     const call = await updateCallTargetBlockIdService({
-//       newTargetBlockId: req.params.newTargetBlockId,
-//       callId: req.params.callId,
-//     });
-//     if (call) {
-//       return res.status(201).json(call);
-//     } else {
-//       return res.status(400).json({ message: "Something went wrong" });
-//     }
-//   } catch (error) {
-//     next(error);
-//   }
-// };
+// @route PATCH http://localhost:3500/plotFieldCommands/calls/:callId/commandIndex
+// @access Private
+export const updateCallReferencedCommandIndexController: RequestHandler<
+  UpdateCallReferencedCommandIndexParams,
+  unknown,
+  UpdateCallReferencedCommandIndexBody,
+  unknown
+> = async (req, res, next) => {
+  try {
+    const call = await updateCallReferencedCommandIndexService({
+      callId: req.params.callId,
+      referencedCommandIndex: req.body.referencedCommandIndex,
+    });
+    if (call) {
+      return res.status(201).json(call);
+    } else {
+      return res.status(400).json({ message: "Something went wrong" });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
 
 type DeleteCallParams = {
   callId: string;

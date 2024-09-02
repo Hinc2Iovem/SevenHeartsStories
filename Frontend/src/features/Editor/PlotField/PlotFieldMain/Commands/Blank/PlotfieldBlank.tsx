@@ -29,6 +29,8 @@ import useCreateWait from "../hooks/Wait/useCreateWait";
 import useCreateWardrobe from "../hooks/Wardrobe/useCreateWardrobe";
 import PlotFieldBlankCreateCharacter from "./PlotFieldBlankCreateCharacter";
 import useOutOfModal from "../../../../../../hooks/UI/useOutOfModal";
+import useCreateComment from "../hooks/Comment/useCommentWait";
+import useUpdateTopologyBlockAmountOfCommands from "../hooks/TopologyBlock/useUpdateTopologyBlockAmountOfCommands";
 
 type PlotFieldBlankTypes = {
   plotFieldCommandId: string;
@@ -58,6 +60,7 @@ const AllCommands = [
   "suit",
   "wait",
   "wardrobe",
+  "comment",
 ];
 
 export default function PlotfieldBlank({
@@ -165,11 +168,16 @@ export default function PlotfieldBlank({
   const createSound = useCreateSound({ plotFieldCommandId });
   const createSuit = useCreateSuit({ plotFieldCommandId });
   const createWait = useCreateWait({ plotFieldCommandId });
+  const createComment = useCreateComment({ plotFieldCommandId });
   const createWardrobe = useCreateWardrobe({
     plotFieldCommandId,
     topologyBlockId,
   });
-
+  const updateTopologyBlockAmountOfCommands =
+    useUpdateTopologyBlockAmountOfCommands({
+      topologyBlockId,
+      addOrMinusAmountOfCommand: "add",
+    });
   const handleSubmit = ({
     submittedByCharacter,
     type,
@@ -232,9 +240,12 @@ export default function PlotfieldBlank({
         createWait.mutate();
       } else if (allCommands === "wardrobe") {
         createWardrobe.mutate();
+      } else if (allCommands === "comment") {
+        createComment.mutate();
       }
       updateCommandName.mutate({ valueForSay: false });
     }
+    updateTopologyBlockAmountOfCommands.mutate();
   };
 
   const handleFormSubmit = (e: React.FormEvent) => {

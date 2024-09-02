@@ -8,10 +8,19 @@ import OptionCharacteristicBlock from "./OptionVariations/OptionCharacteristicBl
 import OptionPremiumBlock from "./OptionVariations/OptionPremiumBlock";
 import OptionRelationshipBlock from "./OptionVariations/OptionRelationshipBlock";
 import useGetChoiceOptionById from "../../hooks/Choice/ChoiceOption/useGetChoiceOptionById";
+import OptionSelectOrder from "./OptionSelectOrder";
 
 type ChoiceOptionBlockTypes = {
   currentTopologyBlockId: string;
   plotFieldCommandId: string;
+  amountOfOptions: number;
+  setOptionOrderToRevalidate: React.Dispatch<
+    React.SetStateAction<number | undefined>
+  >;
+  setOptionOrderIdNotToRevalidate: React.Dispatch<React.SetStateAction<string>>;
+  setOptionOrderIdToRevalidate: React.Dispatch<React.SetStateAction<string>>;
+  optionOrderIdNotToRevalidate: string;
+  optionOrderToRevalidate: number | undefined;
 } & TranslationChoiceOptionTypes;
 
 export default function ChoiceOptionBlock({
@@ -20,21 +29,47 @@ export default function ChoiceOptionBlock({
   translations,
   plotFieldCommandId,
   currentTopologyBlockId,
+  amountOfOptions,
+  optionOrderIdNotToRevalidate,
+  optionOrderToRevalidate,
+  setOptionOrderIdNotToRevalidate,
+  setOptionOrderToRevalidate,
+  setOptionOrderIdToRevalidate,
 }: ChoiceOptionBlockTypes) {
   const [showAllSexualOrientationBlocks, setShowAllSexualOrientationBlocks] =
     useState(false);
   const [showAllTopologyBlocks, setShowAllTopologyBlocks] = useState(false);
+  const [showAllOrders, setShowAllOrders] = useState(false);
 
   const { data: choiceOption } = useGetChoiceOptionById({ choiceOptionId });
   const [topologyBlockId, setTopologyBlockId] = useState("");
   const [sexualOrientationType, setSexualOrientationType] = useState("");
+  const [currentOrder, setCurrentOrder] = useState<number | undefined>();
 
   useEffect(() => {
     if (choiceOption) {
       setTopologyBlockId(choiceOption?.topologyBlockId || "");
       setSexualOrientationType(choiceOption?.sexualOrientationType || "");
+      setCurrentOrder(choiceOption?.optionOrder);
     }
   }, [choiceOption]);
+
+  console.log(choiceOptionId, ": ", choiceOption?.optionOrder);
+
+  useEffect(() => {
+    if (
+      optionOrderIdNotToRevalidate?.trim().length &&
+      typeof optionOrderToRevalidate === "number"
+    ) {
+      if (
+        choiceOption?.optionOrder === optionOrderToRevalidate &&
+        choiceOptionId !== optionOrderIdNotToRevalidate
+      ) {
+        setCurrentOrder(undefined);
+        setOptionOrderIdToRevalidate(choiceOption?._id || "");
+      }
+    }
+  }, [optionOrderIdNotToRevalidate, optionOrderToRevalidate, choiceOptionId]);
 
   const [optionText, setOptionText] = useState("");
 
@@ -89,11 +124,11 @@ export default function ChoiceOptionBlock({
           ) : type === "relationship" ? (
             <OptionRelationshipBlock choiceOptionId={choiceOptionId} />
           ) : null}
-          <div className="flex justify-between items-center w-full flex-wrap">
+          <div className="flex justify-between w-full">
             <div
               className={`${
                 showAllSexualOrientationBlocks ? "" : "overflow-hidden"
-              } w-1/2`}
+              } w-[calc(50%+2.5rem)] self-end`}
             >
               <OptionSelectSexualOrientationBlock
                 setShowAllSexualOrientationBlocks={
@@ -106,12 +141,27 @@ export default function ChoiceOptionBlock({
             </div>
             <div
               className={`${
-                showAllTopologyBlocks ? "" : "overflow-hidden"
-              } w-1/2 flex`}
+                showAllTopologyBlocks || showAllOrders ? "" : "overflow-hidden"
+              } w-full flex flex-col`}
             >
+              <OptionSelectOrder
+                amountOfOptions={amountOfOptions}
+                choiceId={choiceOption?.plotFieldCommandChoiceId || ""}
+                choiceOptionId={choiceOptionId}
+                setShowAllOrders={setShowAllOrders}
+                showAllOrders={showAllOrders}
+                optionOrder={currentOrder}
+                setShowAllTopologyBlocks={setShowAllTopologyBlocks}
+                setOptionOrderToRevalidate={setOptionOrderToRevalidate}
+                setOptionOrderIdNotToRevalidate={
+                  setOptionOrderIdNotToRevalidate
+                }
+                setCurrentOrder={setCurrentOrder}
+              />
               <OptionSelectTopologyBlock
                 setTopologyBlockId={setTopologyBlockId}
                 setShowAllTopologyBlocks={setShowAllTopologyBlocks}
+                setShowAllOrders={setShowAllOrders}
                 showAllTopologyBlocks={showAllTopologyBlocks}
                 choiceOptionId={choiceOptionId}
                 currentTopologyBlockId={currentTopologyBlockId}

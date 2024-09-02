@@ -5,7 +5,12 @@ export type TopologyBlockTypes = {
   isStartingTopologyBlock: boolean;
   episodeId: string;
   name?: string;
+  topologyBlockInfo: {
+    amountOfCommands: number;
+  };
 };
+
+export type TopologyBlockAddOrMinusTypes = "add" | "minus";
 
 export type TopologyBlockInfoTypes = {
   _id: string;

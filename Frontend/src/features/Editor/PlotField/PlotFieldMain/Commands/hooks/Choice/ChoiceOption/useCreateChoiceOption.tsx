@@ -38,6 +38,11 @@ export default function useCreateChoiceOption({
         exact: true,
         type: "active",
       });
+      queryClient.invalidateQueries({
+        queryKey: ["plotfieldCommand", plotFieldCommandId, "choice"],
+        exact: true,
+        type: "active",
+      });
     },
   });
 }

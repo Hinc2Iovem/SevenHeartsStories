@@ -35,4 +35,5 @@ export type AllPossiblePlotFieldComamndsTypes =
   | "sound"
   | "suit"
   | "wait"
+  | "comment"
   | "wardrobe";

@@ -30,12 +30,15 @@ export type ChoiceTypes = {
   characterId?: string;
   characterEmotionId?: string;
   timeLimit?: number;
+  timeLimitDefaultOptionId?: string;
+  amountOfOptions: number;
 };
 
 export type ChoiceOptionTypes = {
   _id: string;
   plotFieldCommandChoiceId: string;
   topologyBlockId: string;
+  optionOrder?: number;
   sexualOrientationType: SexualOrientationTypes;
   type: ChoiceOptionVariationsTypes;
 };

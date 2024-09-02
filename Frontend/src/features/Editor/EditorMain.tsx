@@ -64,7 +64,11 @@ export default function EditorMain({ setShowHeader }: EditorMainTypes) {
           keyCombinationToExpandPlotField={keyCombinationToExpandPlotField}
         />
         <div
-          className={`fixed top-[2rem] active:scale-[0.98] text-[1.3rem] transition-all bg-white hover:bg-primary-light-blue hover:text-white text-gray-700 shadow-md px-[1rem] py-[.5rem] rounded-md translate-x-[calc(50%+1rem)] z-[10]`}
+          className={`${
+            keyCombinationToExpandPlotField === "expandPlotField"
+              ? "hidden"
+              : ""
+          } fixed top-[2rem] active:scale-[0.98] text-[1.3rem] transition-all bg-white hover:bg-primary-light-blue hover:text-white text-gray-700 shadow-md px-[1rem] py-[.5rem] rounded-md translate-x-[calc(50%+1rem)] z-[10]`}
         >
           {(scale * 100).toFixed(0)}%
         </div>

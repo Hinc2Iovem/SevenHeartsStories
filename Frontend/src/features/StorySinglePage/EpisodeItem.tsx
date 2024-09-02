@@ -73,13 +73,14 @@ export default function EpisodeItem({
     <li
       {...provided.draggableProps}
       {...provided.dragHandleProps}
-      onMouseEnter={prefetchTopologyBlocks}
-      onFocus={prefetchTopologyBlocks}
       ref={provided.innerRef}
       className="w-full bg-white gap-[1rem] flex flex-col"
     >
       <div
-        onClick={() => setIsEpisodeInfoOpen((prev) => !prev)}
+        onClick={() => {
+          prefetchTopologyBlocks();
+          setIsEpisodeInfoOpen((prev) => !prev);
+        }}
         className={` ${
           isEpisodeInfoOpen ? "" : " hover:scale-[1.01]"
         } outline-gray-400 text-start bg-white w-full rounded-md shadow-sm shadow-gray-300 p-[1rem]`}

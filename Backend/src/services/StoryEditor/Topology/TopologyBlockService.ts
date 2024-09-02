@@ -289,6 +289,51 @@ export const topologyBlockUpdateNameService = async ({
   return await existingTopologyBlock.save();
 };
 
+type TopologyBlockUpdateTopologyBlockInfo = {
+  addOrMinusAmountOfCommand?: string;
+  topologyBlockId: string;
+};
+
+export const topologyBlockUpdateTopologyBlockInfoService = async ({
+  addOrMinusAmountOfCommand,
+  topologyBlockId,
+}: TopologyBlockUpdateTopologyBlockInfo) => {
+  validateMongoId({ value: topologyBlockId, valueName: "topologyBlock" });
+
+  const existingTopologyBlock = await TopologyBlock.findById(
+    topologyBlockId
+  ).exec();
+  if (!existingTopologyBlock) {
+    throw createHttpError(400, "Such topologyBlock doesn't exist");
+  }
+
+  console.log("addOrMinusAmountOfCommand: ", addOrMinusAmountOfCommand);
+
+  if (addOrMinusAmountOfCommand?.trim().length) {
+    if (
+      addOrMinusAmountOfCommand.toLowerCase() !== "add" &&
+      addOrMinusAmountOfCommand.toLowerCase() !== "minus"
+    ) {
+      throw createHttpError(
+        400,
+        "Value for addOrMinusAmountOfCommand may only be equal to add or minus"
+      );
+    }
+
+    if (existingTopologyBlock.topologyBlockInfo) {
+      existingTopologyBlock.topologyBlockInfo.amountOfCommands +=
+        addOrMinusAmountOfCommand.trim().toLowerCase() === "add" ? 1 : -1;
+    } else {
+      const newTopologyBlockInfo = {
+        amountOfCommands: 1,
+      };
+      existingTopologyBlock.topologyBlockInfo = newTopologyBlockInfo;
+    }
+  }
+
+  return await existingTopologyBlock.save();
+};
+
 type TopologyBlockCreateConnection = {
   targetBlockId: string;
   episodeId: string;

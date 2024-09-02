@@ -20,6 +20,7 @@ import CommandSoundField from "./Sound/CommandSoundField";
 import CommandSuitField from "./Suit/CommandSuitField";
 import CommandWaitField from "./Wait/CommandWaitField";
 import CommandWardrobeField from "./Wardrobe/CommandWardrobeField";
+import CommandCommentField from "./Comment/CommandCommentField";
 
 type PlotFieldItemTypes = {
   provided: DraggableProvided;
@@ -116,6 +117,8 @@ export default function PlotfieldItem({
           topologyBlockId={topologyBlockId}
           plotFieldCommandId={_id}
         />
+      ) : command === "comment" ? (
+        <CommandCommentField command={command} plotFieldCommandId={_id} />
       ) : null}
     </li>
   );

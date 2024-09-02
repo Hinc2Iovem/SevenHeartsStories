@@ -4,6 +4,7 @@ import { AllChoiceVariations } from "../../../../consts/CHOICE_OPTION_TYPES";
 import { ChoiceType } from "../../../../controllers/StoryEditor/PlotField/Choice/ChoiceController";
 import Choice from "../../../../models/StoryEditor/PlotField/Choice/Choice";
 import { validateMongoId } from "../../../../utils/validateMongoId";
+import ChoiceOption from "../../../../models/StoryEditor/PlotField/Choice/ChoiceOption";
 
 type GetChoiceByPlotFieldCommandIdTypes = {
   plotFieldCommandId: string;
@@ -31,6 +32,7 @@ type UpdateChoiceTypes = {
   choiceType: ChoiceType | undefined;
   exitBlockId: string | undefined;
   characterId: string | undefined;
+  optionOrder: number | undefined;
   characterEmotionId: string | undefined;
 };
 
@@ -40,6 +42,7 @@ export const updateChoiceService = async ({
   timeLimit,
   exitBlockId,
   characterId,
+  optionOrder,
   characterEmotionId,
 }: UpdateChoiceTypes) => {
   validateMongoId({ value: choiceId, valueName: "Choice" });
@@ -64,7 +67,16 @@ export const updateChoiceService = async ({
   if (choiceType?.trim().length) {
     existingChoice.choiceType = choiceType.toLowerCase();
     if (choiceType.toLowerCase() === "timelimit") {
-      existingChoice.timeLimit = timeLimit;
+      if (timeLimit) {
+        existingChoice.timeLimit = timeLimit;
+      }
+      if (typeof optionOrder === "number") {
+        const existingChoiceOption = await ChoiceOption.findOne({
+          plotFieldCommandChoiceId: choiceId,
+          optionOrder,
+        });
+        existingChoice.timeLimitDefaultOptionId = existingChoiceOption?._id;
+      }
     } else if (choiceType.toLowerCase() === "multiple") {
       validateMongoId({ value: exitBlockId, valueName: "ExitBlock" });
       existingChoice.exitBlockId = new Types.ObjectId(exitBlockId);

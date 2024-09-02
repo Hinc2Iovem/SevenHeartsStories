@@ -9,6 +9,10 @@ export const callSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "TopologyBlock",
   },
+  referencedCommandIndex: {
+    type: Number,
+    default: 0,
+  },
 });
 
 type Call = InferSchemaType<typeof callSchema>;

@@ -21,6 +21,9 @@ export const plotFieldCommandChoiceOptionSchema = new mongoose.Schema({
     type: String,
     default: "combined",
   },
+  optionOrder: {
+    type: Number,
+  },
 });
 
 type PlotFieldCommandChoiceOption = InferSchemaType<

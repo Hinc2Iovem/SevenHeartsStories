@@ -10,6 +10,7 @@ type UpdateChoiceOnMutationTypes = {
   exitBlockId?: string;
   characterId?: string;
   characterEmotionId?: string;
+  optionOrder?: number;
   choiceType?: ChoiceVariationsTypes;
   timeLimit?: number;
 };
@@ -22,6 +23,7 @@ export default function useUpdateChoice({ choiceId }: UpdateChoiceTextTypes) {
       choiceType,
       exitBlockId,
       timeLimit,
+      optionOrder,
     }: UpdateChoiceOnMutationTypes) => {
       await axiosCustomized.patch(`/plotFieldCommands/choices/${choiceId}`, {
         choiceType,
@@ -29,6 +31,7 @@ export default function useUpdateChoice({ choiceId }: UpdateChoiceTextTypes) {
         characterEmotionId,
         characterId,
         exitBlockId,
+        optionOrder,
       });
     },
   });
