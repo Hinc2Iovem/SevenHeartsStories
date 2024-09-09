@@ -140,12 +140,14 @@ function CharacterItemMinor({
               />
             </div>
           ) : (
-            <PreviewImage
-              imgClasses="w-full h-full bg-neutral-alabaster object-cover rounded-md border-[2px] border-b-0 rounded-b-none border-white"
-              divClasses="bg-neutral-alabaster w-full h-full relative"
-              imagePreview={imagePreview}
-              setPreview={setPreview}
-            />
+            <div className="w-full h-full bg-neutral-alabaster">
+              <PreviewImage
+                imgClasses="object-cover rounded-md border-[2px] border-b-0 rounded-b-none border-white"
+                divClasses="top-1/2 relative"
+                imagePreview={imagePreview}
+                setPreview={setPreview}
+              />
+            </div>
           )}
           <div className="w-full rounded-b-md bg-neutral-alabaster p-[1rem] text-[1.5rem] shadow-sm border-t-[1px] border-gray-300 rounded-t-md shadow-gray-600">
             {characterName.length > 30
@@ -169,7 +171,10 @@ function CharacterItemMinor({
           </div>
 
           <div className="flex gap-[1rem] flex-wrap">
-            <Link className="ml-auto" to={`/stories/${storyId}/wardrobes`}>
+            <Link
+              className="ml-auto"
+              to={`/stories/${storyId}/wardrobes/characters/${characterId}`}
+            >
               <button className=" bg-white shadow-md p-[.5rem] rounded-md active:scale-[0.99] hover:scale-[1.01] ">
                 <img src={wardrobe} alt="Wardrobe" className="w-[3rem]" />
               </button>
@@ -230,12 +235,14 @@ function CharacterItemEmpty({
               />
             </div>
           ) : (
-            <PreviewImage
-              imgClasses="w-full h-full bg-neutral-alabaster object-cover rounded-md border-[2px] border-b-0 rounded-b-none border-white"
-              divClasses="bg-neutral-alabaster w-full h-full relative"
-              imagePreview={imagePreview}
-              setPreview={setPreview}
-            />
+            <div className="w-full h-full bg-neutral-alabaster">
+              <PreviewImage
+                imgClasses="object-cover rounded-md border-[2px] border-b-0 rounded-b-none border-white"
+                divClasses="top-1/2 relative"
+                imagePreview={imagePreview}
+                setPreview={setPreview}
+              />
+            </div>
           )}
           <div className="w-full rounded-b-md bg-neutral-alabaster p-[1rem] text-[1.5rem] shadow-sm border-t-[1px] border-gray-300 rounded-t-md shadow-gray-600">
             {characterName.length > 30

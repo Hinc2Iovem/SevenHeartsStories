@@ -10,5 +10,6 @@ export default function useGetSingleStory({ storyId }: { storyId: string }) {
   return useQuery({
     queryKey: ["stories", storyId],
     queryFn: () => getStoryById({ id: storyId }),
+    enabled: !!storyId,
   });
 }

@@ -1,5 +1,6 @@
+import { useRef } from "react";
 import { BodyTypes } from "../../../const/APPEARACE_PARTS";
-import useEscapeOfModal from "../../../hooks/UI/useEscapeOfModal";
+import useOutOfModal from "../../../hooks/UI/useOutOfModal";
 import { TranslationTextFieldNameAppearancePartsTypes } from "../../../types/Additional/TRANSLATION_TEXT_FIELD_NAMES";
 
 type WardrobeHeaderChooceAppearaceTypeProps = {
@@ -21,14 +22,17 @@ export default function WardrobeHeaderChooceAppearaceType({
   setShowBodyTypeModal,
   showBodyTypeModal,
 }: WardrobeHeaderChooceAppearaceTypeProps) {
-  useEscapeOfModal({
-    setValue: setShowBodyTypeModal,
-    value: showBodyTypeModal,
+  const modalRef = useRef<HTMLDivElement>(null);
+  useOutOfModal({
+    modalRef,
+    setShowModal: setShowBodyTypeModal,
+    showModal: showBodyTypeModal,
   });
   return (
-    <div className="flex flex-col gap-[.5rem] relative">
+    <div className="flex flex-col gap-[.5rem] relative ">
       <button
-        onClick={() => {
+        onClick={(e) => {
+          e.stopPropagation();
           setShowCharacterModal(false);
           setShowModal(false);
           setShowBodyTypeModal(true);
@@ -42,9 +46,10 @@ export default function WardrobeHeaderChooceAppearaceType({
       </p>
       <aside
         id="scrollBar"
+        ref={modalRef}
         className={`${
           showBodyTypeModal ? "" : "hidden"
-        } absolute top-1/2 translate-y-[1rem] z-[10] p-[1rem] min-w-[10rem] w-full h-[10rem] overflow-y-auto bg-white shadow-md rounded-md flex flex-col gap-[1rem]`}
+        } absolute top-1/2 translate-y-[1rem] z-[10] p-[1rem] min-w-[10rem] w-full h-[10rem] overflow-y-auto bg-white shadow-md rounded-md flex flex-col gap-[1rem] | containerScroll`}
       >
         {BodyTypes.map((bt) => (
           <button

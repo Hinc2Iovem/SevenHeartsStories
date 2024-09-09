@@ -74,7 +74,7 @@ export default function EpisodeItem({
       {...provided.draggableProps}
       {...provided.dragHandleProps}
       ref={provided.innerRef}
-      className="w-full bg-white gap-[1rem] flex flex-col"
+      className="w-full bg-white flex flex-col"
     >
       <div
         onClick={() => {
@@ -82,7 +82,9 @@ export default function EpisodeItem({
           setIsEpisodeInfoOpen((prev) => !prev);
         }}
         className={` ${
-          isEpisodeInfoOpen ? "" : " hover:scale-[1.01]"
+          isEpisodeInfoOpen
+            ? "shadow-none border-[.1rem] border-b-0 rounded-b-none"
+            : " hover:scale-[1.01]"
         } outline-gray-400 text-start bg-white w-full rounded-md shadow-sm shadow-gray-300 p-[1rem]`}
       >
         <h3 className="text-[1.5rem] text-gray-700">
@@ -91,8 +93,8 @@ export default function EpisodeItem({
       </div>
       <div
         className={`${
-          isEpisodeInfoOpen ? "" : "hidden"
-        } flex flex-col p-[1rem] min-h-[10rem] w-full bg-white rounded-md shadow-md shadow-gray-300`}
+          isEpisodeInfoOpen ? "border-[.1rem]  rounded-t-none" : "hidden"
+        } flex flex-col p-[1rem] min-h-[10rem] w-full bg-white rounded-md shadow-gray-300`}
       >
         <p className="text-[1.5rem] self-end">
           Статус:{" "}

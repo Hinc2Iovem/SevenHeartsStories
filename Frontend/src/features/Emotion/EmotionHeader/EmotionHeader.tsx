@@ -1,7 +1,7 @@
 import { useState } from "react";
-import "../../Character/characterStyle.css";
 import EmotionHeaderCharacters from "./EmotionHeaderCharacters";
 import EmotionHeaderCreateEmotion from "./EmotionHeaderCreateEmotion";
+import "../../Character/characterStyle.css";
 
 type EmotionHeaderTypes = {
   setCharacterId: React.Dispatch<React.SetStateAction<string>>;

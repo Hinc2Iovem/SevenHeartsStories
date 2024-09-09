@@ -1,9 +1,12 @@
 import { useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import useGetCharacterById from "../../../hooks/Fetching/Character/useGetCharacterById";
-import useGetTranslationCharacters from "../../../hooks/Fetching/Translation/Characters/useGetTranslationCharacters";
+import useGetTranslationCharacters, {
+  getTranslationCharacters,
+} from "../../../hooks/Fetching/Translation/Characters/useGetTranslationCharacters";
 import useOutOfModal from "../../../hooks/UI/useOutOfModal";
 import { TranslationCharacterTypes } from "../../../types/Additional/TranslationTypes";
+import { useQueryClient } from "@tanstack/react-query";
 
 type WardrobeHeaderChooseCharacterTypes = {
   setCharacterId: React.Dispatch<React.SetStateAction<string>>;
@@ -25,7 +28,7 @@ export default function WardrobeHeaderChooseCharacter({
   const modalRef = useRef<HTMLDivElement>(null);
 
   const { data: characters } = useGetTranslationCharacters({
-    storyId: storyId ?? "",
+    storyId: storyId || "",
     language: "russian",
   });
 
@@ -35,9 +38,22 @@ export default function WardrobeHeaderChooseCharacter({
     showModal: showCharacterModal,
   });
 
+  const queryClient = useQueryClient();
+  const prefetchCharacters = () => {
+    queryClient.prefetchQuery({
+      queryKey: [],
+      queryFn: () =>
+        getTranslationCharacters({
+          language: "russian",
+          storyId: storyId || "",
+        }),
+    });
+  };
   return (
     <div className="flex flex-col gap-[.5rem] relative min-w-[20rem]">
       <button
+        onMouseEnter={prefetchCharacters}
+        onFocus={prefetchCharacters}
         onClick={(e) => {
           e.stopPropagation();
           setShowBodyTypeModal(false);
@@ -60,9 +76,10 @@ export default function WardrobeHeaderChooseCharacter({
         id="scrollBar"
         className={`${
           showCharacterModal ? "" : "hidden"
-        } absolute top-1/2 translate-y-[1rem] z-[10] p-[1rem] w-full max-h-[10rem] overflow-y-auto bg-white shadow-md rounded-md flex flex-col gap-[1rem]`}
+        } absolute top-1/2 translate-y-[1rem] z-[10] p-[1rem] w-full max-h-[10rem] overflow-y-auto bg-white shadow-md rounded-md flex flex-col gap-[1rem] | containerScroll`}
       >
-        {characters &&
+        {(!characterName && (characters?.length || 0) > 0) ||
+        (characterName && (characters?.length || 0) > 1) ? (
           characters?.map((c) => (
             <WardrobeHeaderChooseCharacterItem
               key={c._id}
@@ -71,7 +88,17 @@ export default function WardrobeHeaderChooseCharacter({
               setShowCharacterModal={setShowCharacterModal}
               {...c}
             />
-          ))}
+          ))
+        ) : (
+          <button
+            onClick={() => {
+              setShowCharacterModal(false);
+            }}
+            className="rounded-md text-[1.3rem] px-[.5rem] py-[.2rem] text-start hover:bg-primary-light-blue hover:text-white transition-all "
+          >
+            Пусто
+          </button>
+        )}
       </aside>
     </div>
   );

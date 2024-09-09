@@ -24,8 +24,6 @@ export default function WardrobeHeader({
   const [showBodyTypeModal, setShowBodyTypeModal] = useState(false);
   const [showModal, setShowModal] = useState(false);
 
-  console.log("characterId: ", characterId);
-
   return (
     <header className="flex flex-col gap-[1rem]">
       <div className="flex gap-[1rem] flex-wrap">

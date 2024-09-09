@@ -1,15 +1,14 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
+import characteristics from "../../assets/images/Story/characteristic.png";
 import characters from "../../assets/images/Story/characters.png";
 import emotion from "../../assets/images/Story/emotion.png";
 import wardrobe from "../../assets/images/Story/wardrobe.png";
-import characteristics from "../../assets/images/Story/characteristic.png";
 import arrowBack from "../../assets/images/shared/prev.png";
 import { MATCHMEDIA } from "../../const/MATCHMEDIA";
 import useGetDecodedJWTValues from "../../hooks/Auth/useGetDecodedJWTValues";
-import useGetTranslationStory from "../../hooks/Fetching/Translation/useGetTranslationStory";
+import useGetTranslationStoryById from "../../hooks/Fetching/Story/useGetTranslationStoryById";
 import useMatchMedia from "../../hooks/UI/useMatchMedia";
-import { TranslationStoryTypes } from "../../types/Additional/TranslationTypes";
 import ButtonHoverPromptModal from "../shared/ButtonAsideHoverPromptModal/ButtonHoverPromptModal";
 import LightBox from "../shared/utilities/LightBox";
 import StoryInfoModal from "./StoryInfoModal";
@@ -22,21 +21,21 @@ export default function StorySinglePageHeader() {
   const { userId } = useGetDecodedJWTValues();
   const { storyId } = useParams();
   const [infoModal, setInfoModal] = useState(false);
-  const translationStory = useGetTranslationStory({
-    id: storyId ?? "",
+  const { data: translationStory } = useGetTranslationStoryById({
+    storyId: storyId || "",
     language: "russian",
   });
-  const [storyName, setStoryName] = useState<
-    TranslationStoryTypes | undefined
-  >();
+  const [storyName, setStoryName] = useState<string>("");
 
   useEffect(() => {
-    if (translationStory.data) {
+    if (translationStory) {
       setStoryName(
-        translationStory.data?.find((ts) => ts.textFieldName === "storyName")
+        translationStory.translations.find(
+          (t) => t.textFieldName === "storyName"
+        )?.text || ""
       );
     }
-  }, [translationStory.data]);
+  }, [translationStory]);
 
   return (
     <>
@@ -121,7 +120,7 @@ export default function StorySinglePageHeader() {
 
         <div className="flex w-full justify-between flex-wrap items-center">
           <h1 className="text-[3.5rem] bg-white text-gray-700 rounded-md shadow-md w-fit px-[1rem]">
-            {storyName?.text}
+            {storyName}
           </h1>
           <div className="relative">
             <button
