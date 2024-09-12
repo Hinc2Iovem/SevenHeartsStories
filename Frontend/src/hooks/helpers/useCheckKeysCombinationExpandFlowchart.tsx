@@ -5,20 +5,32 @@ type CheckKeysCombinationExpandTypes = {
   setCommand: React.Dispatch<
     React.SetStateAction<PossibleCommandsCreatedByCombinationOfKeysTypes>
   >;
+  setHideFlowchartFromScriptwriter: React.Dispatch<
+    React.SetStateAction<boolean | null>
+  >;
+  setExpansionDivDirection: React.Dispatch<
+    React.SetStateAction<"right" | "left">
+  >;
   command: PossibleCommandsCreatedByCombinationOfKeysTypes;
 };
 
 export default function useCheckKeysCombinationExpandFlowchart({
   command,
   setCommand,
+  setHideFlowchartFromScriptwriter,
+  setExpansionDivDirection,
 }: CheckKeysCombinationExpandTypes) {
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.altKey && event.key.toLowerCase() === "c") {
         if (command === "expandFlowchart") {
           setCommand("" as PossibleCommandsCreatedByCombinationOfKeysTypes);
+          setExpansionDivDirection("left");
+          setHideFlowchartFromScriptwriter(false);
         } else {
           setCommand("expandFlowchart");
+          setExpansionDivDirection("" as "left" | "right");
+          setHideFlowchartFromScriptwriter(false);
         }
       }
     };

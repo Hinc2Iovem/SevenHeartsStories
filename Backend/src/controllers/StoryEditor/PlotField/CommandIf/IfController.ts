@@ -90,32 +90,6 @@ export const updateCommandIfOrderController: RequestHandler<
   }
 };
 
-// type AddAnotherValueBlockTypes = {
-//   commandIfId: string;
-// };
-
-// // @route POST http://localhost:3500/plotFieldCommands/ifs/:commandIfId/addCondititon
-// // @access Private
-// export const addAnotherBlockCommandIfController: RequestHandler<
-//   AddAnotherValueBlockTypes,
-//   unknown,
-//   unknown,
-//   unknown
-// > = async (req, res, next) => {
-//   try {
-//     const commandIf = await addAnotherBlockIfService({
-//       commandIfId: req.params.commandIfId,
-//     });
-//     if (commandIf) {
-//       return res.status(201).json(commandIf);
-//     } else {
-//       return res.status(400).json({ message: "Something went wrong" });
-//     }
-//   } catch (error) {
-//     next(error);
-//   }
-// };
-
 type DeleteCommandIfParams = {
   ifId: string;
 };

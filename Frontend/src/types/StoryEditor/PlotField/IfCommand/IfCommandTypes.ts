@@ -3,6 +3,8 @@ import { ConditionSignTypes } from "../Condition/ConditionTypes";
 export type IfCommandTypes = {
   _id: string;
   plotFieldCommandId: string;
+  amountOfCommandsInsideElse: number;
+  amountOfCommandsInsideIf: number;
 };
 
 export type IfValueTypes = {

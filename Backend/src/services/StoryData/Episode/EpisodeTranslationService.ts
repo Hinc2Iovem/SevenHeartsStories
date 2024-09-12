@@ -234,15 +234,9 @@ export const episodeCreateService = async ({
     episodeId: newEpisode._id,
     name: "First",
     isStartingTopologyBlock: true,
-  });
-
-  await TopologyBlockInfo.create({
-    amountOfAchievements: 0,
-    amountOfAmethysts: 0,
-    amountOfAuthorWords: 0,
-    amountOfCharacterWords: 0,
-    amountOfWords: 0,
-    topologyBlockId: firstTopologyBlock._id,
+    topologyBlockInfo: {
+      amountOfCommands: 1,
+    },
   });
 
   await PlotFieldCommand.create({

@@ -5,6 +5,14 @@ export const ifModelSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "PlotFieldCommand",
   },
+  amountOfCommandsInsideIf: {
+    type: Number,
+    default: 0,
+  },
+  amountOfCommandsInsideElse: {
+    type: Number,
+    default: 0,
+  },
 });
 
 type IfModel = InferSchemaType<typeof ifModelSchema>;

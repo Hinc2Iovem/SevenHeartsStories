@@ -1,6 +1,8 @@
 import createHttpError from "http-errors";
 import PlotFieldCommand from "../../../models/StoryEditor/PlotField/PlotFieldCommand";
 import { validateMongoId } from "../../../utils/validateMongoId";
+import TopologyBlock from "../../../models/StoryEditor/Topology/TopologyBlock";
+import IfModel from "../../../models/StoryEditor/PlotField/If/IfModel";
 
 type GetAllPlotFieldCommandsByIfIdTypes = {
   commandIfId: string;
@@ -64,26 +66,25 @@ type PlotFieldCommandCreateInsideIfBlockTypes = {
   commandIfId: string;
   topologyBlockId: string;
   isElse?: boolean;
+  commandOrder: number;
 };
 
 export const plotFieldCommandCreateInsideIfBlockService = async ({
   commandIfId,
   topologyBlockId,
   isElse,
+  commandOrder,
 }: PlotFieldCommandCreateInsideIfBlockTypes) => {
   validateMongoId({ value: commandIfId, valueName: "CommandIf" });
   validateMongoId({ value: topologyBlockId, valueName: "TopologyBlock" });
 
-  const existingPlotFieldCommands = await PlotFieldCommand.find({
-    commandIfId,
-    isElse: isElse ? isElse : false,
-  }).countDocuments();
-
-  const commandOrder = existingPlotFieldCommands
-    ? existingPlotFieldCommands
-    : 0;
+  const existingCommandIf = await IfModel.findById(commandIfId);
 
   if (isElse) {
+    if (existingCommandIf) {
+      existingCommandIf.amountOfCommandsInsideElse = commandOrder + 1;
+      await existingCommandIf.save();
+    }
     return await PlotFieldCommand.create({
       commandIfId,
       commandOrder,
@@ -91,6 +92,10 @@ export const plotFieldCommandCreateInsideIfBlockService = async ({
       isElse,
     });
   } else {
+    if (existingCommandIf) {
+      existingCommandIf.amountOfCommandsInsideIf = commandOrder + 1;
+      await existingCommandIf.save();
+    }
     return await PlotFieldCommand.create({
       commandIfId,
       commandOrder,
@@ -101,21 +106,29 @@ export const plotFieldCommandCreateInsideIfBlockService = async ({
 
 type PlotFieldCommandCreateTypes = {
   topologyBlockId: string;
+  commandOrder: number;
 };
 
 export const plotFieldCommandCreateService = async ({
   topologyBlockId,
+  commandOrder,
 }: PlotFieldCommandCreateTypes) => {
   validateMongoId({ value: topologyBlockId, valueName: "TopologyBlock" });
 
-  const existingPlotFieldCommands = await PlotFieldCommand.find({
-    topologyBlockId,
-    commandIfId: { $exists: false },
-  }).countDocuments();
+  if (typeof commandOrder !== "number") {
+    throw createHttpError(400, "CommandOrder is required");
+  }
 
-  const commandOrder = existingPlotFieldCommands
-    ? existingPlotFieldCommands
-    : 0;
+  const currentTopologyBlock = await TopologyBlock.findById(
+    topologyBlockId
+  ).exec();
+  if (
+    currentTopologyBlock &&
+    typeof currentTopologyBlock.topologyBlockInfo?.amountOfCommands === "number"
+  ) {
+    currentTopologyBlock.topologyBlockInfo.amountOfCommands = commandOrder + 1;
+    await currentTopologyBlock.save();
+  }
 
   return await PlotFieldCommand.create({ topologyBlockId, commandOrder });
 };

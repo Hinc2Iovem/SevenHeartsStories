@@ -11,19 +11,23 @@ import { PossibleCommandsCreatedByCombinationOfKeysTypes } from "../../../const/
 type FlowChartTypes = {
   setCurrentTopologyBlockId: React.Dispatch<React.SetStateAction<string>>;
   setScale: React.Dispatch<React.SetStateAction<number>>;
-  keyCombinationToExpandFlowChart: PossibleCommandsCreatedByCombinationOfKeysTypes;
+  hideFlowchartFromScriptwriter: boolean;
+  command: PossibleCommandsCreatedByCombinationOfKeysTypes;
   currentTopologyBlockId: string;
   scale: number;
+  expansionDivDirection: "right" | "left";
 };
 
 export const SCROLLBAR_WIDTH = 17;
 
 export default function Flowchart({
   scale,
+  hideFlowchartFromScriptwriter,
   setScale,
   setCurrentTopologyBlockId,
   currentTopologyBlockId,
-  keyCombinationToExpandFlowChart,
+  command,
+  expansionDivDirection,
 }: FlowChartTypes) {
   const { episodeId } = useParams();
   const { data: allTopologyBlocks } = useGetAllTopologyBlocksByEpisodeId({
@@ -68,15 +72,14 @@ export default function Flowchart({
       ref={boundsRef}
       className={`${
         scale >= 0.99 ? "" : "border-white border-[4px] border-dashed"
-      } ${
-        keyCombinationToExpandFlowChart === "expandFlowchart"
-          ? "w-full"
-          : "w-1/2"
-      } ${
-        keyCombinationToExpandFlowChart === "expandFlowchart" ||
-        !keyCombinationToExpandFlowChart
-          ? ""
-          : "hidden"
+      }
+       ${hideFlowchartFromScriptwriter ? "hidden" : ""}
+       ${
+         command === "expandFlowchart" || expansionDivDirection === "left"
+           ? "w-full"
+           : "w-1/2"
+       } ${
+        command === "expandFlowchart" || !command ? "" : "hidden"
       } overflow-auto rounded-md shadow-md relative bg-primary-light-blue | containerScroll`}
     >
       <div
@@ -103,7 +106,7 @@ export default function Flowchart({
       <button
         onClick={() => createTopologyBlock.mutate()}
         className={`fixed bottom-[1.5rem] ${
-          keyCombinationToExpandFlowChart !== "expandFlowchart"
+          command !== "expandFlowchart"
             ? "left-[calc(50%+.6rem)]"
             : "left-[2rem]"
         } z-[10] px-[1rem] py-[.5rem] bg-white rounded-md shadow-sm text-[1.4rem]`}

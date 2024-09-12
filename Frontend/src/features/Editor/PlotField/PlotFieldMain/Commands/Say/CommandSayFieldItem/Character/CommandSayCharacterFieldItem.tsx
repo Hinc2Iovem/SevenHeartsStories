@@ -83,7 +83,7 @@ export default function CommandSayCharacterFieldItem({
   }, [debouncedValue]);
 
   return (
-    <div className="flex flex-wrap gap-[1rem] w-full bg-primary-light-blue rounded-md p-[.5rem] sm:flex-row flex-col">
+    <div className="flex flex-wrap gap-[1rem] w-full bg-primary-light-blue rounded-md p-[.5rem] sm:flex-row flex-col relative">
       <FormCharacter
         nameValue={nameValue}
         setNameValue={setNameValue}

@@ -59,6 +59,7 @@ export default function StoryHeroSection() {
       setStoryImg(story?.imgUrl || "");
     }
   }, [story]);
+  console.log("story: ", story);
 
   useEffect(() => {
     if (preview) {

@@ -31,15 +31,19 @@ export default function PlotfieldItemInsideIf({
   topologyBlockId,
   commandIfId,
   provided,
+  commandOrder,
 }: PlotFieldItemTypes) {
   return (
     <li
       {...provided.draggableProps}
       {...provided.dragHandleProps}
       ref={provided.innerRef}
+      onDrag={(e) => {
+        e.stopPropagation();
+      }}
       className={`${
         commandIfId ? "ml-[1rem] pr-[2rem]" : ""
-      } w-full flex gap-[1rem]`}
+      } w-full flex gap-[1rem] `}
     >
       {!command ? (
         <PlotfieldBlank
@@ -117,6 +121,9 @@ export default function PlotfieldItemInsideIf({
           plotFieldCommandId={_id}
         />
       ) : null}
+      <span className="bg-black text-white text-[1.4rem] w-[4rem] text-center">
+        {commandOrder}
+      </span>
     </li>
   );
 }

@@ -16,6 +16,8 @@ import useGetAllPlotFieldCommandsByIfIdInsideElse from "../hooks/useGetAllPlotFi
 import useGetAllPlotFieldCommandsByIfIdInsideIf from "../hooks/useGetAllPlotFieldCommandsByIfIdInsideIf";
 import PlotfieldItemInsideIf from "../PlotfieldItemInsideIf";
 import CommandIfValues from "./CommandIfValues";
+import { generateMongoObjectId } from "../../../../../../utils/generateMongoObjectId";
+import { AllPossiblePlotFieldComamndsTypes } from "../../../../../../types/StoryEditor/PlotField/PlotFieldTypes";
 
 type CommandIfFieldTypes = {
   plotFieldCommandId: string;
@@ -34,7 +36,7 @@ export default function CommandIfField({
     plotFieldCommandId,
   });
   const [commandIfId, setCommandIfId] = useState("");
-  const createCommandinsideIf = useCreateBlankCommandInsideIf({
+  const createCommandInsideIf = useCreateBlankCommandInsideIf({
     topologyBlockId,
     commandIfId,
   });
@@ -69,11 +71,77 @@ export default function CommandIfField({
 
   const updateCommandOrder = useUpdateOrderInsideCommandIf({ commandIfId });
 
+  const [
+    currentAmountOfCommandsInsideElse,
+    setCurrentAmountOfCommandsInsideElse,
+  ] = useState(commandIf?.amountOfCommandsInsideElse);
+  const [currentAmountOfCommandsInsideIf, setCurrentAmountOfCommandsInsideIf] =
+    useState(commandIf?.amountOfCommandsInsideIf);
+
   useEffect(() => {
     if (commandIf) {
       setCommandIfId(commandIf._id);
+      setCurrentAmountOfCommandsInsideElse(
+        commandIf.amountOfCommandsInsideElse
+      );
+      setCurrentAmountOfCommandsInsideIf(commandIf.amountOfCommandsInsideIf);
     }
   }, [commandIf]);
+
+  const handleCreateCommand = (isElse: boolean) => {
+    const _id = generateMongoObjectId();
+    if (isElse) {
+      createCommandInsideElse.mutate({
+        commandOrder: currentAmountOfCommandsInsideElse as number,
+        _id,
+        command: "" as AllPossiblePlotFieldComamndsTypes,
+        isElse,
+        topologyBlockId,
+        commandIfId,
+      });
+      setCurrentAmountOfCommandsInsideElse((prev) => {
+        if (prev) {
+          return prev + 1;
+        } else {
+          return 1;
+        }
+      });
+      if (createCommandInsideElse.isError) {
+        setCurrentAmountOfCommandsInsideElse((prev) => {
+          if (prev) {
+            return prev - 1;
+          } else {
+            return 0;
+          }
+        });
+      }
+    } else {
+      createCommandInsideIf.mutate({
+        commandOrder: currentAmountOfCommandsInsideIf as number,
+        _id,
+        command: "" as AllPossiblePlotFieldComamndsTypes,
+        isElse,
+        topologyBlockId,
+        commandIfId,
+      });
+      setCurrentAmountOfCommandsInsideIf((prev) => {
+        if (prev) {
+          return prev + 1;
+        } else {
+          return 1;
+        }
+      });
+      if (createCommandInsideIf.isError) {
+        setCurrentAmountOfCommandsInsideIf((prev) => {
+          if (prev) {
+            return prev - 1;
+          } else {
+            return 0;
+          }
+        });
+      }
+    }
+  };
 
   const handleOnDragEndInsideIf = (result: DropResult) => {
     if (!result?.destination) return;
@@ -83,6 +151,7 @@ export default function CommandIfField({
       result.source.index,
       1
     );
+
     orderedCommandsInsideIf.splice(result.destination.index, 0, reorderedItem);
     updateCommandOrder.mutate({
       newOrder: result.destination.index,
@@ -94,7 +163,7 @@ export default function CommandIfField({
   const handleOnDragEndInsideElse = (result: DropResult) => {
     if (!result?.destination) return;
 
-    const orderedCommandsInsideElse = [...(commandsInsideElse ?? [])];
+    const orderedCommandsInsideElse = [...(commandsInsideElse || [])];
     const [reorderedItem] = orderedCommandsInsideElse.splice(
       result.source.index,
       1
@@ -123,13 +192,13 @@ export default function CommandIfField({
             positionByAbscissa="right"
             className="shadow-sm shadow-gray-400 active:scale-[.99] relative bg-green-200"
             asideClasses="text-[1.3rem] -translate-y-1/3"
-            onClick={() => createCommandinsideIf.mutate()}
+            onClick={() => handleCreateCommand(false)}
             variant="rectangle"
           >
             <img
               src={plus}
               alt="+"
-              className="w-[1.5rem] absolute translate-y-1/2 translate-x-1/2 right-[0rem] bottom-0 z-[2]"
+              className="w-[1.5rem] absolute translate-y-1/2 -translate-x-1/2 left-[0rem] bottom-0 z-[2]"
             />
             <img src={commandImg} alt="Commands" className="w-[3rem]" />
           </ButtonHoverPromptModal>
@@ -167,13 +236,13 @@ export default function CommandIfField({
           positionByAbscissa="right"
           className="shadow-sm shadow-gray-400 active:scale-[.99] relative bg-neutral-magnolia z-[2]"
           asideClasses="text-[1.3rem] -translate-y-1/3"
-          onClick={() => createCommandInsideElse.mutate()}
+          onClick={() => handleCreateCommand(true)}
           variant="rectangle"
         >
           <img
             src={plus}
             alt="+"
-            className="w-[1.5rem] absolute translate-y-1/2 translate-x-1/2 right-[0rem] bottom-0"
+            className="w-[1.5rem] absolute translate-y-1/2 -translate-x-1/2 left-[0rem] bottom-0"
           />
           <img src={commandImg} alt="Commands" className="w-[3rem]" />
         </ButtonHoverPromptModal>

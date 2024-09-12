@@ -92,6 +92,7 @@ type PlotFieldCommandCreateInsideIfBlockParams = {
 
 type PlotFieldCommandCreateInsideIfBlockBody = {
   isElse?: boolean;
+  commandOrder: number;
 };
 
 // @route POST http://localhost:3500/plotField/topologyBlocks/:topologyBlockId/commandIfs/:commandIfId
@@ -107,6 +108,7 @@ export const plotFieldCommandCreateInsideIfBlockController: RequestHandler<
       commandIfId: req.params.commandIfId,
       topologyBlockId: req.params.topologyBlockId,
       isElse: req.body.isElse,
+      commandOrder: req.body.commandOrder,
     });
     if (plotFieldCommand) {
       return res.status(201).json(plotFieldCommand);
@@ -121,18 +123,22 @@ export const plotFieldCommandCreateInsideIfBlockController: RequestHandler<
 type PlotFieldCommandCreateParams = {
   topologyBlockId: string;
 };
+type PlotFieldCommandCreateBody = {
+  commandOrder: number;
+};
 
 // @route POST http://localhost:3500/plotField/topologyBlocks/:topologyBlockId
 // @access Private
 export const plotFieldCommandControllerCreate: RequestHandler<
   PlotFieldCommandCreateParams,
   unknown,
-  unknown,
+  PlotFieldCommandCreateBody,
   unknown
 > = async (req, res, next) => {
   try {
     const plotFieldCommand = await plotFieldCommandCreateService({
       topologyBlockId: req.params.topologyBlockId,
+      commandOrder: req.body.commandOrder,
     });
     if (plotFieldCommand) {
       return res.status(201).json(plotFieldCommand);

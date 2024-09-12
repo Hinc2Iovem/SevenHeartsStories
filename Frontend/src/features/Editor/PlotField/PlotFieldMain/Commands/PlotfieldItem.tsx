@@ -32,6 +32,7 @@ export default function PlotfieldItem({
   topologyBlockId,
   commandIfId,
   provided,
+  commandOrder,
 }: PlotFieldItemTypes) {
   return (
     <li
@@ -120,6 +121,9 @@ export default function PlotfieldItem({
       ) : command === "comment" ? (
         <CommandCommentField command={command} plotFieldCommandId={_id} />
       ) : null}
+      <span className="bg-red-500 text-white text-[1.4rem] text-center w-[4rem]">
+        {commandOrder}
+      </span>
     </li>
   );
 }

@@ -159,7 +159,6 @@ export const createChoiceOptionService = async ({
   const newChoiceOption = await ChoiceOption.create({
     plotFieldCommandChoiceId,
     type: type ?? "common",
-    optionOrder,
   });
 
   existingChoice.amountOfOptions += 1;

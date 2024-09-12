@@ -146,6 +146,7 @@ export default function PlotfieldBlank({
     storyId: storyId ?? "",
     topologyBlockId,
   });
+
   const createCommandAmbient = useCreateAmbient({ plotFieldCommandId });
   const createBackground = useCreateBackground({ plotFieldCommandId });
   const createCall = useCreateCall({ plotFieldCommandId });
@@ -316,10 +317,10 @@ export default function PlotfieldBlank({
         <aside
           ref={promptRef}
           className={`${showPromptValues ? "" : "hidden"} 
-        z-[2] w-full bg-white shadow-md rounded-md absolute left-0 max-h-[20rem] translate-y-[1rem] overflow-auto | containerScroll
+        z-[1000] w-full bg-white shadow-md rounded-md absolute left-0 max-h-[20rem] translate-y-[1rem] overflow-auto | containerScroll
         `}
         >
-          <ul className="flex flex-col gap-[1rem]  p-[1rem]">
+          <ul className="flex flex-col gap-[1rem] p-[1rem]">
             {filteredPromptValues.length > 0 ? (
               filteredPromptValues.map((pv) => (
                 <button

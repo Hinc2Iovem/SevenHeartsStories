@@ -3,11 +3,13 @@ import { useParams } from "react-router-dom";
 import { PossibleCommandsCreatedByCombinationOfKeysTypes } from "../../const/COMMANDS_CREATED_BY_KEY_COMBINATION";
 import useCheckKeysCombinationExpandFlowchart from "../../hooks/helpers/useCheckKeysCombinationExpandFlowchart";
 import useCheckKeysCombinationExpandPlotField from "../../hooks/helpers/useCheckKeysCombinationExpandPlotField";
+import { CoordinatesProvider } from "./Flowchart/Context/CoordinatesContext";
 import Flowchart from "./Flowchart/Flowchart";
-import "./Flowchart/FlowchartStyles.css";
 import PlotField from "./PlotField/PlotField";
 import useGetFirstTopologyBlock from "./PlotField/PlotFieldMain/Commands/hooks/TopologyBlock/useGetFirstTopologyBlock";
-import { CoordinatesProvider } from "./Flowchart/Context/CoordinatesContext";
+import useGetDecodedJWTValues from "../../hooks/Auth/useGetDecodedJWTValues";
+import DraggableExpansionDiv from "./components/DraggableExpansionDiv";
+import "./Flowchart/FlowchartStyles.css";
 
 type EditorMainTypes = {
   setShowHeader: React.Dispatch<React.SetStateAction<boolean>>;
@@ -15,15 +17,63 @@ type EditorMainTypes = {
 
 export default function EditorMain({ setShowHeader }: EditorMainTypes) {
   const { episodeId } = useParams();
+  const { roles } = useGetDecodedJWTValues();
   const [command, setCommand] =
     useState<PossibleCommandsCreatedByCombinationOfKeysTypes>(
       "" as PossibleCommandsCreatedByCombinationOfKeysTypes
     );
+  const [hideFlowchartFromScriptwriter, setHideFlowchartFromScriptwriter] =
+    useState<boolean | null>(null);
 
+  const [expansionDivDirection, setExpansionDivDirection] = useState(
+    "" as "right" | "left"
+  );
+
+  const [afterFirstRerender, setAfterFirstRerender] = useState(false);
   const keyCombinationToExpandPlotField =
-    useCheckKeysCombinationExpandPlotField({ setCommand, command });
+    useCheckKeysCombinationExpandPlotField({
+      setCommand,
+      setHideFlowchartFromScriptwriter,
+      setExpansionDivDirection,
+      command,
+    });
   const keyCombinationToExpandFlowChart =
-    useCheckKeysCombinationExpandFlowchart({ setCommand, command });
+    useCheckKeysCombinationExpandFlowchart({
+      setCommand,
+      setHideFlowchartFromScriptwriter,
+      setExpansionDivDirection,
+      command,
+    });
+
+  useEffect(() => {
+    // makes only plotfield to show up(for roles below);
+    // setAfterFirstRerender - needs to be here for this effect to work only when page loads first time
+    if (roles && typeof hideFlowchartFromScriptwriter !== "boolean") {
+      if (
+        roles.includes("editor") ||
+        roles.includes("headscriptwriter") ||
+        roles.includes("scriptwriter")
+      ) {
+        setHideFlowchartFromScriptwriter(true);
+        setCommand("expandPlotField");
+      } else {
+        setHideFlowchartFromScriptwriter(false);
+        setCommand("" as PossibleCommandsCreatedByCombinationOfKeysTypes);
+      }
+      setAfterFirstRerender(true);
+    }
+  }, [roles, keyCombinationToExpandPlotField]);
+
+  useEffect(() => {
+    // when clicked on the shrink btn, changes command to show both plotfield and flowchart
+    if (
+      afterFirstRerender &&
+      !hideFlowchartFromScriptwriter &&
+      command !== "expandFlowchart"
+    ) {
+      setCommand("" as PossibleCommandsCreatedByCombinationOfKeysTypes);
+    }
+  }, [afterFirstRerender, hideFlowchartFromScriptwriter]);
 
   const [scale, setScale] = useState(1);
 
@@ -55,33 +105,55 @@ export default function EditorMain({ setShowHeader }: EditorMainTypes) {
 
   return (
     <>
-      <main
-        className={`flex w-full h-[calc(100vh-2.30rem)] justify-center relative`}
-      >
-        <PlotField
-          setShowHeader={setShowHeader}
-          topologyBlockId={currentTopologyBlockId}
-          keyCombinationToExpandPlotField={keyCombinationToExpandPlotField}
-        />
-        <div
-          className={`${
-            keyCombinationToExpandPlotField === "expandPlotField"
-              ? "hidden"
-              : ""
-          } fixed top-[2rem] active:scale-[0.98] text-[1.3rem] transition-all bg-white hover:bg-primary-light-blue hover:text-white text-gray-700 shadow-md px-[1rem] py-[.5rem] rounded-md translate-x-[calc(50%+1rem)] z-[10]`}
+      {typeof hideFlowchartFromScriptwriter === "boolean" && (
+        <main
+          className={`flex w-full h-[calc(100vh-2.30rem)] justify-center relative`}
         >
-          {(scale * 100).toFixed(0)}%
-        </div>
-        <CoordinatesProvider>
-          <Flowchart
-            currentTopologyBlockId={currentTopologyBlockId}
-            setCurrentTopologyBlockId={setCurrentTopologyBlockId}
-            keyCombinationToExpandFlowChart={keyCombinationToExpandFlowChart}
-            scale={scale}
-            setScale={setScale}
+          <PlotField
+            expansionDivDirection={expansionDivDirection}
+            hideFlowchartFromScriptwriter={hideFlowchartFromScriptwriter}
+            setHideFlowchartFromScriptwriter={setHideFlowchartFromScriptwriter}
+            setShowHeader={setShowHeader}
+            topologyBlockId={currentTopologyBlockId}
+            setExpansionDivDirection={setExpansionDivDirection}
+            command={command}
           />
-        </CoordinatesProvider>
-      </main>
+          {!command.trim().length ? (
+            <DraggableExpansionDiv
+              setCommand={setCommand}
+              setHideFlowchartFromScriptwriter={
+                setHideFlowchartFromScriptwriter
+              }
+              setExpansionDivDirection={setExpansionDivDirection}
+            />
+          ) : null}
+          <div
+            className={`${
+              keyCombinationToExpandPlotField === "expandPlotField" ||
+              hideFlowchartFromScriptwriter
+                ? "hidden"
+                : ""
+            } ${
+              keyCombinationToExpandFlowChart === "expandFlowchart"
+                ? "left-[2rem]"
+                : "left-[calc(50%+1rem)]"
+            } fixed top-[2rem] active:scale-[0.98] text-[1.3rem] transition-all bg-white hover:bg-primary-light-blue hover:text-white text-gray-700 shadow-md px-[1rem] py-[.5rem] rounded-md z-[10]`}
+          >
+            {(scale * 100).toFixed(0)}%
+          </div>
+          <CoordinatesProvider>
+            <Flowchart
+              expansionDivDirection={expansionDivDirection}
+              hideFlowchartFromScriptwriter={hideFlowchartFromScriptwriter}
+              currentTopologyBlockId={currentTopologyBlockId}
+              setCurrentTopologyBlockId={setCurrentTopologyBlockId}
+              command={command}
+              scale={scale}
+              setScale={setScale}
+            />
+          </CoordinatesProvider>
+        </main>
+      )}
     </>
   );
 }

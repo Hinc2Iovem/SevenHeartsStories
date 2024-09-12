@@ -1,17 +1,10 @@
 import createHttpError from "http-errors";
 import { Types } from "mongoose";
-import Episode from "../../../models/StoryData/Episode";
-import { validateMongoId } from "../../../utils/validateMongoId";
-import { checkCurrentLanguage } from "../../../utils/checkCurrentLanguage";
-import { TranslationTextFieldName } from "../../../consts/TRANSLATION_TEXT_FIELD_NAMES";
-import Translation from "../../../models/StoryData/Translation/Translation";
 import { EpisodeStatuses } from "../../../consts/EPISODE_STATUSES";
+import Episode from "../../../models/StoryData/Episode";
 import EpisodeInfo from "../../../models/StoryData/EpisodeInfo";
-import TopologyBlockInfo from "../../../models/StoryEditor/Topology/TopologyBlockInfo";
-import TopologyBlock from "../../../models/StoryEditor/Topology/TopologyBlock";
-import Story from "../../../models/StoryData/Story";
 import Season from "../../../models/StoryData/Season";
-import PlotFieldCommand from "../../../models/StoryEditor/PlotField/PlotFieldCommand";
+import { validateMongoId } from "../../../utils/validateMongoId";
 
 type GetEpisodesBySeasonId = {
   seasonId: string;
