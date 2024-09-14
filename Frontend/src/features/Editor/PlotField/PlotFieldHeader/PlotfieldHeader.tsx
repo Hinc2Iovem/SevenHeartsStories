@@ -9,6 +9,7 @@ import { generateMongoObjectId } from "../../../../utils/generateMongoObjectId";
 type PlotFieldHeaderTypes = {
   topologyBlockId: string;
   amountOfCommands: number;
+  showAllCommands: boolean;
   hideFlowchartFromScriptwriter: boolean;
   setShowHeader: React.Dispatch<React.SetStateAction<boolean>>;
   setHideFlowchartFromScriptwriter: React.Dispatch<
@@ -17,6 +18,7 @@ type PlotFieldHeaderTypes = {
   setExpansionDivDirection: React.Dispatch<
     React.SetStateAction<"right" | "left">
   >;
+  setShowAllCommands: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 export default function PlotfieldHeader({
@@ -26,6 +28,8 @@ export default function PlotfieldHeader({
   setHideFlowchartFromScriptwriter,
   setExpansionDivDirection,
   hideFlowchartFromScriptwriter,
+  showAllCommands,
+  setShowAllCommands,
 }: PlotFieldHeaderTypes) {
   const [currentAmountOfCommands, setCurrentAmountOfCommands] =
     useState(amountOfCommands);
@@ -58,9 +62,14 @@ export default function PlotfieldHeader({
   }, [commandCreatedByKeyCombinationBlankCommand]);
 
   return (
-    <header className="flex gap-[1rem] justify-between items-center">
+    <header
+      className={`${
+        showAllCommands ? "hidden" : ""
+      } flex gap-[1rem] justify-between items-center`}
+    >
       <div className="flex gap-[1rem]">
         <ButtonHoverPromptModal
+          onClick={() => setShowAllCommands(true)}
           contentName="Все команды"
           positionByAbscissa="left"
           asideClasses="text-[1.3rem] top-[3.5rem] bottom-[-3.5rem]"

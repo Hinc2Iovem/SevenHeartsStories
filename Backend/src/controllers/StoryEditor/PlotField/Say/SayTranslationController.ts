@@ -1,5 +1,6 @@
 import { RequestHandler } from "express";
 import {
+  createSayBlankTranslationService,
   createSayTranslationDuplicateService,
   createSayTranslationService,
   getAllSayTranslationByTopologyBlockIdService,
@@ -86,6 +87,40 @@ export const getAllSayTranslationByTopologyBlockIdController: RequestHandler<
     const say = await getAllSayTranslationByTopologyBlockIdService({
       topologyBlockId: req.params.topologyBlockId,
       currentLanguage: req.query.currentLanguage,
+    });
+    if (say) {
+      return res.status(201).json(say);
+    } else {
+      return res.status(400).json({ message: "Something went wrong" });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
+type CreateSayBlankParams = {
+  plotFieldCommandId: string;
+  topologyBlockId: string;
+};
+
+type CreateSayBlankBody = {
+  characterId: string;
+  type?: SayType | undefined;
+};
+
+// @route POST http://localhost:3500/says/:plotFieldCommandId/topologyBlocks/:topologyBlockId/blank/translations
+// @access Private
+export const createSayBlankTranslationController: RequestHandler<
+  CreateSayBlankParams,
+  unknown,
+  CreateSayBlankBody,
+  unknown
+> = async (req, res, next) => {
+  try {
+    const say = await createSayBlankTranslationService({
+      plotFieldCommandId: req.params.plotFieldCommandId,
+      topologyBlockId: req.params.topologyBlockId,
+      type: req.body.type,
     });
     if (say) {
       return res.status(201).json(say);

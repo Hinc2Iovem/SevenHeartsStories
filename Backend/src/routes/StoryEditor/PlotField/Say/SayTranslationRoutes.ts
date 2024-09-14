@@ -6,6 +6,7 @@ import {
   getAllSayTranslationByTopologyBlockIdController,
   getSayTranslationUpdatedAtAndLanguageController,
   createSayTranslationDuplicateController,
+  createSayBlankTranslationController,
 } from "../../../../controllers/StoryEditor/PlotField/Say/SayTranslationController";
 
 // Default route === /says
@@ -18,6 +19,12 @@ sayTranslationsRoute
 sayTranslationsRoute
   .route("/:plotFieldCommandId/translations")
   .get(sayTranslationByCommandIdController);
+
+sayTranslationsRoute
+  .route(
+    "/:plotFieldCommandId/topologyBlocks/:topologyBlockId/blank/translations"
+  )
+  .post(createSayBlankTranslationController);
 
 sayTranslationsRoute
   .route("/:plotFieldCommandId/topologyBlocks/:topologyBlockId/translations")

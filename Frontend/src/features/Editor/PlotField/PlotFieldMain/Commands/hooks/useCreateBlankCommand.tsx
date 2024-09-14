@@ -19,12 +19,11 @@ export default function useCreateBlankCommand({
   return useMutation({
     mutationKey: ["new", "plotfield", "topologyBlock", topologyBlockId],
     mutationFn: async (commandOrder) => {
-      await axiosCustomized.post(
-        `/plotField/topologyBlocks/${topologyBlockId}`,
-        {
+      return await axiosCustomized
+        .post<PlotFieldTypes>(`/plotField/topologyBlocks/${topologyBlockId}`, {
           commandOrder: commandOrder.commandOrder,
-        }
-      );
+        })
+        .then((r) => r.data);
     },
     onMutate: async (newCommand: NewCommandTypes) => {
       await queryClient.cancelQueries({
@@ -49,7 +48,6 @@ export default function useCreateBlankCommand({
         ["plotfield", "topologyBlock", topologyBlockId],
         context?.prevCommands
       );
-      console.log("Error: ", err.message);
     },
     onSettled: () => {
       queryClient.invalidateQueries({

@@ -12,9 +12,13 @@ import { useEffect, useState } from "react";
 
 type PlotFieldMainTypes = {
   topologyBlockId: string;
+  showAllCommands: boolean;
 };
 
-export default function PlotFieldMain({ topologyBlockId }: PlotFieldMainTypes) {
+export default function PlotFieldMain({
+  topologyBlockId,
+  showAllCommands,
+}: PlotFieldMainTypes) {
   const { data: plotfieldCommands } = useGetAllPlotFieldCommands({
     topologyBlockId,
   });
@@ -31,7 +35,6 @@ export default function PlotFieldMain({ topologyBlockId }: PlotFieldMainTypes) {
 
   const handleOnDragEnd = (result: DropResult) => {
     if (!result?.destination) return;
-    console.log(result);
 
     const orderedCommands = [...(commands ?? [])];
     const [reorderedItem] = orderedCommands.splice(result.source.index, 1);
@@ -44,7 +47,11 @@ export default function PlotFieldMain({ topologyBlockId }: PlotFieldMainTypes) {
   };
 
   return (
-    <main className="mt-[.5rem] h-[calc(100vh-8rem)] overflow-y-auto | containerScroll">
+    <main
+      className={`${
+        showAllCommands ? "hidden" : ""
+      } mt-[.5rem] h-[calc(100vh-8rem)] overflow-y-auto | containerScroll`}
+    >
       <DragDropContext onDragEnd={handleOnDragEnd}>
         <Droppable droppableId="plotFieldCommands">
           {(provided: DroppableProvided) => (

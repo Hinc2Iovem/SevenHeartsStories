@@ -8,24 +8,19 @@ type CreateSayCommandTypes = {
 };
 
 type CreateSayCommandOnMutationTypes = {
-  characterId?: string;
   type: CommandSayVariationTypes;
 };
 
-export default function useCreateSayCommand({
+export default function useCreateSayCommandBlank({
   plotFieldCommandId,
   topologyBlockId,
 }: CreateSayCommandTypes) {
   return useMutation({
-    mutationFn: async ({
-      type,
-      characterId,
-    }: CreateSayCommandOnMutationTypes) => {
+    mutationFn: async ({ type }: CreateSayCommandOnMutationTypes) => {
       await axiosCustomized.post(
-        `/says/${plotFieldCommandId}/topologyBlocks/${topologyBlockId}/translations`,
+        `/says/${plotFieldCommandId}/topologyBlocks/${topologyBlockId}/blank/translations`,
         {
           type,
-          characterId,
         }
       );
     },

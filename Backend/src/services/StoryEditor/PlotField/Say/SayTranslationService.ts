@@ -117,6 +117,78 @@ export const getAllSayTranslationByTopologyBlockIdService = async ({
   return existingItem;
 };
 
+type CreateSayBlankTypes = {
+  type: SayType | undefined;
+  plotFieldCommandId: string;
+  topologyBlockId: string;
+};
+
+export const createSayBlankTranslationService = async ({
+  type,
+  plotFieldCommandId,
+  topologyBlockId,
+}: CreateSayBlankTypes) => {
+  validateMongoId({ value: topologyBlockId, valueName: "TopologyBlock" });
+  validateMongoId({ value: plotFieldCommandId, valueName: "PlotFieldCommand" });
+
+  const existingPlotFieldCommand = await PlotFieldCommand.findById(
+    plotFieldCommandId
+  ).lean();
+  if (!existingPlotFieldCommand) {
+    throw createHttpError(400, "PlotFieldCommand with such id wasn't found");
+  }
+
+  if (!type?.trim().length) {
+    throw createHttpError(400, "Type is required");
+  }
+
+  if (!AllPossibleTypeVariations.includes(type.toLowerCase())) {
+    throw createHttpError(
+      400,
+      `Such type isn't supported, possible types: ${AllPossibleTypeVariations.map(
+        (tv) => tv
+      )}`
+    );
+  }
+
+  if (type?.toLowerCase() === "author") {
+    await TranslationSay.create({
+      commandId: plotFieldCommandId,
+      topologyBlockId,
+      language: "russian",
+      translations: [],
+    });
+    return await Say.create({ plotFieldCommandId, type: "author" });
+  } else if (type?.toLowerCase() === "character") {
+    await TranslationSay.create({
+      commandId: plotFieldCommandId,
+      topologyBlockId,
+      language: "russian",
+      translations: [],
+    });
+    return await Say.create({
+      plotFieldCommandId,
+      type: "character",
+    });
+  } else if (type?.toLowerCase() === "notify") {
+    await TranslationSay.create({
+      commandId: plotFieldCommandId,
+      topologyBlockId,
+      language: "russian",
+      translations: [],
+    });
+    return await Say.create({ plotFieldCommandId, type: "notify" });
+  } else if (type?.toLowerCase() === "hint") {
+    await TranslationSay.create({
+      commandId: plotFieldCommandId,
+      topologyBlockId,
+      language: "russian",
+      translations: [],
+    });
+    return await Say.create({ plotFieldCommandId, type: "hint" });
+  }
+};
+
 type CreateSayTypes = {
   characterId: string;
   type: SayType | undefined;

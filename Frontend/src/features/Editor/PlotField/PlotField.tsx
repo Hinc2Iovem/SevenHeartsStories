@@ -1,7 +1,9 @@
+import { useState } from "react";
 import { PossibleCommandsCreatedByCombinationOfKeysTypes } from "../../../const/COMMANDS_CREATED_BY_KEY_COMBINATION";
 import PlotfieldHeader from "./PlotFieldHeader/PlotfieldHeader";
 import useGetTopologyBlockById from "./PlotFieldMain/Commands/hooks/TopologyBlock/useGetTopologyBlockById";
 import PlotFieldMain from "./PlotFieldMain/PlotFieldMain";
+import ShowAllCommandsPlotfield from "./ShowAllCommands/ShowAllCommandsPlotfield";
 
 type PlotFieldProps = {
   topologyBlockId: string;
@@ -29,6 +31,7 @@ export default function PlotField({
   const { data: currentTopologyBlock } = useGetTopologyBlockById({
     topologyBlockId,
   });
+  const [showAllCommands, setShowAllCommands] = useState<boolean>(false);
 
   return (
     <section
@@ -40,8 +43,18 @@ export default function PlotField({
         command === "expandPlotField" || !command ? "" : "hidden"
       } flex-grow flex-shrink-0 bg-white rounded-md shadow-md min-h-[20rem] h-full relative p-[1rem]`}
     >
+      <ShowAllCommandsPlotfield
+        amountOfCommands={
+          currentTopologyBlock?.topologyBlockInfo.amountOfCommands || 1
+        }
+        topologyBlockId={topologyBlockId}
+        showAllCommands={showAllCommands}
+        setShowAllCommands={setShowAllCommands}
+      />
       {currentTopologyBlock ? (
         <PlotfieldHeader
+          setShowAllCommands={setShowAllCommands}
+          showAllCommands={showAllCommands}
           hideFlowchartFromScriptwriter={hideFlowchartFromScriptwriter}
           amountOfCommands={
             currentTopologyBlock?.topologyBlockInfo.amountOfCommands || 1
@@ -52,7 +65,10 @@ export default function PlotField({
           setHideFlowchartFromScriptwriter={setHideFlowchartFromScriptwriter}
         />
       ) : null}
-      <PlotFieldMain topologyBlockId={topologyBlockId} />
+      <PlotFieldMain
+        showAllCommands={showAllCommands}
+        topologyBlockId={topologyBlockId}
+      />
     </section>
   );
 }
