@@ -5,6 +5,7 @@ import {
   commandWardrobeUpdateTranslationController,
   getAllCommandWardrobesTranslationByTopologyBlockIdController,
   getCommandWardrobeTranslationUpdatedAtAndLanguageController,
+  createCommandWardrobeTranslationDuplicateController,
 } from "../../../../controllers/StoryEditor/PlotField/Wardrobe/CommandWardrobeTranslationController";
 
 // Default route === /commandWardrobes
@@ -22,6 +23,10 @@ commandWardrobeTranslationsRoute
   .route("/:plotFieldCommandId/topologyBlocks/:topologyBlockId/translations")
   .post(createCommandWardrobeTranslationController)
   .patch(commandWardrobeUpdateTranslationController);
+
+commandWardrobeTranslationsRoute
+  .route("/topologyBlocks/:topologyBlockId/copy")
+  .post(createCommandWardrobeTranslationDuplicateController);
 
 commandWardrobeTranslationsRoute
   .route("/topologyBlocks/:topologyBlockId/translations")

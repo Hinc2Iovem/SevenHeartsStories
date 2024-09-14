@@ -4,6 +4,7 @@ import {
   deleteNameService,
   updateNameService,
   getNameByPlotFieldCommandIdService,
+  createNameDuplicateService,
 } from "../../../../services/StoryEditor/PlotField/Name/CommandNameService";
 
 type GetNameByPlotFieldCommandIdParams = {
@@ -32,6 +33,36 @@ export const getNameByPlotFieldCommandIdController: RequestHandler<
   }
 };
 
+type CreateNameDuplicateParams = {
+  topologyBlockId: string;
+};
+
+type CreateNameDuplicateBody = {
+  commandOrder?: number;
+};
+
+// @route POST http://localhost:3500/plotFieldCommands/names/topologyBlocks/:topologyBlockId/copy
+// @access Private
+export const createNameDuplicateController: RequestHandler<
+  CreateNameDuplicateParams,
+  unknown,
+  CreateNameDuplicateBody,
+  unknown
+> = async (req, res, next) => {
+  try {
+    const name = await createNameDuplicateService({
+      topologyBlockId: req.params.topologyBlockId,
+      commandOrder: req.body.commandOrder,
+    });
+    if (name) {
+      return res.status(201).json(name);
+    } else {
+      return res.status(400).json({ message: "Something went wrong" });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
 type CreateNameParams = {
   plotFieldCommandId: string;
 };

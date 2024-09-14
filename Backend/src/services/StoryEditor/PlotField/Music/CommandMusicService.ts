@@ -24,6 +24,30 @@ export const getMusicByPlotFieldCommandIdService = async ({
   return existingMusic;
 };
 
+type CreateMusicDuplicateTypes = {
+  topologyBlockId: string;
+  commandOrder?: number;
+};
+
+export const createMusicDuplicateService = async ({
+  topologyBlockId,
+  commandOrder,
+}: CreateMusicDuplicateTypes) => {
+  validateMongoId({ value: topologyBlockId, valueName: "TopologyBlock" });
+
+  if (typeof commandOrder !== "number") {
+    throw createHttpError(400, "CommandOrder is required");
+  }
+
+  const newPlotfieldCommand = await PlotFieldCommand.create({
+    topologyBlockId,
+    commandOrder: commandOrder + 1,
+  });
+
+  return await CommandMusic.create({
+    plotFieldCommandId: newPlotfieldCommand._id,
+  });
+};
 type CreateMusicTypes = {
   plotFieldCommandId: string;
 };

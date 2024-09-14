@@ -23,6 +23,31 @@ export const getMoveByPlotFieldCommandIdService = async ({
   return existingMove;
 };
 
+type CreateMoveDuplicateTypes = {
+  topologyBlockId: string;
+  commandOrder?: number;
+};
+
+export const createMoveDuplicateService = async ({
+  topologyBlockId,
+  commandOrder,
+}: CreateMoveDuplicateTypes) => {
+  validateMongoId({ value: topologyBlockId, valueName: "TopologyBlock" });
+
+  if (typeof commandOrder !== "number") {
+    throw createHttpError(400, "CommandOrder is required");
+  }
+
+  const newPlotfieldCommand = await PlotFieldCommand.create({
+    topologyBlockId,
+    commandOrder: commandOrder + 1,
+  });
+
+  return await Move.create({
+    plotFieldCommandId: newPlotfieldCommand._id,
+  });
+};
+
 type CreateMoveTypes = {
   plotFieldCommandId: string;
 };

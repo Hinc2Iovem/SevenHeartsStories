@@ -4,6 +4,7 @@ import {
   deleteSuitService,
   updateSuitService,
   getSuitByPlotFieldCommandIdService,
+  createSuitDuplicateService,
 } from "../../../../services/StoryEditor/PlotField/Suit/SuitService.ts";
 
 type GetSuitByPlotFieldCommandIdParams = {
@@ -32,6 +33,36 @@ export const getSuitByPlotFieldCommandIdController: RequestHandler<
   }
 };
 
+type CreateSuitDuplicateParams = {
+  topologyBlockId: string;
+};
+
+type CreateSuitDuplicateBody = {
+  commandOrder?: number;
+};
+
+// @route POST http://localhost:3500/plotFieldCommands/suits/topologyBlocks/:topologyBlockId/copy
+// @access Private
+export const createSuitDuplicateController: RequestHandler<
+  CreateSuitDuplicateParams,
+  unknown,
+  CreateSuitDuplicateBody,
+  unknown
+> = async (req, res, next) => {
+  try {
+    const suit = await createSuitDuplicateService({
+      topologyBlockId: req.params.topologyBlockId,
+      commandOrder: req.body.commandOrder,
+    });
+    if (suit) {
+      return res.status(201).json(suit);
+    } else {
+      return res.status(400).json({ message: "Something went wrong" });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
 type CreateSuitParams = {
   plotFieldCommandId: string;
 };

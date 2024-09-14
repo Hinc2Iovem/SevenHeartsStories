@@ -1,5 +1,6 @@
 import { RequestHandler } from "express";
 import {
+  createCommentDuplicateService,
   createCommentService,
   deleteCommentService,
   getCommentByPlotFieldCommandIdService,
@@ -47,6 +48,37 @@ export const createCommentController: RequestHandler<
   try {
     const comment = await createCommentService({
       plotFieldCommandId: req.params.plotFieldCommandId,
+    });
+    if (comment) {
+      return res.status(201).json(comment);
+    } else {
+      return res.status(400).json({ message: "Something went wrong" });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
+type CreateCommentDuplicateParams = {
+  topologyBlockId: string;
+};
+
+type CreateCommentDuplicateBody = {
+  commandOrder?: number;
+};
+
+// @route POST http://localhost:3500/plotFieldCommands/comments/topologyBlocks/:topologyBlockId/copy
+// @access Private
+export const createCommentDuplicateController: RequestHandler<
+  CreateCommentDuplicateParams,
+  unknown,
+  CreateCommentDuplicateBody,
+  unknown
+> = async (req, res, next) => {
+  try {
+    const comment = await createCommentDuplicateService({
+      topologyBlockId: req.params.topologyBlockId,
+      commandOrder: req.body.commandOrder,
     });
     if (comment) {
       return res.status(201).json(comment);

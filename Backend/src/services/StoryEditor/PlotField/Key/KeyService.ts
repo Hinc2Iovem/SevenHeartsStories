@@ -43,6 +43,35 @@ export const getKeyByPlotFieldCommandIdService = async ({
   return existingKey;
 };
 
+type CreateKeyDuplicateTypes = {
+  topologyBlockId: string;
+  storyId: string;
+  commandOrder?: number;
+};
+
+export const createKeyDuplicateService = async ({
+  topologyBlockId,
+  storyId,
+  commandOrder,
+}: CreateKeyDuplicateTypes) => {
+  validateMongoId({ value: topologyBlockId, valueName: "TopologyBlock" });
+  validateMongoId({ value: storyId, valueName: "Story" });
+
+  if (typeof commandOrder !== "number") {
+    throw createHttpError(400, "CommandOrder is required");
+  }
+
+  const newPlotfieldCommand = await PlotFieldCommand.create({
+    topologyBlockId,
+    commandOrder: commandOrder + 1,
+  });
+
+  return await Key.create({
+    plotFieldCommandId: newPlotfieldCommand._id,
+    storyId,
+  });
+};
+
 type CreateCommandKeyTypes = {
   plotFieldCommandId: string;
   storyId: string;

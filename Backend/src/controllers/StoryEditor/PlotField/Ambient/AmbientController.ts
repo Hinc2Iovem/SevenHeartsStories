@@ -1,5 +1,6 @@
 import { RequestHandler } from "express";
 import {
+  createAmbientDuplicateService,
   createAmbientService,
   deleteAmbientService,
   getAmbientByPlotFieldCommandIdService,
@@ -47,6 +48,37 @@ export const createAmbientController: RequestHandler<
   try {
     const ambient = await createAmbientService({
       plotFieldCommandId: req.params.plotFieldCommandId,
+    });
+    if (ambient) {
+      return res.status(201).json(ambient);
+    } else {
+      return res.status(400).json({ message: "Something went wrong" });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
+type CreateAmbientDuplicateParams = {
+  topologyBlockId: string;
+};
+
+type CreateAmbientDuplicateBody = {
+  commandOrder?: number;
+};
+
+// @route POST http://localhost:3500/plotFieldCommands/ambients/topologyBlocks/:topologyBlockId/copy
+// @access Private
+export const createAmbientDuplicateController: RequestHandler<
+  CreateAmbientDuplicateParams,
+  unknown,
+  CreateAmbientDuplicateBody,
+  unknown
+> = async (req, res, next) => {
+  try {
+    const ambient = await createAmbientDuplicateService({
+      topologyBlockId: req.params.topologyBlockId,
+      commandOrder: req.body.commandOrder,
     });
     if (ambient) {
       return res.status(201).json(ambient);

@@ -4,6 +4,7 @@ import {
   deleteSuitController,
   getSuitByPlotFieldCommandIdController,
   updateSuitController,
+  createSuitDuplicateController,
 } from "../../../../controllers/StoryEditor/PlotField/Suit/SuitController";
 
 // Default route === /plotFieldCommands
@@ -13,6 +14,10 @@ suitRoute
   .route("/:plotFieldCommandId/suits")
   .get(getSuitByPlotFieldCommandIdController)
   .post(createSuitController);
+
+suitRoute
+  .route("/suits/topologyBlocks/:topologyBlockId/copy")
+  .post(createSuitDuplicateController);
 
 suitRoute
   .route("/characters/:characterId/suits/:suitId")

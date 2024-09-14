@@ -1,5 +1,6 @@
 import { RequestHandler } from "express";
 import {
+  createAchievementDuplicateService,
   deleteAchievementService,
   getAchievementByPlotFieldCommandIdService,
   getAchievementsByStoryIdService,
@@ -46,6 +47,39 @@ export const getAchievementByPlotFieldCommandIdController: RequestHandler<
   try {
     const achievement = await getAchievementByPlotFieldCommandIdService({
       plotFieldCommandId: req.params.plotFieldCommandId,
+    });
+    if (achievement) {
+      return res.status(201).json(achievement);
+    } else {
+      return res.status(400).json({ message: "Something went wrong" });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
+type CreateAchievementDuplicateParams = {
+  topologyBlockId: string;
+  storyId: string;
+};
+
+type CreateAchievementDuplicateBody = {
+  commandOrder?: number;
+};
+
+// @route POST http://localhost:3500/stories/achievements/topologyBlocks/:topologyBlockId/copy
+// @access Private
+export const createAchievementDuplicateController: RequestHandler<
+  CreateAchievementDuplicateParams,
+  unknown,
+  CreateAchievementDuplicateBody,
+  unknown
+> = async (req, res, next) => {
+  try {
+    const achievement = await createAchievementDuplicateService({
+      topologyBlockId: req.params.topologyBlockId,
+      storyId: req.params.storyId,
+      commandOrder: req.body.commandOrder,
     });
     if (achievement) {
       return res.status(201).json(achievement);

@@ -161,6 +161,46 @@ export const plotFieldCommandUpdateCommandNameService = async ({
   return await existingPlotFieldCommand.save();
 };
 
+type PlotFieldCommandUpdateAllOrdersAfterDuplicationTypes = {
+  duplicateId: string;
+  topologyBlockId: string;
+  commandOrder?: number;
+};
+
+export const plotFieldCommandUpdateAllOrdersAfterDuplicationService = async ({
+  topologyBlockId,
+  duplicateId,
+  commandOrder,
+}: PlotFieldCommandUpdateAllOrdersAfterDuplicationTypes) => {
+  validateMongoId({ value: duplicateId, valueName: "Duplicate" });
+  validateMongoId({ value: topologyBlockId, valueName: "TopologyBlock" });
+
+  if (typeof commandOrder !== "number") {
+    throw createHttpError(400, "Command Order is required");
+  }
+
+  const allPlotfieldCommands = await PlotFieldCommand.find({
+    topologyBlockId,
+    commandOrder: { $gt: commandOrder },
+    _id: { $ne: duplicateId },
+  }).exec();
+
+  if (allPlotfieldCommands.length) {
+    let iterationNumber = 1 + commandOrder;
+    for (const pc of allPlotfieldCommands) {
+      if (pc.commandOrder) {
+        pc.commandOrder += 1;
+      } else {
+        pc.commandOrder = iterationNumber;
+      }
+      ++iterationNumber;
+      await pc.save();
+    }
+  } else {
+    return `Nothing to update`;
+  }
+};
+
 type PlotFieldCommandOrderUpdateTypes = {
   plotFieldCommandId: string;
   newOrder: number;

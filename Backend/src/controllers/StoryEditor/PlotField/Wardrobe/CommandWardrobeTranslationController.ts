@@ -2,6 +2,7 @@ import { RequestHandler } from "express";
 import {
   commandWardrobeTranslationByCommandIdService,
   commandWardrobeUpdateTranslationService,
+  createCommandWardrobeDuplicateTranslationService,
   createCommandWardrobeTranslationService,
   getAllCommandWardrobesTranslationByTopologyBlockIdService,
   getCommandWardrobeTranslationUpdatedAtAndLanguageService,
@@ -115,6 +116,38 @@ export const createCommandWardrobeTranslationController: RequestHandler<
       plotFieldCommandId: req.params.plotFieldCommandId,
       topologyBlockId: req.params.topologyBlockId,
     });
+    if (commandWardrobe) {
+      return res.status(201).json(commandWardrobe);
+    } else {
+      return res.status(400).json({ message: "Something went wrong" });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
+type CreateCommandWardrobeDuplicateParams = {
+  topologyBlockId: string;
+};
+
+type CreateCommandWardrobeDuplicateBody = {
+  commandOrder?: number;
+};
+
+// @route POST http://localhost:3500/commandWardrobes/topologyBlocks/:topologyBlockId/copy
+// @access Private
+export const createCommandWardrobeTranslationDuplicateController: RequestHandler<
+  CreateCommandWardrobeDuplicateParams,
+  unknown,
+  CreateCommandWardrobeDuplicateBody,
+  unknown
+> = async (req, res, next) => {
+  try {
+    const commandWardrobe =
+      await createCommandWardrobeDuplicateTranslationService({
+        topologyBlockId: req.params.topologyBlockId,
+        commandOrder: req.body.commandOrder,
+      });
     if (commandWardrobe) {
       return res.status(201).json(commandWardrobe);
     } else {

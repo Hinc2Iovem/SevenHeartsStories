@@ -24,6 +24,33 @@ export const getIfByPlotFieldCommandIdService = async ({
   return existingIf;
 };
 
+type CreateIfDuplicateTypes = {
+  topologyBlockId: string;
+  commandOrder?: number;
+};
+
+export const createIfDuplicateService = async ({
+  topologyBlockId,
+  commandOrder,
+}: CreateIfDuplicateTypes) => {
+  validateMongoId({ value: topologyBlockId, valueName: "TopologyBlock" });
+
+  if (typeof commandOrder !== "number") {
+    throw createHttpError(400, "CommandOrder is required");
+  }
+
+  const newPlotfieldCommand = await PlotFieldCommand.create({
+    topologyBlockId,
+    commandOrder: commandOrder + 1,
+  });
+
+  const condition = await IfModel.create({
+    plotFieldCommandId: newPlotfieldCommand._id,
+  });
+
+  await IfValue.create({ plotFieldCommandIfId: condition._id });
+  return condition;
+};
 type CreateIfTypes = {
   plotFieldCommandId: string;
 };

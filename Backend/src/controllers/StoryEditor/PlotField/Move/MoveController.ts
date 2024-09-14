@@ -4,6 +4,7 @@ import {
   deleteMoveService,
   updateMoveService,
   getMoveByPlotFieldCommandIdService,
+  createMoveDuplicateService,
 } from "../../../../services/StoryEditor/PlotField/Move/MoveService";
 
 type GetMoveByPlotFieldCommandIdParams = {
@@ -21,6 +22,37 @@ export const getMoveByPlotFieldCommandIdController: RequestHandler<
   try {
     const move = await getMoveByPlotFieldCommandIdService({
       plotFieldCommandId: req.params.plotFieldCommandId,
+    });
+    if (move) {
+      return res.status(201).json(move);
+    } else {
+      return res.status(400).json({ message: "Something went wrong" });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
+type CreateMoveDuplicateParams = {
+  topologyBlockId: string;
+};
+
+type CreateMoveDuplicateBody = {
+  commandOrder?: number;
+};
+
+// @route POST http://localhost:3500/plotFieldCommands/moves/topologyBlocks/:topologyBlockId/copy
+// @access Private
+export const createMoveDuplicateController: RequestHandler<
+  CreateMoveDuplicateParams,
+  unknown,
+  CreateMoveDuplicateBody,
+  unknown
+> = async (req, res, next) => {
+  try {
+    const move = await createMoveDuplicateService({
+      topologyBlockId: req.params.topologyBlockId,
+      commandOrder: req.body.commandOrder,
     });
     if (move) {
       return res.status(201).json(move);

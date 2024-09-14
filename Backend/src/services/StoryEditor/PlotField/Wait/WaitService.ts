@@ -23,6 +23,30 @@ export const getWaitByPlotFieldCommandIdService = async ({
   return existingWait;
 };
 
+type CreateWaitDuplicateTypes = {
+  topologyBlockId: string;
+  commandOrder?: number;
+};
+
+export const createWaitDuplicateService = async ({
+  topologyBlockId,
+  commandOrder,
+}: CreateWaitDuplicateTypes) => {
+  validateMongoId({ value: topologyBlockId, valueName: "TopologyBlock" });
+
+  if (typeof commandOrder !== "number") {
+    throw createHttpError(400, "CommandOrder is required");
+  }
+
+  const newPlotfieldCommand = await PlotFieldCommand.create({
+    topologyBlockId,
+    commandOrder: commandOrder + 1,
+  });
+
+  return await Wait.create({
+    plotFieldCommandId: newPlotfieldCommand._id,
+  });
+};
 type CreateWaitTypes = {
   plotFieldCommandId: string;
 };

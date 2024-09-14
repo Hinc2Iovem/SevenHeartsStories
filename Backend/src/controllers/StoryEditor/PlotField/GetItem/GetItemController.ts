@@ -1,7 +1,8 @@
 import { RequestHandler } from "express";
 import {
+  createGetItemDuplicateService,
   deleteGetItemService,
-  getItemByPlotFieldCommandIdService
+  getItemByPlotFieldCommandIdService,
 } from "../../../../services/StoryEditor/PlotField/GetItem/GetItemService";
 
 type GetItemByPlotFieldCommandIdParams = {
@@ -30,7 +31,36 @@ export const getItemByPlotFieldCommandIdController: RequestHandler<
   }
 };
 
+type CreateGetItemDuplicateParams = {
+  topologyBlockId: string;
+};
 
+type CreateGetItemDuplicateBody = {
+  commandOrder?: number;
+};
+
+// @route POST http://localhost:3500/plotFieldCommands/getItems/topologyBlocks/:topologyBlockId/copy
+// @access Private
+export const createGetItemDuplicateController: RequestHandler<
+  CreateGetItemDuplicateParams,
+  unknown,
+  CreateGetItemDuplicateBody,
+  unknown
+> = async (req, res, next) => {
+  try {
+    const getItem = await createGetItemDuplicateService({
+      topologyBlockId: req.params.topologyBlockId,
+      commandOrder: req.body.commandOrder,
+    });
+    if (getItem) {
+      return res.status(201).json(getItem);
+    } else {
+      return res.status(400).json({ message: "Something went wrong" });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
 
 type DeleteGetItemParams = {
   getItemId: string;

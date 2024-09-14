@@ -5,6 +5,7 @@ import {
   updateSoundIsGlobalService,
   updateSoundService,
   getSoundByPlotFieldCommandIdService,
+  createSoundDuplicateService,
 } from "../../../../services/StoryEditor/PlotField/Sound/CommandSoundService";
 
 type GetSoundByPlotFieldCommandIdParams = {
@@ -48,6 +49,37 @@ export const createSoundController: RequestHandler<
   try {
     const sound = await createSoundService({
       plotFieldCommandId: req.params.plotFieldCommandId,
+    });
+    if (sound) {
+      return res.status(201).json(sound);
+    } else {
+      return res.status(400).json({ message: "Something went wrong" });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
+type CreateSoundDuplicateParams = {
+  topologyBlockId: string;
+};
+
+type CreateSoundDuplicateBody = {
+  commandOrder?: number;
+};
+
+// @route POST http://localhost:3500/plotFieldCommands/sounds/topologyBlocks/:topologyBlockId/copy
+// @access Private
+export const createSoundDuplicateController: RequestHandler<
+  CreateSoundDuplicateParams,
+  unknown,
+  CreateSoundDuplicateBody,
+  unknown
+> = async (req, res, next) => {
+  try {
+    const sound = await createSoundDuplicateService({
+      topologyBlockId: req.params.topologyBlockId,
+      commandOrder: req.body.commandOrder,
     });
     if (sound) {
       return res.status(201).json(sound);

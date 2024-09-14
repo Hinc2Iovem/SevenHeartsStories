@@ -5,6 +5,7 @@ import {
   updateBlockConditionOrderOfExecutionController,
   updateBlockConditionTopologyBlockController,
 } from "../../../../controllers/StoryEditor/PlotField/Condition/ConditionBlockController";
+import { createConditionBlockDuplicateController } from "../../../../controllers/StoryEditor/PlotField/Condition/ConditionController";
 
 // Default route === /commandConditions
 export const conditionBlockRoute = express.Router();
@@ -22,6 +23,10 @@ conditionBlockRoute
     "/conditionBlocks/:conditionBlockId/sourceBlocks/:sourceBlockId/targetBlocks/:targetBlockId"
   )
   .patch(updateBlockConditionTopologyBlockController);
+
+conditionBlockRoute
+  .route("/conditionBlocks/topologyBlocks/:topologyBlockId/copy")
+  .post(createConditionBlockDuplicateController);
 
 conditionBlockRoute
   .route("/conditionBlocks/:conditionBlockId/orderOfExecution")

@@ -2,6 +2,7 @@ import { RequestHandler } from "express";
 import {
   backgroundUpdateImgService,
   backgroundUpdateMusicIdService,
+  createBackgroundDuplicateService,
   createBackgroundService,
   deleteBackgroundService,
   getBackgroundByPlotFieldCommandIdService,
@@ -49,6 +50,37 @@ export const createBackgroundController: RequestHandler<
   try {
     const background = await createBackgroundService({
       plotFieldCommandId: req.params.plotFieldCommandId,
+    });
+    if (background) {
+      return res.status(201).json(background);
+    } else {
+      return res.status(400).json({ message: "Something went wrong" });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
+type CreateBackgroundDuplicateParams = {
+  topologyBlockId: string;
+};
+
+type CreateBackgroundDuplicateBody = {
+  commandOrder?: number;
+};
+
+// @route POST http://localhost:3500/plotFieldCommands/backgrounds/topologyBlocks/:topologyBlockId/copy
+// @access Private
+export const createBackgroundDuplicateController: RequestHandler<
+  CreateBackgroundDuplicateParams,
+  unknown,
+  CreateBackgroundDuplicateBody,
+  unknown
+> = async (req, res, next) => {
+  try {
+    const background = await createBackgroundDuplicateService({
+      topologyBlockId: req.params.topologyBlockId,
+      commandOrder: req.body.commandOrder,
     });
     if (background) {
       return res.status(201).json(background);

@@ -45,6 +45,31 @@ export const createSoundService = async ({
   });
 };
 
+type CreateSoundDuplicateTypes = {
+  topologyBlockId: string;
+  commandOrder?: number;
+};
+
+export const createSoundDuplicateService = async ({
+  topologyBlockId,
+  commandOrder,
+}: CreateSoundDuplicateTypes) => {
+  validateMongoId({ value: topologyBlockId, valueName: "TopologyBlock" });
+
+  if (typeof commandOrder !== "number") {
+    throw createHttpError(400, "CommandOrder is required");
+  }
+
+  const newPlotfieldCommand = await PlotFieldCommand.create({
+    topologyBlockId,
+    commandOrder: commandOrder + 1,
+  });
+
+  return await CommandSound.create({
+    plotFieldCommandId: newPlotfieldCommand._id,
+  });
+};
+
 type UpdateSoundTypes = {
   soundName: string | undefined;
   commandSoundId: string;

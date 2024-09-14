@@ -5,6 +5,7 @@ import {
   getSoundByPlotFieldCommandIdController,
   updateSoundController,
   updateSoundIsGlobalController,
+  createSoundDuplicateController,
 } from "../../../../controllers/StoryEditor/PlotField/Sound/CommandSoundController";
 
 // Default route === /plotFieldCommands
@@ -18,6 +19,10 @@ soundCommandRoute
 soundCommandRoute
   .route("/stories/:storyId/commandSounds/:commandSoundId")
   .patch(updateSoundController);
+
+soundCommandRoute
+  .route("/sounds/topologyBlocks/:topologyBlockId/copy")
+  .post(createSoundDuplicateController);
 
 soundCommandRoute
   .route("/sounds/:soundId/isGlobal")

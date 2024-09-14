@@ -1,5 +1,6 @@
 import { RequestHandler } from "express";
 import {
+  createSayTranslationDuplicateService,
   createSayTranslationService,
   getAllSayTranslationByTopologyBlockIdService,
   getSayTranslationUpdatedAtAndLanguageService,
@@ -120,6 +121,45 @@ export const createSayTranslationController: RequestHandler<
       topologyBlockId: req.params.topologyBlockId,
       characterId: req.body.characterId,
       type: req.body.type,
+    });
+    if (say) {
+      return res.status(201).json(say);
+    } else {
+      return res.status(400).json({ message: "Something went wrong" });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
+type CreateSayDuplicateParams = {
+  topologyBlockId: string;
+};
+
+type CreateSayDuplicateBody = {
+  characterId?: string;
+  characterEmotionId?: string;
+  type?: SayType;
+  commandOrder?: number;
+  commandSide?: string;
+};
+
+// @route POST http://localhost:3500/says/:plotFieldCommandId/topologyBlocks/:topologyBlockId/translations
+// @access Private
+export const createSayTranslationDuplicateController: RequestHandler<
+  CreateSayDuplicateParams,
+  unknown,
+  CreateSayDuplicateBody,
+  unknown
+> = async (req, res, next) => {
+  try {
+    const say = await createSayTranslationDuplicateService({
+      topologyBlockId: req.params.topologyBlockId,
+      characterId: req.body.characterId,
+      type: req.body.type,
+      commandOrder: req.body.commandOrder,
+      characterEmotionId: req.body.characterEmotionId,
+      commandSide: req.body.commandSide,
     });
     if (say) {
       return res.status(201).json(say);

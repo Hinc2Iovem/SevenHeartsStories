@@ -4,6 +4,7 @@ import {
   deleteMusicController,
   getMusicByPlotFieldCommandIdController,
   updateMusicController,
+  createMusicDuplicateController,
 } from "../../../../controllers/StoryEditor/PlotField/Music/CommandMusicController";
 
 // Default route === /plotFieldCommands
@@ -13,6 +14,10 @@ commandMusicRoute
   .route("/:plotFieldCommandId/music")
   .get(getMusicByPlotFieldCommandIdController)
   .post(createMusicController);
+
+commandMusicRoute
+  .route("/music/topologyBlocks/:topologyBlockId/copy")
+  .post(createMusicDuplicateController);
 
 commandMusicRoute
   .route("/stories/:storyId/commandMusic/:commandMusicId")

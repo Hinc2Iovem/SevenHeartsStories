@@ -1,9 +1,8 @@
 import createHttpError from "http-errors";
-import Story from "../../../../models/StoryData/Story";
+import TranslationAchievement from "../../../../models/StoryData/Translation/TranslationAchievement";
 import Achievement from "../../../../models/StoryEditor/PlotField/Achievement/Achievement";
 import PlotFieldCommand from "../../../../models/StoryEditor/PlotField/PlotFieldCommand";
 import TopologyBlock from "../../../../models/StoryEditor/Topology/TopologyBlock";
-import TopologyBlockInfo from "../../../../models/StoryEditor/Topology/TopologyBlockInfo";
 import { validateMongoId } from "../../../../utils/validateMongoId";
 
 type GetAchievementByPlotFieldCommandIdTypes = {
@@ -43,6 +42,60 @@ export const getAchievementsByStoryIdService = async ({
   }
 
   return existingAchievements;
+};
+
+type CreateAchievementDuplicateTypes = {
+  topologyBlockId: string;
+  commandOrder?: number;
+  storyId: string;
+};
+export const createAchievementDuplicateService = async ({
+  topologyBlockId,
+  commandOrder,
+  storyId,
+}: CreateAchievementDuplicateTypes) => {
+  validateMongoId({ value: topologyBlockId, valueName: "TopologyBlock" });
+  validateMongoId({ value: storyId, valueName: "Story" });
+
+  if (typeof commandOrder !== "number") {
+    throw createHttpError(400, "CommandOrder is required");
+  }
+
+  const newPlotfieldCommand = await PlotFieldCommand.create({
+    command: "achievement",
+    commandOrder: commandOrder + 1,
+    topologyBlockId,
+  });
+  const newAchievement = await Achievement.create({
+    plotFieldCommandId: newPlotfieldCommand._id,
+    storyId,
+  });
+
+  await TranslationAchievement.create({
+    commandId: newPlotfieldCommand._id,
+    topologyBlockId,
+    language: "russian",
+    translations: [],
+    storyId,
+  });
+
+  const topologyBlockInfo = await TopologyBlock.findById(
+    topologyBlockId
+  ).exec();
+
+  if (topologyBlockInfo) {
+    if (topologyBlockInfo.topologyBlockInfo) {
+      topologyBlockInfo.topologyBlockInfo.amountOfAchievements += 1;
+    } else {
+      topologyBlockInfo.topologyBlockInfo = {
+        amountOfAchievements: 1,
+        amountOfCommands: 1,
+      };
+    }
+    await topologyBlockInfo.save();
+  }
+
+  return newAchievement;
 };
 
 type DeleteAchievementTypes = {

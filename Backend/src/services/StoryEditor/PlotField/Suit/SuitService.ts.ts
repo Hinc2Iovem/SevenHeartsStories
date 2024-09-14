@@ -46,6 +46,31 @@ export const createSuitService = async ({
   });
 };
 
+type CreateSuitDuplicateTypes = {
+  topologyBlockId: string;
+  commandOrder?: number;
+};
+
+export const createSuitDuplicateService = async ({
+  topologyBlockId,
+  commandOrder,
+}: CreateSuitDuplicateTypes) => {
+  validateMongoId({ value: topologyBlockId, valueName: "TopologyBlock" });
+
+  if (typeof commandOrder !== "number") {
+    throw createHttpError(400, "CommandOrder is required");
+  }
+
+  const newPlotfieldCommand = await PlotFieldCommand.create({
+    topologyBlockId,
+    commandOrder: commandOrder + 1,
+  });
+
+  return await Suit.create({
+    plotFieldCommandId: newPlotfieldCommand._id,
+  });
+};
+
 type UpdateSuitTypes = {
   suitName: string | undefined;
   characterId: string;

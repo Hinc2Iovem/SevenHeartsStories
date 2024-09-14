@@ -1,5 +1,6 @@
 import express from "express";
 import {
+  createChoiceDuplicateController,
   deleteChoiceController,
   getChoiceByPlotFieldCommandIdController,
   updateChoiceController,
@@ -22,5 +23,9 @@ choiceRoute
 choiceRoute
   .route("/choices/:choiceId/isAuthor")
   .patch(updateChoiceIsAuthorController);
+
+choiceRoute
+  .route("/choices/topologyBlocks/:topologyBlockId/copy")
+  .post(createChoiceDuplicateController);
 
 choiceRoute.route("/choices/:choiceId/type").patch(updateChoiceTypeController);

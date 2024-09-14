@@ -44,6 +44,31 @@ export const createEffectService = async ({
   });
 };
 
+type CreateEffectDuplicateTypes = {
+  topologyBlockId: string;
+  commandOrder?: number;
+};
+
+export const createEffectDuplicateService = async ({
+  topologyBlockId,
+  commandOrder,
+}: CreateEffectDuplicateTypes) => {
+  validateMongoId({ value: topologyBlockId, valueName: "TopologyBlock" });
+
+  if (typeof commandOrder !== "number") {
+    throw createHttpError(400, "CommandOrder is required");
+  }
+
+  const newPlotfieldCommand = await PlotFieldCommand.create({
+    topologyBlockId,
+    commandOrder: commandOrder + 1,
+  });
+
+  return await Effect.create({
+    plotFieldCommandId: newPlotfieldCommand._id,
+  });
+};
+
 type UpdateEffectTypes = {
   effectName: string | undefined;
   effectId: string;

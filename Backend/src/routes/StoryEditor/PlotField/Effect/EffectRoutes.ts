@@ -4,6 +4,7 @@ import {
   deleteEffectController,
   getEffectByPlotFieldCommandIdController,
   updateEffectController,
+  createEffectDuplicateController,
 } from "../../../../controllers/StoryEditor/PlotField/Effect/EffectController";
 
 // Default route === /plotFieldCommands
@@ -13,6 +14,10 @@ effectsRoute
   .route("/:plotFieldCommandId/effects")
   .get(getEffectByPlotFieldCommandIdController)
   .post(createEffectController);
+
+effectsRoute
+  .route("/effects/topologyBlocks/:topologyBlockId/copy")
+  .post(createEffectDuplicateController);
 
 effectsRoute
   .route("/effects/:effectId")

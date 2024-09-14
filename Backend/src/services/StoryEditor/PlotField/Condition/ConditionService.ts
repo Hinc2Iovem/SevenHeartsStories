@@ -58,6 +58,43 @@ export const createConditionService = async ({
   return condition;
 };
 
+type CreateConditionBlockDuplicateTypes = {
+  topologyBlockId: string;
+  commandOrder?: number;
+};
+
+export const createConditionBlockDuplicateService = async ({
+  topologyBlockId,
+  commandOrder,
+}: CreateConditionBlockDuplicateTypes) => {
+  validateMongoId({ value: topologyBlockId, valueName: "TopologyBlock" });
+
+  if (typeof commandOrder !== "number") {
+    throw createHttpError(400, "CommandOrder is required");
+  }
+
+  const newPlotfieldCommand = await PlotFieldCommand.create({
+    topologyBlockId,
+    commandOrder: commandOrder + 1,
+  });
+
+  const condition = await Condition.create({
+    plotFieldCommandId: newPlotfieldCommand._id,
+  });
+
+  const ifConditionBlock = await ConditionBlock.create({
+    conditionId: condition._id,
+  });
+
+  await ConditionBlock.create({
+    conditionId: condition._id,
+    isElse: true,
+  });
+
+  await ConditionValue.create({ conditionBlockId: ifConditionBlock._id });
+  return condition;
+};
+
 type DeleteConditionTypes = {
   conditionId: string;
 };

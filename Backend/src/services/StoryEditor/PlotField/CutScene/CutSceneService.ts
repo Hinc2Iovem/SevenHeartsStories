@@ -44,6 +44,31 @@ export const createCutSceneService = async ({
   });
 };
 
+type CreateCutSceneDuplicateTypes = {
+  topologyBlockId: string;
+  commandOrder?: number;
+};
+
+export const createCutSceneDuplicateService = async ({
+  topologyBlockId,
+  commandOrder,
+}: CreateCutSceneDuplicateTypes) => {
+  validateMongoId({ value: topologyBlockId, valueName: "TopologyBlock" });
+
+  if (typeof commandOrder !== "number") {
+    throw createHttpError(400, "CommandOrder is required");
+  }
+
+  const newPlotfieldCommand = await PlotFieldCommand.create({
+    topologyBlockId,
+    commandOrder: commandOrder + 1,
+  });
+
+  return await CutScene.create({
+    plotFieldCommandId: newPlotfieldCommand._id,
+  });
+};
+
 type UpdateCutSceneTypes = {
   cutSceneName: string | undefined;
   cutSceneId: string;

@@ -1,5 +1,6 @@
 import { RequestHandler } from "express";
 import {
+  createConditionBlockDuplicateService,
   createConditionService,
   deleteConditionService,
   getConditionByPlotFieldCommandIdService,
@@ -46,6 +47,37 @@ export const createConditionController: RequestHandler<
   try {
     const condition = await createConditionService({
       plotFieldCommandId: req.params.plotFieldCommandId,
+    });
+    if (condition) {
+      return res.status(201).json(condition);
+    } else {
+      return res.status(400).json({ message: "Something went wrong" });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
+type CreateConditionBlockDuplicateParams = {
+  topologyBlockId: string;
+};
+
+type CreateConditionBlockDuplicateBody = {
+  commandOrder?: number;
+};
+
+// @route POST http://localhost:3500/plotFieldCommands/conditions/topologyBlocks/:topologyBlockId/copy
+// @access Private
+export const createConditionBlockDuplicateController: RequestHandler<
+  CreateConditionBlockDuplicateParams,
+  unknown,
+  CreateConditionBlockDuplicateBody,
+  unknown
+> = async (req, res, next) => {
+  try {
+    const condition = await createConditionBlockDuplicateService({
+      topologyBlockId: req.params.topologyBlockId,
+      commandOrder: req.body.commandOrder,
     });
     if (condition) {
       return res.status(201).json(condition);

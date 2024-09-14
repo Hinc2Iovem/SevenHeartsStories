@@ -5,6 +5,7 @@ import {
   getChoiceByPlotFieldCommandIdService,
   updateChoiceIsAuthorService,
   updateChoiceTypeService,
+  createChoiceDuplicateService,
 } from "../../../../services/StoryEditor/PlotField/Choice/ChoiceService";
 
 type GetChoiceByPlotFieldCommandIdParams = {
@@ -126,6 +127,53 @@ export const updateChoiceIsAuthorController: RequestHandler<
     const choice = await updateChoiceIsAuthorService({
       isAuthor: req.body.isAuthor,
       choiceId: req.params.choiceId,
+    });
+    if (choice) {
+      return res.status(201).json(choice);
+    } else {
+      return res.status(400).json({ message: "Something went wrong" });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
+type CreateChoiceDuplicateParams = {
+  topologyBlockId: string;
+};
+
+type CreateChoiceDuplicateBody = {
+  isAuthor: boolean | undefined;
+  choiceType?: string;
+  exitBlockId?: string;
+  characterId?: string;
+  characterEmotionId?: string;
+  timeLimitDefaultOptionId?: string;
+  timeLimit?: number;
+  amountOfOptions?: number;
+  commandOrder?: number;
+};
+
+// @route POST http://localhost:3500/plotFieldCommands/choices/topologyBlocks/:topologyBlockId/copy
+// @access Private
+export const createChoiceDuplicateController: RequestHandler<
+  CreateChoiceDuplicateParams,
+  unknown,
+  CreateChoiceDuplicateBody,
+  unknown
+> = async (req, res, next) => {
+  try {
+    const choice = await createChoiceDuplicateService({
+      topologyBlockId: req.params.topologyBlockId,
+      isAuthor: req.body.isAuthor,
+      choiceType: req.body.choiceType,
+      exitBlockId: req.body.exitBlockId,
+      characterId: req.body.characterId,
+      characterEmotionId: req.body.characterEmotionId,
+      timeLimit: req.body.timeLimit,
+      timeLimitDefaultOptionId: req.body.timeLimitDefaultOptionId,
+      amountOfOptions: req.body.amountOfOptions,
+      commandOrder: req.body.commandOrder,
     });
     if (choice) {
       return res.status(201).json(choice);

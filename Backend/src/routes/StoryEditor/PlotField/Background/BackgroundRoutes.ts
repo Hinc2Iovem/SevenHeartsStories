@@ -1,11 +1,11 @@
 import express from "express";
 import {
   createBackgroundController,
-  deleteBackgroundController,
   getBackgroundByPlotFieldCommandIdController,
   updateBackgroundController,
   updateBackgroundImgController,
   updateBackgroundMusicIdController,
+  createBackgroundDuplicateController,
 } from "../../../../controllers/StoryEditor/PlotField/Background/BackgroundController";
 
 // Default route === /plotFieldCommands
@@ -23,6 +23,10 @@ backgroundRoute
 backgroundRoute
   .route("/stories/:storyId/backgrounds/:backgroundId/musicName")
   .patch(updateBackgroundMusicIdController);
+
+backgroundRoute
+  .route("/backgrounds/topologyBlocks/:topologyBlockId/copy")
+  .post(createBackgroundDuplicateController);
 
 backgroundRoute
   .route("/backgrounds/:backgroundId/img")

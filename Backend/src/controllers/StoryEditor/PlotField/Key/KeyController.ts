@@ -5,6 +5,7 @@ import {
   getKeyByPlotFieldCommandIdService,
   updateCommandKeyService,
   getKeyByStoryIdService,
+  createKeyDuplicateService,
 } from "../../../../services/StoryEditor/PlotField/Key/KeyService";
 
 type GetKeyByStoryIdParams = {
@@ -59,6 +60,38 @@ export const getKeyByPlotFieldCommandIdController: RequestHandler<
   }
 };
 
+type CreateKeyDuplicateParams = {
+  topologyBlockId: string;
+  storyId: string;
+};
+
+type CreateKeyDuplicateBody = {
+  commandOrder?: number;
+};
+
+// @route POST http://localhost:3500/plotFieldCommands/keys/stories/:storyId/topologyBlocks/:topologyBlockId/copy
+// @access Private
+export const createKeyDuplicateController: RequestHandler<
+  CreateKeyDuplicateParams,
+  unknown,
+  CreateKeyDuplicateBody,
+  unknown
+> = async (req, res, next) => {
+  try {
+    const key = await createKeyDuplicateService({
+      topologyBlockId: req.params.topologyBlockId,
+      storyId: req.params.storyId,
+      commandOrder: req.body.commandOrder,
+    });
+    if (key) {
+      return res.status(201).json(key);
+    } else {
+      return res.status(400).json({ message: "Something went wrong" });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
 type CreateKeyParams = {
   plotFieldCommandId: string;
   storyId: string;

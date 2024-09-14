@@ -47,6 +47,31 @@ export const createCommentService = async ({
   });
 };
 
+type CreateCommentDuplicateTypes = {
+  topologyBlockId: string;
+  commandOrder?: number;
+};
+
+export const createCommentDuplicateService = async ({
+  topologyBlockId,
+  commandOrder,
+}: CreateCommentDuplicateTypes) => {
+  validateMongoId({ value: topologyBlockId, valueName: "TopologyBlock" });
+
+  if (typeof commandOrder !== "number") {
+    throw createHttpError(400, "CommandOrder is required");
+  }
+
+  const newPlotfieldCommand = await PlotFieldCommand.create({
+    topologyBlockId,
+    commandOrder: commandOrder + 1,
+  });
+
+  return await Comment.create({
+    plotFieldCommandId: newPlotfieldCommand._id,
+  });
+};
+
 type UpdateCommentTypes = {
   commentId: string;
   comment?: string;

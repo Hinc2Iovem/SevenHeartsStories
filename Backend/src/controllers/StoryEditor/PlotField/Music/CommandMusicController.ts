@@ -4,6 +4,7 @@ import {
   deleteMusicService,
   updateMusicService,
   getMusicByPlotFieldCommandIdService,
+  createMusicDuplicateService,
 } from "../../../../services/StoryEditor/PlotField/Music/CommandMusicService";
 
 type GetMusicByPlotFieldCommandIdParams = {
@@ -47,6 +48,36 @@ export const createMusicController: RequestHandler<
   try {
     const music = await createMusicService({
       plotFieldCommandId: req.params.plotFieldCommandId,
+    });
+    if (music) {
+      return res.status(201).json(music);
+    } else {
+      return res.status(400).json({ message: "Something went wrong" });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
+type CreateMusicDuplicateParams = {
+  topologyBlockId: string;
+};
+type CreateMusicDuplicateBody = {
+  commandOrder?: number;
+};
+
+// @route POST http://localhost:3500/plotFieldCommands/music/topologyBlocks/:topologyBlockId/copy
+// @access Private
+export const createMusicDuplicateController: RequestHandler<
+  CreateMusicDuplicateParams,
+  unknown,
+  CreateMusicDuplicateBody,
+  unknown
+> = async (req, res, next) => {
+  try {
+    const music = await createMusicDuplicateService({
+      topologyBlockId: req.params.topologyBlockId,
+      commandOrder: req.body.commandOrder,
     });
     if (music) {
       return res.status(201).json(music);

@@ -1,5 +1,6 @@
 import { RequestHandler } from "express";
 import {
+  createCutSceneDuplicateService,
   createCutSceneService,
   deleteCutSceneService,
   getCutSceneByPlotFieldCommandIdService,
@@ -47,6 +48,37 @@ export const createCutSceneController: RequestHandler<
   try {
     const cutScene = await createCutSceneService({
       plotFieldCommandId: req.params.plotFieldCommandId,
+    });
+    if (cutScene) {
+      return res.status(201).json(cutScene);
+    } else {
+      return res.status(400).json({ message: "Something went wrong" });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
+type CreateCutSceneDuplicateParams = {
+  topologyBlockId: string;
+};
+
+type CreateCutSceneDuplicateBody = {
+  commandOrder?: number;
+};
+
+// @route POST http://localhost:3500/plotFieldCommands/cutScenes/topologyBlocks/:topologyBlockId/copy
+// @access Private
+export const createCutSceneDuplicateController: RequestHandler<
+  CreateCutSceneDuplicateParams,
+  unknown,
+  CreateCutSceneDuplicateBody,
+  unknown
+> = async (req, res, next) => {
+  try {
+    const cutScene = await createCutSceneDuplicateService({
+      topologyBlockId: req.params.topologyBlockId,
+      commandOrder: req.body.commandOrder,
     });
     if (cutScene) {
       return res.status(201).json(cutScene);

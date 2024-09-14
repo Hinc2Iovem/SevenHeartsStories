@@ -5,6 +5,7 @@ import {
   getKeyByPlotFieldCommandIdController,
   getKeyByStoryIdController,
   updateKeyController,
+  createKeyDuplicateController,
 } from "../../../../controllers/StoryEditor/PlotField/Key/KeyController";
 
 // Default route === /plotFieldCommands
@@ -17,6 +18,10 @@ keyRoute
 keyRoute
   .route("/:plotFieldCommandId/stories/:storyId/keys")
   .post(createKeyController);
+
+keyRoute
+  .route("/keys/topologyBlocks/:topologyBlockId/copy")
+  .post(createKeyDuplicateController);
 
 keyRoute.route("/stories/:storyId/keys").get(getKeyByStoryIdController);
 

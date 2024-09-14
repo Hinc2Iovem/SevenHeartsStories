@@ -26,6 +26,10 @@ export const topologyBlockSchema = new mongoose.Schema(
         type: Number,
         default: 0,
       },
+      amountOfAchievements: {
+        type: Number,
+        default: 0,
+      },
       default: {},
     },
   },

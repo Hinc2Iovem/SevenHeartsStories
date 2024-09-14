@@ -326,6 +326,7 @@ export const topologyBlockUpdateTopologyBlockInfoService = async ({
     } else {
       const newTopologyBlockInfo = {
         amountOfCommands: 1,
+        amountOfAchievements: 0,
       };
       existingTopologyBlock.topologyBlockInfo = newTopologyBlockInfo;
     }

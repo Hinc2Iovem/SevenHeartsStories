@@ -145,6 +145,37 @@ export const createCommandWardrobeTranslationService = async ({
   return await CommandWardrobe.create({ plotFieldCommandId });
 };
 
+type CreateCommandWardrobeDuplicateTypes = {
+  commandOrder?: number;
+  topologyBlockId: string;
+};
+
+export const createCommandWardrobeDuplicateTranslationService = async ({
+  commandOrder,
+  topologyBlockId,
+}: CreateCommandWardrobeDuplicateTypes) => {
+  validateMongoId({ value: topologyBlockId, valueName: "TopologyBlock" });
+
+  if (typeof commandOrder !== "number") {
+    throw createHttpError(400, "CommandOrder is required");
+  }
+
+  const newPlotfieldCommand = await PlotFieldCommand.create({
+    topologyBlockId,
+    commandOrder: commandOrder + 1,
+  });
+
+  await TranslationCommandWardrobe.create({
+    commandId: newPlotfieldCommand._id,
+    topologyBlockId,
+    language: "russian",
+    translations: [],
+  });
+  return await CommandWardrobe.create({
+    plotFieldCommandId: newPlotfieldCommand._id,
+  });
+};
+
 type UpdateCommandWardrobeTypes = {
   plotFieldCommandId: string;
   topologyBlockId: string;

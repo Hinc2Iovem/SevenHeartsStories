@@ -1,5 +1,6 @@
 import { RequestHandler } from "express";
 import {
+  createCallDuplicateService,
   createCallService,
   deleteCallService,
   getCallByPlotFieldCommandIdService,
@@ -48,6 +49,37 @@ export const createCallController: RequestHandler<
   try {
     const call = await createCallService({
       plotFieldCommandId: req.params.plotFieldCommandId,
+    });
+    if (call) {
+      return res.status(201).json(call);
+    } else {
+      return res.status(400).json({ message: "Something went wrong" });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
+type CreateCallDuplicateParams = {
+  topologyBlockId: string;
+};
+
+type CreateCallDuplicateBody = {
+  commandOrder?: number;
+};
+
+// @route POST http://localhost:3500/plotFieldCommands/calls/topologyBlocks/:topologyBlockId/copy
+// @access Private
+export const createCallDuplicateController: RequestHandler<
+  CreateCallDuplicateParams,
+  unknown,
+  CreateCallDuplicateBody,
+  unknown
+> = async (req, res, next) => {
+  try {
+    const call = await createCallDuplicateService({
+      topologyBlockId: req.params.topologyBlockId,
+      commandOrder: req.body.commandOrder,
     });
     if (call) {
       return res.status(201).json(call);

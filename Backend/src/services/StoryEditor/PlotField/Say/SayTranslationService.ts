@@ -196,6 +196,102 @@ export const createSayTranslationService = async ({
   }
 };
 
+type CreateSayDuplicateTypes = {
+  topologyBlockId: string;
+  characterId?: string;
+  type?: SayType;
+  characterEmotionId?: string;
+  commandOrder?: number;
+  commandSide?: string;
+};
+
+export const createSayTranslationDuplicateService = async ({
+  characterId,
+  type,
+  topologyBlockId,
+  characterEmotionId,
+  commandOrder,
+  commandSide,
+}: CreateSayDuplicateTypes) => {
+  validateMongoId({ value: topologyBlockId, valueName: "TopologyBlock" });
+
+  if (typeof commandOrder !== "number") {
+    throw createHttpError(400, "CommandOrder is required");
+  }
+
+  if (!type?.trim().length) {
+    throw createHttpError(400, "Type is required");
+  }
+
+  if (!AllPossibleTypeVariations.includes(type.toLowerCase())) {
+    throw createHttpError(
+      400,
+      `Such type isn't supported, possible types: ${AllPossibleTypeVariations.map(
+        (tv) => tv
+      )}`
+    );
+  }
+
+  const newPlotfieldCommand = await PlotFieldCommand.create({
+    topologyBlockId,
+    commandOrder: commandOrder + 1,
+  });
+
+  if (type?.toLowerCase() === "author") {
+    await TranslationSay.create({
+      commandId: newPlotfieldCommand._id,
+      topologyBlockId,
+      language: "russian",
+      translations: [],
+    });
+    return await Say.create({
+      plotFieldCommandId: newPlotfieldCommand._id,
+      type: "author",
+      commandSide,
+    });
+  } else if (type?.toLowerCase() === "character") {
+    validateMongoId({ value: characterId, valueName: "Character" });
+
+    await TranslationSay.create({
+      commandId: newPlotfieldCommand._id,
+      topologyBlockId,
+      language: "russian",
+      translations: [],
+    });
+    return await Say.create({
+      characterId,
+      plotFieldCommandId: newPlotfieldCommand._id,
+      characterEmotionId,
+      type: "character",
+      commandSide,
+    });
+  } else if (type?.toLowerCase() === "notify") {
+    await TranslationSay.create({
+      commandId: newPlotfieldCommand._id,
+      topologyBlockId,
+      language: "russian",
+      translations: [],
+    });
+    return await Say.create({
+      plotFieldCommandId: newPlotfieldCommand._id,
+      type: "notify",
+      commandSide,
+    });
+  } else if (type?.toLowerCase() === "hint") {
+    await TranslationSay.create({
+      commandId: newPlotfieldCommand._id,
+      topologyBlockId,
+      language: "russian",
+      translations: [],
+    });
+    return await Say.create({
+      plotFieldCommandId: newPlotfieldCommand._id,
+      type: "hint",
+      commandSide,
+    });
+  }
+};
+
 type UpdateSayTypes = {
   plotFieldCommandId: string;
   topologyBlockId: string;

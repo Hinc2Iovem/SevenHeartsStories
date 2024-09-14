@@ -1,5 +1,6 @@
 import { RequestHandler } from "express";
 import {
+  createWaitDuplicateService,
   createWaitService,
   deleteWaitService,
   getWaitByPlotFieldCommandIdService,
@@ -32,6 +33,36 @@ export const getWaitByPlotFieldCommandIdController: RequestHandler<
   }
 };
 
+type CreateWaitDuplicateParams = {
+  topologyBlockId: string;
+};
+
+type CreateWaitDuplicateBody = {
+  commandOrder?: number;
+};
+
+// @route POST http://localhost:3500/plotFieldCommands/wait/topologyBlocks/:topologyBlockId/copy
+// @access Private
+export const createWaitDuplicateController: RequestHandler<
+  CreateWaitDuplicateParams,
+  unknown,
+  CreateWaitDuplicateBody,
+  unknown
+> = async (req, res, next) => {
+  try {
+    const wait = await createWaitDuplicateService({
+      topologyBlockId: req.params.topologyBlockId,
+      commandOrder: req.body.commandOrder,
+    });
+    if (wait) {
+      return res.status(201).json(wait);
+    } else {
+      return res.status(400).json({ message: "Something went wrong" });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
 type CreateWaitParams = {
   plotFieldCommandId: string;
 };

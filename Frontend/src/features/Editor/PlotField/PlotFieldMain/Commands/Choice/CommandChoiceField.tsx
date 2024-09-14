@@ -5,6 +5,8 @@ import useUpdateChoiceIsAuthor from "../hooks/Choice/useUpdateChoiceIsAuthor";
 import ChoiceQuestionField from "./ChoiceQuestionField";
 import ChoiceVariationTypeBlock from "./ChoiceVariationTypeBlock";
 import ChoiceOptionBlocksList from "./Option/ChoiceOptionBlocksList";
+import useCreateChoice from "../hooks/Choice/useCreateChoice";
+import useUpdateChoice from "../hooks/Choice/useUpdateChoice";
 
 type CommandChoiceFieldTypes = {
   plotFieldCommandId: string;
@@ -19,6 +21,7 @@ export default function CommandChoiceField({
 }: CommandChoiceFieldTypes) {
   const [timeLimit, setTimeLimit] = useState<number>(0);
   const [exitBlockId, setExitBlockId] = useState("");
+  const [showCopyCursor, setShowCopyCursor] = useState(false);
 
   const [nameValue] = useState<string>(command ?? "Choice");
   const [commandChoiceId, setCommandChoiceId] = useState("");
@@ -68,8 +71,34 @@ export default function CommandChoiceField({
     }
   }, [updateChoiceIsAuthor]);
 
+  const createChoiceDuplicate = useCreateChoice({
+    plotFieldCommandId,
+    topologyBlockId,
+  });
+  const fillChoiceDuplicateWithData = useUpdateChoice({
+    choiceId: commandChoiceId,
+  });
+
   return (
-    <div className="flex gap-[1rem] w-full flex-wrap bg-primary-light-blue rounded-md p-[.5rem] sm:flex-row flex-col sm:items-center">
+    <div
+      onMouseMoveCapture={(e) => {
+        if (e.ctrlKey) {
+          setShowCopyCursor(true);
+        } else {
+          setShowCopyCursor(false);
+        }
+      }}
+      onClick={() => {
+        if (showCopyCursor) {
+          handleCopyingCommand();
+        }
+      }}
+      onMouseLeave={() => {
+        setShowCopyCursor(false);
+      }}
+      className="flex gap-[1rem] w-full flex-wrap bg-primary-light-blue rounded-md p-[.5rem] sm:flex-row flex-col sm:items-center"
+      style={{ cursor: showCopyCursor ? "cell" : "" }}
+    >
       <div className="sm:w-[20%] min-w-[10rem] flex-grow w-full relative">
         <h3 className="text-[1.3rem] text-start outline-gray-300 w-full capitalize px-[1rem] py-[.5rem] rounded-md shadow-md bg-white cursor-default">
           {nameValue}

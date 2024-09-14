@@ -1,6 +1,7 @@
 import { RequestHandler } from "express";
 import {
   commandIfUpdateCommandIfOrderService,
+  createIfDuplicateService,
   createIfService,
   deleteIfService,
   getIfByPlotFieldCommandIdService,
@@ -21,6 +22,37 @@ export const getCommandIfByPlotFieldCommandIdController: RequestHandler<
   try {
     const commandIf = await getIfByPlotFieldCommandIdService({
       plotFieldCommandId: req.params.plotFieldCommandId,
+    });
+    if (commandIf) {
+      return res.status(201).json(commandIf);
+    } else {
+      return res.status(400).json({ message: "Something went wrong" });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
+type CreateCommandIfDuplicateParams = {
+  topologyBlockId: string;
+};
+
+type CreateCommandIfDuplicateBody = {
+  commandOrder?: number;
+};
+
+// @route POST http://localhost:3500/plotFieldCommands/ifs/topologyBlocks/:topologyBlockId/copy
+// @access Private
+export const createCommandIfDuplicateController: RequestHandler<
+  CreateCommandIfDuplicateParams,
+  unknown,
+  CreateCommandIfDuplicateBody,
+  unknown
+> = async (req, res, next) => {
+  try {
+    const commandIf = await createIfDuplicateService({
+      topologyBlockId: req.params.topologyBlockId,
+      commandOrder: req.body.commandOrder,
     });
     if (commandIf) {
       return res.status(201).json(commandIf);

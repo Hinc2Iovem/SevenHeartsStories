@@ -4,6 +4,7 @@ import {
   deleteCutSceneController,
   getCutSceneByPlotFieldCommandIdController,
   updateCutSceneController,
+  createCutSceneDuplicateController,
 } from "../../../../controllers/StoryEditor/PlotField/CutScene/CutSceneController";
 
 // Default route === /plotFieldCommands
@@ -13,6 +14,10 @@ cutScenesRoute
   .route("/:plotFieldCommandId/cutScenes")
   .post(createCutSceneController)
   .get(getCutSceneByPlotFieldCommandIdController);
+
+cutScenesRoute
+  .route("/cutScenes/topologyBlocks/:topologyBlockId/copy")
+  .post(createCutSceneDuplicateController);
 
 cutScenesRoute
   .route("/cutScenes/:cutSceneId")

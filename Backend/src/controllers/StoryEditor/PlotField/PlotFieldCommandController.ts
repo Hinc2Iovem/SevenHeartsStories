@@ -8,6 +8,7 @@ import {
   plotFieldCommandUpdateCommandNameService,
   plotFieldCommandUpdateCommandOrderService,
   getAllPlotFieldCommandsByIfIdInsideElseService,
+  plotFieldCommandUpdateAllOrdersAfterDuplicationService,
 } from "../../../services/StoryEditor/PlotField/PlotFieldCommandService";
 
 type GetAllPlotFieldCommandsByIfId = {
@@ -171,6 +172,40 @@ export const plotFieldCommandControllerUpdateCommandName: RequestHandler<
       commandName: req.body.commandName,
       plotFieldCommandId: req.params.plotFieldCommandId,
     });
+    if (plotFieldCommand) {
+      return res.status(201).json(plotFieldCommand);
+    } else {
+      return res.status(400).json({ message: "Something went wrong" });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
+type PlotFieldCommandUpdateAllOrdersAfterDuplicationParams = {
+  topologyBlockId: string;
+  duplicateId: string;
+};
+
+type PlotFieldCommandUpdateAllOrdersAfterDuplicationNameBody = {
+  commandOrder: number | undefined;
+};
+
+// @route PATCH http://localhost:3500/plotField/topologyBlocks/:topologyBlockId/commandOrder/duplicate/:duplicateId
+// @access Private
+export const plotFieldCommandUpdateAllOrdersAfterDuplicationController: RequestHandler<
+  PlotFieldCommandUpdateAllOrdersAfterDuplicationParams,
+  unknown,
+  PlotFieldCommandUpdateAllOrdersAfterDuplicationNameBody,
+  unknown
+> = async (req, res, next) => {
+  try {
+    const plotFieldCommand =
+      await plotFieldCommandUpdateAllOrdersAfterDuplicationService({
+        commandOrder: req.body.commandOrder,
+        duplicateId: req.params.duplicateId,
+        topologyBlockId: req.params.topologyBlockId,
+      });
     if (plotFieldCommand) {
       return res.status(201).json(plotFieldCommand);
     } else {

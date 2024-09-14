@@ -1,6 +1,7 @@
 import express from "express";
 import {
   createMoveController,
+  createMoveDuplicateController,
   deleteMoveController,
   getMoveByPlotFieldCommandIdController,
   updateMoveController,
@@ -13,6 +14,10 @@ movesRoute
   .route("/:plotFieldCommandId/moves")
   .get(getMoveByPlotFieldCommandIdController)
   .post(createMoveController);
+
+movesRoute
+  .route("/moves/topologyBlocks/:topologyBlockId/copy")
+  .post(createMoveDuplicateController);
 
 movesRoute
   .route("/moves/:moveId")

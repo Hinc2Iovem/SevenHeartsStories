@@ -5,6 +5,7 @@ import {
   getCallByPlotFieldCommandIdController,
   updateCallController,
   updateCallReferencedCommandIndexController,
+  createCallDuplicateController,
 } from "../../../../controllers/StoryEditor/PlotField/Call/CallController";
 
 // Default route === /plotFieldCommands
@@ -24,5 +25,9 @@ callRoute
 callRoute
   .route("/calls/:callId/commandIndex")
   .patch(updateCallReferencedCommandIndexController);
+
+callRoute
+  .route("/calls/topologyBlocks/:topologyBlockId/copy")
+  .post(createCallDuplicateController);
 
 callRoute.route("/calls/:callId").delete(deleteCallController);

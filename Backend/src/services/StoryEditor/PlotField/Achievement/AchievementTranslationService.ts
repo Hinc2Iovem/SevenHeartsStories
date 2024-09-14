@@ -1,11 +1,11 @@
-import createHttpError from "http-errors";
-import { validateMongoId } from "../../../../utils/validateMongoId";
-import TranslationAchievement from "../../../../models/StoryData/Translation/TranslationAchievement";
-import PlotFieldCommand from "../../../../models/StoryEditor/PlotField/PlotFieldCommand";
-import { checkCurrentLanguage } from "../../../../utils/checkCurrentLanguage";
-import Achievement from "../../../../models/StoryEditor/PlotField/Achievement/Achievement";
-import TopologyBlockInfo from "../../../../models/StoryEditor/Topology/TopologyBlockInfo";
 import { subDays, subHours, subMinutes } from "date-fns";
+import createHttpError from "http-errors";
+import TranslationAchievement from "../../../../models/StoryData/Translation/TranslationAchievement";
+import Achievement from "../../../../models/StoryEditor/PlotField/Achievement/Achievement";
+import PlotFieldCommand from "../../../../models/StoryEditor/PlotField/PlotFieldCommand";
+import TopologyBlock from "../../../../models/StoryEditor/Topology/TopologyBlock";
+import { checkCurrentLanguage } from "../../../../utils/checkCurrentLanguage";
+import { validateMongoId } from "../../../../utils/validateMongoId";
 
 type GetByUpdatedAtAndLanguageTypes = {
   currentLanguage: string | undefined;
@@ -167,13 +167,21 @@ export const createAchievementTranslationService = async ({
     throw createHttpError(400, "PlotFieldCommand with such id wasn't found");
   }
 
-  const topologyBlockInfo = await TopologyBlockInfo.findOne({
-    topologyBlockId,
-  }).exec();
+  const topologyBlockInfo = await TopologyBlock.findById(
+    topologyBlockId
+  ).exec();
   if (topologyBlockInfo) {
-    topologyBlockInfo.amountOfAchievements += 1;
+    if (topologyBlockInfo.topologyBlockInfo) {
+      topologyBlockInfo.topologyBlockInfo.amountOfAchievements += 1;
+    } else {
+      topologyBlockInfo.topologyBlockInfo = {
+        amountOfAchievements: 1,
+        amountOfCommands: 1,
+      };
+    }
     await topologyBlockInfo.save();
   }
+
   await TranslationAchievement.create({
     commandId: plotFieldCommandId,
     topologyBlockId,

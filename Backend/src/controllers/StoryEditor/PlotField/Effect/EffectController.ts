@@ -1,5 +1,6 @@
 import { RequestHandler } from "express";
 import {
+  createEffectDuplicateService,
   createEffectService,
   deleteEffectService,
   getEffectByPlotFieldCommandIdService,
@@ -47,6 +48,37 @@ export const createEffectController: RequestHandler<
   try {
     const effect = await createEffectService({
       plotFieldCommandId: req.params.plotFieldCommandId,
+    });
+    if (effect) {
+      return res.status(201).json(effect);
+    } else {
+      return res.status(400).json({ message: "Something went wrong" });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
+type CreateEffectDuplicateParams = {
+  topologyBlockId: string;
+};
+
+type CreateEffectDuplicateBody = {
+  commandOrder?: number;
+};
+
+// @route POST http://localhost:3500/plotFieldCommands/effects/topologyBlocks/:topologyBlockId/copy
+// @access Private
+export const createEffectDuplicateController: RequestHandler<
+  CreateEffectDuplicateParams,
+  unknown,
+  CreateEffectDuplicateBody,
+  unknown
+> = async (req, res, next) => {
+  try {
+    const effect = await createEffectDuplicateService({
+      topologyBlockId: req.params.topologyBlockId,
+      commandOrder: req.body.commandOrder,
     });
     if (effect) {
       return res.status(201).json(effect);

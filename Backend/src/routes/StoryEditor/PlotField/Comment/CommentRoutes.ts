@@ -1,6 +1,7 @@
 import express from "express";
 import {
   createCommentController,
+  createCommentDuplicateController,
   deleteCommentController,
   getCommentByPlotFieldCommandIdController,
   updateCommentController,
@@ -13,6 +14,10 @@ commentRoute
   .route("/:plotFieldCommandId/comments")
   .get(getCommentByPlotFieldCommandIdController)
   .post(createCommentController);
+
+commentRoute
+  .route("/comments/topologyBlocks/:topologyBlockId/copy")
+  .post(createCommentDuplicateController);
 
 commentRoute
   .route("/comments/:commentId")

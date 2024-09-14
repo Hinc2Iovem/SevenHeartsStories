@@ -4,6 +4,7 @@ import {
   deleteAmbientController,
   getAmbientByPlotFieldCommandIdController,
   updateAmbientController,
+  createAmbientDuplicateController,
 } from "../../../../controllers/StoryEditor/PlotField/Ambient/AmbientController";
 
 // Default route === /plotFieldCommands
@@ -13,6 +14,10 @@ ambientRoute
   .route("/:plotFieldCommandId/ambients")
   .post(createAmbientController)
   .get(getAmbientByPlotFieldCommandIdController);
+
+ambientRoute
+  .route("/ambients/topologyBlocks/:topologyBlockId/copy")
+  .post(createAmbientDuplicateController);
 
 ambientRoute
   .route("/ambients/:ambientId")
