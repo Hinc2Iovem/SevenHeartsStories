@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { axiosCustomized } from "../../../../../../api/axios";
 import { PlotFieldTypes } from "../../../../../../types/StoryEditor/PlotField/PlotFieldTypes";
+import usePlotfieldCommands from "../../../PlotFieldContext";
 
 type NewCommandTypes = {
   _id: string;
@@ -15,6 +16,7 @@ export default function useCreateBlankCommand({
 }: {
   topologyBlockId: string;
 }) {
+  const { addCommand } = usePlotfieldCommands();
   const queryClient = useQueryClient();
   return useMutation({
     mutationKey: ["new", "plotfield", "topologyBlock", topologyBlockId],
@@ -22,6 +24,7 @@ export default function useCreateBlankCommand({
       return await axiosCustomized
         .post<PlotFieldTypes>(`/plotField/topologyBlocks/${topologyBlockId}`, {
           commandOrder: commandOrder.commandOrder,
+          _id: commandOrder._id,
         })
         .then((r) => r.data);
     },
@@ -36,10 +39,17 @@ export default function useCreateBlankCommand({
         topologyBlockId,
       ]);
 
-      queryClient.setQueryData(
-        ["plotfield", "topologyBlock", topologyBlockId],
-        (old: PlotFieldTypes[]) => [...old, newCommand]
-      );
+      // queryClient.setQueryData(
+      //   ["plotfield", "topologyBlock", topologyBlockId],
+      //   (old: PlotFieldTypes[]) => [...old, newCommand]
+      // );
+
+      addCommand({
+        _id: newCommand._id,
+        command: "",
+        commandOrder: newCommand.commandOrder,
+        topologyBlockId,
+      });
 
       return { prevCommands };
     },
@@ -49,12 +59,12 @@ export default function useCreateBlankCommand({
         context?.prevCommands
       );
     },
-    onSettled: () => {
-      queryClient.invalidateQueries({
-        queryKey: ["plotfield", "topologyBlock", topologyBlockId],
-        type: "active",
-        exact: true,
-      });
-    },
+    // onSettled: () => {
+    //   queryClient.invalidateQueries({
+    //     queryKey: ["plotfield", "topologyBlock", topologyBlockId],
+    //     type: "active",
+    //     exact: true,
+    //   });
+    // },
   });
 }

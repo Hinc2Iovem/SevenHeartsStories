@@ -125,7 +125,8 @@ type PlotFieldCommandCreateParams = {
   topologyBlockId: string;
 };
 type PlotFieldCommandCreateBody = {
-  commandOrder: number;
+  commandOrder?: number;
+  _id?: string;
 };
 
 // @route POST http://localhost:3500/plotField/topologyBlocks/:topologyBlockId
@@ -140,6 +141,7 @@ export const plotFieldCommandControllerCreate: RequestHandler<
     const plotFieldCommand = await plotFieldCommandCreateService({
       topologyBlockId: req.params.topologyBlockId,
       commandOrder: req.body.commandOrder,
+      _id: req.body._id,
     });
     if (plotFieldCommand) {
       return res.status(201).json(plotFieldCommand);

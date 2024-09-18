@@ -9,6 +9,8 @@ import PlotfieldItem from "./Commands/PlotfieldItem";
 import useGetAllPlotFieldCommands from "./Commands/hooks/useGetAllPlotFieldCommands";
 import useUpdateCommandOrder from "./Commands/hooks/useUpdateCommandOrder";
 import { useEffect, useState } from "react";
+import usePlotfieldCommands from "../PlotFieldContext";
+import { PlotFieldTypes } from "../../../../types/StoryEditor/PlotField/PlotFieldTypes";
 
 type PlotFieldMainTypes = {
   topologyBlockId: string;
@@ -19,6 +21,8 @@ export default function PlotFieldMain({
   topologyBlockId,
   showAllCommands,
 }: PlotFieldMainTypes) {
+  const { commands: optimisticCommands } = usePlotfieldCommands();
+
   const { data: plotfieldCommands } = useGetAllPlotFieldCommands({
     topologyBlockId,
   });
@@ -30,6 +34,18 @@ export default function PlotFieldMain({
       setCommands(plotfieldCommands);
     }
   }, [plotfieldCommands]);
+  console.log(optimisticCommands);
+
+  useEffect(() => {
+    if (optimisticCommands) {
+      setCommands((prev) => {
+        return [
+          ...prev,
+          ...(optimisticCommands as unknown as PlotFieldTypes[]),
+        ];
+      });
+    }
+  }, [optimisticCommands]);
 
   const updateCommandOrder = useUpdateCommandOrder();
 

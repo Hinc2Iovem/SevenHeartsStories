@@ -1,23 +1,59 @@
 import { useState } from "react";
 import addCommand from "../../../../assets/images/Editor/addCommand.png";
-import minusCommand from "../../../../assets/images/Editor/minusCommand.png";
-import plusCommand from "../../../../assets/images/Editor/plusCommand.png";
 import cross from "../../../../assets/images/Editor/cross.png";
 
 type CreatingMultipleCommandsTypes = {
   setAllCommandsToCreate: React.Dispatch<React.SetStateAction<string[]>>;
+  setShowDefaultSettings: React.Dispatch<
+    React.SetStateAction<{
+      wait: boolean;
+      choice: boolean;
+    }>
+  >;
+  setTime: React.Dispatch<React.SetStateAction<string | null>>;
   pc: string;
 };
 
 export default function CreatingMultipleCommands({
   setAllCommandsToCreate,
+  setShowDefaultSettings,
+  setTime,
   pc,
 }: CreatingMultipleCommandsTypes) {
   const [amountOfCommands, setAmountOfCommands] = useState(0);
-  const [
-    showAmountOfCommandsWillBeCreated,
-    setShowAmountOfCommandsWillBeCreated,
-  ] = useState(false);
+
+  const handleAddCommand = () => {
+    setAmountOfCommands(1);
+    setAllCommandsToCreate((prev) => [...prev, pc]);
+
+    if (pc === "wait") {
+      setShowDefaultSettings((prev) => ({ wait: true, choice: prev.choice }));
+    }
+    if (pc === "choice") {
+      setShowDefaultSettings((prev) => ({ wait: prev.wait, choice: true }));
+    }
+  };
+
+  const handleRemoveAllCommands = () => {
+    setAmountOfCommands(0);
+    setAllCommandsToCreate((prev) => {
+      const index = prev.lastIndexOf(pc);
+      if (index !== -1) {
+        const newCommands = [...prev];
+        newCommands.splice(index, 1);
+        return newCommands;
+      }
+      return prev;
+    });
+
+    if (pc === "wait") {
+      setTime(null);
+      setShowDefaultSettings((prev) => ({ wait: false, choice: prev.choice }));
+    }
+    if (pc === "choice") {
+      setShowDefaultSettings((prev) => ({ wait: prev.wait, choice: false }));
+    }
+  };
 
   return (
     <form
@@ -28,77 +64,17 @@ export default function CreatingMultipleCommands({
     >
       <button
         type="button"
-        onClick={() => {
-          setAmountOfCommands(1);
-          setAllCommandsToCreate((prev) => {
-            return [...prev, pc];
-          });
-          setShowAmountOfCommandsWillBeCreated(true);
-        }}
+        onClick={handleAddCommand}
         className={`${
-          showAmountOfCommandsWillBeCreated ? "hidden" : ""
+          amountOfCommands ? "hidden" : ""
         } shadow-md rounded-full outline-white`}
       >
         <img src={addCommand} alt="+" className="w-[2.8rem]" />
       </button>
-      <div
-        className={`flex gap-[2rem] ${
-          showAmountOfCommandsWillBeCreated ? "" : "hidden"
-        }`}
-      >
-        <div className="flex gap-[.5rem]">
-          <button
-            type="button"
-            onClick={() => {
-              setAmountOfCommands((prev) => {
-                if (prev - 1 === 0) {
-                  setShowAmountOfCommandsWillBeCreated(false);
-                  return 0;
-                } else {
-                  return prev - 1;
-                }
-              });
-
-              setAllCommandsToCreate((prev) => {
-                const index = prev.lastIndexOf(pc);
-                if (index !== -1) {
-                  const newCommands = [...prev];
-                  newCommands.splice(index, 1);
-                  return newCommands;
-                } else {
-                  return prev;
-                }
-              });
-            }}
-            className="shadow-md outline-white"
-          >
-            <img src={minusCommand} alt="-" className="w-[2.8rem]" />
-          </button>
-          <div className="shadow-md outline-white h-full min-w-[2.8rem] text-center">
-            <h3 className="text-[1.7rem]">{amountOfCommands}</h3>
-          </div>
-          <button
-            type="button"
-            onClick={() => {
-              setAmountOfCommands((prev) => prev + 1);
-              setAllCommandsToCreate((prev) => {
-                return [...prev, pc];
-              });
-            }}
-            className="shadow-md outline-white"
-          >
-            <img src={plusCommand} alt="+" className="w-[2.8rem]" />
-          </button>
-        </div>
+      <div className={`flex gap-[2rem] ${amountOfCommands ? "" : "hidden"}`}>
         <button
           type="button"
-          onClick={() => {
-            setShowAmountOfCommandsWillBeCreated(false);
-            setAmountOfCommands(0);
-            setAllCommandsToCreate((prev) => {
-              return prev.filter((p) => p !== pc);
-            });
-          }}
+          onClick={handleRemoveAllCommands}
           className="shadow-md rounded-full outline-white"
         >
           <img src={cross} alt="X" className="w-[2.8rem]" />

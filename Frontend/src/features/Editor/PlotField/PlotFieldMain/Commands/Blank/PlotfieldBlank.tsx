@@ -5,6 +5,7 @@ import {
   AllPossibleSayPlotFieldCommands,
 } from "../../../../../../const/PLOTFIELD_COMMANDS";
 import useGetTranslationCharacters from "../../../../../../hooks/Fetching/Translation/Characters/useGetTranslationCharacters";
+import useOutOfModal from "../../../../../../hooks/UI/useOutOfModal";
 import { AllPossiblePlotFieldComamndsTypes } from "../../../../../../types/StoryEditor/PlotField/PlotFieldTypes";
 import { CommandSayVariationTypes } from "../../../../../../types/StoryEditor/PlotField/Say/SayTypes";
 import useCreateAchievement from "../hooks/Achievement/useCreateAchievement";
@@ -12,6 +13,7 @@ import useCreateAmbient from "../hooks/Ambient/useCreateAmbient";
 import useCreateBackground from "../hooks/Background/useCreateBackground";
 import useCreateCall from "../hooks/Call/useCreateCall";
 import useCreateChoice from "../hooks/Choice/useCreateChoice";
+import useCreateComment from "../hooks/Comment/useCommentWait";
 import useCreateCondition from "../hooks/Condition/useCreateCondition";
 import useCreateCutScene from "../hooks/CutScene/useCreateCutScene";
 import useCreateEffect from "../hooks/Effect/useCreateEffect";
@@ -28,9 +30,6 @@ import useUpdateCommandName from "../hooks/useUpdateCommandName";
 import useCreateWait from "../hooks/Wait/useCreateWait";
 import useCreateWardrobe from "../hooks/Wardrobe/useCreateWardrobe";
 import PlotFieldBlankCreateCharacter from "./PlotFieldBlankCreateCharacter";
-import useOutOfModal from "../../../../../../hooks/UI/useOutOfModal";
-import useCreateComment from "../hooks/Comment/useCommentWait";
-import useUpdateTopologyBlockAmountOfCommands from "../hooks/TopologyBlock/useUpdateTopologyBlockAmountOfCommands";
 
 type PlotFieldBlankTypes = {
   plotFieldCommandId: string;
@@ -77,6 +76,7 @@ export default function PlotfieldBlank({
     storyId: storyId || "",
     language: "russian",
   });
+
   const promptRef = useRef<HTMLDivElement>(null);
   const [showPromptValues, setShowPromptValues] = useState(false);
   const [value, setValue] = useState("");
@@ -174,11 +174,7 @@ export default function PlotfieldBlank({
     plotFieldCommandId,
     topologyBlockId,
   });
-  const updateTopologyBlockAmountOfCommands =
-    useUpdateTopologyBlockAmountOfCommands({
-      topologyBlockId,
-      addOrMinusAmountOfCommand: "add",
-    });
+
   const handleSubmit = ({
     submittedByCharacter,
     type,
@@ -246,7 +242,6 @@ export default function PlotfieldBlank({
       }
       updateCommandName.mutate({ valueForSay: false });
     }
-    updateTopologyBlockAmountOfCommands.mutate();
   };
 
   const handleFormSubmit = (e: React.FormEvent) => {
@@ -291,6 +286,7 @@ export default function PlotfieldBlank({
     setShowModal: setShowPromptValues,
     showModal: showPromptValues,
   });
+
   return (
     <div className="shadow-sm shadow-gray-300 bg-white rounded-md relative w-full">
       <form

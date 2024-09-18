@@ -106,22 +106,26 @@ export const plotFieldCommandCreateInsideIfBlockService = async ({
 
 type PlotFieldCommandCreateTypes = {
   topologyBlockId: string;
-  commandOrder: number;
+  commandOrder?: number;
+  _id?: string;
 };
 
 export const plotFieldCommandCreateService = async ({
   topologyBlockId,
   commandOrder,
+  _id,
 }: PlotFieldCommandCreateTypes) => {
   validateMongoId({ value: topologyBlockId, valueName: "TopologyBlock" });
+  console.log("commandOrder: ", commandOrder);
 
-  if (typeof commandOrder !== "number") {
-    throw createHttpError(400, "CommandOrder is required");
+  if (typeof commandOrder !== "number" || !_id?.trim().length) {
+    throw createHttpError(400, "CommandOrder and _id are required");
   }
 
   const currentTopologyBlock = await TopologyBlock.findById(
     topologyBlockId
   ).exec();
+
   if (
     currentTopologyBlock &&
     typeof currentTopologyBlock.topologyBlockInfo?.amountOfCommands === "number"
@@ -130,7 +134,7 @@ export const plotFieldCommandCreateService = async ({
     await currentTopologyBlock.save();
   }
 
-  return await PlotFieldCommand.create({ topologyBlockId, commandOrder });
+  return await PlotFieldCommand.create({ topologyBlockId, commandOrder, _id });
 };
 
 type PlotFieldCommandNameUpdateTypes = {
@@ -143,6 +147,8 @@ export const plotFieldCommandUpdateCommandNameService = async ({
   plotFieldCommandId,
 }: PlotFieldCommandNameUpdateTypes) => {
   validateMongoId({ value: plotFieldCommandId, valueName: "PlotField" });
+
+  console.log("plotFieldCommandId: ", plotFieldCommandId);
 
   const existingPlotFieldCommand = await PlotFieldCommand.findById(
     plotFieldCommandId
