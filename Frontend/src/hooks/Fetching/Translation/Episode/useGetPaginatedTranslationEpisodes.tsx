@@ -21,11 +21,13 @@ export default function useGetPaginatedTranslationEpisodes({
   page,
   limit,
   seasonId,
+  storyId,
 }: {
   language?: CurrentlyAvailableLanguagesTypes;
   page: number;
   limit: number;
   seasonId: string;
+  storyId: string;
 }) {
   return useQuery({
     queryKey: [
@@ -36,6 +38,8 @@ export default function useGetPaginatedTranslationEpisodes({
       limit,
       "translation",
       language,
+      "story",
+      storyId,
       "season",
       seasonId,
       "episode",
@@ -46,6 +50,6 @@ export default function useGetPaginatedTranslationEpisodes({
           `/episodes/paginated/translations?currentLanguage=${language}&page=${page}&limit=${limit}&seasonId=${seasonId}`
         )
         .then((r) => r.data),
-    enabled: !!language && !!page && !!limit && !!seasonId,
+    enabled: !!language && !!storyId && !!page && !!limit && !!seasonId,
   });
 }

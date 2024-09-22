@@ -7,6 +7,7 @@ import {
   getPaginatedSeasonTranslationUpdatedAtAndLanguageService,
   seasonCreateService,
   seasonTranslationUpdateService,
+  getCheckSeasonTranslationCompletnessByStoryIdService,
 } from "../../../services/StoryData/Season/SeasonTranslationService";
 
 type GetUpdatedAtAndLanguageQuery = {
@@ -66,6 +67,39 @@ export const getPaginatedTranlsationSeasonsController: RequestHandler<
     });
     if (textFieldName) {
       return res.status(201).json(textFieldName);
+    } else {
+      return res.status(400).json({ message: "Something went wrong" });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
+type GetCheckSeasonTranslationCompletnessByStoryIdParams = {
+  storyId: string;
+};
+
+type GetCheckSeasonTranslationCompletnessByStoryIdQuery = {
+  currentLanguage: string | undefined;
+  translateToLanguage: string | undefined;
+};
+
+// @route GET http://localhost:3500/seasons/stories/:storyId/completness/translations
+// @access Private
+export const getCheckSeasonTranslationCompletnessByStoryIdController: RequestHandler<
+  GetCheckSeasonTranslationCompletnessByStoryIdParams,
+  unknown,
+  unknown,
+  GetCheckSeasonTranslationCompletnessByStoryIdQuery
+> = async (req, res, next) => {
+  try {
+    const seasons = await getCheckSeasonTranslationCompletnessByStoryIdService({
+      storyId: req.params.storyId,
+      currentLanguage: req.query.currentLanguage,
+      translateToLanguage: req.query.translateToLanguage,
+    });
+    if (typeof seasons === "boolean") {
+      return res.status(201).json(seasons);
     } else {
       return res.status(400).json({ message: "Something went wrong" });
     }

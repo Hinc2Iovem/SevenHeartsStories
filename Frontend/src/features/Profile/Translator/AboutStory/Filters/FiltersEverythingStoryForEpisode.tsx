@@ -1,10 +1,10 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import useGetPaginatedTranslationEpisodes from "../../../../../hooks/Fetching/Translation/Episode/useGetPaginatedTranslationEpisodes";
 import useInvalidateTranslatorEpisodeQueries from "../../../../../hooks/helpers/Profile/Translator/useInvalidateTranslatorEpisodeQueries";
 import { CurrentlyAvailableLanguagesTypes } from "../../../../../types/Additional/CURRENTLY_AVAILABEL_LANGUAGES";
 import { TranslationEpisodeTypes } from "../../../../../types/Additional/TranslationTypes";
-import SeasonPrompt from "../../InputPrompts/SeasonPrompt";
-import StoryPrompt from "../../InputPrompts/StoryPrompt";
+import SeasonPrompt from "../../InputPrompts/SeasonPrompt/SeasonPrompt";
+import StoryPrompt from "../../InputPrompts/StoryPrompt/StoryPrompt";
 import DisplayTranslatedNonTranslatedEpisode from "../Display/Episode/DisplayTranslatedNonTranslatedEpisode";
 
 type FiltersEverythingCharacterForEpisodeTypes = {
@@ -26,8 +26,16 @@ export default function FiltersEverythingStoryForEpisode({
   prevTranslateToLanguage,
 }: FiltersEverythingCharacterForEpisodeTypes) {
   const [page, setPage] = useState(1);
+  const [prevStoryId, setPrevStoryId] = useState("");
+  const [seasonValue, setSeasonValue] = useState("");
   const [storyId, setStoryId] = useState("");
   const [seasonId, setSeasonId] = useState("");
+
+  useEffect(() => {
+    if (storyId?.trim().length) {
+      setSeasonId("");
+    }
+  }, [storyId]);
 
   useInvalidateTranslatorEpisodeQueries({
     prevTranslateFromLanguage,
@@ -43,6 +51,7 @@ export default function FiltersEverythingStoryForEpisode({
     language: translateFromLanguage,
     page,
     limit: 3,
+    storyId,
   });
 
   const { data: nonTranslatedEpisode } = useGetPaginatedTranslationEpisodes({
@@ -50,6 +59,7 @@ export default function FiltersEverythingStoryForEpisode({
     language: translateToLanguage,
     page,
     limit: 3,
+    storyId,
   });
 
   const memoizedCombinedTranslations = useMemo(() => {
@@ -92,8 +102,23 @@ export default function FiltersEverythingStoryForEpisode({
   return (
     <>
       <div className="flex w-full gap-[1rem] bg-neutral-alabaster px-[.5rem] py-[.5rem] rounded-md shadow-sm">
-        <StoryPrompt setStoryId={setStoryId} />
-        <SeasonPrompt setSeasonId={setSeasonId} storyId={storyId} />
+        <StoryPrompt
+          setStoryId={setStoryId}
+          setPrevStoryId={setPrevStoryId}
+          currentLanguage={translateFromLanguage}
+          setSeasonValue={setSeasonValue}
+          currentTranslationView={"episode"}
+          prevStoryId={prevStoryId}
+          translateToLanguage={translateToLanguage}
+        />
+        <SeasonPrompt
+          setSeasonId={setSeasonId}
+          storyId={storyId}
+          seasonValue={seasonValue}
+          setSeasonValue={setSeasonValue}
+          currentLanguage={translateFromLanguage}
+          translateToLanguage={translateToLanguage}
+        />
       </div>
       <main
         className={`grid grid-cols-[repeat(auto-fill,minmax(30rem,1fr))] sm:grid-cols-[repeat(auto-fill,minmax(50rem,1fr))] gap-[1rem] w-full`}
@@ -101,6 +126,8 @@ export default function FiltersEverythingStoryForEpisode({
         {memoizedCombinedTranslations.map((ct, i) => (
           <DisplayTranslatedNonTranslatedEpisode
             key={(ct.translated?._id || i) + "-ctEpisode"}
+            currentIndex={i}
+            lastIndex={memoizedCombinedTranslations.length - 1}
             languageToTranslate={translateToLanguage}
             translateFromLanguage={translateFromLanguage}
             {...ct}

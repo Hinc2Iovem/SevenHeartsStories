@@ -7,6 +7,7 @@ import {
   getAllCharacteristicsTranslationsByCharacteristicIdAndLanguageController,
   getPaginatedCharacteristicTranslationUpdatedAtAndLanguageController,
   getPaginatedTranlsationCharacteristicsController,
+  getCheckCharacteristicTranslationCompletnessByStoryIdController,
 } from "../../../controllers/StoryData/Characteristic/CharacteristicTranslationController";
 import { verifyHeadScriptwriter } from "../../../middlewares/verifyHeadScriptwriter";
 import { verifyJWT } from "../../../middlewares/verifyJWT";
@@ -47,3 +48,7 @@ characteristicTranslationRoute
 characteristicTranslationRoute
   .route("/:characteristicId/stories/:storyId/translations")
   .patch(verifyJWT, characteristicTranslationUpdateController);
+
+characteristicTranslationRoute
+  .route("/stories/:storyId/completness/translations")
+  .get(getCheckCharacteristicTranslationCompletnessByStoryIdController);

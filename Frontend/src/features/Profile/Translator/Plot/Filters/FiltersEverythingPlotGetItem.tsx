@@ -88,6 +88,8 @@ export default function FiltersEverythingPlotGetItem({
             <DisplayTranslatedNonTranslatedPlotGetItem
               key={t.translated?._id || i + "-getItem"}
               languageToTranslate={translateToLanguage}
+              lastIndex={memoizedCombinedTranslations.length - 1}
+              currentIndex={i}
               translateFromLanguage={translateFromLanguage}
               {...t}
             />

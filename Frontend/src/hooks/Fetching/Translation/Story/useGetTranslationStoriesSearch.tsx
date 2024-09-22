@@ -6,13 +6,11 @@ import { CurrentlyAvailableLanguagesTypes } from "../../../../types/Additional/C
 type GetTranslationStoriesSearchTypes = {
   language: CurrentlyAvailableLanguagesTypes;
   debouncedValue?: string;
-  showStories: boolean;
 };
 
 export default function useGetTranslationStoriesSearch({
   language,
   debouncedValue,
-  showStories,
 }: GetTranslationStoriesSearchTypes) {
   return useQuery({
     queryKey: ["translation", language, "story", "search", debouncedValue],
@@ -22,6 +20,6 @@ export default function useGetTranslationStoriesSearch({
           `/stories/storyStatus/search/translations?currentLanguage=${language}&text=${debouncedValue}`
         )
         .then((r) => r.data),
-    enabled: !!language && !!showStories,
+    enabled: !!language,
   });
 }

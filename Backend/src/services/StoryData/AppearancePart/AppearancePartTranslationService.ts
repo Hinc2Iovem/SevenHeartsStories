@@ -191,6 +191,65 @@ export const getPaginatedTranlsationAppearancePartsService = async ({
   return results;
 };
 
+type GetCheckAppearancePartTranslationCompletnessByCharacterIdTypes = {
+  characterId: string;
+  currentLanguage: string | undefined;
+  translateToLanguage: string | undefined;
+  appearancePartVariation: string | undefined;
+};
+
+export const getCheckAppearancePartTranslationCompletnessByCharacterIdService =
+  async ({
+    characterId,
+    currentLanguage,
+    appearancePartVariation,
+    translateToLanguage,
+  }: GetCheckAppearancePartTranslationCompletnessByCharacterIdTypes) => {
+    validateMongoId({ value: characterId, valueName: "Character" });
+    if (
+      !currentLanguage?.trim().length ||
+      !translateToLanguage?.trim().length
+    ) {
+      throw createHttpError(400, "CurrentLanguage is required");
+    }
+    checkCurrentLanguage({ currentLanguage });
+    checkCurrentLanguage({ currentLanguage: translateToLanguage });
+
+    const objectTranslateFrom: {
+      characterId: string;
+      language: string;
+      appearancePartVariation?: string;
+    } = {
+      characterId,
+      language: currentLanguage,
+    };
+
+    const objectTranslateTo: {
+      characterId: string;
+      language: string;
+      appearancePartVariation?: string;
+    } = {
+      characterId,
+      language: translateToLanguage,
+    };
+
+    if (appearancePartVariation?.trim().length) {
+      objectTranslateFrom.appearancePartVariation = appearancePartVariation;
+      objectTranslateTo.appearancePartVariation = appearancePartVariation;
+    }
+
+    const translateFromAppearancePart =
+      await TranslationAppearancePart.countDocuments(objectTranslateFrom);
+    const translateToAppearancePart =
+      await TranslationAppearancePart.countDocuments(objectTranslateTo);
+
+    if (translateFromAppearancePart === translateToAppearancePart) {
+      return true;
+    } else {
+      return false;
+    }
+  };
+
 type AppearancePartByAppearancePartIdTypes = {
   appearancePartId: string;
   currentLanguage: string;

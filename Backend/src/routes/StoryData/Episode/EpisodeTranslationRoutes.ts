@@ -7,6 +7,7 @@ import {
   getAllEpisodesTranslationsByTypeAndSearchController,
   getPaginatedEpisodeTranslationUpdatedAtAndLanguageController,
   getPaginatedTranlsationEpisodesController,
+  getCheckEpisodeTranslationCompletnessBySeasonIdController,
 } from "../../../controllers/StoryData/Episode/EpisodeTranslationController";
 import { verifyHeadScriptwriter } from "../../../middlewares/verifyHeadScriptwriter";
 import { verifyJWT } from "../../../middlewares/verifyJWT";
@@ -35,3 +36,7 @@ episodeTranslationRoute
 episodeTranslationRoute
   .route("/episodeStatus/search/translations")
   .get(verifyJWT, getAllEpisodesTranslationsByTypeAndSearchController);
+
+episodeTranslationRoute
+  .route("/seasons/:seasonId/completness/translations")
+  .get(getCheckEpisodeTranslationCompletnessBySeasonIdController);

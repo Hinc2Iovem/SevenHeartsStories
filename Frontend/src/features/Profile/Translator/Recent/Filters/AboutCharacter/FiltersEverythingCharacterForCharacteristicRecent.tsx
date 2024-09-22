@@ -95,12 +95,14 @@ export default function FiltersEverythingCharacterForCharacteristicRecent({
     <>
       {memoizedCombinedTranslations.length ? (
         <main
-          className={`grid grid-cols-[repeat(auto-fill,minmax(25rem,1fr))] gap-[1rem] w-full`}
+          className={`grid grid-cols-[repeat(auto-fit,minmax(25rem,1fr))] gap-[1rem] w-full`}
         >
           {memoizedCombinedTranslations?.map((ct, i) => (
             <DisplayTranslatedNonTranslatedCharacteristic
               key={(ct?.translated?._id || i) + "-ctCharacteristic"}
               languageToTranslate={translateToLanguage}
+              currentIndex={i}
+              lastIndex={memoizedCombinedTranslations.length - 1}
               translateFromLanguage={translateFromLanguage}
               {...ct}
             />

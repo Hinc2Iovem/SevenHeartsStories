@@ -9,6 +9,8 @@ type DisplayTranslatedNonTranslatedSeasonTypes = {
   translated: TranslationSeasonTypes | null;
   translateFromLanguage: CurrentlyAvailableLanguagesTypes;
   nonTranslated: TranslationSeasonTypes | null;
+  currentIndex: number;
+  lastIndex: number;
 };
 
 export default function DisplayTranslatedNonTranslatedSeason({
@@ -16,6 +18,8 @@ export default function DisplayTranslatedNonTranslatedSeason({
   translated,
   languageToTranslate,
   translateFromLanguage,
+  currentIndex,
+  lastIndex,
 }: DisplayTranslatedNonTranslatedSeasonTypes) {
   const [translatedBackUpSeasonName, setTranslatedBackUpSeasonName] =
     useState("");
@@ -89,7 +93,9 @@ export default function DisplayTranslatedNonTranslatedSeason({
 
   return (
     <div
-      className={`flex-col h-fit w-full flex gap-[.5rem] bg-primary-pastel-blue p-[.5rem] rounded-md`}
+      className={`${
+        currentIndex === lastIndex ? "col-span-full" : ""
+      } flex-col h-fit w-full flex gap-[.5rem] bg-primary-pastel-blue p-[.5rem] rounded-md`}
     >
       <div
         className={`h-full w-full overflow-auto rounded-md shadow-md shadow-gray-400 bg-white`}

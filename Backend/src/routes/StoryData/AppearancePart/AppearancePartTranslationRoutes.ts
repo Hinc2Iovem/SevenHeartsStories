@@ -7,6 +7,7 @@ import {
   getAllAppearancePartsTranslationByCharacterIdController,
   getPaginatedAppearancePartTranslationUpdatedAtAndLanguageController,
   getPaginatedTranlsationAppearancePartsController,
+  getCheckAppearancePartTranslationCompletnessByCharacterIdController,
 } from "../../../controllers/StoryData/AppearancePart/AppearancePartTranslationController";
 
 // Default route === /appearanceParts
@@ -36,3 +37,7 @@ appearancePartTranslationsRoute
 appearancePartTranslationsRoute
   .route("/characters/:characterId/types/translations")
   .get(getAllAppearancePartsTranslationByCharacterIdAndTypeController);
+
+appearancePartTranslationsRoute
+  .route("/characters/:characterId/completness/translations")
+  .get(getCheckAppearancePartTranslationCompletnessByCharacterIdController);

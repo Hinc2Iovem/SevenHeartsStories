@@ -89,6 +89,8 @@ export default function FiltersEverythingPlotAchievement({
           {memoizedCombinedTranslations?.map((t, i) => (
             <DisplayTranslatedNonTranslatedPlotAchievement
               key={t.translated?._id || i + "-achievement"}
+              lastIndex={memoizedCombinedTranslations.length - 1}
+              currentIndex={i}
               languageToTranslate={translateToLanguage}
               translateFromLanguage={translateFromLanguage}
               {...t}

@@ -9,6 +9,8 @@ import { CharacterTypes } from "../../../../../../types/StoryData/Character/Char
 type DisplayTranslatedNonTranslatedCharacterTypes = {
   languageToTranslate: CurrentlyAvailableLanguagesTypes;
   translateFromLanguage: CurrentlyAvailableLanguagesTypes;
+  lastIndex: number;
+  currentIndex: number;
 } & CombinedTranslatedAndNonTranslatedCharacterTypes;
 
 export default function DisplayTranslatedNonTranslatedCharacterRecent({
@@ -16,6 +18,8 @@ export default function DisplayTranslatedNonTranslatedCharacterRecent({
   translated,
   languageToTranslate,
   translateFromLanguage,
+  currentIndex,
+  lastIndex,
 }: DisplayTranslatedNonTranslatedCharacterTypes) {
   const [characterType, setCharacterType] = useState("" as CharacterTypes);
   const [translatedCharacterNameInitial, setTranslatedCharacterNameInitial] =
@@ -194,6 +198,8 @@ export default function DisplayTranslatedNonTranslatedCharacterRecent({
         characterType === "emptycharacter" || characterType === "maincharacter"
           ? "h-fit flex-col"
           : "min-h-[24rem] sm:flex-row flex-col"
+      } ${
+        currentIndex === lastIndex ? "col-span-full" : ""
       } w-full flex gap-[.5rem] bg-primary-pastel-blue p-[.5rem] rounded-md`}
     >
       <div

@@ -1,4 +1,4 @@
-import mongoose, { InferSchemaType, model } from "mongoose";
+import mongoose, { model } from "mongoose";
 
 export const translationCharacterSchema = new mongoose.Schema(
   {

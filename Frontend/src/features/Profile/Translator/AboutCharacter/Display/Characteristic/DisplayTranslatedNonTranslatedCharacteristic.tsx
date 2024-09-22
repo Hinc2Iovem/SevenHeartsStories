@@ -9,6 +9,8 @@ type DisplayTranslatedNonTranslatedCharacteristicTypes = {
   translateFromLanguage: CurrentlyAvailableLanguagesTypes;
   translated: TranslationCharacterCharacteristicTypes | null;
   nonTranslated: TranslationCharacterCharacteristicTypes | null;
+  lastIndex: number;
+  currentIndex: number;
 };
 
 export default function DisplayTranslatedNonTranslatedCharacteristic({
@@ -16,6 +18,8 @@ export default function DisplayTranslatedNonTranslatedCharacteristic({
   nonTranslated,
   languageToTranslate,
   translateFromLanguage,
+  currentIndex,
+  lastIndex,
 }: DisplayTranslatedNonTranslatedCharacteristicTypes) {
   const [
     translatedBackUpCharacterCharacteristic,

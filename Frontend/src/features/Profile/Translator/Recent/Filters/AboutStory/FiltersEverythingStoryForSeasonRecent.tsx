@@ -93,12 +93,14 @@ export default function FiltersEverythingStoryForSeasonRecent({
     <>
       {memoizedCombinedTranslations.length ? (
         <main
-          className={`grid grid-cols-[repeat(auto-fill,minmax(30rem,1fr))] gap-[1rem] w-full`}
+          className={`grid grid-cols-[repeat(auto-fit,minmax(30rem,1fr))] gap-[1rem] w-full`}
         >
           {memoizedCombinedTranslations.map((ct, i) => (
             <DisplayTranslatedNonTranslatedSeason
               key={(ct.translated?._id || i) + "-ctSeason"}
               languageToTranslate={translateToLanguage}
+              lastIndex={memoizedCombinedTranslations.length - 1}
+              currentIndex={i}
               translateFromLanguage={translateFromLanguage}
               {...ct}
             />

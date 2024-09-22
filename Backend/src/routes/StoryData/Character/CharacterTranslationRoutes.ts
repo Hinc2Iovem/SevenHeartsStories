@@ -6,6 +6,7 @@ import {
   characterUpdateTranslationController,
   getAllTranslationCharactersByStoryIdController,
   getCharacterTranslationByCharacterIdController,
+  getCheckCharacterTranslationCompletnessByStoryIdController,
   getPaginatedCharacterTranslationUpdatedAtAndLanguageController,
   getPaginatedTranlsationCharactersController,
 } from "../../../controllers/StoryData/Character/CharacterTranslationController";
@@ -41,3 +42,7 @@ characterTranslationRoute
   .route("/:characterId/translations")
   .get(getCharacterTranslationByCharacterIdController)
   .patch(characterUpdateTranslationController);
+
+characterTranslationRoute
+  .route("/stories/:storyId/completness/translations")
+  .get(getCheckCharacterTranslationCompletnessByStoryIdController);

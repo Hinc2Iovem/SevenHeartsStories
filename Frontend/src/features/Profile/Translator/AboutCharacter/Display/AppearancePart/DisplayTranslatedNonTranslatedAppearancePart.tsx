@@ -11,6 +11,8 @@ type DisplayTranslatedNonTranslatedAppearancePartTypes = {
   translated: TranslationAppearancePartTypes | null;
   nonTranslated: TranslationAppearancePartTypes | null;
   translateFromLanguage: CurrentlyAvailableLanguagesTypes;
+  lastIndex: number;
+  currentIndex: number;
 };
 
 export default function DisplayTranslatedNonTranslatedAppearancePart({
@@ -19,6 +21,8 @@ export default function DisplayTranslatedNonTranslatedAppearancePart({
   languageToTranslate,
   filteredAppearanceType,
   translateFromLanguage,
+  currentIndex,
+  lastIndex,
 }: DisplayTranslatedNonTranslatedAppearancePartTypes) {
   const [translatedAppearancePart, setTranslatedAppearancePart] = useState("");
   const [translatedBackUpAppearancePart, setTranslatedBackUpAppearancePart] =
@@ -118,7 +122,9 @@ export default function DisplayTranslatedNonTranslatedAppearancePart({
         filteredAppearanceType === translated?.type ||
         ("" as TranslationTextFieldNameAppearancePartsTypes) ? (
           <div
-            className={`h-fit flex-col w-full flex gap-[.5rem] bg-primary-pastel-blue p-[.5rem] rounded-md`}
+            className={`${
+              currentIndex === lastIndex ? "col-span-full" : ""
+            } h-fit flex-col w-full flex gap-[.5rem] bg-primary-pastel-blue p-[.5rem] rounded-md`}
           >
             <div
               className={`h-full w-full rounded-md shadow-md shadow-gray-400 bg-white`}
@@ -155,7 +161,9 @@ export default function DisplayTranslatedNonTranslatedAppearancePart({
         ) : null
       ) : (
         <div
-          className={`h-fit flex-col w-full flex gap-[.5rem] bg-primary-pastel-blue p-[.5rem] rounded-md`}
+          className={`${
+            currentIndex === lastIndex ? "col-span-full" : ""
+          } h-fit flex-col w-full flex gap-[.5rem] bg-primary-pastel-blue p-[.5rem] rounded-md`}
         >
           <div
             className={`h-full w-full rounded-md shadow-md shadow-gray-400 bg-white`}

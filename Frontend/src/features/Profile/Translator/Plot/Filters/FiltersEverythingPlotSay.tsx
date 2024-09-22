@@ -88,6 +88,8 @@ export default function FiltersEverythingPlotSay({
           {memoizedCombinedTranslations?.map((t, i) => (
             <DisplayTranslatedNonTranslatedPlotSay
               key={t.translated?._id || i + "-say"}
+              lastIndex={memoizedCombinedTranslations.length - 1}
+              currentIndex={i}
               languageToTranslate={translateToLanguage}
               translateFromLanguage={translateFromLanguage}
               {...t}

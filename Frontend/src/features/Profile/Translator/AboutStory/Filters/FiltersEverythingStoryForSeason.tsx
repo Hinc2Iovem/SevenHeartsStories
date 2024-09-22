@@ -3,7 +3,7 @@ import useGetPaginatedTranslationSeasons from "../../../../../hooks/Fetching/Tra
 import useInvalidateTranslatorSeasonQueries from "../../../../../hooks/helpers/Profile/Translator/useInvalidateTranslatorSeasonQueries";
 import { CurrentlyAvailableLanguagesTypes } from "../../../../../types/Additional/CURRENTLY_AVAILABEL_LANGUAGES";
 import { TranslationSeasonTypes } from "../../../../../types/Additional/TranslationTypes";
-import StoryPrompt from "../../InputPrompts/StoryPrompt";
+import StoryPrompt from "../../InputPrompts/StoryPrompt/StoryPrompt";
 import DisplayTranslatedNonTranslatedSeason from "../Display/Season/DisplayTranslatedNonTranslatedSeason";
 
 type FiltersEverythingCharacterForSeasonTypes = {
@@ -90,7 +90,12 @@ export default function FiltersEverythingStoryForSeason({
   return (
     <>
       <div className="flex w-full gap-[1rem] bg-neutral-alabaster px-[.5rem] py-[.5rem] rounded-md shadow-sm">
-        <StoryPrompt setStoryId={setStoryId} />
+        <StoryPrompt
+          setStoryId={setStoryId}
+          currentLanguage={translateFromLanguage}
+          currentTranslationView={"season"}
+          translateToLanguage={translateToLanguage}
+        />
       </div>
       <main
         className={`grid grid-cols-[repeat(auto-fill,minmax(30rem,1fr))] gap-[1rem] w-full`}
@@ -98,6 +103,8 @@ export default function FiltersEverythingStoryForSeason({
         {memoizedCombinedTranslations.map((ct, i) => (
           <DisplayTranslatedNonTranslatedSeason
             key={(ct.translated?._id || i) + "-ctSeason"}
+            currentIndex={i}
+            lastIndex={memoizedCombinedTranslations.length - 1}
             languageToTranslate={translateToLanguage}
             translateFromLanguage={translateFromLanguage}
             {...ct}

@@ -10,6 +10,8 @@ import "../../../../../Editor/Flowchart/FlowchartStyles.css";
 type DisplayTranslatedNonTranslatedEpisodeTypes = {
   languageToTranslate: CurrentlyAvailableLanguagesTypes;
   translateFromLanguage: CurrentlyAvailableLanguagesTypes;
+  currentIndex: number;
+  lastIndex: number;
 } & CombinedTranslatedAndNonTranslatedEpisodeTypes;
 
 export default function DisplayTranslatedNonTranslatedEpisode({
@@ -17,6 +19,8 @@ export default function DisplayTranslatedNonTranslatedEpisode({
   translated,
   languageToTranslate,
   translateFromLanguage,
+  currentIndex,
+  lastIndex,
 }: DisplayTranslatedNonTranslatedEpisodeTypes) {
   const [translatedBackUpEpisodeName, setTranslatedBackUpEpisodeName] =
     useState("");
@@ -153,7 +157,9 @@ export default function DisplayTranslatedNonTranslatedEpisode({
 
   return (
     <div
-      className={`sm:h-[15rem] h-[25rem] sm:flex-row flex-col w-full flex gap-[.5rem] bg-primary-pastel-blue p-[.5rem] rounded-md`}
+      className={`${
+        currentIndex === lastIndex ? "col-span-full" : ""
+      } sm:h-[15rem] h-[25rem] sm:flex-row flex-col w-full flex gap-[.5rem] bg-primary-pastel-blue p-[.5rem] rounded-md`}
     >
       <div
         className={`h-full w-full sm:w-[calc(50%)] overflow-auto rounded-md shadow-md shadow-gray-400 bg-white | containerScroll`}

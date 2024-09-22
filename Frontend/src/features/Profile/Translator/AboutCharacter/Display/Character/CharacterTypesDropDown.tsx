@@ -9,12 +9,14 @@ const CHARACTER_TYPES = [
 
 type CharacterTypesDropDownTypes = {
   characterType: string;
-  setCharacterType: React.Dispatch<React.SetStateAction<string>>;
+  setCharacterTypeRus: React.Dispatch<React.SetStateAction<string>>;
+  setCharacterTypeEng: React.Dispatch<React.SetStateAction<string>>;
 };
 
 export default function CharacterTypesDropDown({
   characterType,
-  setCharacterType,
+  setCharacterTypeRus,
+  setCharacterTypeEng,
 }: CharacterTypesDropDownTypes) {
   const [showModal, setShowModal] = useState(false);
   const modalRef = useRef<HTMLDivElement>(null);
@@ -43,9 +45,17 @@ export default function CharacterTypesDropDown({
             type="button"
             onClick={() => {
               if (ct === characterType) {
-                setCharacterType("");
+                setCharacterTypeRus("");
+                setCharacterTypeEng("");
               } else {
-                setCharacterType(ct);
+                setCharacterTypeRus(ct);
+                const characterTypeToEng =
+                  ct === "Обычный Персонаж"
+                    ? "emptycharacter"
+                    : ct === "Второстепенный Персонаж"
+                    ? "minorcharacter"
+                    : "maincharacter";
+                setCharacterTypeEng(characterTypeToEng);
               }
               setShowModal(false);
             }}

@@ -7,6 +7,7 @@ import {
   getEpisodeByIdAndLanguageService,
   getPaginatedEpisodeTranslationUpdatedAtAndLanguageService,
   getPaginatedTranlsationEpisodesService,
+  getCheckEpisodeTranslationCompletnessBySeasonIdService,
 } from "../../../services/StoryData/Episode/EpisodeTranslationService";
 
 type GetUpdatedAtAndLanguageQuery = {
@@ -34,6 +35,40 @@ export const getPaginatedEpisodeTranslationUpdatedAtAndLanguageController: Reque
       });
     if (textFieldName) {
       return res.status(201).json(textFieldName);
+    } else {
+      return res.status(400).json({ message: "Something went wrong" });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
+type GetCheckEpisodeTranslationCompletnessBySeasonIdParams = {
+  seasonId: string;
+};
+
+type GetCheckEpisodeTranslationCompletnessBySeasonIdQuery = {
+  currentLanguage: string | undefined;
+  translateToLanguage: string | undefined;
+};
+
+// @route GET http://localhost:3500/episodes/seasons/:seasonId/completness/translations
+// @access Private
+export const getCheckEpisodeTranslationCompletnessBySeasonIdController: RequestHandler<
+  GetCheckEpisodeTranslationCompletnessBySeasonIdParams,
+  unknown,
+  unknown,
+  GetCheckEpisodeTranslationCompletnessBySeasonIdQuery
+> = async (req, res, next) => {
+  try {
+    const episodes =
+      await getCheckEpisodeTranslationCompletnessBySeasonIdService({
+        seasonId: req.params.seasonId,
+        currentLanguage: req.query.currentLanguage,
+        translateToLanguage: req.query.translateToLanguage,
+      });
+    if (typeof episodes === "boolean") {
+      return res.status(201).json(episodes);
     } else {
       return res.status(400).json({ message: "Something went wrong" });
     }

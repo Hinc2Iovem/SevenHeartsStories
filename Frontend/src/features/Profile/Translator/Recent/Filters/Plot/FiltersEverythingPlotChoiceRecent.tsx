@@ -92,13 +92,15 @@ export default function FiltersEverythingPlotChoiceRecent({
     <>
       {(memoizedCombinedTranslations?.length || 0) > 0 ? (
         <div
-          className={`grid grid-cols-[repeat(auto-fill,minmax(30rem,1fr))] sm:grid-cols-[repeat(auto-fill,minmax(50rem,1fr))] gap-[1rem] w-full`}
+          className={`grid grid-cols-[repeat(auto-fit,minmax(30rem,1fr))] sm:grid-cols-[repeat(auto-fit,minmax(50rem,1fr))] gap-[1rem] w-full`}
         >
           {memoizedCombinedTranslations?.map((t, i) => (
             <DisplayTranslatedNonTranslatedChoice
               key={t.translated?._id || i + "-choice"}
               languageToTranslate={translateToLanguage}
               translateFromLanguage={translateFromLanguage}
+              lastIndex={memoizedCombinedTranslations.length - 1}
+              currentIndex={i}
               prevTranslateFromLanguage={prevTranslateFromLanguage}
               prevTranslateToLanguage={prevTranslateToLanguage}
               {...t}

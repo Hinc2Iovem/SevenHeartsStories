@@ -44,7 +44,7 @@ export default function useGetPaginatedAppearancePartRecentTranslations({
     queryFn: async () =>
       await axiosCustomized
         .get<PaginatedAppearancePartTypes>(
-          `/appearanceParts/paginated/recent/translations?currentLanguage=${language}&updatedAt=${updatedAt}&page=${page}$limit=${limit}`
+          `/appearanceParts/paginated/recent/translations?currentLanguage=${language}&updatedAt=${updatedAt}&page=${page}&limit=${limit}`
         )
         .then((r) => r.data),
     enabled: !!language && !!updatedAt && !!page && !!limit,

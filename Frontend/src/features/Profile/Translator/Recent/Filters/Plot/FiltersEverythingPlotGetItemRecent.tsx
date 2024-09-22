@@ -91,11 +91,13 @@ export default function FiltersEverythingPlotGetItemRecent({
     <>
       {(memoizedCombinedTranslations?.length || 0) > 0 ? (
         <div
-          className={`grid grid-cols-[repeat(auto-fill,minmax(30rem,1fr))] sm:grid-cols-[repeat(auto-fill,minmax(50rem,1fr))] gap-[1rem] w-full`}
+          className={`grid grid-cols-[repeat(auto-fit,minmax(30rem,1fr))] sm:grid-cols-[repeat(auto-fit,minmax(50rem,1fr))] gap-[1rem] w-full`}
         >
           {memoizedCombinedTranslations?.map((t, i) => (
             <DisplayTranslatedNonTranslatedPlotGetItem
               key={t.translated?._id || i + "-getItem"}
+              currentIndex={i}
+              lastIndex={memoizedCombinedTranslations.length - 1}
               languageToTranslate={translateToLanguage}
               translateFromLanguage={translateFromLanguage}
               {...t}

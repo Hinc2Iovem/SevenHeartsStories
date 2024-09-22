@@ -5,6 +5,7 @@ import {
   createAppearancePartTranslationService,
   getAllAppearancePartsTranslationByCharacterIdAndTypeService,
   getAllAppearancePartsTranslationByCharacterIdService,
+  getCheckAppearancePartTranslationCompletnessByCharacterIdService,
   getPaginatedAppearancePartTranslationUpdatedAtAndLanguageService,
   getPaginatedTranlsationAppearancePartsService,
 } from "../../../services/StoryData/AppearancePart/AppearancePartTranslationService";
@@ -69,6 +70,42 @@ export const getPaginatedTranlsationAppearancePartsController: RequestHandler<
     });
     if (textFieldName) {
       return res.status(201).json(textFieldName);
+    } else {
+      return res.status(400).json({ message: "Something went wrong" });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
+type GetCheckAppearancePartTranslationCompletnessByCharacterIdParams = {
+  characterId: string;
+};
+
+type GetCheckAppearancePartTranslationCompletnessByCharacterIdQuery = {
+  currentLanguage: string | undefined;
+  translateToLanguage: string | undefined;
+  appearancePartVariation: string | undefined;
+};
+
+// @route GET http://localhost:3500/appearanceParts/characters/:characterId/completness/translations
+// @access Private
+export const getCheckAppearancePartTranslationCompletnessByCharacterIdController: RequestHandler<
+  GetCheckAppearancePartTranslationCompletnessByCharacterIdParams,
+  unknown,
+  unknown,
+  GetCheckAppearancePartTranslationCompletnessByCharacterIdQuery
+> = async (req, res, next) => {
+  try {
+    const appearanceParts =
+      await getCheckAppearancePartTranslationCompletnessByCharacterIdService({
+        characterId: req.params.characterId,
+        currentLanguage: req.query.currentLanguage,
+        translateToLanguage: req.query.translateToLanguage,
+        appearancePartVariation: req.query.appearancePartVariation,
+      });
+    if (typeof appearanceParts === "boolean") {
+      return res.status(201).json(appearanceParts);
     } else {
       return res.status(400).json({ message: "Something went wrong" });
     }

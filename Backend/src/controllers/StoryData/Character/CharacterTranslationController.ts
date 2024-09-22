@@ -6,6 +6,7 @@ import {
   characterUpdateTranslationService,
   getAllTranslationCharactersByStoryIdService,
   getCharacterTranslationByCharacterIdService,
+  getCheckCharacterTranslationCompletnessByStoryIdService,
   getPaginatedCharacterTranslationUpdatedAtAndLanguageService,
   getPaginatedTranlsationCharactersService,
 } from "../../../services/StoryData/Character/CharacterTranslationService";
@@ -35,6 +36,42 @@ export const getPaginatedCharacterTranslationUpdatedAtAndLanguageController: Req
       });
     if (textFieldName) {
       return res.status(201).json(textFieldName);
+    } else {
+      return res.status(400).json({ message: "Something went wrong" });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
+type GetCheckCharacterTranslationCompletnessByStoryIdParams = {
+  storyId: string;
+};
+
+type GetCheckCharacterTranslationCompletnessByStoryIdQuery = {
+  currentLanguage: string | undefined;
+  translateToLanguage: string | undefined;
+  characterType: string | undefined;
+};
+
+// @route GET http://localhost:3500/characters/stories/:storyId/completness/translations
+// @access Private
+export const getCheckCharacterTranslationCompletnessByStoryIdController: RequestHandler<
+  GetCheckCharacterTranslationCompletnessByStoryIdParams,
+  unknown,
+  unknown,
+  GetCheckCharacterTranslationCompletnessByStoryIdQuery
+> = async (req, res, next) => {
+  try {
+    const stories =
+      await getCheckCharacterTranslationCompletnessByStoryIdService({
+        storyId: req.params.storyId,
+        currentLanguage: req.query.currentLanguage,
+        translateToLanguage: req.query.translateToLanguage,
+        characterType: req.query.characterType,
+      });
+    if (typeof stories === "boolean") {
+      return res.status(201).json(stories);
     } else {
       return res.status(400).json({ message: "Something went wrong" });
     }

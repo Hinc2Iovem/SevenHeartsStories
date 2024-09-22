@@ -7,6 +7,7 @@ import {
   getAllCharacteristicsTranslationsByCharacteristicIdAndLanguageService,
   getCharacteristicTranslationUpdatedAtAndLanguageService,
   getPaginatedTranlsationCharacteristicsService,
+  getCheckCharacteristicTranslationCompletnessByStoryIdService,
 } from "../../../services/StoryData/Characteristic/CharacteristicTranslationService";
 
 type GetUpdatedAtAndLanguageQuery = {
@@ -66,6 +67,40 @@ export const getPaginatedTranlsationCharacteristicsController: RequestHandler<
     });
     if (textFieldName) {
       return res.status(201).json(textFieldName);
+    } else {
+      return res.status(400).json({ message: "Something went wrong" });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
+type GetCheckCharacteristicTranslationCompletnessByStoryIdParams = {
+  storyId: string;
+};
+
+type GetCheckCharacteristicTranslationCompletnessByStoryIdQuery = {
+  currentLanguage: string | undefined;
+  translateToLanguage: string | undefined;
+};
+
+// @route GET http://localhost:3500/characteristics/stories/:storyId/completness/translations
+// @access Private
+export const getCheckCharacteristicTranslationCompletnessByStoryIdController: RequestHandler<
+  GetCheckCharacteristicTranslationCompletnessByStoryIdParams,
+  unknown,
+  unknown,
+  GetCheckCharacteristicTranslationCompletnessByStoryIdQuery
+> = async (req, res, next) => {
+  try {
+    const characteristics =
+      await getCheckCharacteristicTranslationCompletnessByStoryIdService({
+        storyId: req.params.storyId,
+        currentLanguage: req.query.currentLanguage,
+        translateToLanguage: req.query.translateToLanguage,
+      });
+    if (typeof characteristics === "boolean") {
+      return res.status(201).json(characteristics);
     } else {
       return res.status(400).json({ message: "Something went wrong" });
     }

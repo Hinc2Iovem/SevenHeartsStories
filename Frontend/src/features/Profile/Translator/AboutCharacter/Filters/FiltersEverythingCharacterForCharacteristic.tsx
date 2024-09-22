@@ -3,7 +3,7 @@ import useGetPaginatedTranslationCharacteristics from "../../../../../hooks/Fetc
 import useInvalidateTranslatorCharacteristicQueries from "../../../../../hooks/helpers/Profile/Translator/useInvalidateTranslatorCharacteristicQueries";
 import { CurrentlyAvailableLanguagesTypes } from "../../../../../types/Additional/CURRENTLY_AVAILABEL_LANGUAGES";
 import { TranslationCharacterCharacteristicTypes } from "../../../../../types/Additional/TranslationTypes";
-import StoryPrompt from "../../InputPrompts/StoryPrompt";
+import StoryPrompt from "../../InputPrompts/StoryPrompt/StoryPrompt";
 import DisplayTranslatedNonTranslatedCharacteristic from "../Display/Characteristic/DisplayTranslatedNonTranslatedCharacteristic";
 
 type FiltersEverythingCharacterForCharacteristicTypes = {
@@ -92,15 +92,22 @@ export default function FiltersEverythingCharacterForCharacteristic({
   return (
     <>
       <div className="flex w-full gap-[1rem] bg-neutral-alabaster px-[.5rem] py-[.5rem] rounded-md shadow-sm">
-        <StoryPrompt setStoryId={setStoryId} />
+        <StoryPrompt
+          setStoryId={setStoryId}
+          currentLanguage={translateFromLanguage}
+          currentTranslationView={"characteristic"}
+          translateToLanguage={translateToLanguage}
+        />
       </div>
       <main
-        className={`grid grid-cols-[repeat(auto-fill,minmax(25rem,1fr))] gap-[1rem] w-full`}
+        className={`grid grid-cols-[repeat(auto-fit,minmax(25rem,1fr))] gap-[1rem] w-full`}
       >
         {memoizedCombinedTranslations?.map((ct, i) => (
           <DisplayTranslatedNonTranslatedCharacteristic
             key={(ct?.translated?._id || i) + "-ctCharacteristic"}
             languageToTranslate={translateToLanguage}
+            currentIndex={i}
+            lastIndex={memoizedCombinedTranslations.length - 1}
             translateFromLanguage={translateFromLanguage}
             {...ct}
           />

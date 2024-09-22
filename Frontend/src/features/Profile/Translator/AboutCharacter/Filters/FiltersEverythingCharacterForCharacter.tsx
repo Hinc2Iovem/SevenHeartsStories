@@ -3,7 +3,7 @@ import useGetPaginatedTranslationCharacter from "../../../../../hooks/Fetching/T
 import useInvalidateTranslatorCharacterQueries from "../../../../../hooks/helpers/Profile/Translator/useInvalidateTranslatorCharacterQueries";
 import { CurrentlyAvailableLanguagesTypes } from "../../../../../types/Additional/CURRENTLY_AVAILABEL_LANGUAGES";
 import { TranslationCharacterTypes } from "../../../../../types/Additional/TranslationTypes";
-import StoryPrompt from "../../InputPrompts/StoryPrompt";
+import StoryPrompt from "../../InputPrompts/StoryPrompt/StoryPrompt";
 import CharacterTypesDropDown from "../Display/Character/CharacterTypesDropDown";
 import DisplayTranslatedNonTranslatedCharacter from "../Display/Character/DisplayTranslatedNonTranslatedCharacter";
 
@@ -27,7 +27,8 @@ export default function FiltersEverythingCharacterForCharacter({
 }: FiltersEverythingCharacterForCharacterTypes) {
   const [storyId, setStoryId] = useState("");
   const [page, setPage] = useState(1);
-  const [characterType, setCharacterType] = useState("");
+  const [characterTypeRus, setCharacterTypeRus] = useState("");
+  const [characterTypeEng, setCharacterTypeEng] = useState("");
 
   useInvalidateTranslatorCharacterQueries({
     prevTranslateFromLanguage,
@@ -36,13 +37,13 @@ export default function FiltersEverythingCharacterForCharacter({
     translateToLanguage,
     limit: 3,
     page,
-    characterType,
+    characterType: characterTypeEng,
   });
 
   const { data: translatedCharacters } = useGetPaginatedTranslationCharacter({
     storyId,
     language: translateFromLanguage,
-    characterType,
+    characterType: characterTypeEng,
     limit: 3,
     page,
   });
@@ -51,7 +52,7 @@ export default function FiltersEverythingCharacterForCharacter({
     {
       storyId,
       language: translateToLanguage,
-      characterType,
+      characterType: characterTypeEng,
       limit: 3,
       page,
     }
@@ -98,16 +99,23 @@ export default function FiltersEverythingCharacterForCharacter({
   return (
     <>
       <div className="flex w-full gap-[1rem] bg-neutral-alabaster px-[.5rem] py-[.5rem] rounded-md shadow-sm">
-        <StoryPrompt setStoryId={setStoryId} />
+        <StoryPrompt
+          setStoryId={setStoryId}
+          characterType={characterTypeEng}
+          currentTranslationView={"character"}
+          currentLanguage={translateFromLanguage}
+          translateToLanguage={translateToLanguage}
+        />
         <CharacterTypesDropDown
-          setCharacterType={setCharacterType}
-          characterType={characterType}
+          setCharacterTypeRus={setCharacterTypeRus}
+          setCharacterTypeEng={setCharacterTypeEng}
+          characterType={characterTypeRus}
         />
       </div>
       <main
         className={`grid ${
-          characterType === "Обычный Персонаж" ||
-          characterType === "Главный Персонаж"
+          characterTypeRus === "Обычный Персонаж" ||
+          characterTypeRus === "Главный Персонаж"
             ? "grid-cols-[repeat(auto-fill,minmax(25rem,1fr))]"
             : "grid-cols-[repeat(auto-fill,minmax(30rem,1fr))] sm:grid-cols-[repeat(auto-fill,minmax(50rem,1fr))]"
         } gap-[1rem] w-full`}
@@ -116,7 +124,7 @@ export default function FiltersEverythingCharacterForCharacter({
           return (
             <DisplayTranslatedNonTranslatedCharacter
               key={(ct?.translated?._id || i) + "-ct"}
-              characterTypeFilter={characterType}
+              characterTypeFilter={characterTypeRus}
               translateFromLanguage={translateFromLanguage}
               languageToTranslate={translateToLanguage}
               {...ct}

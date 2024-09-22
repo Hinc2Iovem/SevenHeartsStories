@@ -91,6 +91,8 @@ export default function FiltersEverythingPlotChoice({
               key={t.translated?._id || i + "-choice"}
               languageToTranslate={translateToLanguage}
               translateFromLanguage={translateFromLanguage}
+              lastIndex={memoizedCombinedTranslations.length - 1}
+              currentIndex={i}
               prevTranslateFromLanguage={prevTranslateFromLanguage}
               prevTranslateToLanguage={prevTranslateToLanguage}
               {...t}

@@ -7,6 +7,7 @@ import {
   getAllSeasonsTranslationsByStoryIdAndLanguageController,
   getPaginatedSeasonTranslationUpdatedAtAndLanguageController,
   getPaginatedTranlsationSeasonsController,
+  getCheckSeasonTranslationCompletnessByStoryIdController,
 } from "../../../controllers/StoryData/Season/SeasonTranslationController";
 import { verifyHeadScriptwriter } from "../../../middlewares/verifyHeadScriptwriter";
 import { verifyJWT } from "../../../middlewares/verifyJWT";
@@ -35,3 +36,7 @@ seasonTranslationRoute
   .route("/:seasonId/translations")
   .get(verifyJWT, seasonGetByIdController)
   .patch(verifyJWT, seasonTranslationUpdateController);
+
+seasonTranslationRoute
+  .route("/stories/:storyId/completness/translations")
+  .get(getCheckSeasonTranslationCompletnessByStoryIdController);

@@ -4,9 +4,10 @@ import useInvalidateTranslatorAppearancePartsQueries from "../../../../../hooks/
 import { CurrentlyAvailableLanguagesTypes } from "../../../../../types/Additional/CURRENTLY_AVAILABEL_LANGUAGES";
 import { TranslationTextFieldNameAppearancePartsTypes } from "../../../../../types/Additional/TRANSLATION_TEXT_FIELD_NAMES";
 import { TranslationAppearancePartTypes } from "../../../../../types/Additional/TranslationTypes";
-import CharacterPrompt from "../../InputPrompts/CharacterPrompt";
+import CharacterPrompt from "../../InputPrompts/CharacterPrompt/CharacterPrompt";
 import AppearanceTypeDropDown from "../Display/AppearancePart/AppearanceTypeDropDown";
 import DisplayTranslatedNonTranslatedAppearancePart from "../Display/AppearancePart/DisplayTranslatedNonTranslatedAppearancePart";
+import StoryPrompt from "../../InputPrompts/StoryPrompt/StoryPrompt";
 
 type FiltersEverythingCharacterForAppearancePartTypes = {
   translateFromLanguage: CurrentlyAvailableLanguagesTypes;
@@ -27,6 +28,7 @@ export default function FiltersEverythingCharacterForAppearancePart({
   prevTranslateToLanguage,
 }: FiltersEverythingCharacterForAppearancePartTypes) {
   const [characterId, setCharacterId] = useState("");
+  const [storyId, setStoryId] = useState("");
   const [page, setPage] = useState(1);
   const [appearanceType, setAppearanceType] = useState(
     "" as TranslationTextFieldNameAppearancePartsTypes
@@ -101,9 +103,20 @@ export default function FiltersEverythingCharacterForAppearancePart({
   return (
     <>
       <div className="flex w-full gap-[1rem] bg-neutral-alabaster px-[.5rem] py-[.5rem] rounded-md shadow-sm">
+        <StoryPrompt
+          setStoryId={setStoryId}
+          currentLanguage={translateFromLanguage}
+          currentTranslationView={"appearancePart"}
+          translateToLanguage={translateToLanguage}
+        />
         <CharacterPrompt
+          storyId={storyId}
           setCharacterId={setCharacterId}
           characterId={characterId}
+          currentLanguage={translateFromLanguage}
+          currentTranslationView={"appearancePart"}
+          translateToLanguage={translateToLanguage}
+          appearancePartVariation={appearanceType}
         />
         <AppearanceTypeDropDown setAppearanceType={setAppearanceType} />
       </div>
@@ -114,6 +127,8 @@ export default function FiltersEverythingCharacterForAppearancePart({
           <DisplayTranslatedNonTranslatedAppearancePart
             key={(ct.translated?._id || i) + "-ctAppearancePart"}
             filteredAppearanceType={appearanceType}
+            currentIndex={i}
+            lastIndex={memoizedCombinedTranslations.length - 1}
             languageToTranslate={translateToLanguage}
             translateFromLanguage={translateFromLanguage}
             {...ct}

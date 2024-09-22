@@ -193,6 +193,63 @@ export const getPaginatedTranlsationCharactersService = async ({
   return results;
 };
 
+type GetCheckCharacterTranslationCompletnessByStoryIdTypes = {
+  storyId: string;
+  currentLanguage: string | undefined;
+  translateToLanguage: string | undefined;
+  characterType: string | undefined;
+};
+
+export const getCheckCharacterTranslationCompletnessByStoryIdService = async ({
+  storyId,
+  currentLanguage,
+  characterType,
+  translateToLanguage,
+}: GetCheckCharacterTranslationCompletnessByStoryIdTypes) => {
+  validateMongoId({ value: storyId, valueName: "Story" });
+  if (!currentLanguage?.trim().length || !translateToLanguage?.trim().length) {
+    throw createHttpError(400, "CurrentLanguage is required");
+  }
+  checkCurrentLanguage({ currentLanguage });
+  checkCurrentLanguage({ currentLanguage: translateToLanguage });
+
+  const objectTranslateFrom: {
+    storyId: string;
+    language: string;
+    characterType?: string;
+  } = {
+    storyId,
+    language: currentLanguage,
+  };
+
+  const objectTranslateTo: {
+    storyId: string;
+    language: string;
+    characterType?: string;
+  } = {
+    storyId,
+    language: translateToLanguage,
+  };
+
+  if (characterType?.trim().length) {
+    objectTranslateFrom.characterType = characterType;
+    objectTranslateTo.characterType = characterType;
+  }
+
+  const translateFromCharacter = await TranslationCharacter.countDocuments(
+    objectTranslateFrom
+  );
+  const translateToCharacter = await TranslationCharacter.countDocuments(
+    objectTranslateTo
+  );
+
+  if (translateFromCharacter === translateToCharacter) {
+    return true;
+  } else {
+    return false;
+  }
+};
+
 type GetAllTranslationCharactersByStoryIdTypes = {
   storyId: string;
   currentLanguage?: string;

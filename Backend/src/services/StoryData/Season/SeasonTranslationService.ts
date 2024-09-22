@@ -182,6 +182,54 @@ export const getPaginatedTranlsationSeasonsService = async ({
   return results;
 };
 
+type GetCheckSeasonTranslationCompletnessByStoryIdTypes = {
+  storyId: string;
+  currentLanguage: string | undefined;
+  translateToLanguage: string | undefined;
+};
+
+export const getCheckSeasonTranslationCompletnessByStoryIdService = async ({
+  storyId,
+  currentLanguage,
+  translateToLanguage,
+}: GetCheckSeasonTranslationCompletnessByStoryIdTypes) => {
+  validateMongoId({ value: storyId, valueName: "Story" });
+  if (!currentLanguage?.trim().length || !translateToLanguage?.trim().length) {
+    throw createHttpError(400, "CurrentLanguage is required");
+  }
+  checkCurrentLanguage({ currentLanguage });
+  checkCurrentLanguage({ currentLanguage: translateToLanguage });
+
+  const objectTranslateFrom: {
+    storyId: string;
+    language: string;
+  } = {
+    storyId,
+    language: currentLanguage,
+  };
+
+  const objectTranslateTo: {
+    storyId: string;
+    language: string;
+  } = {
+    storyId,
+    language: translateToLanguage,
+  };
+
+  const translateFromSeason = await TranslationSeason.countDocuments(
+    objectTranslateFrom
+  );
+  const translateToSeason = await TranslationSeason.countDocuments(
+    objectTranslateTo
+  );
+
+  if (translateFromSeason === translateToSeason) {
+    return true;
+  } else {
+    return false;
+  }
+};
+
 type GetAllSeasonsByLanguageTypes = {
   currentLanguage?: string;
   storyId: string;

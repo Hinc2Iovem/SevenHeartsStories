@@ -15,6 +15,8 @@ type DisplayTranslatedNonTranslatedCommandTypes = {
   prevTranslateFromLanguage: CurrentlyAvailableLanguagesTypes;
   prevTranslateToLanguage: CurrentlyAvailableLanguagesTypes;
   translateFromLanguage: CurrentlyAvailableLanguagesTypes;
+  lastIndex: number;
+  currentIndex: number;
 } & CombinedTranslatedAndNonTranslatedChoiceTypes;
 
 export default function DisplayTranslatedNonTranslatedChoice({
@@ -24,6 +26,8 @@ export default function DisplayTranslatedNonTranslatedChoice({
   translateFromLanguage,
   prevTranslateFromLanguage,
   prevTranslateToLanguage,
+  currentIndex,
+  lastIndex,
 }: DisplayTranslatedNonTranslatedCommandTypes) {
   useInvalidateTranslatorChoiceOptionQueries({
     prevTranslateFromLanguage,
@@ -117,7 +121,9 @@ export default function DisplayTranslatedNonTranslatedChoice({
 
   return (
     <div
-      className={`h-[50rem] sm:h-[25rem] sm:flex-row flex-col w-full flex gap-[.5rem] bg-blue-200 p-[.5rem] rounded-md`}
+      className={`${
+        currentIndex === lastIndex ? "col-span-full" : ""
+      } h-[50rem] sm:h-[25rem] sm:flex-row flex-col w-full flex gap-[.5rem] bg-blue-200 p-[.5rem] rounded-md`}
     >
       <div
         className={`h-full w-full sm:w-[calc(50%)] overflow-auto rounded-md shadow-md shadow-gray-400 bg-white | containerScroll`}

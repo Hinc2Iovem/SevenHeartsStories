@@ -10,6 +10,8 @@ import { CombinedTranslatedAndNonTranslatedSayTypes } from "../../Filters/Filter
 type DisplayTranslatedNonTranslatedPlotSayTypes = {
   languageToTranslate: CurrentlyAvailableLanguagesTypes;
   translateFromLanguage: CurrentlyAvailableLanguagesTypes;
+  currentIndex: number;
+  lastIndex: number;
 } & CombinedTranslatedAndNonTranslatedSayTypes;
 
 export default function DisplayTranslatedNonTranslatedPlotSay({
@@ -17,6 +19,8 @@ export default function DisplayTranslatedNonTranslatedPlotSay({
   translateFromLanguage,
   nonTranslated,
   translated,
+  currentIndex,
+  lastIndex,
 }: DisplayTranslatedNonTranslatedPlotSayTypes) {
   const [itemId, setItemId] = useState("");
 
@@ -104,7 +108,9 @@ export default function DisplayTranslatedNonTranslatedPlotSay({
 
   return (
     <div
-      className={`h-fit max-h-[20rem] overflow-auto sm:flex-row flex-col w-full flex gap-[.5rem] bg-purple-200 p-[.5rem] rounded-md | containerScroll`}
+      className={`${
+        currentIndex === lastIndex ? "col-span-full" : ""
+      } h-fit max-h-[20rem] overflow-auto sm:flex-row flex-col w-full flex gap-[.5rem] bg-purple-200 p-[.5rem] rounded-md | containerScroll`}
     >
       <div
         className={`h-full w-full rounded-md shadow-md shadow-gray-400 bg-white overflow-auto | containerScroll`}

@@ -96,12 +96,14 @@ export default function FiltersEverythingCharacterForAppearancePartRecent({
     <>
       {memoizedCombinedTranslations.length ? (
         <main
-          className={`grid grid-cols-[repeat(auto-fill,minmax(25rem,1fr))] gap-[1rem] w-full`}
+          className={`grid grid-cols-[repeat(auto-fit,minmax(25rem,1fr))] gap-[1rem] w-full`}
         >
           {memoizedCombinedTranslations.map((ct, i) => (
             <DisplayTranslatedNonTranslatedAppearancePart
               key={(ct.translated?._id || i) + "-ctAppearancePart"}
               languageToTranslate={translateToLanguage}
+              currentIndex={i}
+              lastIndex={memoizedCombinedTranslations.length - 1}
               translateFromLanguage={translateFromLanguage}
               {...ct}
             />

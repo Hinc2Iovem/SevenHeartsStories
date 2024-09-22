@@ -1,19 +1,30 @@
 import { useEffect, useRef, useState } from "react";
-import useGetSeasonTranslationsByStoryIdAndSearch from "../../../../hooks/Fetching/Translation/Season/useGetSeasonTranslationsByStoryIdAndSearch";
-import useOutOfModal from "../../../../hooks/UI/useOutOfModal";
-import useDebounce from "../../../../hooks/utilities/useDebounce";
+import useGetSeasonTranslationsByStoryIdAndSearch from "../../../../../hooks/Fetching/Translation/Season/useGetSeasonTranslationsByStoryIdAndSearch";
+import useOutOfModal from "../../../../../hooks/UI/useOutOfModal";
+import useDebounce from "../../../../../hooks/utilities/useDebounce";
+import { CurrentlyAvailableLanguagesTypes } from "../../../../../types/Additional/CURRENTLY_AVAILABEL_LANGUAGES";
+import CheckForCompletenessEpisode from "./CheckForCompletenessEpisode";
 
 type SeasonPromptTypes = {
   setSeasonId: React.Dispatch<React.SetStateAction<string>>;
   storyId: string;
+  currentLanguage: CurrentlyAvailableLanguagesTypes;
+  translateToLanguage: CurrentlyAvailableLanguagesTypes;
+  setSeasonValue: React.Dispatch<React.SetStateAction<string>>;
+  seasonValue: string;
+  currentTranslationView: "episode";
 };
 
 export default function SeasonPrompt({
   setSeasonId,
   storyId,
+  currentLanguage,
+  translateToLanguage,
+  seasonValue,
+  currentTranslationView,
+  setSeasonValue,
 }: SeasonPromptTypes) {
   const [showSeasons, setShowSeasons] = useState(false);
-  const [seasonValue, setSeasonValue] = useState("");
   const [seasonBackupValue, setSeasonBackupValue] = useState("");
   const modalSeasonsRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -32,10 +43,6 @@ export default function SeasonPrompt({
       setSeasonValue(seasonBackupValue);
     }
   }, [showSeasons, seasonValue, seasonBackupValue]);
-
-  useEffect(() => {
-    setSeasonValue("");
-  }, [storyId]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -59,7 +66,7 @@ export default function SeasonPrompt({
 
   return (
     <form
-      className="bg-white rounded-md shadow-md relative"
+      className="bg-white rounded-md shadow-sm relative"
       onSubmit={handleSubmit}
     >
       <input
@@ -99,9 +106,20 @@ export default function SeasonPrompt({
                   setSeasonValue(s.translations[0]?.text || "");
                   setShowSeasons(false);
                 }}
-                className="text-[1.4rem] outline-gray-300 text-gray-600 text-start hover:bg-primary-pastel-blue hover:text-white rounded-md px-[1rem] py-[.5rem] hover:shadow-md"
+                className="text-[1.4rem] outline-gray-300 text-gray-600 text-start hover:bg-primary-pastel-blue hover:text-white rounded-md px-[1rem] py-[.5rem] hover:shadow-md relative"
               >
                 {s.translations[0]?.text || ""}
+                {currentLanguage && translateToLanguage ? (
+                  <>
+                    {currentTranslationView === "episode" ? (
+                      <CheckForCompletenessEpisode
+                        seasonId={s.seasonId}
+                        currentLanguage={currentLanguage}
+                        translateToLanguage={translateToLanguage}
+                      />
+                    ) : null}
+                  </>
+                ) : null}
               </button>
             ))
           ) : (

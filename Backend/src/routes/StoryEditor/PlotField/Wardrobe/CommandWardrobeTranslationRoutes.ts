@@ -12,7 +12,7 @@ import {
 export const commandWardrobeTranslationsRoute = express.Router();
 
 commandWardrobeTranslationsRoute
-  .route("/recent/translations")
+  .route("/paginated/recent/translations")
   .get(getCommandWardrobeTranslationUpdatedAtAndLanguageController);
 
 commandWardrobeTranslationsRoute

@@ -84,28 +84,14 @@ export default function FiltersEverythingStoryForStory({
 
   return (
     <>
-      {/* <button
-        onClick={() => {
-          setPage((prev) => prev - 1);
-        }}
-        className="text-[1.5rem]"
-      >
-        -
-      </button>
-      <button
-        onClick={() => {
-          setPage((prev) => prev + 1);
-        }}
-        className="text-[1.5rem]"
-      >
-        +
-      </button> */}
       <main
         className={`grid grid-cols-[repeat(auto-fill,minmax(30rem,1fr))] sm:grid-cols-[repeat(auto-fill,minmax(50rem,1fr))] gap-[1rem] w-full`}
       >
         {memoizedCombinedTranslations.map((ct, i) => (
           <DisplayTranslatedNonTranslatedStory
             key={(ct.translated?._id || i) + "-ctStory"}
+            lastIndex={memoizedCombinedTranslations.length - 1}
+            currentIndex={i}
             languageToTranslate={translateToLanguage}
             translateFromLanguage={translateFromLanguage}
             {...ct}

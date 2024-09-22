@@ -93,12 +93,14 @@ export default function FiltersEverythingStoryForEpisodeRecent({
     <>
       {memoizedCombinedTranslations.length ? (
         <main
-          className={`grid grid-cols-[repeat(auto-fill,minmax(30rem,1fr))] sm:grid-cols-[repeat(auto-fill,minmax(50rem,1fr))] gap-[1rem] w-full`}
+          className={`grid grid-cols-[repeat(auto-fit,minmax(30rem,1fr))] sm:grid-cols-[repeat(auto-fit,minmax(50rem,1fr))] gap-[1rem] w-full`}
         >
           {memoizedCombinedTranslations.map((ct, i) => (
             <DisplayTranslatedNonTranslatedEpisode
               key={(ct.translated?._id || i) + "-ctEpisode"}
               languageToTranslate={translateToLanguage}
+              currentIndex={i}
+              lastIndex={memoizedCombinedTranslations.length - 1}
               translateFromLanguage={translateFromLanguage}
               {...ct}
             />

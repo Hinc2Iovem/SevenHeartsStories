@@ -182,6 +182,56 @@ export const getPaginatedTranlsationCharacteristicsService = async ({
   return results;
 };
 
+type GetCheckCharacteristicTranslationCompletnessByStoryIdTypes = {
+  storyId: string;
+  currentLanguage: string | undefined;
+  translateToLanguage: string | undefined;
+};
+
+export const getCheckCharacteristicTranslationCompletnessByStoryIdService =
+  async ({
+    storyId,
+    currentLanguage,
+    translateToLanguage,
+  }: GetCheckCharacteristicTranslationCompletnessByStoryIdTypes) => {
+    validateMongoId({ value: storyId, valueName: "Story" });
+    if (
+      !currentLanguage?.trim().length ||
+      !translateToLanguage?.trim().length
+    ) {
+      throw createHttpError(400, "CurrentLanguage is required");
+    }
+    checkCurrentLanguage({ currentLanguage });
+    checkCurrentLanguage({ currentLanguage: translateToLanguage });
+
+    const objectTranslateFrom: {
+      storyId: string;
+      language: string;
+    } = {
+      storyId,
+      language: currentLanguage,
+    };
+
+    const objectTranslateTo: {
+      storyId: string;
+      language: string;
+    } = {
+      storyId,
+      language: translateToLanguage,
+    };
+
+    const translateFromCharacteristic =
+      await TranslationCharacteristic.countDocuments(objectTranslateFrom);
+    const translateToCharacteristic =
+      await TranslationCharacteristic.countDocuments(objectTranslateTo);
+
+    if (translateFromCharacteristic === translateToCharacteristic) {
+      return true;
+    } else {
+      return false;
+    }
+  };
+
 type GetAllCharacteristicsByCharacteristicIdLanguageTypes = {
   currentLanguage?: string;
   characteristicId: string;

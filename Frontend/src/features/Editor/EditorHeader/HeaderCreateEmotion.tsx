@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import CharacterPrompt from "../../Profile/Translator/InputPrompts/CharacterPrompt";
+import CharacterPrompt from "../../Profile/Translator/InputPrompts/CharacterPrompt/CharacterPrompt";
 import useOutOfModal from "../../../hooks/UI/useOutOfModal";
 import useCreateEmotion from "../../../hooks/Posting/Emotion/useCreateEmotion";
 

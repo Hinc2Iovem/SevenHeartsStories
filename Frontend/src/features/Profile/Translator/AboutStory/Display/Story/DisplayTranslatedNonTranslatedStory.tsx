@@ -10,6 +10,8 @@ import { TranslationTextFieldNameStoryTypes } from "../../../../../../types/Addi
 type DisplayTranslatedNonTranslatedStoryTypes = {
   languageToTranslate: CurrentlyAvailableLanguagesTypes;
   translateFromLanguage: CurrentlyAvailableLanguagesTypes;
+  currentIndex: number;
+  lastIndex: number;
 } & CombinedTranslatedAndNonTranslatedStoryTypes;
 
 export default function DisplayTranslatedNonTranslatedStory({
@@ -17,6 +19,8 @@ export default function DisplayTranslatedNonTranslatedStory({
   translated,
   languageToTranslate,
   translateFromLanguage,
+  currentIndex,
+  lastIndex,
 }: DisplayTranslatedNonTranslatedStoryTypes) {
   const [translatedBackUpStoryName, setTranslatedBackUpStoryName] =
     useState("");
@@ -197,7 +201,9 @@ export default function DisplayTranslatedNonTranslatedStory({
 
   return (
     <div
-      className={`sm:h-[17.5rem] h-[35rem] sm:flex-row flex-col w-full flex gap-[.5rem] bg-primary-pastel-blue p-[.5rem] rounded-md`}
+      className={`${
+        currentIndex === lastIndex ? "col-span-full" : ""
+      } sm:h-[17.5rem] h-[35rem] sm:flex-row flex-col w-full flex gap-[.5rem] bg-primary-pastel-blue p-[.5rem] rounded-md`}
     >
       <div
         className={`h-full w-full sm:w-[calc(50%)] overflow-auto rounded-md shadow-md shadow-gray-400 bg-white | containerScroll`}

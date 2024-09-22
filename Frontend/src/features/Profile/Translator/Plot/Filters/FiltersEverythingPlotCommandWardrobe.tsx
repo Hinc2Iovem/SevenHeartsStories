@@ -89,6 +89,8 @@ export default function FiltersEverythingPlotCommandWardrobe({
           {memoizedCombinedTranslations?.map((t, i) => (
             <DisplayTranslatedNonTranslatedPlotCommandWardrobe
               key={t.translated?._id || i + "-commandWardrobe"}
+              lastIndex={memoizedCombinedTranslations.length - 1}
+              currentIndex={i}
               languageToTranslate={translateToLanguage}
               translateFromLanguage={translateFromLanguage}
               {...t}
