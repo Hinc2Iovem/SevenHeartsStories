@@ -45,11 +45,21 @@ export const translationAchievementSchema = new mongoose.Schema(
 
 translationAchievementSchema.index({ updatedAt: -1 });
 
-type TranslationAchievement = InferSchemaType<
-  typeof translationAchievementSchema
->;
+export interface TranslationAchievementDocument extends Document {
+  commandId?: mongoose.Schema.Types.ObjectId;
+  storyId?: mongoose.Schema.Types.ObjectId;
+  topologyBlockId?: mongoose.Schema.Types.ObjectId;
+  language: string;
+  translations: {
+    textFieldName: string;
+    text?: string;
+    amountOfWords: number;
+  }[];
+  createdAt: Date;
+  updatedAt: Date;
+}
 
-export default model<TranslationAchievement>(
+export default model<TranslationAchievementDocument>(
   "TranslationAchievement",
   translationAchievementSchema
 );

@@ -86,13 +86,14 @@ export const getPaginatedCharacterTranslationUpdatedAtAndLanguageService =
       };
     }
 
-    results.results = await TranslationCharacter.find({
-      updatedAt: { $gte: startDate, $lt: endDate },
-      language: currentLanguage,
-    })
-      .limit(limitNumber)
-      .skip(startIndex)
-      .exec();
+    results.results =
+      (await TranslationCharacter.find({
+        updatedAt: { $gte: startDate, $lt: endDate },
+        language: currentLanguage,
+      })
+        .limit(limitNumber)
+        .skip(startIndex)
+        .exec()) || [];
     const overAllAmountOfCharacters = await TranslationCharacter.countDocuments(
       {
         updatedAt: { $gte: startDate, $lt: endDate },
@@ -103,18 +104,6 @@ export const getPaginatedCharacterTranslationUpdatedAtAndLanguageService =
     results.amountOfCharacters = overAllAmountOfCharacters;
 
     return results;
-
-    const existingTranslations = await TranslationCharacter.find({
-      updatedAt: { $gte: startDate, $lt: endDate },
-      language: currentLanguage,
-    })
-      .lean()
-      .exec();
-
-    if (!existingTranslations.length) {
-      return [];
-    }
-    return existingTranslations;
   };
 
 type GetPaginatedCharactersTypes = {
@@ -190,10 +179,11 @@ export const getPaginatedTranlsationCharactersService = async ({
     };
   }
 
-  results.results = await TranslationCharacter.find(queryObj)
-    .limit(limitNumber)
-    .skip(startIndex)
-    .exec();
+  results.results =
+    (await TranslationCharacter.find(queryObj)
+      .limit(limitNumber)
+      .skip(startIndex)
+      .exec()) || [];
   const overAllAmountOfCharacters = await TranslationCharacter.countDocuments(
     queryObj
   );

@@ -10,9 +10,11 @@ import {
 type GetUpdatedAtAndLanguageQuery = {
   currentLanguage: string | undefined;
   updatedAt: string | undefined;
+  page: number | undefined;
+  limit: number | undefined;
 };
 
-// @route GET http://localhost:3500/choices/recent/translations
+// @route GET http://localhost:3500/choices/paginated/recent/translations
 // @access Private
 export const getChoiceTranslationUpdatedAtAndLanguageController: RequestHandler<
   unknown,
@@ -25,6 +27,8 @@ export const getChoiceTranslationUpdatedAtAndLanguageController: RequestHandler<
       {
         currentLanguage: req.query.currentLanguage,
         updatedAt: req.query.updatedAt,
+        page: req.query.page,
+        limit: req.query.limit,
       }
     );
     if (textFieldName) {
@@ -131,7 +135,7 @@ type ChoiceUpdateTranslationParams = {
 };
 
 type ChoiceUpdateTranslationBody = {
-  textFieldName: string | undefined;
+  textFieldName: string;
   text: string | undefined;
   currentLanguage?: string;
 };

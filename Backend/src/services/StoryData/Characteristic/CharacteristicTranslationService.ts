@@ -83,13 +83,14 @@ export const getCharacteristicTranslationUpdatedAtAndLanguageService = async ({
       limit: limitNumber,
     };
   }
-  results.results = await TranslationCharacteristic.find({
-    language: currentLanguage,
-    updatedAt: { $gte: startDate, $lt: endDate },
-  })
-    .limit(limitNumber)
-    .skip(startIndex)
-    .exec();
+  results.results =
+    (await TranslationCharacteristic.find({
+      language: currentLanguage,
+      updatedAt: { $gte: startDate, $lt: endDate },
+    })
+      .limit(limitNumber)
+      .skip(startIndex)
+      .exec()) || [];
   const overAllAmountOfCharacteristics =
     await TranslationCharacteristic.countDocuments({
       language: currentLanguage,
@@ -163,13 +164,14 @@ export const getPaginatedTranlsationCharacteristicsService = async ({
       limit: limitNumber,
     };
   }
-  results.results = await TranslationCharacteristic.find({
-    language: currentLanguage,
-    storyId,
-  })
-    .limit(limitNumber)
-    .skip(startIndex)
-    .exec();
+  results.results =
+    (await TranslationCharacteristic.find({
+      language: currentLanguage,
+      storyId,
+    })
+      .limit(limitNumber)
+      .skip(startIndex)
+      .exec()) || [];
   const overAllAmountOfCharacteristics =
     await TranslationCharacteristic.countDocuments({
       language: currentLanguage,

@@ -1,5 +1,7 @@
 import createHttpError from "http-errors";
-import TranslationCommandWardrobe from "../../../../models/StoryData/Translation/TranslationCommandWardrobe";
+import TranslationCommandWardrobe, {
+  TranslationCommandWardrobeDocument,
+} from "../../../../models/StoryData/Translation/TranslationCommandWardrobe";
 import PlotFieldCommand from "../../../../models/StoryEditor/PlotField/PlotFieldCommand";
 import CommandWardrobe from "../../../../models/StoryEditor/PlotField/Wardrobe/CommandWardrobe";
 import { checkCurrentLanguage } from "../../../../utils/checkCurrentLanguage";
@@ -9,17 +11,38 @@ import { subDays, subHours, subMinutes } from "date-fns";
 type GetByUpdatedAtAndLanguageTypes = {
   currentLanguage: string | undefined;
   updatedAt: string | undefined;
+  page: number | undefined;
+  limit: number | undefined;
+};
+
+type ResultTypes = {
+  next: {
+    page: number;
+    limit: number;
+  };
+  prev: {
+    page: number;
+    limit: number;
+  };
+  results: TranslationCommandWardrobeDocument[];
+  amountOfWardrobes: number;
 };
 
 export const getCommandWardrobeTranslationUpdatedAtAndLanguageService = async ({
   currentLanguage,
   updatedAt,
+  limit,
+  page,
 }: GetByUpdatedAtAndLanguageTypes) => {
   if (!currentLanguage?.trim().length) {
     throw createHttpError(400, "Language is required");
   }
 
   checkCurrentLanguage({ currentLanguage });
+
+  if (!page || !limit) {
+    throw createHttpError(400, "Page and limit are required");
+  }
 
   let startDate: Date | undefined;
   let endDate = new Date();
@@ -47,17 +70,47 @@ export const getCommandWardrobeTranslationUpdatedAtAndLanguageService = async ({
       throw createHttpError(400, "Invalid updatedAt value");
   }
 
-  const existingTranslations = await TranslationCommandWardrobe.find({
-    updatedAt: { $gte: startDate, $lt: endDate },
-    language: currentLanguage,
-  })
-    .lean()
-    .exec();
+  const pageNumber = Number(page);
+  const limitNumber = Number(limit);
 
-  if (!existingTranslations.length) {
-    return [];
+  const startIndex = (pageNumber - 1) * limitNumber;
+  const endIndex = pageNumber * limitNumber;
+
+  const results = {} as ResultTypes;
+
+  if (
+    endIndex <
+    (await TranslationCommandWardrobe.countDocuments({
+      language: currentLanguage,
+      updatedAt: { $gte: startDate, $lt: endDate },
+    }).exec())
+  ) {
+    results.next = {
+      page: pageNumber + 1,
+      limit: limitNumber,
+    };
   }
-  return existingTranslations;
+  if (startIndex > 0) {
+    results.prev = {
+      page: pageNumber - 1,
+      limit: limitNumber,
+    };
+  }
+  results.results = await TranslationCommandWardrobe.find({
+    language: currentLanguage,
+    updatedAt: { $gte: startDate, $lt: endDate },
+  })
+    .limit(limitNumber)
+    .skip(startIndex)
+    .exec();
+  const overAllAmountOfCommandWardrobes =
+    await TranslationCommandWardrobe.countDocuments({
+      language: currentLanguage,
+      updatedAt: { $gte: startDate, $lt: endDate },
+    });
+  results.amountOfWardrobes = overAllAmountOfCommandWardrobes;
+
+  return results;
 };
 
 type CommandWardrobeByPlotFieldCommandIdTypes = {
@@ -179,7 +232,7 @@ export const createCommandWardrobeDuplicateTranslationService = async ({
 type UpdateCommandWardrobeTypes = {
   plotFieldCommandId: string;
   topologyBlockId: string;
-  textFieldName: string | undefined;
+  textFieldName: string;
   text: string | undefined;
   currentLanguage?: string;
 };
@@ -208,6 +261,7 @@ export const commandWardrobeUpdateTranslationService = async ({
       existingPlotFieldCommand.translations.push({
         text,
         textFieldName,
+        amountOfWords: text?.length || 0,
       });
     }
 

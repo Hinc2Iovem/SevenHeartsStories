@@ -41,11 +41,20 @@ export const translationCommandWardrobeSchema = new mongoose.Schema(
 
 translationCommandWardrobeSchema.index({ updatedAt: -1 });
 
-type TranslationCommandWardrobe = InferSchemaType<
-  typeof translationCommandWardrobeSchema
->;
+export interface TranslationCommandWardrobeDocument extends Document {
+  commandId?: mongoose.Schema.Types.ObjectId;
+  topologyBlockId?: mongoose.Schema.Types.ObjectId;
+  language: string;
+  translations: {
+    textFieldName: string;
+    text?: string;
+    amountOfWords: number;
+  }[];
+  createdAt: Date;
+  updatedAt: Date;
+}
 
-export default model<TranslationCommandWardrobe>(
+export default model<TranslationCommandWardrobeDocument>(
   "TranslationCommandWardrobe",
   translationCommandWardrobeSchema
 );

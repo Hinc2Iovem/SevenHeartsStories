@@ -11,9 +11,11 @@ import {
 type GetUpdatedAtAndLanguageQuery = {
   currentLanguage: string | undefined;
   updatedAt: string | undefined;
+  page: number | undefined;
+  limit: number | undefined;
 };
 
-// @route GET http://localhost:3500/commandWardrobes/recent/translations
+// @route GET http://localhost:3500/commandWardrobes/paginated/recent/translations
 // @access Private
 export const getCommandWardrobeTranslationUpdatedAtAndLanguageController: RequestHandler<
   unknown,
@@ -26,6 +28,8 @@ export const getCommandWardrobeTranslationUpdatedAtAndLanguageController: Reques
       await getCommandWardrobeTranslationUpdatedAtAndLanguageService({
         currentLanguage: req.query.currentLanguage,
         updatedAt: req.query.updatedAt,
+        page: req.query.page,
+        limit: req.query.limit,
       });
     if (textFieldName) {
       return res.status(201).json(textFieldName);
@@ -164,7 +168,7 @@ type CommandWardrobeUpdateTranslationParams = {
 };
 
 type CommandWardrobeUpdateTranslationBody = {
-  textFieldName: string | undefined;
+  textFieldName: string;
   text: string | undefined;
   currentLanguage?: string;
 };

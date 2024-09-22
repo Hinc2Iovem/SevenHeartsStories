@@ -41,9 +41,19 @@ export const translationChoiceSchema = new mongoose.Schema(
 
 translationChoiceSchema.index({ updatedAt: -1 });
 
-type TranslationChoice = InferSchemaType<typeof translationChoiceSchema>;
-
-export default model<TranslationChoice>(
+export interface TranslationChoiceDocument extends Document {
+  commandId?: mongoose.Schema.Types.ObjectId;
+  topologyBlockId?: mongoose.Schema.Types.ObjectId;
+  language: string;
+  translations: {
+    textFieldName: string;
+    text?: string;
+    amountOfWords: number;
+  }[];
+  createdAt: Date;
+  updatedAt: Date;
+}
+export default model<TranslationChoiceDocument>(
   "TranslationChoice",
   translationChoiceSchema
 );

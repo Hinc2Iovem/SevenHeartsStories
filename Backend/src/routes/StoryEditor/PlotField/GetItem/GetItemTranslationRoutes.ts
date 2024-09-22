@@ -11,7 +11,7 @@ import {
 export const getItemTranslationsRoute = express.Router();
 
 getItemTranslationsRoute
-  .route("/recent/translations")
+  .route("/paginated/recent/translations")
   .get(getGetItemTranslationUpdatedAtAndLanguageController);
 
 getItemTranslationsRoute

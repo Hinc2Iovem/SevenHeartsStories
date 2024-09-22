@@ -11,7 +11,7 @@ import {
 export const choiceTranslationsRoute = express.Router();
 
 choiceTranslationsRoute
-  .route("/recent/translations")
+  .route("/paginated/recent/translations")
   .get(getChoiceTranslationUpdatedAtAndLanguageController);
 
 choiceTranslationsRoute

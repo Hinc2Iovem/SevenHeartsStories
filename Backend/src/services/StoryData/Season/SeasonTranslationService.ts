@@ -84,13 +84,14 @@ export const getPaginatedSeasonTranslationUpdatedAtAndLanguageService = async ({
       limit: limitNumber,
     };
   }
-  results.results = await TranslationSeason.find({
-    language: currentLanguage,
-    updatedAt: { $gte: startDate, $lt: endDate },
-  })
-    .limit(limitNumber)
-    .skip(startIndex)
-    .exec();
+  results.results =
+    (await TranslationSeason.find({
+      language: currentLanguage,
+      updatedAt: { $gte: startDate, $lt: endDate },
+    })
+      .limit(limitNumber)
+      .skip(startIndex)
+      .exec()) || [];
 
   const overAllAmountOfSeasons = await TranslationSeason.countDocuments({
     language: currentLanguage,
@@ -164,13 +165,14 @@ export const getPaginatedTranlsationSeasonsService = async ({
       limit: limitNumber,
     };
   }
-  results.results = await TranslationSeason.find({
-    language: currentLanguage,
-    storyId,
-  })
-    .limit(limitNumber)
-    .skip(startIndex)
-    .exec();
+  results.results =
+    (await TranslationSeason.find({
+      language: currentLanguage,
+      storyId,
+    })
+      .limit(limitNumber)
+      .skip(startIndex)
+      .exec()) || [];
   const overAllAmountOfSeasons = await TranslationSeason.countDocuments({
     language: currentLanguage,
     storyId,

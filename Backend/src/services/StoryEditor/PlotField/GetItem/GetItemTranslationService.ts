@@ -1,6 +1,8 @@
 import createHttpError from "http-errors";
 import { validateMongoId } from "../../../../utils/validateMongoId";
-import TranslationGetItem from "../../../../models/StoryData/Translation/TranslationGetItem";
+import TranslationGetItem, {
+  TranslationGetItemDocument,
+} from "../../../../models/StoryData/Translation/TranslationGetItem";
 import PlotFieldCommand from "../../../../models/StoryEditor/PlotField/PlotFieldCommand";
 import { checkCurrentLanguage } from "../../../../utils/checkCurrentLanguage";
 import { subDays, subHours, subMinutes } from "date-fns";
@@ -8,17 +10,38 @@ import { subDays, subHours, subMinutes } from "date-fns";
 type GetByUpdatedAtAndLanguageTypes = {
   currentLanguage: string | undefined;
   updatedAt: string | undefined;
+  page: number | undefined;
+  limit: number | undefined;
+};
+
+type ResultTypes = {
+  next: {
+    page: number;
+    limit: number;
+  };
+  prev: {
+    page: number;
+    limit: number;
+  };
+  results: TranslationGetItemDocument[];
+  amountOfGetItems: number;
 };
 
 export const getGetItemTranslationUpdatedAtAndLanguageService = async ({
   currentLanguage,
   updatedAt,
+  limit,
+  page,
 }: GetByUpdatedAtAndLanguageTypes) => {
   if (!currentLanguage?.trim().length) {
     throw createHttpError(400, "Language is required");
   }
 
   checkCurrentLanguage({ currentLanguage });
+
+  if (!page || !limit) {
+    throw createHttpError(400, "Page and limit are required");
+  }
 
   let startDate: Date | undefined;
   let endDate = new Date();
@@ -46,17 +69,47 @@ export const getGetItemTranslationUpdatedAtAndLanguageService = async ({
       throw createHttpError(400, "Invalid updatedAt value");
   }
 
-  const existingTranslations = await TranslationGetItem.find({
-    updatedAt: { $gte: startDate, $lt: endDate },
-    language: currentLanguage,
-  })
-    .lean()
-    .exec();
+  const pageNumber = Number(page);
+  const limitNumber = Number(limit);
 
-  if (!existingTranslations.length) {
-    return [];
+  const startIndex = (pageNumber - 1) * limitNumber;
+  const endIndex = pageNumber * limitNumber;
+
+  const results = {} as ResultTypes;
+
+  if (
+    endIndex <
+    (await TranslationGetItem.countDocuments({
+      language: currentLanguage,
+      updatedAt: { $gte: startDate, $lt: endDate },
+    }).exec())
+  ) {
+    results.next = {
+      page: pageNumber + 1,
+      limit: limitNumber,
+    };
   }
-  return existingTranslations;
+  if (startIndex > 0) {
+    results.prev = {
+      page: pageNumber - 1,
+      limit: limitNumber,
+    };
+  }
+  results.results =
+    (await TranslationGetItem.find({
+      language: currentLanguage,
+      updatedAt: { $gte: startDate, $lt: endDate },
+    })
+      .limit(limitNumber)
+      .skip(startIndex)
+      .exec()) || [];
+  const overAllAmountOfGetItems = await TranslationGetItem.countDocuments({
+    language: currentLanguage,
+    updatedAt: { $gte: startDate, $lt: endDate },
+  });
+  results.amountOfGetItems = overAllAmountOfGetItems;
+
+  return results;
 };
 
 type GetItemByPlotFieldCommandIdTypes = {
@@ -145,7 +198,7 @@ export const createGetItemTranslationService = async ({
 type UpdateGetItemTypes = {
   plotFieldCommandId: string;
   topologyBlockId: string;
-  textFieldName: string | undefined;
+  textFieldName: string;
   text: string | undefined;
   currentLanguage?: string;
 };
@@ -174,6 +227,7 @@ export const getItemUpdateTranslationService = async ({
       existingPlotFieldCommand.translations.push({
         text,
         textFieldName,
+        amountOfWords: text?.length || 0,
       });
     }
 

@@ -87,13 +87,14 @@ export const getPaginatedAppearancePartTranslationUpdatedAtAndLanguageService =
         limit: limitNumber,
       };
     }
-    results.results = await TranslationAppearancePart.find({
-      updatedAt: { $gte: startDate, $lt: endDate },
-      language: currentLanguage,
-    })
-      .limit(limitNumber)
-      .skip(startIndex)
-      .exec();
+    results.results =
+      (await TranslationAppearancePart.find({
+        updatedAt: { $gte: startDate, $lt: endDate },
+        language: currentLanguage,
+      })
+        .limit(limitNumber)
+        .skip(startIndex)
+        .exec()) || [];
     const overAllAmountOfAppearanceParts =
       await TranslationAppearancePart.countDocuments({
         updatedAt: { $gte: startDate, $lt: endDate },
@@ -178,10 +179,11 @@ export const getPaginatedTranlsationAppearancePartsService = async ({
       limit: limitNumber,
     };
   }
-  results.results = await TranslationAppearancePart.find(queryObj)
-    .limit(limitNumber)
-    .skip(startIndex)
-    .exec();
+  results.results =
+    (await TranslationAppearancePart.find(queryObj)
+      .limit(limitNumber)
+      .skip(startIndex)
+      .exec()) || [];
   const overAllAmountOfAppearanceParts =
     await TranslationAppearancePart.countDocuments(queryObj);
   results.amountOfAppearanceParts = overAllAmountOfAppearanceParts;

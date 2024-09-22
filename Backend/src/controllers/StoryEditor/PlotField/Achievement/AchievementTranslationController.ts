@@ -11,9 +11,11 @@ import {
 type GetUpdatedAtAndLanguageQuery = {
   currentLanguage: string | undefined;
   updatedAt: string | undefined;
+  limit: number | undefined;
+  page: number | undefined;
 };
 
-// @route GET http://localhost:3500/achievements/recent/translations
+// @route GET http://localhost:3500/achievements/paginated/recent/translations
 // @access Private
 export const getAchievementTranslationUpdatedAtAndLanguageController: RequestHandler<
   unknown,
@@ -26,6 +28,8 @@ export const getAchievementTranslationUpdatedAtAndLanguageController: RequestHan
       await getAchievementTranslationUpdatedAtAndLanguageService({
         currentLanguage: req.query.currentLanguage,
         updatedAt: req.query.updatedAt,
+        page: req.query.page,
+        limit: req.query.limit,
       });
     if (textFieldName) {
       return res.status(201).json(textFieldName);
@@ -168,7 +172,7 @@ type AchievementUpdateTranslationParams = {
 
 type AchievementUpdateTranslationBody = {
   storyId: string;
-  textFieldName: string | undefined;
+  textFieldName: string;
   text: string | undefined;
   currentLanguage?: string;
 };

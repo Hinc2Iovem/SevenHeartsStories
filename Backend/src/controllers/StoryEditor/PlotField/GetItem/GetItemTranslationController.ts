@@ -10,9 +10,11 @@ import {
 type GetUpdatedAtAndLanguageQuery = {
   currentLanguage: string | undefined;
   updatedAt: string | undefined;
+  page: number | undefined;
+  limit: number | undefined;
 };
 
-// @route GET http://localhost:3500/getItems/recent/translations
+// @route GET http://localhost:3500/getItems/paginated/recent/translations
 // @access Private
 export const getGetItemTranslationUpdatedAtAndLanguageController: RequestHandler<
   unknown,
@@ -25,6 +27,8 @@ export const getGetItemTranslationUpdatedAtAndLanguageController: RequestHandler
       await getGetItemTranslationUpdatedAtAndLanguageService({
         currentLanguage: req.query.currentLanguage,
         updatedAt: req.query.updatedAt,
+        page: req.query.page,
+        limit: req.query.limit,
       });
     if (textFieldName) {
       return res.status(201).json(textFieldName);
@@ -130,7 +134,7 @@ type GetItemUpdateTranslationParams = {
 };
 
 type GetItemUpdateTranslationBody = {
-  textFieldName: string | undefined;
+  textFieldName: string;
   text: string | undefined;
   currentLanguage?: string;
 };

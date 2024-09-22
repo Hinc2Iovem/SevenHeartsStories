@@ -12,7 +12,7 @@ import {
 export const achievementTranslationsRoute = express.Router();
 
 achievementTranslationsRoute
-  .route("/recent/translations")
+  .route("/paginated/recent/translations")
   .get(getAchievementTranslationUpdatedAtAndLanguageController);
 
 achievementTranslationsRoute

@@ -41,9 +41,20 @@ export const translationGetItemSchema = new mongoose.Schema(
 
 translationGetItemSchema.index({ updatedAt: -1 });
 
-type TranslationGetItem = InferSchemaType<typeof translationGetItemSchema>;
+export interface TranslationGetItemDocument extends Document {
+  commandId?: mongoose.Schema.Types.ObjectId;
+  topologyBlockId?: mongoose.Schema.Types.ObjectId;
+  language: string;
+  translations: {
+    textFieldName: string;
+    text?: string;
+    amountOfWords: number;
+  }[];
+  createdAt: Date;
+  updatedAt: Date;
+}
 
-export default model<TranslationGetItem>(
+export default model<TranslationGetItemDocument>(
   "TranslationGetItem",
   translationGetItemSchema
 );

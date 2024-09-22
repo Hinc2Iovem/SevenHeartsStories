@@ -86,13 +86,14 @@ export const getPaginatedStoryTranslationUpdatedAtAndLanguageService = async ({
       limit: limitNumber,
     };
   }
-  results.results = await TranslationStory.find({
-    language: currentLanguage,
-    updatedAt: { $gte: startDate, $lt: endDate },
-  })
-    .limit(limitNumber)
-    .skip(startIndex)
-    .exec();
+  results.results =
+    (await TranslationStory.find({
+      language: currentLanguage,
+      updatedAt: { $gte: startDate, $lt: endDate },
+    })
+      .limit(limitNumber)
+      .skip(startIndex)
+      .exec()) || [];
   const overAllAmountOfStories = await TranslationStory.countDocuments({
     language: currentLanguage,
     updatedAt: { $gte: startDate, $lt: endDate },
@@ -160,10 +161,11 @@ export const getPaginatedTranlsationStoriesService = async ({
       limit: limitNumber,
     };
   }
-  results.results = await TranslationStory.find({ language: currentLanguage })
-    .limit(limitNumber)
-    .skip(startIndex)
-    .exec();
+  results.results =
+    (await TranslationStory.find({ language: currentLanguage })
+      .limit(limitNumber)
+      .skip(startIndex)
+      .exec()) || [];
   const overAllAmountOfStories = await TranslationStory.countDocuments({
     language: currentLanguage,
   });
