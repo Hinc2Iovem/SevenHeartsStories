@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import useGetTranslationEpisodesQueries from "../../../../../hooks/Fetching/Translation/Episode/useGetEpisodesTranslationsBySeasonId";
+import useGetPaginatedTranslationEpisodes from "../../../../../hooks/Fetching/Translation/Episode/useGetPaginatedTranslationEpisodes";
 import useInvalidateTranslatorEpisodeQueries from "../../../../../hooks/helpers/Profile/Translator/useInvalidateTranslatorEpisodeQueries";
 import { CurrentlyAvailableLanguagesTypes } from "../../../../../types/Additional/CURRENTLY_AVAILABEL_LANGUAGES";
 import { TranslationEpisodeTypes } from "../../../../../types/Additional/TranslationTypes";
@@ -25,6 +25,7 @@ export default function FiltersEverythingStoryForEpisode({
   prevTranslateFromLanguage,
   prevTranslateToLanguage,
 }: FiltersEverythingCharacterForEpisodeTypes) {
+  const [page, setPage] = useState(1);
   const [storyId, setStoryId] = useState("");
   const [seasonId, setSeasonId] = useState("");
 
@@ -33,19 +34,23 @@ export default function FiltersEverythingStoryForEpisode({
     prevTranslateToLanguage,
     translateToLanguage,
     seasonId,
+    page,
+    limit: 3,
   });
 
-  const { data: translatedEpisode } = useGetTranslationEpisodesQueries({
+  const { data: translatedEpisode } = useGetPaginatedTranslationEpisodes({
     seasonId,
     language: translateFromLanguage,
+    page,
+    limit: 3,
   });
 
-  const { data: nonTranslatedEpisode } = useGetTranslationEpisodesQueries({
+  const { data: nonTranslatedEpisode } = useGetPaginatedTranslationEpisodes({
     seasonId,
     language: translateToLanguage,
+    page,
+    limit: 3,
   });
-
-  console.log("seasonId: ", seasonId);
 
   const memoizedCombinedTranslations = useMemo(() => {
     const combinedArray: CombinedTranslatedAndNonTranslatedEpisodeTypes[] = [];
@@ -53,7 +58,7 @@ export default function FiltersEverythingStoryForEpisode({
       [key: string]: CombinedTranslatedAndNonTranslatedEpisodeTypes;
     } = {};
 
-    translatedEpisode?.forEach((tc) => {
+    translatedEpisode?.results.forEach((tc) => {
       const episodeId = tc.episodeId;
       if (!episodeMap[episodeId]) {
         episodeMap[episodeId] = {
@@ -65,7 +70,7 @@ export default function FiltersEverythingStoryForEpisode({
       }
     });
 
-    nonTranslatedEpisode?.forEach((ntc) => {
+    nonTranslatedEpisode?.results.forEach((ntc) => {
       const episodeId = ntc.episodeId;
       if (!episodeMap[episodeId]) {
         episodeMap[episodeId] = {

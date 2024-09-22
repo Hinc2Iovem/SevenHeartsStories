@@ -12,6 +12,7 @@ type FiltersEverythingPlotChoiceTypes = {
   prevTranslateFromLanguage: CurrentlyAvailableLanguagesTypes;
   prevTranslateToLanguage: CurrentlyAvailableLanguagesTypes;
   updatedAt: UpdatedAtPossibleVariationTypes;
+  page: number;
 };
 
 export type CombinedTranslatedAndNonTranslatedChoiceTypes = {
@@ -25,6 +26,7 @@ export default function FiltersEverythingPlotChoiceRecent({
   prevTranslateToLanguage,
   translateToLanguage,
   updatedAt,
+  page,
 }: FiltersEverythingPlotChoiceTypes) {
   useInvalidateTranslatorQueriesRecent({
     prevTranslateFromLanguage,
@@ -32,15 +34,21 @@ export default function FiltersEverythingPlotChoiceRecent({
     queryKey: "choice",
     translateToLanguage,
     updatedAt,
+    page,
+    limit: 3,
   });
 
   const { data: translatedChoices } = useGetChoiceRecentTranslations({
     language: translateFromLanguage,
     updatedAt,
+    page,
+    limit: 3,
   });
   const { data: nonTranslatedChoices } = useGetChoiceRecentTranslations({
     language: translateToLanguage,
     updatedAt,
+    page,
+    limit: 3,
   });
 
   const memoizedCombinedTranslations = useMemo(() => {
@@ -49,7 +57,7 @@ export default function FiltersEverythingPlotChoiceRecent({
       [key: string]: CombinedTranslatedAndNonTranslatedChoiceTypes;
     } = {};
 
-    translatedChoices?.forEach((tc) => {
+    translatedChoices?.results.forEach((tc) => {
       const choiceId = tc.commandId;
       if (!choiceMap[choiceId]) {
         choiceMap[choiceId] = {
@@ -61,7 +69,7 @@ export default function FiltersEverythingPlotChoiceRecent({
       }
     });
 
-    nonTranslatedChoices?.forEach((ntc) => {
+    nonTranslatedChoices?.results.forEach((ntc) => {
       const choiceId = ntc.commandId;
       if (!choiceMap[choiceId]) {
         choiceMap[choiceId] = {

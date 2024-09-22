@@ -12,6 +12,7 @@ type FiltersEverythingCharacterForEpisodeTypes = {
   prevTranslateFromLanguage: CurrentlyAvailableLanguagesTypes;
   prevTranslateToLanguage: CurrentlyAvailableLanguagesTypes;
   updatedAt: UpdatedAtPossibleVariationTypes;
+  page: number;
 };
 
 export type CombinedTranslatedAndNonTranslatedEpisodeTypes = {
@@ -25,6 +26,7 @@ export default function FiltersEverythingStoryForEpisodeRecent({
   prevTranslateFromLanguage,
   prevTranslateToLanguage,
   updatedAt,
+  page,
 }: FiltersEverythingCharacterForEpisodeTypes) {
   useInvalidateTranslatorQueriesRecent({
     prevTranslateFromLanguage,
@@ -32,16 +34,22 @@ export default function FiltersEverythingStoryForEpisodeRecent({
     translateToLanguage,
     queryKey: "episode",
     updatedAt,
+    page,
+    limit: 3,
   });
 
   const { data: translatedEpisode } = useGetEpisodeRecentTranslations({
     updatedAt,
     language: translateFromLanguage,
+    page,
+    limit: 3,
   });
 
   const { data: nonTranslatedEpisode } = useGetEpisodeRecentTranslations({
     updatedAt,
     language: translateToLanguage,
+    page,
+    limit: 3,
   });
 
   const memoizedCombinedTranslations = useMemo(() => {
@@ -50,7 +58,7 @@ export default function FiltersEverythingStoryForEpisodeRecent({
       [key: string]: CombinedTranslatedAndNonTranslatedEpisodeTypes;
     } = {};
 
-    translatedEpisode?.forEach((tc) => {
+    translatedEpisode?.results.forEach((tc) => {
       const episodeId = tc.episodeId;
       if (!episodeMap[episodeId]) {
         episodeMap[episodeId] = {
@@ -62,7 +70,7 @@ export default function FiltersEverythingStoryForEpisodeRecent({
       }
     });
 
-    nonTranslatedEpisode?.forEach((ntc) => {
+    nonTranslatedEpisode?.results.forEach((ntc) => {
       const episodeId = ntc.episodeId;
       if (!episodeMap[episodeId]) {
         episodeMap[episodeId] = {

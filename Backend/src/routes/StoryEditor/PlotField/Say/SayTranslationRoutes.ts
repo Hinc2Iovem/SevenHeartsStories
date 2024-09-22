@@ -13,7 +13,7 @@ import {
 export const sayTranslationsRoute = express.Router();
 
 sayTranslationsRoute
-  .route("/recent/translations")
+  .route("/paginated/recent/translations")
   .get(getSayTranslationUpdatedAtAndLanguageController);
 
 sayTranslationsRoute

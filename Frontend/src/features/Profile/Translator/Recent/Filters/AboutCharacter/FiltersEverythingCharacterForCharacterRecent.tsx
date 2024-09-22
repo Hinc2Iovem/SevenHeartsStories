@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import useGetCharacterRecentTranslations from "../../../../../../hooks/Fetching/Translation/Characters/useGetCharacterRecentTranslations";
+import useGetPaginatedCharacterRecentTranslations from "../../../../../../hooks/Fetching/Translation/Characters/useGetPaginatedCharacterRecentTranslations";
 import useInvalidateTranslatorQueriesRecent from "../../../../../../hooks/helpers/Profile/Translator/useInvalidateTranslatorQueriesRecent";
 import { CurrentlyAvailableLanguagesTypes } from "../../../../../../types/Additional/CURRENTLY_AVAILABEL_LANGUAGES";
 import { TranslationCharacterTypes } from "../../../../../../types/Additional/TranslationTypes";
@@ -12,6 +12,7 @@ type FiltersEverythingCharacterForCharacterTypes = {
   prevTranslateFromLanguage: CurrentlyAvailableLanguagesTypes;
   prevTranslateToLanguage: CurrentlyAvailableLanguagesTypes;
   updatedAt: UpdatedAtPossibleVariationTypes;
+  page: number;
 };
 
 export type CombinedTranslatedAndNonTranslatedCharacterTypes = {
@@ -25,6 +26,7 @@ export default function FiltersEverythingCharacterForCharacterRecent({
   prevTranslateFromLanguage,
   prevTranslateToLanguage,
   updatedAt,
+  page,
 }: FiltersEverythingCharacterForCharacterTypes) {
   useInvalidateTranslatorQueriesRecent({
     prevTranslateFromLanguage,
@@ -32,17 +34,25 @@ export default function FiltersEverythingCharacterForCharacterRecent({
     translateToLanguage,
     queryKey: "character",
     updatedAt,
+    page,
+    limit: 3,
   });
 
-  const { data: translatedCharacters } = useGetCharacterRecentTranslations({
-    updatedAt,
-    language: translateFromLanguage,
-  });
+  const { data: translatedCharacters } =
+    useGetPaginatedCharacterRecentTranslations({
+      updatedAt,
+      language: translateFromLanguage,
+      page,
+      limit: 3,
+    });
 
-  const { data: nonTranslatedCharacters } = useGetCharacterRecentTranslations({
-    updatedAt,
-    language: translateToLanguage,
-  });
+  const { data: nonTranslatedCharacters } =
+    useGetPaginatedCharacterRecentTranslations({
+      updatedAt,
+      language: translateToLanguage,
+      page,
+      limit: 3,
+    });
 
   const memoizedCombinedTranslations = useMemo(() => {
     const combinedArray: CombinedTranslatedAndNonTranslatedCharacterTypes[] =
@@ -51,7 +61,7 @@ export default function FiltersEverythingCharacterForCharacterRecent({
       [key: string]: CombinedTranslatedAndNonTranslatedCharacterTypes;
     } = {};
 
-    translatedCharacters?.forEach((tc) => {
+    translatedCharacters?.results.forEach((tc) => {
       const characterId = tc.characterId;
       if (!characterMap[characterId]) {
         characterMap[characterId] = {
@@ -63,7 +73,7 @@ export default function FiltersEverythingCharacterForCharacterRecent({
       }
     });
 
-    nonTranslatedCharacters?.forEach((ntc) => {
+    nonTranslatedCharacters?.results.forEach((ntc) => {
       const characterId = ntc.characterId;
       if (!characterMap[characterId]) {
         characterMap[characterId] = {

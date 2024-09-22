@@ -3,8 +3,9 @@ import {
   getAllAssignedStoriesTranslationsByLanguageAndStaffIdService,
   getAllStoriesTranslationsByLanguageService,
   getAllStoriesTranslationsByTypeAndSearchService,
+  getPaginatedTranlsationStoriesService,
   getStoryByIdAndLanguageService,
-  getStoryTranslationUpdatedAtAndLanguageService,
+  getPaginatedStoryTranslationUpdatedAtAndLanguageService,
   storyCreateService,
   storyTranslationUpdateService,
 } from "../../../services/StoryData/Story/StoryTranslationService";
@@ -12,23 +13,58 @@ import {
 type GetUpdatedAtAndLanguageQuery = {
   currentLanguage: string | undefined;
   updatedAt: string | undefined;
+  limit: number | undefined;
+  page: number | undefined;
 };
 
-// @route GET http://localhost:3500/stories/recent/translations
+// @route GET http://localhost:3500/stories/paginated/recent/translations
 // @access Private
-export const getStoryTranslationUpdatedAtAndLanguageController: RequestHandler<
+export const getPaginatedStoryTranslationUpdatedAtAndLanguageController: RequestHandler<
   unknown,
   unknown,
   unknown,
   GetUpdatedAtAndLanguageQuery
 > = async (req, res, next) => {
   try {
-    const textFieldName = await getStoryTranslationUpdatedAtAndLanguageService({
+    const stories =
+      await getPaginatedStoryTranslationUpdatedAtAndLanguageService({
+        currentLanguage: req.query.currentLanguage,
+        updatedAt: req.query.updatedAt,
+        page: req.query.page,
+        limit: req.query.limit,
+      });
+    if (stories) {
+      return res.status(201).json(stories);
+    } else {
+      return res.status(400).json({ message: "Something went wrong" });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
+type GetPaginatedTranslationStoriesQuery = {
+  currentLanguage: string | undefined;
+  limit: number | undefined;
+  page: number | undefined;
+};
+
+// @route GET http://localhost:3500/stories/paginated/translations
+// @access Private
+export const getPaginatedTranslationStoriesController: RequestHandler<
+  unknown,
+  unknown,
+  unknown,
+  GetPaginatedTranslationStoriesQuery
+> = async (req, res, next) => {
+  try {
+    const stories = await getPaginatedTranlsationStoriesService({
       currentLanguage: req.query.currentLanguage,
-      updatedAt: req.query.updatedAt,
+      limit: req.query.limit,
+      page: req.query.page,
     });
-    if (textFieldName) {
-      return res.status(201).json(textFieldName);
+    if (stories) {
+      return res.status(201).json(stories);
     } else {
       return res.status(400).json({ message: "Something went wrong" });
     }

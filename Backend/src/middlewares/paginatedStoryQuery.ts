@@ -20,7 +20,7 @@ type ResultTypes<T extends Document> = {
   amountOfStories: number;
 };
 
-export default function paginatedQuery<T extends Document>(
+export default function paginatedStoryQuery<T extends Document>(
   model: Model<T>
 ): RequestHandler<unknown, unknown, unknown, PaginatedQueryTypes> {
   return async (req, res, next) => {

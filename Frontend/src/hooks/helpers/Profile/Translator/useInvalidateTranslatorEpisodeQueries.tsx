@@ -7,6 +7,8 @@ type InvalidateTranslatorQueriesTypes = {
   prevTranslateToLanguage: CurrentlyAvailableLanguagesTypes;
   translateToLanguage: CurrentlyAvailableLanguagesTypes;
   seasonId: string;
+  page: number;
+  limit: number;
 };
 
 export default function useInvalidateTranslatorEpisodeQueries({
@@ -14,12 +16,19 @@ export default function useInvalidateTranslatorEpisodeQueries({
   prevTranslateToLanguage,
   translateToLanguage,
   seasonId,
+  page,
+  limit,
 }: InvalidateTranslatorQueriesTypes) {
   const queryClient = useQueryClient();
   useEffect(() => {
     if (prevTranslateFromLanguage) {
       queryClient.invalidateQueries({
         queryKey: [
+          "paginated",
+          "page",
+          page,
+          "limit",
+          limit,
           "translation",
           prevTranslateFromLanguage,
           "season",
@@ -27,8 +36,14 @@ export default function useInvalidateTranslatorEpisodeQueries({
           "episode",
         ],
       });
+
       queryClient.invalidateQueries({
         queryKey: [
+          "paginated",
+          "page",
+          page,
+          "limit",
+          limit,
           "translation",
           translateToLanguage,
           "season",
@@ -40,6 +55,11 @@ export default function useInvalidateTranslatorEpisodeQueries({
     if (prevTranslateToLanguage || prevTranslateFromLanguage) {
       queryClient.invalidateQueries({
         queryKey: [
+          "paginated",
+          "page",
+          page,
+          "limit",
+          limit,
           "translation",
           prevTranslateToLanguage,
           "season",

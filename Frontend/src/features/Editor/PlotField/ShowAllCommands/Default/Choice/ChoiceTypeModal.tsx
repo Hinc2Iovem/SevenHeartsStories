@@ -46,7 +46,10 @@ export default function ChoiceTypeModal({
         {ALL_POSSIBLE_CHOICE_VARIATIONS.map((cv) => (
           <button
             key={cv}
-            onClick={() => setChoiceType(cv)}
+            onClick={() => {
+              setShowChoiceTypes(false);
+              setChoiceType(cv);
+            }}
             className={`${
               cv === choiceType
                 ? " bg-primary-pastel-blue text-white"

@@ -1,8 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { axiosCustomized } from "../../../../api/axios";
-import { UpdatedAtPossibleVariationTypes } from "../../../../features/Profile/Translator/Recent/Filters/FiltersEverythingRecent";
 import { CurrentlyAvailableLanguagesTypes } from "../../../../types/Additional/CURRENTLY_AVAILABEL_LANGUAGES";
-import { TranslationCharacterCharacteristicTypes } from "../../../../types/Additional/TranslationTypes";
+import { TranslationCharacterTypes } from "../../../../types/Additional/TranslationTypes";
 
 type PaginatedCharacterTypes = {
   next?: {
@@ -13,20 +12,22 @@ type PaginatedCharacterTypes = {
     page: number;
     limit: number;
   };
-  results: TranslationCharacterCharacteristicTypes[];
-  amountOfCharacteristics: number;
+  results: TranslationCharacterTypes[];
+  amountOfCharacter: number;
 };
 
-export default function useGetCharacteristicRecentTranslations({
-  updatedAt,
+export default function useGetPaginatedTranslationCharacter({
   language = "russian",
   page,
   limit,
+  storyId,
+  characterType,
 }: {
-  updatedAt: UpdatedAtPossibleVariationTypes;
   language?: CurrentlyAvailableLanguagesTypes;
   page: number;
   limit: number;
+  storyId: string;
+  characterType: string;
 }) {
   return useQuery({
     queryKey: [
@@ -37,16 +38,17 @@ export default function useGetCharacteristicRecentTranslations({
       limit,
       "translation",
       language,
-      "characteristic",
-      "updatedAt",
-      updatedAt,
+      "story",
+      storyId,
+      "character",
+      characterType,
     ],
     queryFn: async () =>
       await axiosCustomized
         .get<PaginatedCharacterTypes>(
-          `/characteristics/paginated/recent/translations?currentLanguage=${language}&updatedAt=${updatedAt}&page=${page}&limit=${limit}`
+          `/characters/paginated/translations?currentLanguage=${language}&page=${page}&limit=${limit}&storyId=${storyId}&characterType=${characterType}`
         )
         .then((r) => r.data),
-    enabled: !!language && !!updatedAt && !!page && !!limit,
+    enabled: !!language && !!page && !!limit && !!storyId,
   });
 }

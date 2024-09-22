@@ -12,6 +12,7 @@ type FiltersEverythingPlotGetItemTypes = {
   prevTranslateFromLanguage: CurrentlyAvailableLanguagesTypes;
   prevTranslateToLanguage: CurrentlyAvailableLanguagesTypes;
   updatedAt: UpdatedAtPossibleVariationTypes;
+  page: number;
 };
 
 export type CombinedTranslatedAndNonTranslatedGetItemTypes = {
@@ -25,6 +26,7 @@ export default function FiltersEverythingPlotGetItemRecent({
   prevTranslateToLanguage,
   translateToLanguage,
   updatedAt,
+  page,
 }: FiltersEverythingPlotGetItemTypes) {
   useInvalidateTranslatorQueriesRecent({
     prevTranslateFromLanguage,
@@ -32,14 +34,21 @@ export default function FiltersEverythingPlotGetItemRecent({
     queryKey: "getItem",
     translateToLanguage,
     updatedAt,
+    page,
+    limit: 3,
   });
+
   const { data: translatedGetItems } = useGetGetItemRecentTranslations({
     language: translateFromLanguage,
     updatedAt,
+    page,
+    limit: 3,
   });
   const { data: nonTranslatedGetItems } = useGetGetItemRecentTranslations({
     language: translateToLanguage,
     updatedAt,
+    page,
+    limit: 3,
   });
 
   const memoizedCombinedTranslations = useMemo(() => {
@@ -48,7 +57,7 @@ export default function FiltersEverythingPlotGetItemRecent({
       [key: string]: CombinedTranslatedAndNonTranslatedGetItemTypes;
     } = {};
 
-    translatedGetItems?.forEach((tc) => {
+    translatedGetItems?.results.forEach((tc) => {
       const getItemId = tc.commandId;
       if (!getItemMap[getItemId]) {
         getItemMap[getItemId] = {
@@ -60,7 +69,7 @@ export default function FiltersEverythingPlotGetItemRecent({
       }
     });
 
-    nonTranslatedGetItems?.forEach((ntc) => {
+    nonTranslatedGetItems?.results.forEach((ntc) => {
       const getItemId = ntc.commandId;
       if (!getItemMap[getItemId]) {
         getItemMap[getItemId] = {

@@ -12,6 +12,7 @@ type FiltersEverythingPlotCommandWardrobeTypes = {
   prevTranslateFromLanguage: CurrentlyAvailableLanguagesTypes;
   prevTranslateToLanguage: CurrentlyAvailableLanguagesTypes;
   updatedAt: UpdatedAtPossibleVariationTypes;
+  page: number;
 };
 
 export type CombinedTranslatedAndNonTranslatedCommandWardrobeTypes = {
@@ -25,6 +26,7 @@ export default function FiltersEverythingPlotCommandWardrobeRecent({
   prevTranslateToLanguage,
   translateToLanguage,
   updatedAt,
+  page,
 }: FiltersEverythingPlotCommandWardrobeTypes) {
   useInvalidateTranslatorQueriesRecent({
     prevTranslateFromLanguage,
@@ -32,16 +34,22 @@ export default function FiltersEverythingPlotCommandWardrobeRecent({
     queryKey: "commandWardrobe",
     translateToLanguage,
     updatedAt,
+    page,
+    limit: 3,
   });
   const { data: translatedCommandWardrobes } =
     useGetCommandWardrobeRecentTranslations({
       language: translateFromLanguage,
       updatedAt,
+      page,
+      limit: 3,
     });
   const { data: nonTranslatedCommandWardrobes } =
     useGetCommandWardrobeRecentTranslations({
       language: translateToLanguage,
       updatedAt,
+      page,
+      limit: 3,
     });
 
   const memoizedCombinedTranslations = useMemo(() => {
@@ -51,7 +59,7 @@ export default function FiltersEverythingPlotCommandWardrobeRecent({
       [key: string]: CombinedTranslatedAndNonTranslatedCommandWardrobeTypes;
     } = {};
 
-    translatedCommandWardrobes?.forEach((tc) => {
+    translatedCommandWardrobes?.results.forEach((tc) => {
       const commandWardrobeId = tc.commandId;
       if (!commandWardrobeMap[commandWardrobeId]) {
         commandWardrobeMap[commandWardrobeId] = {
@@ -63,7 +71,7 @@ export default function FiltersEverythingPlotCommandWardrobeRecent({
       }
     });
 
-    nonTranslatedCommandWardrobes?.forEach((ntc) => {
+    nonTranslatedCommandWardrobes?.results.forEach((ntc) => {
       const commandWardrobeId = ntc.commandId;
       if (!commandWardrobeMap[commandWardrobeId]) {
         commandWardrobeMap[commandWardrobeId] = {

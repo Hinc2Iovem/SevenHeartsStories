@@ -1,10 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
 import { axiosCustomized } from "../../../../api/axios";
-import { UpdatedAtPossibleVariationTypes } from "../../../../features/Profile/Translator/Recent/Filters/FiltersEverythingRecent";
 import { CurrentlyAvailableLanguagesTypes } from "../../../../types/Additional/CURRENTLY_AVAILABEL_LANGUAGES";
-import { TranslationStoryTypes } from "../../../../types/Additional/TranslationTypes";
+import { TranslationEpisodeTypes } from "../../../../types/Additional/TranslationTypes";
 
-type PaginatedStoryTypes = {
+type PaginatedEpisodeTypes = {
   next?: {
     page: number;
     limit: number;
@@ -13,20 +12,20 @@ type PaginatedStoryTypes = {
     page: number;
     limit: number;
   };
-  results: TranslationStoryTypes[];
-  amountOfStories: number;
+  results: TranslationEpisodeTypes[];
+  amountOfEpisodes: number;
 };
 
-export default function useGetStoryRecentTranslations({
-  updatedAt,
+export default function useGetPaginatedTranslationEpisodes({
   language = "russian",
   page,
   limit,
+  seasonId,
 }: {
-  updatedAt: UpdatedAtPossibleVariationTypes;
   language?: CurrentlyAvailableLanguagesTypes;
   page: number;
   limit: number;
+  seasonId: string;
 }) {
   return useQuery({
     queryKey: [
@@ -37,16 +36,16 @@ export default function useGetStoryRecentTranslations({
       limit,
       "translation",
       language,
-      "story",
-      "updatedAt",
-      updatedAt,
+      "season",
+      seasonId,
+      "episode",
     ],
     queryFn: async () =>
       await axiosCustomized
-        .get<PaginatedStoryTypes>(
-          `/stories/paginated/recent/translations?currentLanguage=${language}&updatedAt=${updatedAt}&page=${page}&limit=${limit}`
+        .get<PaginatedEpisodeTypes>(
+          `/episodes/paginated/translations?currentLanguage=${language}&page=${page}&limit=${limit}&seasonId=${seasonId}`
         )
         .then((r) => r.data),
-    enabled: !!language && !!updatedAt && !!page && !!limit,
+    enabled: !!language && !!page && !!limit && !!seasonId,
   });
 }

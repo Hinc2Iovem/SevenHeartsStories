@@ -7,6 +7,9 @@ type InvalidateTranslatorQueriesTypes = {
   prevTranslateToLanguage: CurrentlyAvailableLanguagesTypes;
   translateToLanguage: CurrentlyAvailableLanguagesTypes;
   storyId: string;
+  characterType: string;
+  page: number;
+  limit: number;
 };
 
 export default function useInvalidateTranslatorCharacterQueries({
@@ -14,6 +17,9 @@ export default function useInvalidateTranslatorCharacterQueries({
   prevTranslateToLanguage,
   translateToLanguage,
   storyId,
+  limit,
+  page,
+  characterType,
 }: InvalidateTranslatorQueriesTypes) {
   const queryClient = useQueryClient();
 
@@ -21,31 +27,49 @@ export default function useInvalidateTranslatorCharacterQueries({
     if (prevTranslateFromLanguage) {
       queryClient.invalidateQueries({
         queryKey: [
+          "paginated",
+          "page",
+          page,
+          "limit",
+          limit,
           "translation",
           prevTranslateFromLanguage,
-          "character",
           "story",
           storyId,
+          "character",
+          characterType,
         ],
       });
       queryClient.invalidateQueries({
         queryKey: [
+          "paginated",
+          "page",
+          page,
+          "limit",
+          limit,
           "translation",
           translateToLanguage,
-          "character",
           "story",
           storyId,
+          "character",
+          characterType,
         ],
       });
     }
     if (prevTranslateToLanguage || prevTranslateFromLanguage) {
       queryClient.invalidateQueries({
         queryKey: [
+          "paginated",
+          "page",
+          page,
+          "limit",
+          limit,
           "translation",
           prevTranslateToLanguage,
-          "character",
           "story",
           storyId,
+          "character",
+          characterType,
         ],
       });
     }

@@ -45,9 +45,21 @@ export const translationEpisodeSchema = new mongoose.Schema(
 
 translationEpisodeSchema.index({ updatedAt: -1 });
 
-type TranslationEpisode = InferSchemaType<typeof translationEpisodeSchema>;
+export interface TranslationEpisodeDocument extends Document {
+  episodeId?: mongoose.Schema.Types.ObjectId;
+  seasonId?: mongoose.Schema.Types.ObjectId;
+  episodeStatus: string;
+  language: string;
+  translations: {
+    textFieldName: string;
+    text?: string;
+    amountOfWords: number;
+  }[];
+  createdAt: Date;
+  updatedAt: Date;
+}
 
-export default model<TranslationEpisode>(
+export default model<TranslationEpisodeDocument>(
   "TranslationEpisode",
   translationEpisodeSchema
 );

@@ -4,15 +4,37 @@ import { UpdatedAtPossibleVariationTypes } from "../../../../features/Profile/Tr
 import { CurrentlyAvailableLanguagesTypes } from "../../../../types/Additional/CURRENTLY_AVAILABEL_LANGUAGES";
 import { TranslationAppearancePartTypes } from "../../../../types/Additional/TranslationTypes";
 
-export default function useGetAppearancePartRecentTranslations({
+type PaginatedAppearancePartTypes = {
+  next?: {
+    page: number;
+    limit: number;
+  };
+  prev?: {
+    page: number;
+    limit: number;
+  };
+  results: TranslationAppearancePartTypes[];
+  amountOfAppearanceParts: number;
+};
+
+export default function useGetPaginatedAppearancePartRecentTranslations({
   updatedAt,
   language = "russian",
+  page,
+  limit,
 }: {
   updatedAt: UpdatedAtPossibleVariationTypes;
   language?: CurrentlyAvailableLanguagesTypes;
+  page: number;
+  limit: number;
 }) {
   return useQuery({
     queryKey: [
+      "paginated",
+      "page",
+      page,
+      "limit",
+      limit,
       "translation",
       language,
       "appearancePart",
@@ -21,10 +43,10 @@ export default function useGetAppearancePartRecentTranslations({
     ],
     queryFn: async () =>
       await axiosCustomized
-        .get<TranslationAppearancePartTypes[]>(
-          `/appearanceParts/recent/translations?currentLanguage=${language}&updatedAt=${updatedAt}`
+        .get<PaginatedAppearancePartTypes>(
+          `/appearanceParts/paginated/recent/translations?currentLanguage=${language}&updatedAt=${updatedAt}&page=${page}$limit=${limit}`
         )
         .then((r) => r.data),
-    enabled: !!language && !!updatedAt,
+    enabled: !!language && !!updatedAt && !!page && !!limit,
   });
 }

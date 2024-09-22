@@ -1,8 +1,38 @@
 import createHttpError from "http-errors";
-import PlotFieldCommand from "../../../models/StoryEditor/PlotField/PlotFieldCommand";
-import { validateMongoId } from "../../../utils/validateMongoId";
-import TopologyBlock from "../../../models/StoryEditor/Topology/TopologyBlock";
+import TranslationAchievement from "../../../models/StoryData/Translation/TranslationAchievement";
+import TranslationChoice from "../../../models/StoryData/Translation/TranslationChoice";
+import TranslationGetItem from "../../../models/StoryData/Translation/TranslationGetItem";
+import TranslationSay from "../../../models/StoryData/Translation/TranslationSay";
+import Achievement from "../../../models/StoryEditor/PlotField/Achievement/Achievement";
+import Ambient from "../../../models/StoryEditor/PlotField/Ambient/Ambient";
+import Background from "../../../models/StoryEditor/PlotField/Background/Background";
+import Call from "../../../models/StoryEditor/PlotField/Call/Call";
+import Choice from "../../../models/StoryEditor/PlotField/Choice/Choice";
+import Comment from "../../../models/StoryEditor/PlotField/Comment/Comment";
+import Condition from "../../../models/StoryEditor/PlotField/Condition/Condition";
+import CutScene from "../../../models/StoryEditor/PlotField/CutScene/CutScene";
+import Effect from "../../../models/StoryEditor/PlotField/Effect/Effect";
+import GetItem from "../../../models/StoryEditor/PlotField/GetItem/GetItem";
 import IfModel from "../../../models/StoryEditor/PlotField/If/IfModel";
+import Key from "../../../models/StoryEditor/PlotField/Key/Key";
+import Move from "../../../models/StoryEditor/PlotField/Move/Move";
+import CommandMusic from "../../../models/StoryEditor/PlotField/Music/CommandMusic";
+import PlotFieldCommand from "../../../models/StoryEditor/PlotField/PlotFieldCommand";
+import Say from "../../../models/StoryEditor/PlotField/Say/Say";
+import TopologyBlock from "../../../models/StoryEditor/Topology/TopologyBlock";
+import { validateMongoId } from "../../../utils/validateMongoId";
+import Name from "../../../models/StoryEditor/PlotField/Name/Name";
+import Sound from "../../../models/StoryData/Sound";
+import Suit from "../../../models/StoryEditor/PlotField/Suit/Suit";
+import Wait from "../../../models/StoryEditor/PlotField/Wait/Wait";
+import CommandWardrobe from "../../../models/StoryEditor/PlotField/Wardrobe/CommandWardrobe";
+import TranslationCommandWardrobe from "../../../models/StoryData/Translation/TranslationCommandWardrobe";
+import { Types } from "mongoose";
+import ChoiceOption from "../../../models/StoryEditor/PlotField/Choice/ChoiceOption";
+import OptionCharacteristic from "../../../models/StoryEditor/PlotField/Choice/OptionCharacteristic";
+import OptionPremium from "../../../models/StoryEditor/PlotField/Choice/OptionPremium";
+import OptionRelationship from "../../../models/StoryEditor/PlotField/Choice/OptionRelationship";
+import TranslationChoiceOption from "../../../models/StoryData/Translation/TranslationChoiceOption";
 
 type GetAllPlotFieldCommandsByIfIdTypes = {
   commandIfId: string;
@@ -60,6 +90,261 @@ export const getAllPlotFieldCommandsService = async ({
   }
 
   return existingCommands;
+};
+
+type MultipleCommandsType =
+  | "achievement"
+  | "ambient"
+  | "background"
+  | "call"
+  | "choice"
+  | "comment"
+  | "condition"
+  | "cutscene"
+  | "effect"
+  | "getitem"
+  | "if"
+  | "key"
+  | "move"
+  | "music"
+  | "name"
+  | "sound"
+  | "suit"
+  | "wait"
+  | "wardrobe"
+  | "author"
+  | "hint"
+  | "notify"
+  | "character";
+
+type OptionVariationTypes =
+  | "common"
+  | "premium"
+  | "relationship"
+  | "characteristic";
+
+type PlotFieldCommandCreateMultipleTypes = {
+  topologyBlockId: string;
+  allCommands?: string;
+  storyId?: string;
+  waitValue?: number;
+  choiceType?: string;
+  amountOfOptions?: number;
+  optionVariations?: string;
+};
+
+export const plotFieldCommandCreateMultipleService = async ({
+  topologyBlockId,
+  allCommands,
+  storyId,
+  waitValue,
+  amountOfOptions,
+  choiceType,
+  optionVariations,
+}: PlotFieldCommandCreateMultipleTypes) => {
+  validateMongoId({ value: topologyBlockId, valueName: "TopologyBlock" });
+  if (!allCommands?.trim().length) {
+    throw createHttpError(400, "You haven't chosen any of the commands");
+  }
+  const currentTopologyBlock = await TopologyBlock.findById(
+    topologyBlockId
+  ).exec();
+
+  const allCommandsArray: MultipleCommandsType[] = allCommands.split(
+    ","
+  ) as MultipleCommandsType[];
+
+  for (const c of allCommandsArray) {
+    const newPlotFieldCommand = await PlotFieldCommand.create({
+      topologyBlockId,
+      commandOrder:
+        currentTopologyBlock?.topologyBlockInfo?.amountOfCommands || 1,
+    });
+
+    if (
+      currentTopologyBlock &&
+      typeof currentTopologyBlock.topologyBlockInfo?.amountOfCommands ===
+        "number"
+    ) {
+      currentTopologyBlock.topologyBlockInfo.amountOfCommands += 1;
+      await currentTopologyBlock.save();
+    }
+    if (c === "achievement") {
+      await Achievement.create({
+        plotFieldCommandId: newPlotFieldCommand._id,
+        storyId,
+      });
+      await TranslationAchievement.create({
+        commandId: newPlotFieldCommand._id,
+        topologyBlockId,
+        language: "russian",
+        translations: [],
+        storyId,
+      });
+      newPlotFieldCommand.command = "achievement";
+    } else if (
+      c === "author" ||
+      c === "character" ||
+      c === "hint" ||
+      c === "notify"
+    ) {
+      await Say.create({
+        plotFieldCommandId: newPlotFieldCommand._id,
+        type: c,
+      });
+      await TranslationSay.create({
+        commandId: newPlotFieldCommand._id,
+        topologyBlockId,
+        language: "russian",
+        translations: [],
+      });
+      newPlotFieldCommand.command = "say";
+    } else if (c === "ambient") {
+      await Ambient.create({ plotFieldCommandId: newPlotFieldCommand._id });
+      newPlotFieldCommand.command = "ambient";
+    } else if (c === "background") {
+      await Background.create({ plotFieldCommandId: newPlotFieldCommand._id });
+      newPlotFieldCommand.command = "background";
+    } else if (c === "call") {
+      await Call.create({ plotFieldCommandId: newPlotFieldCommand._id });
+      newPlotFieldCommand.command = "call";
+    } else if (c === "choice") {
+      const choiceObject: {
+        plotFieldCommandId: Types.ObjectId;
+        choiceType?: string;
+        amountOfOptions?: number;
+      } = {
+        plotFieldCommandId: newPlotFieldCommand._id,
+      };
+
+      if (choiceType) {
+        choiceObject.choiceType = choiceType;
+      }
+
+      if (amountOfOptions) {
+        choiceObject.amountOfOptions = amountOfOptions;
+      }
+
+      const newChoice = await Choice.create(choiceObject);
+      await TranslationChoice.create({
+        commandId: newPlotFieldCommand._id,
+        language: "russian",
+        topologyBlockId,
+        translations: [],
+      });
+      newPlotFieldCommand.command = "choice";
+
+      if (optionVariations) {
+        const optionVariationsArray: OptionVariationTypes[] =
+          optionVariations.split(",") as OptionVariationTypes[];
+        for (const ov of optionVariationsArray) {
+          const newChoiceOption = await ChoiceOption.create({
+            plotFieldCommandChoiceId: newChoice._id,
+            type: ov,
+          });
+
+          newChoice.amountOfOptions += 1;
+          await newChoice.save();
+
+          if (ov === "characteristic") {
+            await OptionCharacteristic.create({
+              plotFieldCommandChoiceOptionId: newChoiceOption._id,
+            });
+          } else if (ov === "premium") {
+            await OptionPremium.create({
+              plotFieldCommandChoiceOptionId: newChoiceOption._id,
+            });
+          } else if (ov === "relationship") {
+            await OptionRelationship.create({
+              plotFieldCommandChoiceOptionId: newChoiceOption._id,
+            });
+          }
+
+          await TranslationChoiceOption.create({
+            language: "russian",
+            commandId: newPlotFieldCommand._id,
+            translations: [],
+            type: ov,
+            choiceOptionId: newChoiceOption._id,
+          });
+        }
+      }
+    } else if (c === "comment") {
+      await Comment.create({ plotFieldCommandId: newPlotFieldCommand._id });
+      newPlotFieldCommand.command = "comment";
+    } else if (c === "condition") {
+      await Condition.create({ plotFieldCommandId: newPlotFieldCommand._id });
+      newPlotFieldCommand.command = "condition";
+    } else if (c === "cutscene") {
+      await CutScene.create({ plotFieldCommandId: newPlotFieldCommand._id });
+      newPlotFieldCommand.command = "cutscene";
+    } else if (c === "effect") {
+      await Effect.create({ plotFieldCommandId: newPlotFieldCommand._id });
+      newPlotFieldCommand.command = "effect";
+    } else if (c === "getitem") {
+      await GetItem.create({ plotFieldCommandId: newPlotFieldCommand._id });
+      await TranslationGetItem.create({
+        commandId: newPlotFieldCommand._id,
+        language: "russian",
+        topologyBlockId,
+        translations: [],
+      });
+      newPlotFieldCommand.command = "getitem";
+    } else if (c === "if") {
+      await IfModel.create({ plotFieldCommandId: newPlotFieldCommand._id });
+      newPlotFieldCommand.command = "if";
+    } else if (c === "key") {
+      await Key.create({
+        plotFieldCommandId: newPlotFieldCommand._id,
+        storyId,
+      });
+      newPlotFieldCommand.command = "key";
+    } else if (c === "move") {
+      await Move.create({ plotFieldCommandId: newPlotFieldCommand._id });
+      newPlotFieldCommand.command = "move";
+    } else if (c === "music") {
+      await CommandMusic.create({
+        plotFieldCommandId: newPlotFieldCommand._id,
+      });
+      newPlotFieldCommand.command = "music";
+    } else if (c === "name") {
+      await Name.create({ plotFieldCommandId: newPlotFieldCommand._id });
+      newPlotFieldCommand.command = "name";
+    } else if (c === "sound") {
+      await Sound.create({
+        plotFieldCommandId: newPlotFieldCommand._id,
+        storyId,
+      });
+      newPlotFieldCommand.command = "sound";
+    } else if (c === "suit") {
+      await Suit.create({ plotFieldCommandId: newPlotFieldCommand._id });
+      newPlotFieldCommand.command = "suit";
+    } else if (c === "wait") {
+      if (waitValue) {
+        await Wait.create({
+          plotFieldCommandId: newPlotFieldCommand._id,
+          waitValue,
+        });
+        newPlotFieldCommand.command = "wait";
+      } else {
+        await Wait.create({ plotFieldCommandId: newPlotFieldCommand._id });
+      }
+    } else if (c === "wardrobe") {
+      await CommandWardrobe.create({
+        plotFieldCommandId: newPlotFieldCommand._id,
+      });
+      await TranslationCommandWardrobe.create({
+        commandId: newPlotFieldCommand._id,
+        topologyBlockId,
+        language: "russian",
+        translations: [],
+      });
+      newPlotFieldCommand.command = "wardrobe";
+    }
+    newPlotFieldCommand.save();
+  }
+
+  return "Numerous Commands were created";
 };
 
 type PlotFieldCommandCreateInsideIfBlockTypes = {

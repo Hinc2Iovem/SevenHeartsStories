@@ -1,10 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
 import { axiosCustomized } from "../../../../api/axios";
-import { UpdatedAtPossibleVariationTypes } from "../../../../features/Profile/Translator/Recent/Filters/FiltersEverythingRecent";
 import { CurrentlyAvailableLanguagesTypes } from "../../../../types/Additional/CURRENTLY_AVAILABEL_LANGUAGES";
-import { TranslationStoryTypes } from "../../../../types/Additional/TranslationTypes";
+import { TranslationAppearancePartTypes } from "../../../../types/Additional/TranslationTypes";
 
-type PaginatedStoryTypes = {
+type PaginatedAppearancePartTypes = {
   next?: {
     page: number;
     limit: number;
@@ -13,20 +12,22 @@ type PaginatedStoryTypes = {
     page: number;
     limit: number;
   };
-  results: TranslationStoryTypes[];
-  amountOfStories: number;
+  results: TranslationAppearancePartTypes[];
+  amountOfAppearanceParts: number;
 };
 
-export default function useGetStoryRecentTranslations({
-  updatedAt,
+export default function useGetPaginatedTranslationAppearanceParts({
   language = "russian",
   page,
   limit,
+  characterId,
+  type,
 }: {
-  updatedAt: UpdatedAtPossibleVariationTypes;
   language?: CurrentlyAvailableLanguagesTypes;
   page: number;
   limit: number;
+  characterId: string;
+  type: string;
 }) {
   return useQuery({
     queryKey: [
@@ -37,16 +38,18 @@ export default function useGetStoryRecentTranslations({
       limit,
       "translation",
       language,
-      "story",
-      "updatedAt",
-      updatedAt,
+      "character",
+      characterId,
+      "appearancePart",
+      "type",
+      type,
     ],
     queryFn: async () =>
       await axiosCustomized
-        .get<PaginatedStoryTypes>(
-          `/stories/paginated/recent/translations?currentLanguage=${language}&updatedAt=${updatedAt}&page=${page}&limit=${limit}`
+        .get<PaginatedAppearancePartTypes>(
+          `/appearanceParts/paginated/translations?currentLanguage=${language}&page=${page}&limit=${limit}&characterId=${characterId}&type=${type}`
         )
         .then((r) => r.data),
-    enabled: !!language && !!updatedAt && !!page && !!limit,
+    enabled: !!language && !!page && !!limit && !!characterId,
   });
 }

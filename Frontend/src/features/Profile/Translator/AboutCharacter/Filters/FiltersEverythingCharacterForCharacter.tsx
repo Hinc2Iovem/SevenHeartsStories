@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import useGetTranslationCharacters from "../../../../../hooks/Fetching/Translation/Characters/useGetTranslationCharacters";
+import useGetPaginatedTranslationCharacter from "../../../../../hooks/Fetching/Translation/Characters/useGetPaginatedTranslationCharacter";
 import useInvalidateTranslatorCharacterQueries from "../../../../../hooks/helpers/Profile/Translator/useInvalidateTranslatorCharacterQueries";
 import { CurrentlyAvailableLanguagesTypes } from "../../../../../types/Additional/CURRENTLY_AVAILABEL_LANGUAGES";
 import { TranslationCharacterTypes } from "../../../../../types/Additional/TranslationTypes";
@@ -26,6 +26,7 @@ export default function FiltersEverythingCharacterForCharacter({
   prevTranslateToLanguage,
 }: FiltersEverythingCharacterForCharacterTypes) {
   const [storyId, setStoryId] = useState("");
+  const [page, setPage] = useState(1);
   const [characterType, setCharacterType] = useState("");
 
   useInvalidateTranslatorCharacterQueries({
@@ -33,17 +34,28 @@ export default function FiltersEverythingCharacterForCharacter({
     prevTranslateToLanguage,
     storyId,
     translateToLanguage,
+    limit: 3,
+    page,
+    characterType,
   });
 
-  const { data: translatedCharacters } = useGetTranslationCharacters({
+  const { data: translatedCharacters } = useGetPaginatedTranslationCharacter({
     storyId,
     language: translateFromLanguage,
+    characterType,
+    limit: 3,
+    page,
   });
 
-  const { data: nonTranslatedCharacters } = useGetTranslationCharacters({
-    storyId,
-    language: translateToLanguage,
-  });
+  const { data: nonTranslatedCharacters } = useGetPaginatedTranslationCharacter(
+    {
+      storyId,
+      language: translateToLanguage,
+      characterType,
+      limit: 3,
+      page,
+    }
+  );
 
   const memoizedCombinedTranslations = useMemo(() => {
     const combinedArray: CombinedTranslatedAndNonTranslatedCharacterTypes[] =
@@ -52,7 +64,7 @@ export default function FiltersEverythingCharacterForCharacter({
       [key: string]: CombinedTranslatedAndNonTranslatedCharacterTypes;
     } = {};
 
-    translatedCharacters?.forEach((tc) => {
+    translatedCharacters?.results.forEach((tc) => {
       const characterId = tc.characterId;
       if (!characterMap[characterId]) {
         characterMap[characterId] = {
@@ -64,7 +76,7 @@ export default function FiltersEverythingCharacterForCharacter({
       }
     });
 
-    nonTranslatedCharacters?.forEach((ntc) => {
+    nonTranslatedCharacters?.results.forEach((ntc) => {
       const characterId = ntc.characterId;
       if (!characterMap[characterId]) {
         characterMap[characterId] = {

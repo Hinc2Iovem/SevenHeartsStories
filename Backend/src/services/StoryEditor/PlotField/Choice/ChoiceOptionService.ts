@@ -3,19 +3,17 @@ import { Types } from "mongoose";
 import { SexualOrientationTypes } from "../../../../consts/SEXUAL_ORIENTATION";
 import { ChoiceOptionType } from "../../../../controllers/StoryEditor/PlotField/Choice/ChoiceOptionController";
 import Translation from "../../../../models/StoryData/Translation/Translation";
+import TranslationChoiceOption from "../../../../models/StoryData/Translation/TranslationChoiceOption";
 import Choice from "../../../../models/StoryEditor/PlotField/Choice/Choice";
 import ChoiceOption from "../../../../models/StoryEditor/PlotField/Choice/ChoiceOption";
 import OptionCharacteristic from "../../../../models/StoryEditor/PlotField/Choice/OptionCharacteristic";
+import OptionPremium from "../../../../models/StoryEditor/PlotField/Choice/OptionPremium";
 import OptionRelationship from "../../../../models/StoryEditor/PlotField/Choice/OptionRelationship";
 import TopologyBlock from "../../../../models/StoryEditor/Topology/TopologyBlock";
 import TopologyBlockConnection from "../../../../models/StoryEditor/Topology/TopologyBlockConnection";
 import TopologyBlockInfo from "../../../../models/StoryEditor/Topology/TopologyBlockInfo";
 import { checkChoiceOptionType } from "../../../../utils/checkChoiceOptionType";
-import { createTopologyBlock } from "../../../../utils/createTopologyBlock";
-import { createTopologyBlockConnection } from "../../../../utils/createTopologyBlockConnection";
 import { validateMongoId } from "../../../../utils/validateMongoId";
-import OptionPremium from "../../../../models/StoryEditor/PlotField/Choice/OptionPremium";
-import TranslationChoiceOption from "../../../../models/StoryData/Translation/TranslationChoiceOption";
 
 type GetChoiceOptionByIdTypes = {
   choiceOptionId: string;
@@ -153,8 +151,6 @@ export const createChoiceOptionService = async ({
   if (!existingChoice) {
     throw createHttpError(400, "Choice with such id wasn't found");
   }
-
-  const optionOrder = existingChoice.amountOfOptions;
 
   const newChoiceOption = await ChoiceOption.create({
     plotFieldCommandChoiceId,

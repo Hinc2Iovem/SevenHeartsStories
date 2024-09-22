@@ -7,8 +7,10 @@ type InvalidateTranslatorQueriesTypes = {
   prevTranslateFromLanguage: CurrentlyAvailableLanguagesTypes;
   prevTranslateToLanguage: CurrentlyAvailableLanguagesTypes;
   translateToLanguage: CurrentlyAvailableLanguagesTypes;
-  characterId: string;
   type: TranslationTextFieldNameAppearancePartsTypes;
+  characterId: string;
+  page: number;
+  limit: number;
 };
 
 export default function useInvalidateTranslatorAppearancePartsQueries({
@@ -17,6 +19,8 @@ export default function useInvalidateTranslatorAppearancePartsQueries({
   translateToLanguage,
   characterId,
   type,
+  page,
+  limit,
 }: InvalidateTranslatorQueriesTypes) {
   const queryClient = useQueryClient();
 
@@ -24,6 +28,11 @@ export default function useInvalidateTranslatorAppearancePartsQueries({
     if (prevTranslateFromLanguage) {
       queryClient.invalidateQueries({
         queryKey: [
+          "paginated",
+          "page",
+          page,
+          "limit",
+          limit,
           "translation",
           prevTranslateFromLanguage,
           "character",
@@ -35,6 +44,11 @@ export default function useInvalidateTranslatorAppearancePartsQueries({
       });
       queryClient.invalidateQueries({
         queryKey: [
+          "paginated",
+          "page",
+          page,
+          "limit",
+          limit,
           "translation",
           translateToLanguage,
           "character",
@@ -48,6 +62,11 @@ export default function useInvalidateTranslatorAppearancePartsQueries({
     if (prevTranslateToLanguage || prevTranslateFromLanguage) {
       queryClient.invalidateQueries({
         queryKey: [
+          "paginated",
+          "page",
+          page,
+          "limit",
+          limit,
           "translation",
           prevTranslateToLanguage,
           "character",

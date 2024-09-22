@@ -33,7 +33,6 @@ export default function PlotfieldHeader({
 }: PlotFieldHeaderTypes) {
   const [currentAmountOfCommands, setCurrentAmountOfCommands] =
     useState(amountOfCommands);
-  console.log("currentAmountOfCommands: ", currentAmountOfCommands);
 
   const createCommand = useCreateBlankCommand({ topologyBlockId });
 

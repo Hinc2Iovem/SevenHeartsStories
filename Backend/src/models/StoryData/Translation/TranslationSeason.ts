@@ -41,9 +41,20 @@ export const translationSeasonSchema = new mongoose.Schema(
 
 translationSeasonSchema.index({ updatedAt: -1 });
 
-type TranslationSeason = InferSchemaType<typeof translationSeasonSchema>;
+export interface TranslationSeasonDocument extends Document {
+  storyId?: mongoose.Schema.Types.ObjectId;
+  seasonId?: mongoose.Schema.Types.ObjectId;
+  language: string;
+  translations: {
+    textFieldName: string;
+    text?: string;
+    amountOfWords: number;
+  }[];
+  createdAt: Date;
+  updatedAt: Date;
+}
 
-export default model<TranslationSeason>(
+export default model<TranslationSeasonDocument>(
   "TranslationSeason",
   translationSeasonSchema
 );

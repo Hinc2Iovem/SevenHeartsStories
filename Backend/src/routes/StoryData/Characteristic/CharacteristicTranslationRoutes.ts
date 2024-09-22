@@ -5,7 +5,8 @@ import {
   characteristicTranslationUpdateController,
   getAllCharacteristicsTranslationsByStoryIdAndLanguageController,
   getAllCharacteristicsTranslationsByCharacteristicIdAndLanguageController,
-  getCharacteristicTranslationUpdatedAtAndLanguageController,
+  getPaginatedCharacteristicTranslationUpdatedAtAndLanguageController,
+  getPaginatedTranlsationCharacteristicsController,
 } from "../../../controllers/StoryData/Characteristic/CharacteristicTranslationController";
 import { verifyHeadScriptwriter } from "../../../middlewares/verifyHeadScriptwriter";
 import { verifyJWT } from "../../../middlewares/verifyJWT";
@@ -14,8 +15,15 @@ import { verifyJWT } from "../../../middlewares/verifyJWT";
 export const characteristicTranslationRoute = express.Router();
 
 characteristicTranslationRoute
-  .route("/recent/translations")
-  .get(verifyJWT, getCharacteristicTranslationUpdatedAtAndLanguageController);
+  .route("/paginated/recent/translations")
+  .get(
+    verifyJWT,
+    getPaginatedCharacteristicTranslationUpdatedAtAndLanguageController
+  );
+
+characteristicTranslationRoute
+  .route("/paginated/translations")
+  .get(getPaginatedTranlsationCharacteristicsController);
 
 characteristicTranslationRoute
   .route("/:characteristicId/translations")
@@ -23,6 +31,7 @@ characteristicTranslationRoute
     verifyJWT,
     getAllCharacteristicsTranslationsByCharacteristicIdAndLanguageController
   );
+
 characteristicTranslationRoute
   .route("/stories/:storyId/translations")
   .get(

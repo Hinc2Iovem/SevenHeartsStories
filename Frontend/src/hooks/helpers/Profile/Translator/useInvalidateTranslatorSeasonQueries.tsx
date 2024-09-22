@@ -7,6 +7,8 @@ type InvalidateTranslatorQueriesTypes = {
   prevTranslateToLanguage: CurrentlyAvailableLanguagesTypes;
   translateToLanguage: CurrentlyAvailableLanguagesTypes;
   storyId: string;
+  page: number;
+  limit: number;
 };
 
 export default function useInvalidateTranslatorSeasonQueries({
@@ -14,6 +16,8 @@ export default function useInvalidateTranslatorSeasonQueries({
   prevTranslateToLanguage,
   translateToLanguage,
   storyId,
+  page,
+  limit,
 }: InvalidateTranslatorQueriesTypes) {
   const queryClient = useQueryClient();
 
@@ -21,31 +25,46 @@ export default function useInvalidateTranslatorSeasonQueries({
     if (prevTranslateFromLanguage) {
       queryClient.invalidateQueries({
         queryKey: [
-          "stories",
+          "paginated",
+          "page",
+          page,
+          "limit",
+          limit,
+          "translation",
+          prevTranslateFromLanguage,
+          "story",
           storyId,
           "season",
-          "language",
-          prevTranslateFromLanguage,
         ],
       });
       queryClient.invalidateQueries({
         queryKey: [
-          "stories",
+          "paginated",
+          "page",
+          page,
+          "limit",
+          limit,
+          "translation",
+          translateToLanguage,
+          "story",
           storyId,
           "season",
-          "language",
-          translateToLanguage,
         ],
       });
     }
     if (prevTranslateToLanguage || prevTranslateFromLanguage) {
       queryClient.invalidateQueries({
         queryKey: [
-          "stories",
+          "paginated",
+          "page",
+          page,
+          "limit",
+          limit,
+          "translation",
+          translateToLanguage,
+          "story",
           storyId,
           "season",
-          "language",
-          prevTranslateToLanguage,
         ],
       });
     }

@@ -12,6 +12,7 @@ type FiltersEverythingCharacterForStoryTypes = {
   prevTranslateFromLanguage: CurrentlyAvailableLanguagesTypes;
   prevTranslateToLanguage: CurrentlyAvailableLanguagesTypes;
   updatedAt: UpdatedAtPossibleVariationTypes;
+  page: number;
 };
 
 export type CombinedTranslatedAndNonTranslatedStoryTypes = {
@@ -25,6 +26,7 @@ export default function FiltersEverythingStoryForStoryRecent({
   prevTranslateFromLanguage,
   prevTranslateToLanguage,
   updatedAt,
+  page,
 }: FiltersEverythingCharacterForStoryTypes) {
   useInvalidateTranslatorQueriesRecent({
     prevTranslateFromLanguage,
@@ -32,16 +34,22 @@ export default function FiltersEverythingStoryForStoryRecent({
     translateToLanguage,
     queryKey: "story",
     updatedAt,
+    page,
+    limit: 3,
   });
 
   const { data: translatedStory } = useGetStoryRecentTranslations({
     language: translateFromLanguage,
     updatedAt,
+    page,
+    limit: 3,
   });
 
   const { data: nonTranslatedStory } = useGetStoryRecentTranslations({
     language: translateToLanguage,
     updatedAt,
+    page,
+    limit: 3,
   });
 
   const memoizedCombinedTranslations = useMemo(() => {
@@ -50,7 +58,7 @@ export default function FiltersEverythingStoryForStoryRecent({
       [key: string]: CombinedTranslatedAndNonTranslatedStoryTypes;
     } = {};
 
-    translatedStory?.forEach((tc) => {
+    translatedStory?.results.forEach((tc) => {
       const storyId = tc.storyId;
       if (!storyMap[storyId]) {
         storyMap[storyId] = {
@@ -62,7 +70,7 @@ export default function FiltersEverythingStoryForStoryRecent({
       }
     });
 
-    nonTranslatedStory?.forEach((ntc) => {
+    nonTranslatedStory?.results.forEach((ntc) => {
       const storyId = ntc.storyId;
       if (!storyMap[storyId]) {
         storyMap[storyId] = {

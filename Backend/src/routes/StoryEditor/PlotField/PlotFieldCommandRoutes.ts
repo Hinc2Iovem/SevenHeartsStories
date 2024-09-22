@@ -9,6 +9,7 @@ import {
   plotFieldCommandCreateInsideIfBlockController,
   getAllPlotFieldCommandsByIfIdInsideElseController,
   plotFieldCommandUpdateAllOrdersAfterDuplicationController,
+  plotFieldCommandMultipleController,
 } from "../../../controllers/StoryEditor/PlotField/PlotFieldCommandController";
 
 // Default route === /plotField
@@ -29,6 +30,10 @@ plotFieldCommandRoute
 plotFieldCommandRoute
   .route("/topologyBlocks/:topologyBlockId/commandIfs/:commandIfId")
   .post(plotFieldCommandCreateInsideIfBlockController);
+
+plotFieldCommandRoute
+  .route("/topologyBlocks/:topologyBlockId/multipleCommands")
+  .post(plotFieldCommandMultipleController);
 
 plotFieldCommandRoute
   .route("/:plotFieldCommandId/topologyBlocks/commandName")

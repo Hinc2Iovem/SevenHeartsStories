@@ -16,20 +16,25 @@ import ChoiceTypeModal from "./ChoiceTypeModal";
 
 type ChoiceDefaultSettings = {
   showChoice: boolean;
+  setChoiceType: React.Dispatch<React.SetStateAction<ChoiceVariationsTypes>>;
+  setOptionVariations: React.Dispatch<
+    React.SetStateAction<ChoiceOptionVariationsTypes[]>
+  >;
+  choiceType: ChoiceVariationsTypes;
+  optionVariations: ChoiceOptionVariationsTypes[];
 };
 
 export default function ChoiceDefaultSettings({
   showChoice,
+  choiceType,
+  optionVariations,
+  setChoiceType,
+  setOptionVariations,
 }: ChoiceDefaultSettings) {
   const { userId } = useGetDecodedJWTValues();
-  const [optionVariations, setOptionVariations] = useState<
-    ChoiceOptionVariationsTypes[]
-  >([]);
+
   const [currentDefaultChoiceOption, setCurrentDefaultChoiceOption] =
     useState("");
-  const [choiceType, setChoiceType] = useState<ChoiceVariationsTypes>(
-    "" as ChoiceVariationsTypes
-  );
 
   const [showChoiceModal, setShowChoiceModal] = useState(false);
   const [showOptionVariations, setShowOptionVariations] = useState(false);

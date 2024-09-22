@@ -2,7 +2,9 @@ import createHttpError from "http-errors";
 import mongoose from "mongoose";
 import { TranslationTextFieldName } from "../../../consts/TRANSLATION_TEXT_FIELD_NAMES";
 import Season from "../../../models/StoryData/Season";
-import TranslationSeason from "../../../models/StoryData/Translation/TranslationSeason";
+import TranslationSeason, {
+  TranslationSeasonDocument,
+} from "../../../models/StoryData/Translation/TranslationSeason";
 import { checkCurrentLanguage } from "../../../utils/checkCurrentLanguage";
 import { validateMongoId } from "../../../utils/validateMongoId";
 import { subDays, subHours, subMinutes } from "date-fns";
@@ -10,17 +12,25 @@ import { subDays, subHours, subMinutes } from "date-fns";
 type GetByUpdatedAtAndLanguageTypes = {
   currentLanguage: string | undefined;
   updatedAt: string | undefined;
+  page: number | undefined;
+  limit: number | undefined;
 };
 
-export const getSeasonTranslationUpdatedAtAndLanguageService = async ({
+export const getPaginatedSeasonTranslationUpdatedAtAndLanguageService = async ({
   currentLanguage,
   updatedAt,
+  limit,
+  page,
 }: GetByUpdatedAtAndLanguageTypes) => {
   if (!currentLanguage?.trim().length) {
     throw createHttpError(400, "Language is required");
   }
 
   checkCurrentLanguage({ currentLanguage });
+
+  if (!page || !limit) {
+    throw createHttpError(400, "Page and limit are required");
+  }
 
   let startDate: Date | undefined;
   let endDate = new Date();
@@ -48,17 +58,126 @@ export const getSeasonTranslationUpdatedAtAndLanguageService = async ({
       throw createHttpError(400, "Invalid updatedAt value");
   }
 
-  const existingTranslations = await TranslationSeason.find({
-    updatedAt: { $gte: startDate, $lt: endDate },
+  const pageNumber = Number(page);
+  const limitNumber = Number(limit);
+
+  const startIndex = (pageNumber - 1) * limitNumber;
+  const endIndex = pageNumber * limitNumber;
+
+  const results = {} as ResultTypes;
+
+  if (
+    endIndex <
+    (await TranslationSeason.countDocuments({
+      language: currentLanguage,
+      updatedAt: { $gte: startDate, $lt: endDate },
+    }).exec())
+  ) {
+    results.next = {
+      page: pageNumber + 1,
+      limit: limitNumber,
+    };
+  }
+  if (startIndex > 0) {
+    results.prev = {
+      page: pageNumber - 1,
+      limit: limitNumber,
+    };
+  }
+  results.results = await TranslationSeason.find({
     language: currentLanguage,
+    updatedAt: { $gte: startDate, $lt: endDate },
   })
-    .lean()
+    .limit(limitNumber)
+    .skip(startIndex)
     .exec();
 
-  if (!existingTranslations.length) {
-    return [];
+  const overAllAmountOfSeasons = await TranslationSeason.countDocuments({
+    language: currentLanguage,
+    updatedAt: { $gte: startDate, $lt: endDate },
+  });
+  results.amountOfSeasons = overAllAmountOfSeasons;
+
+  return results;
+};
+
+type GetPaginatedSeasonsTypes = {
+  currentLanguage: string | undefined;
+  limit: number | undefined;
+  page: number | undefined;
+  storyId: string | undefined;
+};
+
+type ResultTypes = {
+  next: {
+    page: number;
+    limit: number;
+  };
+  prev: {
+    page: number;
+    limit: number;
+  };
+  results: TranslationSeasonDocument[];
+  amountOfSeasons: number;
+};
+
+export const getPaginatedTranlsationSeasonsService = async ({
+  currentLanguage,
+  limit,
+  page,
+  storyId,
+}: GetPaginatedSeasonsTypes) => {
+  validateMongoId({ value: storyId, valueName: "Story" });
+
+  if (!currentLanguage?.trim().length) {
+    throw createHttpError(400, "Language is required");
   }
-  return existingTranslations;
+  checkCurrentLanguage({ currentLanguage });
+
+  if (!page || !limit) {
+    throw createHttpError(400, "Page and limit are required");
+  }
+
+  const pageNumber = Number(page);
+  const limitNumber = Number(limit);
+
+  const startIndex = (pageNumber - 1) * limitNumber;
+  const endIndex = pageNumber * limitNumber;
+
+  const results = {} as ResultTypes;
+
+  if (
+    endIndex <
+    (await TranslationSeason.countDocuments({
+      language: currentLanguage,
+      storyId,
+    }).exec())
+  ) {
+    results.next = {
+      page: pageNumber + 1,
+      limit: limitNumber,
+    };
+  }
+  if (startIndex > 0) {
+    results.prev = {
+      page: pageNumber - 1,
+      limit: limitNumber,
+    };
+  }
+  results.results = await TranslationSeason.find({
+    language: currentLanguage,
+    storyId,
+  })
+    .limit(limitNumber)
+    .skip(startIndex)
+    .exec();
+  const overAllAmountOfSeasons = await TranslationSeason.countDocuments({
+    language: currentLanguage,
+    storyId,
+  });
+  results.amountOfSeasons = overAllAmountOfSeasons;
+
+  return results;
 };
 
 type GetAllSeasonsByLanguageTypes = {
@@ -237,6 +356,7 @@ export const seasonTranslationUpdateService = async ({
       existingSeason.translations.push({
         text,
         textFieldName,
+        amountOfWords: text?.length || 0,
       });
     }
 

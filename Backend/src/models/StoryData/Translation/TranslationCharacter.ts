@@ -45,9 +45,21 @@ export const translationCharacterSchema = new mongoose.Schema(
 
 translationCharacterSchema.index({ updatedAt: -1 });
 
-type TranslationCharacter = InferSchemaType<typeof translationCharacterSchema>;
+export interface TranslationCharacterDocument extends Document {
+  characterId?: mongoose.Schema.Types.ObjectId;
+  storyId?: mongoose.Schema.Types.ObjectId;
+  characterType: string;
+  language: string;
+  translations: {
+    textFieldName: string;
+    text?: string;
+    amountOfWords: number;
+  }[];
+  createdAt: Date;
+  updatedAt: Date;
+}
 
-export default model<TranslationCharacter>(
+export default model<TranslationCharacterDocument>(
   "TranslationCharacter",
   translationCharacterSchema
 );

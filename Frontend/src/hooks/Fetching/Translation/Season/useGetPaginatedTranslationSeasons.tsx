@@ -1,10 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
 import { axiosCustomized } from "../../../../api/axios";
-import { UpdatedAtPossibleVariationTypes } from "../../../../features/Profile/Translator/Recent/Filters/FiltersEverythingRecent";
 import { CurrentlyAvailableLanguagesTypes } from "../../../../types/Additional/CURRENTLY_AVAILABEL_LANGUAGES";
-import { TranslationStoryTypes } from "../../../../types/Additional/TranslationTypes";
+import { TranslationSeasonTypes } from "../../../../types/Additional/TranslationTypes";
 
-type PaginatedStoryTypes = {
+type PaginatedSeasonTypes = {
   next?: {
     page: number;
     limit: number;
@@ -13,20 +12,20 @@ type PaginatedStoryTypes = {
     page: number;
     limit: number;
   };
-  results: TranslationStoryTypes[];
-  amountOfStories: number;
+  results: TranslationSeasonTypes[];
+  amountOfSeasons: number;
 };
 
-export default function useGetStoryRecentTranslations({
-  updatedAt,
+export default function useGetPaginatedTranslationSeasons({
   language = "russian",
   page,
   limit,
+  storyId,
 }: {
-  updatedAt: UpdatedAtPossibleVariationTypes;
   language?: CurrentlyAvailableLanguagesTypes;
   page: number;
   limit: number;
+  storyId: string;
 }) {
   return useQuery({
     queryKey: [
@@ -38,15 +37,15 @@ export default function useGetStoryRecentTranslations({
       "translation",
       language,
       "story",
-      "updatedAt",
-      updatedAt,
+      storyId,
+      "season",
     ],
     queryFn: async () =>
       await axiosCustomized
-        .get<PaginatedStoryTypes>(
-          `/stories/paginated/recent/translations?currentLanguage=${language}&updatedAt=${updatedAt}&page=${page}&limit=${limit}`
+        .get<PaginatedSeasonTypes>(
+          `/seasons/paginated/translations?currentLanguage=${language}&page=${page}&limit=${limit}&storyId=${storyId}`
         )
         .then((r) => r.data),
-    enabled: !!language && !!updatedAt && !!page && !!limit,
+    enabled: !!language && !!page && !!limit && !!storyId,
   });
 }

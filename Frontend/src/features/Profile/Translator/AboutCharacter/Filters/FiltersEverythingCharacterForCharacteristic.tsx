@@ -1,10 +1,10 @@
 import { useMemo, useState } from "react";
-import useGetAllCharacteristicsByStoryId from "../../../../../hooks/Fetching/Translation/Characteristic/useGetAllCharacteristicsByStoryId";
+import useGetPaginatedTranslationCharacteristics from "../../../../../hooks/Fetching/Translation/Characteristic/useGetPaginatedTranslationCharacteristics";
+import useInvalidateTranslatorCharacteristicQueries from "../../../../../hooks/helpers/Profile/Translator/useInvalidateTranslatorCharacteristicQueries";
 import { CurrentlyAvailableLanguagesTypes } from "../../../../../types/Additional/CURRENTLY_AVAILABEL_LANGUAGES";
 import { TranslationCharacterCharacteristicTypes } from "../../../../../types/Additional/TranslationTypes";
 import StoryPrompt from "../../InputPrompts/StoryPrompt";
 import DisplayTranslatedNonTranslatedCharacteristic from "../Display/Characteristic/DisplayTranslatedNonTranslatedCharacteristic";
-import useInvalidateTranslatorCharacteristicQueries from "../../../../../hooks/helpers/Profile/Translator/useInvalidateTranslatorCharacteristicQueries";
 
 type FiltersEverythingCharacterForCharacteristicTypes = {
   translateFromLanguage: CurrentlyAvailableLanguagesTypes;
@@ -24,6 +24,7 @@ export default function FiltersEverythingCharacterForCharacteristic({
   prevTranslateFromLanguage,
   prevTranslateToLanguage,
 }: FiltersEverythingCharacterForCharacteristicTypes) {
+  const [page, setPage] = useState(1);
   const [storyId, setStoryId] = useState("");
 
   useInvalidateTranslatorCharacteristicQueries({
@@ -31,18 +32,23 @@ export default function FiltersEverythingCharacterForCharacteristic({
     prevTranslateToLanguage,
     translateToLanguage,
     storyId,
+    limit: 3,
+    page,
   });
 
-  const { data: translatedCharacteristics } = useGetAllCharacteristicsByStoryId(
-    {
+  const { data: translatedCharacteristics } =
+    useGetPaginatedTranslationCharacteristics({
       storyId,
       language: translateFromLanguage,
-    }
-  );
+      page,
+      limit: 3,
+    });
   const { data: nonTranslatedCharacteristics } =
-    useGetAllCharacteristicsByStoryId({
+    useGetPaginatedTranslationCharacteristics({
       storyId,
       language: translateToLanguage,
+      page,
+      limit: 3,
     });
 
   const memoizedCombinedTranslations = useMemo(() => {
@@ -52,7 +58,7 @@ export default function FiltersEverythingCharacterForCharacteristic({
       [key: string]: CombinedTranslatedAndNonTranslatedCharacteristicTypes;
     } = {};
 
-    translatedCharacteristics?.forEach((tc) => {
+    translatedCharacteristics?.results.forEach((tc) => {
       const characteristicId = tc.characteristicId;
       if (!characteristicMap[characteristicId]) {
         characteristicMap[characteristicId] = {
@@ -64,7 +70,7 @@ export default function FiltersEverythingCharacterForCharacteristic({
       }
     });
 
-    nonTranslatedCharacteristics?.forEach((ntc) => {
+    nonTranslatedCharacteristics?.results.forEach((ntc) => {
       const characteristicId = ntc.characteristicId;
       if (!characteristicMap[characteristicId]) {
         characteristicMap[characteristicId] = {

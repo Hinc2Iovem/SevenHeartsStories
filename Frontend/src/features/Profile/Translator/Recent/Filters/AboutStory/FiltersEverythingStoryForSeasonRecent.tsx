@@ -12,6 +12,7 @@ type FiltersEverythingCharacterForSeasonTypes = {
   prevTranslateFromLanguage: CurrentlyAvailableLanguagesTypes;
   prevTranslateToLanguage: CurrentlyAvailableLanguagesTypes;
   updatedAt: UpdatedAtPossibleVariationTypes;
+  page: number;
 };
 
 export type CombinedTranslatedAndNonTranslatedSeasonTypes = {
@@ -25,6 +26,7 @@ export default function FiltersEverythingStoryForSeasonRecent({
   prevTranslateFromLanguage,
   prevTranslateToLanguage,
   updatedAt,
+  page,
 }: FiltersEverythingCharacterForSeasonTypes) {
   useInvalidateTranslatorQueriesRecent({
     prevTranslateFromLanguage,
@@ -32,16 +34,22 @@ export default function FiltersEverythingStoryForSeasonRecent({
     translateToLanguage,
     queryKey: "season",
     updatedAt,
+    page,
+    limit: 3,
   });
 
   const { data: translatedSeason } = useGetSeasonRecentTranslations({
     updatedAt,
     language: translateFromLanguage,
+    page,
+    limit: 3,
   });
 
   const { data: nonTranslatedSeason } = useGetSeasonRecentTranslations({
     updatedAt,
     language: translateToLanguage,
+    page,
+    limit: 3,
   });
 
   const memoizedCombinedTranslations = useMemo(() => {
@@ -50,7 +58,7 @@ export default function FiltersEverythingStoryForSeasonRecent({
       [key: string]: CombinedTranslatedAndNonTranslatedSeasonTypes;
     } = {};
 
-    translatedSeason?.forEach((tc) => {
+    translatedSeason?.results.forEach((tc) => {
       const seasonId = tc.seasonId;
       if (!seasonMap[seasonId]) {
         seasonMap[seasonId] = {
@@ -62,7 +70,7 @@ export default function FiltersEverythingStoryForSeasonRecent({
       }
     });
 
-    nonTranslatedSeason?.forEach((ntc) => {
+    nonTranslatedSeason?.results.forEach((ntc) => {
       const seasonId = ntc.seasonId;
       if (!seasonMap[seasonId]) {
         seasonMap[seasonId] = {

@@ -2,7 +2,9 @@ import createHttpError from "http-errors";
 import { CharacterTypes } from "../../../consts/CHARACTER_TYPES";
 import { TranslationTextFieldName } from "../../../consts/TRANSLATION_TEXT_FIELD_NAMES";
 import Character from "../../../models/StoryData/Character";
-import TranslationCharacter from "../../../models/StoryData/Translation/TranslationCharacter";
+import TranslationCharacter, {
+  TranslationCharacterDocument,
+} from "../../../models/StoryData/Translation/TranslationCharacter";
 import { checkCurrentLanguage } from "../../../utils/checkCurrentLanguage";
 import { validateMongoId } from "../../../utils/validateMongoId";
 import { subDays, subHours, subMinutes } from "date-fns";
@@ -10,55 +12,195 @@ import { subDays, subHours, subMinutes } from "date-fns";
 type GetByUpdatedAtAndLanguageTypes = {
   currentLanguage: string | undefined;
   updatedAt: string | undefined;
+  page: number | undefined;
+  limit: number | undefined;
 };
 
-export const getCharacterTranslationUpdatedAtAndLanguageService = async ({
+export const getPaginatedCharacterTranslationUpdatedAtAndLanguageService =
+  async ({
+    currentLanguage,
+    updatedAt,
+    limit,
+    page,
+  }: GetByUpdatedAtAndLanguageTypes) => {
+    if (!currentLanguage?.trim().length) {
+      throw createHttpError(400, "Language is required");
+    }
+
+    checkCurrentLanguage({ currentLanguage });
+
+    let startDate: Date | undefined;
+    let endDate = new Date();
+
+    switch (updatedAt) {
+      case "30min":
+        startDate = subMinutes(endDate, 30);
+        break;
+      case "1hr":
+        startDate = subHours(endDate, 1);
+        break;
+      case "5hr":
+        startDate = subHours(endDate, 5);
+        break;
+      case "1d":
+        startDate = subDays(endDate, 1);
+        break;
+      case "3d":
+        startDate = subDays(endDate, 3);
+        break;
+      case "7d":
+        startDate = subDays(endDate, 7);
+        break;
+      default:
+        throw createHttpError(400, "Invalid updatedAt value");
+    }
+
+    if (!page || !limit) {
+      throw createHttpError(400, "Page and limit are required");
+    }
+
+    const pageNumber = Number(page);
+    const limitNumber = Number(limit);
+
+    const startIndex = (pageNumber - 1) * limitNumber;
+    const endIndex = pageNumber * limitNumber;
+
+    const results = {} as ResultTypes;
+
+    if (
+      endIndex <
+      (await TranslationCharacter.countDocuments({
+        updatedAt: { $gte: startDate, $lt: endDate },
+        language: currentLanguage,
+      }).exec())
+    ) {
+      results.next = {
+        page: pageNumber + 1,
+        limit: limitNumber,
+      };
+    }
+    if (startIndex > 0) {
+      results.prev = {
+        page: pageNumber - 1,
+        limit: limitNumber,
+      };
+    }
+
+    results.results = await TranslationCharacter.find({
+      updatedAt: { $gte: startDate, $lt: endDate },
+      language: currentLanguage,
+    })
+      .limit(limitNumber)
+      .skip(startIndex)
+      .exec();
+    const overAllAmountOfCharacters = await TranslationCharacter.countDocuments(
+      {
+        updatedAt: { $gte: startDate, $lt: endDate },
+        language: currentLanguage,
+      }
+    );
+
+    results.amountOfCharacters = overAllAmountOfCharacters;
+
+    return results;
+
+    const existingTranslations = await TranslationCharacter.find({
+      updatedAt: { $gte: startDate, $lt: endDate },
+      language: currentLanguage,
+    })
+      .lean()
+      .exec();
+
+    if (!existingTranslations.length) {
+      return [];
+    }
+    return existingTranslations;
+  };
+
+type GetPaginatedCharactersTypes = {
+  currentLanguage: string | undefined;
+  storyId: string;
+  limit: number | undefined;
+  page: number | undefined;
+  characterType: string | undefined;
+};
+
+type ResultTypes = {
+  next: {
+    page: number;
+    limit: number;
+  };
+  prev: {
+    page: number;
+    limit: number;
+  };
+  results: TranslationCharacterDocument[];
+  amountOfCharacters: number;
+};
+
+export const getPaginatedTranlsationCharactersService = async ({
   currentLanguage,
-  updatedAt,
-}: GetByUpdatedAtAndLanguageTypes) => {
+  storyId,
+  limit,
+  page,
+  characterType,
+}: GetPaginatedCharactersTypes) => {
+  validateMongoId({ value: storyId, valueName: "Story" });
+
   if (!currentLanguage?.trim().length) {
     throw createHttpError(400, "Language is required");
   }
-
   checkCurrentLanguage({ currentLanguage });
 
-  let startDate: Date | undefined;
-  let endDate = new Date();
-
-  switch (updatedAt) {
-    case "30min":
-      startDate = subMinutes(endDate, 30);
-      break;
-    case "1hr":
-      startDate = subHours(endDate, 1);
-      break;
-    case "5hr":
-      startDate = subHours(endDate, 5);
-      break;
-    case "1d":
-      startDate = subDays(endDate, 1);
-      break;
-    case "3d":
-      startDate = subDays(endDate, 3);
-      break;
-    case "7d":
-      startDate = subDays(endDate, 7);
-      break;
-    default:
-      throw createHttpError(400, "Invalid updatedAt value");
+  if (!page || !limit) {
+    throw createHttpError(400, "Page and limit are required");
   }
 
-  const existingTranslations = await TranslationCharacter.find({
-    updatedAt: { $gte: startDate, $lt: endDate },
+  const queryObj: {
+    language: string;
+    storyId: string;
+    characterType?: string;
+  } = {
     language: currentLanguage,
-  })
-    .lean()
-    .exec();
+    storyId,
+  };
 
-  if (!existingTranslations.length) {
-    return [];
+  if (characterType?.trim().length) {
+    queryObj.characterType = characterType;
   }
-  return existingTranslations;
+
+  const pageNumber = Number(page);
+  const limitNumber = Number(limit);
+
+  const startIndex = (pageNumber - 1) * limitNumber;
+  const endIndex = pageNumber * limitNumber;
+
+  const results = {} as ResultTypes;
+
+  if (endIndex < (await TranslationCharacter.countDocuments(queryObj).exec())) {
+    results.next = {
+      page: pageNumber + 1,
+      limit: limitNumber,
+    };
+  }
+  if (startIndex > 0) {
+    results.prev = {
+      page: pageNumber - 1,
+      limit: limitNumber,
+    };
+  }
+
+  results.results = await TranslationCharacter.find(queryObj)
+    .limit(limitNumber)
+    .skip(startIndex)
+    .exec();
+  const overAllAmountOfCharacters = await TranslationCharacter.countDocuments(
+    queryObj
+  );
+
+  results.amountOfCharacters = overAllAmountOfCharacters;
+
+  return results;
 };
 
 type GetAllTranslationCharactersByStoryIdTypes = {
@@ -369,7 +511,7 @@ export const characterCreateBlankService = async ({
 
 type UpdateCharacterTranslationTypes = {
   characterId: string;
-  textFieldName: string | undefined;
+  textFieldName: string;
   text: string | undefined;
   currentLanguage: string | undefined;
 };
@@ -403,6 +545,7 @@ export const characterUpdateTranslationService = async ({
       existingCharacterTranslation.translations.push({
         text,
         textFieldName,
+        amountOfWords: text?.length || 0,
       });
     }
     return await existingCharacterTranslation.save();

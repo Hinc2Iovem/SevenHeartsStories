@@ -13,9 +13,11 @@ import { SayType } from "./SayController";
 type GetUpdatedAtAndLanguageQuery = {
   currentLanguage: string | undefined;
   updatedAt: string | undefined;
+  page: number | undefined;
+  limit: number | undefined;
 };
 
-// @route GET http://localhost:3500/says/recent/translations
+// @route GET http://localhost:3500/says/paginated/recent/translations
 // @access Private
 export const getSayTranslationUpdatedAtAndLanguageController: RequestHandler<
   unknown,
@@ -27,6 +29,8 @@ export const getSayTranslationUpdatedAtAndLanguageController: RequestHandler<
     const textFieldName = await getSayTranslationUpdatedAtAndLanguageService({
       currentLanguage: req.query.currentLanguage,
       updatedAt: req.query.updatedAt,
+      page: req.query.page,
+      limit: req.query.limit,
     });
     if (textFieldName) {
       return res.status(201).json(textFieldName);
@@ -212,7 +216,7 @@ type SayUpdateTranslationParams = {
 };
 
 type SayUpdateTranslationBody = {
-  textFieldName: string | undefined;
+  textFieldName: string;
   text: string | undefined;
   currentLanguage?: string;
 };

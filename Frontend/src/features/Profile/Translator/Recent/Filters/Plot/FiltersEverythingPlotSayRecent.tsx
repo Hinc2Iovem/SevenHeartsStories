@@ -12,6 +12,7 @@ type FiltersEverythingPlotSayTypes = {
   prevTranslateFromLanguage: CurrentlyAvailableLanguagesTypes;
   prevTranslateToLanguage: CurrentlyAvailableLanguagesTypes;
   updatedAt: UpdatedAtPossibleVariationTypes;
+  page: number;
 };
 
 export type CombinedTranslatedAndNonTranslatedSayTypes = {
@@ -25,6 +26,7 @@ export default function FiltersEverythingPlotSayRecent({
   prevTranslateToLanguage,
   translateToLanguage,
   updatedAt,
+  page,
 }: FiltersEverythingPlotSayTypes) {
   useInvalidateTranslatorQueriesRecent({
     prevTranslateFromLanguage,
@@ -32,15 +34,21 @@ export default function FiltersEverythingPlotSayRecent({
     queryKey: "say",
     translateToLanguage,
     updatedAt,
+    page,
+    limit: 3,
   });
 
   const { data: translatedSays } = useGetSayRecentTranslations({
     language: translateFromLanguage,
     updatedAt,
+    page,
+    limit: 3,
   });
   const { data: nonTranslatedSays } = useGetSayRecentTranslations({
     language: translateToLanguage,
     updatedAt,
+    page,
+    limit: 3,
   });
 
   const memoizedCombinedTranslations = useMemo(() => {
@@ -49,7 +57,7 @@ export default function FiltersEverythingPlotSayRecent({
       [key: string]: CombinedTranslatedAndNonTranslatedSayTypes;
     } = {};
 
-    translatedSays?.forEach((tc) => {
+    translatedSays?.results.forEach((tc) => {
       const sayId = tc.commandId;
       if (!sayMap[sayId]) {
         sayMap[sayId] = {
@@ -61,7 +69,7 @@ export default function FiltersEverythingPlotSayRecent({
       }
     });
 
-    nonTranslatedSays?.forEach((ntc) => {
+    nonTranslatedSays?.results.forEach((ntc) => {
       const sayId = ntc.commandId;
       if (!sayMap[sayId]) {
         sayMap[sayId] = {

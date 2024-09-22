@@ -1,29 +1,38 @@
+import { subDays, subHours, subMinutes } from "date-fns";
 import createHttpError from "http-errors";
+import mongoose from "mongoose";
 import { TranslationTextFieldName } from "../../../consts/TRANSLATION_TEXT_FIELD_NAMES";
 import Season from "../../../models/StoryData/Season";
 import Story from "../../../models/StoryData/Story";
-import Translation from "../../../models/StoryData/Translation/Translation";
-import TranslationStory from "../../../models/StoryData/Translation/TranslationStory";
+import TranslationSeason from "../../../models/StoryData/Translation/TranslationSeason";
+import TranslationStory, {
+  TranslationStoryDocument,
+} from "../../../models/StoryData/Translation/TranslationStory";
 import { checkCurrentLanguage } from "../../../utils/checkCurrentLanguage";
 import { validateMongoId } from "../../../utils/validateMongoId";
-import mongoose from "mongoose";
-import TranslationSeason from "../../../models/StoryData/Translation/TranslationSeason";
-import { subDays, subHours, subMinutes } from "date-fns";
 
 type GetByUpdatedAtAndLanguageTypes = {
   currentLanguage: string | undefined;
   updatedAt: string | undefined;
+  page: number | undefined;
+  limit: number | undefined;
 };
 
-export const getStoryTranslationUpdatedAtAndLanguageService = async ({
+export const getPaginatedStoryTranslationUpdatedAtAndLanguageService = async ({
   currentLanguage,
   updatedAt,
+  limit,
+  page,
 }: GetByUpdatedAtAndLanguageTypes) => {
   if (!currentLanguage?.trim().length) {
     throw createHttpError(400, "Language is required");
   }
 
   checkCurrentLanguage({ currentLanguage });
+
+  if (!page || !limit) {
+    throw createHttpError(400, "Page and limit are required");
+  }
 
   let startDate: Date | undefined;
   let endDate = new Date();
@@ -51,17 +60,116 @@ export const getStoryTranslationUpdatedAtAndLanguageService = async ({
       throw createHttpError(400, "Invalid updatedAt value");
   }
 
-  const existingTranslations = await TranslationStory.find({
-    updatedAt: { $gte: startDate, $lt: endDate },
-    language: currentLanguage,
-  })
-    .lean()
-    .exec();
+  const pageNumber = Number(page);
+  const limitNumber = Number(limit);
 
-  if (!existingTranslations.length) {
-    return [];
+  const startIndex = (pageNumber - 1) * limitNumber;
+  const endIndex = pageNumber * limitNumber;
+
+  const results = {} as ResultTypes;
+
+  if (
+    endIndex <
+    (await TranslationStory.countDocuments({
+      language: currentLanguage,
+      updatedAt: { $gte: startDate, $lt: endDate },
+    }).exec())
+  ) {
+    results.next = {
+      page: pageNumber + 1,
+      limit: limitNumber,
+    };
   }
-  return existingTranslations;
+  if (startIndex > 0) {
+    results.prev = {
+      page: pageNumber - 1,
+      limit: limitNumber,
+    };
+  }
+  results.results = await TranslationStory.find({
+    language: currentLanguage,
+    updatedAt: { $gte: startDate, $lt: endDate },
+  })
+    .limit(limitNumber)
+    .skip(startIndex)
+    .exec();
+  const overAllAmountOfStories = await TranslationStory.countDocuments({
+    language: currentLanguage,
+    updatedAt: { $gte: startDate, $lt: endDate },
+  });
+  results.amountOfStories = overAllAmountOfStories;
+
+  return results;
+};
+
+type GetPaginatedStoriesTypes = {
+  currentLanguage: string | undefined;
+  limit: number | undefined;
+  page: number | undefined;
+};
+
+type ResultTypes = {
+  next: {
+    page: number;
+    limit: number;
+  };
+  prev: {
+    page: number;
+    limit: number;
+  };
+  results: TranslationStoryDocument[];
+  amountOfStories: number;
+};
+
+export const getPaginatedTranlsationStoriesService = async ({
+  currentLanguage,
+  limit,
+  page,
+}: GetPaginatedStoriesTypes) => {
+  if (!currentLanguage?.trim().length) {
+    throw createHttpError(400, "Language is required");
+  }
+  checkCurrentLanguage({ currentLanguage });
+
+  if (!page || !limit) {
+    throw createHttpError(400, "Page and limit are required");
+  }
+
+  const pageNumber = Number(page);
+  const limitNumber = Number(limit);
+
+  const startIndex = (pageNumber - 1) * limitNumber;
+  const endIndex = pageNumber * limitNumber;
+
+  const results = {} as ResultTypes;
+
+  if (
+    endIndex <
+    (await TranslationStory.countDocuments({
+      language: currentLanguage,
+    }).exec())
+  ) {
+    results.next = {
+      page: pageNumber + 1,
+      limit: limitNumber,
+    };
+  }
+  if (startIndex > 0) {
+    results.prev = {
+      page: pageNumber - 1,
+      limit: limitNumber,
+    };
+  }
+  results.results = await TranslationStory.find({ language: currentLanguage })
+    .limit(limitNumber)
+    .skip(startIndex)
+    .exec();
+  const overAllAmountOfStories = await TranslationStory.countDocuments({
+    language: currentLanguage,
+  });
+  results.amountOfStories = overAllAmountOfStories;
+
+  return results;
 };
 
 type GetAllAssignedStoriesByLanguageAndStaffIdTypes = {
@@ -332,6 +440,7 @@ export const storyTranslationUpdateService = async ({
       existingStory.translations.push({
         text,
         textFieldName,
+        amountOfWords: text.length,
       });
     }
 

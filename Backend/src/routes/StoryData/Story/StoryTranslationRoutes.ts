@@ -3,10 +3,11 @@ import {
   getAllAssignedStoriesTranslationsByLanguageAndStaffIdController,
   getAllStoriesTranslationsByLanguageController,
   getAllStoriesTranslationsByTypeAndSearchController,
+  getPaginatedTranslationStoriesController,
+  getPaginatedStoryTranslationUpdatedAtAndLanguageController,
   storyCreateController,
   storyGetByIdController,
   storyTranslationUpdateController,
-  getStoryTranslationUpdatedAtAndLanguageController,
 } from "../../../controllers/StoryData/Story/StoryTranslationController";
 import { verifyHeadScriptwriter } from "../../../middlewares/verifyHeadScriptwriter";
 import { verifyJWT } from "../../../middlewares/verifyJWT";
@@ -15,13 +16,17 @@ import { verifyJWT } from "../../../middlewares/verifyJWT";
 export const storyTranslationRoute = express.Router();
 
 storyTranslationRoute
-  .route("/recent/translations")
-  .get(getStoryTranslationUpdatedAtAndLanguageController);
+  .route("/paginated/recent/translations")
+  .get(getPaginatedStoryTranslationUpdatedAtAndLanguageController);
 
 storyTranslationRoute
   .route("/translations")
   .get(verifyJWT, getAllStoriesTranslationsByLanguageController)
   .post(verifyHeadScriptwriter, storyCreateController);
+
+storyTranslationRoute
+  .route("/paginated/translations")
+  .get(verifyJWT, getPaginatedTranslationStoriesController);
 
 storyTranslationRoute
   .route("/:storyId/translations")

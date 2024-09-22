@@ -3,9 +3,14 @@ import { axiosCustomized } from "../../../../../../api/axios";
 
 type UpdateCommandNameTypes = {
   plotFieldCommandId: string;
-  value: string;
+  value?: string;
   topologyBlockId: string;
   commandIfId?: string;
+};
+
+type UpdateCommandNameOnMutationTypes = {
+  valueOnMutation?: string;
+  valueForSay: boolean;
 };
 
 export default function useUpdateCommandName({
@@ -16,11 +21,16 @@ export default function useUpdateCommandName({
 }: UpdateCommandNameTypes) {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async ({ valueForSay }: { valueForSay: boolean }) =>
+    mutationFn: async ({
+      valueForSay,
+      valueOnMutation,
+    }: UpdateCommandNameOnMutationTypes) =>
       await axiosCustomized.patch(
         `/plotField/${plotFieldCommandId}/topologyBlocks/commandName`,
         {
-          commandName: valueForSay ? "say" : value.toLowerCase(),
+          commandName: valueForSay
+            ? "say"
+            : value?.toLowerCase() || valueOnMutation?.toLowerCase(),
         }
       ),
     onSuccess: () => {

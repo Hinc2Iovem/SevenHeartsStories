@@ -1,4 +1,4 @@
-import mongoose, { InferSchemaType, model } from "mongoose";
+import mongoose, { Document, InferSchemaType, model } from "mongoose";
 
 export const translationStorySchema = new mongoose.Schema(
   {
@@ -41,9 +41,20 @@ export const translationStorySchema = new mongoose.Schema(
 
 translationStorySchema.index({ updatedAt: -1 });
 
-type TranslationStory = InferSchemaType<typeof translationStorySchema>;
+export interface TranslationStoryDocument extends Document {
+  storyId?: mongoose.Schema.Types.ObjectId;
+  storyStatus: string;
+  language: string;
+  translations: {
+    textFieldName: string;
+    text?: string;
+    amountOfWords: number;
+  }[];
+  createdAt: Date;
+  updatedAt: Date;
+}
 
-export default model<TranslationStory>(
+export default model<TranslationStoryDocument>(
   "TranslationStory",
   translationStorySchema
 );

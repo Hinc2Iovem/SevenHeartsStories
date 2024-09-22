@@ -4,21 +4,49 @@ import { UpdatedAtPossibleVariationTypes } from "../../../../features/Profile/Tr
 import { CurrentlyAvailableLanguagesTypes } from "../../../../types/Additional/CURRENTLY_AVAILABEL_LANGUAGES";
 import { TranslationSeasonTypes } from "../../../../types/Additional/TranslationTypes";
 
+type PaginatedSeasonTypes = {
+  next?: {
+    page: number;
+    limit: number;
+  };
+  prev?: {
+    page: number;
+    limit: number;
+  };
+  results: TranslationSeasonTypes[];
+  amountOfSeasons: number;
+};
+
 export default function useGetSeasonRecentTranslations({
   updatedAt,
   language = "russian",
+  page,
+  limit,
 }: {
   updatedAt: UpdatedAtPossibleVariationTypes;
   language?: CurrentlyAvailableLanguagesTypes;
+  page: number;
+  limit: number;
 }) {
   return useQuery({
-    queryKey: ["translation", language, "season", "updatedAt", updatedAt],
+    queryKey: [
+      "paginated",
+      "page",
+      page,
+      "limit",
+      limit,
+      "translation",
+      language,
+      "season",
+      "updatedAt",
+      updatedAt,
+    ],
     queryFn: async () =>
       await axiosCustomized
-        .get<TranslationSeasonTypes[]>(
-          `/seasons/recent/translations?currentLanguage=${language}&updatedAt=${updatedAt}`
+        .get<PaginatedSeasonTypes>(
+          `/seasons/paginated/recent/translations?currentLanguage=${language}&updatedAt=${updatedAt}&page=${page}&limit=${limit}`
         )
         .then((r) => r.data),
-    enabled: !!language && !!updatedAt,
+    enabled: !!language && !!updatedAt && !!page && !!limit,
   });
 }

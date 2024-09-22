@@ -1,10 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
 import { axiosCustomized } from "../../../../api/axios";
-import { UpdatedAtPossibleVariationTypes } from "../../../../features/Profile/Translator/Recent/Filters/FiltersEverythingRecent";
 import { CurrentlyAvailableLanguagesTypes } from "../../../../types/Additional/CURRENTLY_AVAILABEL_LANGUAGES";
 import { TranslationCharacterCharacteristicTypes } from "../../../../types/Additional/TranslationTypes";
 
-type PaginatedCharacterTypes = {
+type PaginatedCharacteristicTypes = {
   next?: {
     page: number;
     limit: number;
@@ -17,16 +16,16 @@ type PaginatedCharacterTypes = {
   amountOfCharacteristics: number;
 };
 
-export default function useGetCharacteristicRecentTranslations({
-  updatedAt,
+export default function useGetPaginatedTranslationCharacteristics({
   language = "russian",
   page,
   limit,
+  storyId,
 }: {
-  updatedAt: UpdatedAtPossibleVariationTypes;
   language?: CurrentlyAvailableLanguagesTypes;
   page: number;
   limit: number;
+  storyId: string;
 }) {
   return useQuery({
     queryKey: [
@@ -37,16 +36,16 @@ export default function useGetCharacteristicRecentTranslations({
       limit,
       "translation",
       language,
+      "story",
+      storyId,
       "characteristic",
-      "updatedAt",
-      updatedAt,
     ],
     queryFn: async () =>
       await axiosCustomized
-        .get<PaginatedCharacterTypes>(
-          `/characteristics/paginated/recent/translations?currentLanguage=${language}&updatedAt=${updatedAt}&page=${page}&limit=${limit}`
+        .get<PaginatedCharacteristicTypes>(
+          `/characteristics/paginated/translations?currentLanguage=${language}&page=${page}&limit=${limit}&storyId=${storyId}`
         )
         .then((r) => r.data),
-    enabled: !!language && !!updatedAt && !!page && !!limit,
+    enabled: !!language && !!page && !!limit && !!storyId,
   });
 }

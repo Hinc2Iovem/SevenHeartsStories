@@ -13,7 +13,7 @@ import {
   storyUpdateImgUrlController,
   storyUpdateStatusForWorkerController,
 } from "../../../controllers/StoryData/Story/StoryController";
-import paginatedQuery from "../../../middlewares/paginatedQuery";
+import paginatedStoryQuery from "../../../middlewares/paginatedStoryQuery";
 import Story from "../../../models/StoryData/Story";
 import { verifyHeadScriptwriter } from "../../../middlewares/verifyHeadScriptwriter";
 import { verifyJWT } from "../../../middlewares/verifyJWT";
@@ -28,7 +28,7 @@ storyRoute.route("/").get(storyGetAllController);
 
 storyRoute
   .route("/status")
-  .get(verifyJWT, paginatedQuery(Story), (req, res) => {
+  .get(verifyJWT, paginatedStoryQuery(Story), (req, res) => {
     res.json(res.locals.paginatedResults);
   });
 

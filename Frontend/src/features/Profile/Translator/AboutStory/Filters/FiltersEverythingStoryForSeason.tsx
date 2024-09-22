@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import useGetSeasonsByStoryId from "../../../../../hooks/Fetching/Season/useGetSeasonsByStoryId";
+import useGetPaginatedTranslationSeasons from "../../../../../hooks/Fetching/Translation/Season/useGetPaginatedTranslationSeasons";
 import useInvalidateTranslatorSeasonQueries from "../../../../../hooks/helpers/Profile/Translator/useInvalidateTranslatorSeasonQueries";
 import { CurrentlyAvailableLanguagesTypes } from "../../../../../types/Additional/CURRENTLY_AVAILABEL_LANGUAGES";
 import { TranslationSeasonTypes } from "../../../../../types/Additional/TranslationTypes";
@@ -25,22 +25,29 @@ export default function FiltersEverythingStoryForSeason({
   prevTranslateToLanguage,
 }: FiltersEverythingCharacterForSeasonTypes) {
   const [storyId, setStoryId] = useState("");
+  const [page, setPage] = useState(1);
 
   useInvalidateTranslatorSeasonQueries({
     prevTranslateFromLanguage,
     prevTranslateToLanguage,
     translateToLanguage,
     storyId,
+    limit: 3,
+    page,
   });
 
-  const { data: translatedSeason } = useGetSeasonsByStoryId({
+  const { data: translatedSeason } = useGetPaginatedTranslationSeasons({
     storyId,
     language: translateFromLanguage,
+    limit: 3,
+    page,
   });
 
-  const { data: nonTranslatedSeason } = useGetSeasonsByStoryId({
+  const { data: nonTranslatedSeason } = useGetPaginatedTranslationSeasons({
     storyId,
     language: translateToLanguage,
+    limit: 3,
+    page,
   });
 
   const memoizedCombinedTranslations = useMemo(() => {
@@ -49,7 +56,7 @@ export default function FiltersEverythingStoryForSeason({
       [key: string]: CombinedTranslatedAndNonTranslatedSeasonTypes;
     } = {};
 
-    translatedSeason?.forEach((tc) => {
+    translatedSeason?.results.forEach((tc) => {
       const seasonId = tc.seasonId;
       if (!seasonMap[seasonId]) {
         seasonMap[seasonId] = {
@@ -61,7 +68,7 @@ export default function FiltersEverythingStoryForSeason({
       }
     });
 
-    nonTranslatedSeason?.forEach((ntc) => {
+    nonTranslatedSeason?.results.forEach((ntc) => {
       const seasonId = ntc.seasonId;
       if (!seasonMap[seasonId]) {
         seasonMap[seasonId] = {

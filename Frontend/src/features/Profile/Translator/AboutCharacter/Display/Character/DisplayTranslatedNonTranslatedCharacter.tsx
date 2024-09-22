@@ -3,7 +3,6 @@ import { TranslationTextFieldName } from "../../../../../../const/TRANSLATION_TE
 import useUpdateCharacterTranslation from "../../../../../../hooks/Patching/Translation/useUpdateCharacterTranslation";
 import useDebounce from "../../../../../../hooks/utilities/useDebounce";
 import { CurrentlyAvailableLanguagesTypes } from "../../../../../../types/Additional/CURRENTLY_AVAILABEL_LANGUAGES";
-import { CharacterTypes } from "../../../../../../types/StoryData/Character/CharacterTypes";
 import { CombinedTranslatedAndNonTranslatedCharacterTypes } from "../../Filters/FiltersEverythingCharacterForCharacter";
 
 type DisplayTranslatedNonTranslatedCharacterTypes = {
@@ -37,23 +36,6 @@ export default function DisplayTranslatedNonTranslatedCharacter({
   const [description, setDescription] = useState("");
 
   const [characterId, setCharacterId] = useState("");
-
-  const [characterTypeFilterToEng, setCharacterTypeFilterToEng] =
-    useState<CharacterTypes>("" as CharacterTypes);
-
-  useEffect(() => {
-    if (characterTypeFilter?.trim().length) {
-      if (characterTypeFilter === "Обычный Персонаж") {
-        setCharacterTypeFilterToEng("emptycharacter");
-      } else if (characterTypeFilter === "Главный Персонаж") {
-        setCharacterTypeFilterToEng("maincharacter");
-      } else {
-        setCharacterTypeFilterToEng("minorcharacter");
-      }
-    } else {
-      setCharacterTypeFilterToEng("" as CharacterTypes);
-    }
-  }, [characterTypeFilter]);
 
   useEffect(() => {
     if (translated) {
@@ -205,14 +187,7 @@ export default function DisplayTranslatedNonTranslatedCharacter({
         characterTypeFilter === "Главный Персонаж"
           ? "h-fit flex-col"
           : "min-h-[24rem] sm:flex-row flex-col"
-      } ${
-        characterTypeFilterToEng?.trim().length &&
-        translated?.characterType === characterTypeFilterToEng
-          ? ""
-          : !characterTypeFilter?.trim().length
-          ? ""
-          : "hidden"
-      }  w-full flex gap-[.5rem] bg-primary-pastel-blue p-[.5rem] rounded-md`}
+      } w-full flex gap-[.5rem] bg-primary-pastel-blue p-[.5rem] rounded-md`}
     >
       <div
         className={`h-full ${

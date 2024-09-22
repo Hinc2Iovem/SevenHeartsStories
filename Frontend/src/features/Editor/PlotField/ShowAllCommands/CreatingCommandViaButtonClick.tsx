@@ -36,8 +36,8 @@ type CreatingCommandViaButtonClickTypes = {
   pc: string;
   topologyBlockId: string;
   currentAmountOfCommands: number;
-  setShowAllCommands: React.Dispatch<React.SetStateAction<boolean>>;
   setCurrentAmountOfCommands: React.Dispatch<React.SetStateAction<number>>;
+  setShowAllCommands: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 export default function CreatingCommandViaButtonClick({
@@ -223,6 +223,7 @@ export default function CreatingCommandViaButtonClick({
       updateCommandName.mutate({ valueForSay: false });
     }
     updateTopologyBlockAmountOfCommands.mutate();
+    setShowAllCommands(false);
   };
 
   const handleFormSubmit = (pc: string) => {
@@ -250,7 +251,6 @@ export default function CreatingCommandViaButtonClick({
 
   useEffect(() => {
     if (newPlotFieldCommand.isSuccess) {
-      console.log("working");
       handleFormSubmit(pc);
     }
   }, [pc, newPlotFieldCommand.isSuccess]);

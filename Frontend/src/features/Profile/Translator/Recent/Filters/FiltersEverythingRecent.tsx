@@ -40,6 +40,7 @@ export default function FiltersEverythingRecent({
   prevTranslateFromLanguage,
   prevTranslateToLanguage,
 }: FiltersEverythingCharacterForRecentTypes) {
+  const [page, setPage] = useState(1);
   const [period, setPeriod] = useState<UpdatedAtPossibleVariationTypes>(
     "" as UpdatedAtPossibleVariationTypes
   );
@@ -56,6 +57,7 @@ export default function FiltersEverythingRecent({
           translateFromLanguage={translateFromLanguage}
           translateToLanguage={translateToLanguage}
           updatedAt={period}
+          page={page}
         />
         <FiltersEverythingCharacterForCharacterRecent
           prevTranslateFromLanguage={prevTranslateFromLanguage}
@@ -63,6 +65,7 @@ export default function FiltersEverythingRecent({
           translateFromLanguage={translateFromLanguage}
           translateToLanguage={translateToLanguage}
           updatedAt={period}
+          page={page}
         />
         <FiltersEverythingCharacterForCharacteristicRecent
           prevTranslateFromLanguage={prevTranslateFromLanguage}
@@ -70,6 +73,7 @@ export default function FiltersEverythingRecent({
           translateFromLanguage={translateFromLanguage}
           translateToLanguage={translateToLanguage}
           updatedAt={period}
+          page={page}
         />
         <FiltersEverythingStoryForEpisodeRecent
           prevTranslateFromLanguage={prevTranslateFromLanguage}
@@ -77,6 +81,7 @@ export default function FiltersEverythingRecent({
           translateFromLanguage={translateFromLanguage}
           translateToLanguage={translateToLanguage}
           updatedAt={period}
+          page={page}
         />
         <FiltersEverythingStoryForSeasonRecent
           prevTranslateFromLanguage={prevTranslateFromLanguage}
@@ -84,6 +89,7 @@ export default function FiltersEverythingRecent({
           translateFromLanguage={translateFromLanguage}
           translateToLanguage={translateToLanguage}
           updatedAt={period}
+          page={page}
         />
         <FiltersEverythingStoryForStoryRecent
           prevTranslateFromLanguage={prevTranslateFromLanguage}
@@ -91,6 +97,7 @@ export default function FiltersEverythingRecent({
           translateFromLanguage={translateFromLanguage}
           translateToLanguage={translateToLanguage}
           updatedAt={period}
+          page={page}
         />
         <FiltersEverythingPlotAchievementRecent
           prevTranslateFromLanguage={prevTranslateFromLanguage}
@@ -98,6 +105,7 @@ export default function FiltersEverythingRecent({
           translateFromLanguage={translateFromLanguage}
           translateToLanguage={translateToLanguage}
           updatedAt={period}
+          page={page}
         />
         <FiltersEverythingPlotChoiceRecent
           prevTranslateFromLanguage={prevTranslateFromLanguage}
@@ -105,6 +113,7 @@ export default function FiltersEverythingRecent({
           translateFromLanguage={translateFromLanguage}
           translateToLanguage={translateToLanguage}
           updatedAt={period}
+          page={page}
         />
         <FiltersEverythingPlotGetItemRecent
           prevTranslateFromLanguage={prevTranslateFromLanguage}
@@ -112,6 +121,7 @@ export default function FiltersEverythingRecent({
           translateFromLanguage={translateFromLanguage}
           translateToLanguage={translateToLanguage}
           updatedAt={period}
+          page={page}
         />
         <FiltersEverythingPlotSayRecent
           prevTranslateFromLanguage={prevTranslateFromLanguage}
@@ -119,6 +129,7 @@ export default function FiltersEverythingRecent({
           translateFromLanguage={translateFromLanguage}
           translateToLanguage={translateToLanguage}
           updatedAt={period}
+          page={page}
         />
         <FiltersEverythingPlotCommandWardrobeRecent
           prevTranslateFromLanguage={prevTranslateFromLanguage}
@@ -126,6 +137,7 @@ export default function FiltersEverythingRecent({
           translateFromLanguage={translateFromLanguage}
           translateToLanguage={translateToLanguage}
           updatedAt={period}
+          page={page}
         />
       </main>
     </>

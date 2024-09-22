@@ -8,6 +8,9 @@ import { useQueryClient } from "@tanstack/react-query";
 import { getAllTopologyBlocksByEpisodeId } from "../Editor/PlotField/PlotFieldMain/Commands/hooks/TopologyBlock/useGetAllTopologyBlocksByEpisodeId";
 import { getAllTopologyBlocksConnectionsByEpisodeId } from "../Editor/PlotField/PlotFieldMain/Commands/hooks/TopologyBlock/useGetAllTopologyBlockConnectionsByEpisodeId";
 import { getAllPlotfieldCommands } from "../Editor/PlotField/PlotFieldMain/Commands/hooks/useGetAllPlotFieldCommands";
+import useGetSingleStory from "../../hooks/Fetching/Story/useGetSingleStory";
+import useGetStaffMember from "../../hooks/Fetching/Staff/useGetStaffMember";
+import character from "../../assets/images/shared/characters.png";
 
 type EpisodeItemTypes = {
   provided: DraggableProvided;
@@ -19,15 +22,17 @@ export default function EpisodeItem({
   episodeStatus,
   provided,
 }: EpisodeItemTypes) {
+  const { storyId } = useParams();
   const [localTopologyBlockId] = useState(
     localStorage.getItem(`${_id}-topologyBlockId`)
   );
-  const { storyId } = useParams();
   const [isEpisodeInfoOpen, setIsEpisodeInfoOpen] = useState(false);
+
   const { data: episode } = useGetTranslationEpisode({
     episodeId: _id,
     language: "russian",
   });
+  const { data: currentStory } = useGetSingleStory({ storyId: storyId || "" });
 
   const [episodeTitle, setEpisodeTitle] = useState("");
   const [episodeDescription, setEpisodeDescription] = useState("");
@@ -43,11 +48,6 @@ export default function EpisodeItem({
       });
     }
   }, [episode]);
-
-  useEscapeOfModal({
-    setValue: setIsEpisodeInfoOpen,
-    value: isEpisodeInfoOpen,
-  });
 
   const queryClient = useQueryClient();
   const prefetchTopologyBlocks = () => {
@@ -68,6 +68,11 @@ export default function EpisodeItem({
       });
     }
   };
+
+  useEscapeOfModal({
+    setValue: setIsEpisodeInfoOpen,
+    value: isEpisodeInfoOpen,
+  });
 
   return (
     <li
@@ -94,9 +99,9 @@ export default function EpisodeItem({
       <div
         className={`${
           isEpisodeInfoOpen ? "border-[.1rem]  rounded-t-none" : "hidden"
-        } flex flex-col p-[1rem] min-h-[10rem] w-full bg-white rounded-md shadow-gray-300`}
+        } flex flex-col min-h-[10rem] w-full bg-white rounded-md shadow-gray-300`}
       >
-        <p className="text-[1.5rem] self-end">
+        <p className="text-[1.5rem] self-end pt-[.5rem] pr-[.5rem]">
           Статус:{" "}
           <span
             className={`text-[1.4rem] ${
@@ -106,16 +111,53 @@ export default function EpisodeItem({
             {episodeStatus === "doing" ? "В процессе" : "Завершена"}
           </span>
         </p>
-        <p className="text-[1.3rem] text-gray-600 h-full w-full break-words">
+        <p className="text-[1.4rem] text-gray-600 h-full w-full break-words pl-[.5rem]">
           {episodeDescription}
         </p>
-        <Link
-          className="mt-auto w-fit self-end text-[1.5rem] text-gray-700 hover:text-primary-pastel-blue transition-all"
-          to={`/stories/${storyId}/editor/episodes/${_id}`}
-        >
-          На страницу Эпизода
-        </Link>
+        <div className="flex justify-between items-center gap-[1rem] mt-auto w-full">
+          <div
+            className={`${
+              currentStory?.storyStaffInfo?.length ? "" : "hidden"
+            } flex gap-[.5rem] flex-wrap bg-white shadow-md px-[1rem] py-[.5rem]`}
+          >
+            {currentStory?.storyStaffInfo?.length
+              ? currentStory.storyStaffInfo.map((ss) => (
+                  <WorkersItems key={ss.staffId} staffId={ss.staffId} />
+                ))
+              : null}
+          </div>
+          <Link
+            className="ml-auto w-fit text-[1.5rem] text-gray-700 hover:text-primary-pastel-blue pr-[.5rem] transition-all"
+            to={`/stories/${storyId}/editor/episodes/${_id}`}
+          >
+            На страницу Эпизода
+          </Link>
+        </div>
       </div>
     </li>
+  );
+}
+
+function WorkersItems({ staffId }: { staffId: string }) {
+  const { data: scriptwriter } = useGetStaffMember({ staffId });
+  const [showName, setShowName] = useState(false);
+
+  return (
+    <div className="relative">
+      <img
+        src={scriptwriter?.imgUrl || character}
+        alt={scriptwriter?.username}
+        onMouseEnter={() => setShowName(true)}
+        onMouseLeave={() => setShowName(false)}
+        className="w-[3rem] rounded-md shadow-sm"
+      />
+      <aside
+        className={`${
+          showName ? "" : "hidden"
+        } absolute bottom-[0rem] translate-y-[3rem] rounded-md px-[1rem] py-[.25rem] bg-white shadow-md z-[10] text-[1.4rem]`}
+      >
+        {scriptwriter?.username}
+      </aside>
+    </div>
   );
 }

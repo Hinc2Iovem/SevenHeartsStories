@@ -4,15 +4,37 @@ import { TranslationCommandWardrobeTypes } from "../../../../../types/Additional
 import { UpdatedAtPossibleVariationTypes } from "../../../../../features/Profile/Translator/Recent/Filters/FiltersEverythingRecent";
 import { CurrentlyAvailableLanguagesTypes } from "../../../../../types/Additional/CURRENTLY_AVAILABEL_LANGUAGES";
 
+type PaginatedWardrobeTypes = {
+  next?: {
+    page: number;
+    limit: number;
+  };
+  prev?: {
+    page: number;
+    limit: number;
+  };
+  results: TranslationCommandWardrobeTypes[];
+  amountOfWardrobes: number;
+};
+
 export default function useGetCommandWardrobeRecentTranslations({
   updatedAt,
   language = "russian",
+  page,
+  limit,
 }: {
   updatedAt: UpdatedAtPossibleVariationTypes;
   language?: CurrentlyAvailableLanguagesTypes;
+  page: number;
+  limit: number;
 }) {
   return useQuery({
     queryKey: [
+      "paginated",
+      "page",
+      page,
+      "limit",
+      limit,
       "translation",
       language,
       "commandWardrobe",
@@ -21,10 +43,10 @@ export default function useGetCommandWardrobeRecentTranslations({
     ],
     queryFn: async () =>
       await axiosCustomized
-        .get<TranslationCommandWardrobeTypes[]>(
-          `/commandWardrobes/recent/translations?currentLanguage=${language}&updatedAt=${updatedAt}`
+        .get<PaginatedWardrobeTypes>(
+          `/commandWardrobes/paginated/recent/translations?currentLanguage=${language}&updatedAt=${updatedAt}&page=${page}&limit=${limit}`
         )
         .then((r) => r.data),
-    enabled: !!language && !!updatedAt,
+    enabled: !!language && !!updatedAt && !!page && !!limit,
   });
 }

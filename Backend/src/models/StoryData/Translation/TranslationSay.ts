@@ -41,6 +41,20 @@ export const translationSaySchema = new mongoose.Schema(
 
 translationSaySchema.index({ updatedAt: -1 });
 
-type TranslationSay = InferSchemaType<typeof translationSaySchema>;
+export interface TranslationSayDocument extends Document {
+  commandId?: mongoose.Schema.Types.ObjectId;
+  topologyBlockId?: mongoose.Schema.Types.ObjectId;
+  language: string;
+  translations: {
+    textFieldName: string;
+    text?: string;
+    amountOfWords: number;
+  }[];
+  createdAt: Date;
+  updatedAt: Date;
+}
 
-export default model<TranslationSay>("TranslationSay", translationSaySchema);
+export default model<TranslationSayDocument>(
+  "TranslationSay",
+  translationSaySchema
+);

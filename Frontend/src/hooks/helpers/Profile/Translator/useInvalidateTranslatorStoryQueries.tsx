@@ -6,27 +6,59 @@ type InvalidateTranslatorQueriesTypes = {
   prevTranslateFromLanguage: CurrentlyAvailableLanguagesTypes;
   prevTranslateToLanguage: CurrentlyAvailableLanguagesTypes;
   translateToLanguage: CurrentlyAvailableLanguagesTypes;
+  page: number;
+  limit: number;
 };
 
 export default function useInvalidateTranslatorStoryQueries({
   prevTranslateFromLanguage,
   prevTranslateToLanguage,
   translateToLanguage,
+  limit,
+  page,
 }: InvalidateTranslatorQueriesTypes) {
   const queryClient = useQueryClient();
 
   useEffect(() => {
     if (prevTranslateFromLanguage) {
       queryClient.invalidateQueries({
-        queryKey: ["translation", prevTranslateFromLanguage, "story"],
+        queryKey: [
+          "paginated",
+          "page",
+          page,
+          "limit",
+          limit,
+          "translation",
+          prevTranslateFromLanguage,
+          "story",
+        ],
       });
       queryClient.invalidateQueries({
-        queryKey: ["translation", translateToLanguage, "story"],
+        queryKey: [
+          "paginated",
+          "page",
+          page,
+          "limit",
+          limit,
+          "translation",
+          translateToLanguage,
+          "story",
+        ],
       });
     }
     if (prevTranslateToLanguage || prevTranslateFromLanguage) {
       queryClient.invalidateQueries({
-        queryKey: ["translation", prevTranslateToLanguage, "story"],
+        queryKey: [
+          "paginated",
+          "page",
+          page,
+          "limit",
+          limit,
+
+          "translation",
+          prevTranslateToLanguage,
+          "story",
+        ],
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

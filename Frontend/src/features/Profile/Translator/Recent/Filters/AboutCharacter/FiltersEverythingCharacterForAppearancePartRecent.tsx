@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import useGetAppearancePartRecentTranslations from "../../../../../../hooks/Fetching/Translation/AppearancePart/useGetAppearancePartRecentTranslations";
+import useGetPaginatedAppearancePartRecentTranslations from "../../../../../../hooks/Fetching/Translation/AppearancePart/useGetPaginatedAppearancePartRecentTranslations";
 import useInvalidateTranslatorQueriesRecent from "../../../../../../hooks/helpers/Profile/Translator/useInvalidateTranslatorQueriesRecent";
 import { CurrentlyAvailableLanguagesTypes } from "../../../../../../types/Additional/CURRENTLY_AVAILABEL_LANGUAGES";
 import { TranslationAppearancePartTypes } from "../../../../../../types/Additional/TranslationTypes";
@@ -12,6 +12,7 @@ type FiltersEverythingCharacterForAppearancePartTypes = {
   prevTranslateFromLanguage: CurrentlyAvailableLanguagesTypes;
   prevTranslateToLanguage: CurrentlyAvailableLanguagesTypes;
   updatedAt: UpdatedAtPossibleVariationTypes;
+  page: number;
 };
 
 export type CombinedTranslatedAndNonTranslatedAppearancePartTypes = {
@@ -25,6 +26,7 @@ export default function FiltersEverythingCharacterForAppearancePartRecent({
   prevTranslateFromLanguage,
   prevTranslateToLanguage,
   updatedAt,
+  page,
 }: FiltersEverythingCharacterForAppearancePartTypes) {
   useInvalidateTranslatorQueriesRecent({
     prevTranslateFromLanguage,
@@ -32,18 +34,24 @@ export default function FiltersEverythingCharacterForAppearancePartRecent({
     translateToLanguage,
     updatedAt,
     queryKey: "appearancePart",
+    page,
+    limit: 3,
   });
 
   const { data: translatedAppearancePart } =
-    useGetAppearancePartRecentTranslations({
+    useGetPaginatedAppearancePartRecentTranslations({
       updatedAt,
       language: translateFromLanguage,
+      page,
+      limit: 3,
     });
 
   const { data: nonTranslatedAppearancePart } =
-    useGetAppearancePartRecentTranslations({
+    useGetPaginatedAppearancePartRecentTranslations({
       updatedAt,
       language: translateToLanguage,
+      page,
+      limit: 3,
     });
 
   const memoizedCombinedTranslations = useMemo(() => {
@@ -53,7 +61,7 @@ export default function FiltersEverythingCharacterForAppearancePartRecent({
       [key: string]: CombinedTranslatedAndNonTranslatedAppearancePartTypes;
     } = {};
 
-    translatedAppearancePart?.forEach((tc) => {
+    translatedAppearancePart?.results.forEach((tc) => {
       const appearancePartId = tc.appearancePartId;
       if (!appearancePartMap[appearancePartId]) {
         appearancePartMap[appearancePartId] = {
@@ -65,7 +73,7 @@ export default function FiltersEverythingCharacterForAppearancePartRecent({
       }
     });
 
-    nonTranslatedAppearancePart?.forEach((ntc) => {
+    nonTranslatedAppearancePart?.results.forEach((ntc) => {
       const appearancePartId = ntc.appearancePartId;
       if (!appearancePartMap[appearancePartId]) {
         appearancePartMap[appearancePartId] = {

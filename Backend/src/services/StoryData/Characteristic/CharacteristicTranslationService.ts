@@ -1,6 +1,8 @@
 import createHttpError from "http-errors";
 import { TranslationTextFieldName } from "../../../consts/TRANSLATION_TEXT_FIELD_NAMES";
-import TranslationCharacteristic from "../../../models/StoryData/Translation/TranslationCharacteristic";
+import TranslationCharacteristic, {
+  TranslationCharacteristicDocument,
+} from "../../../models/StoryData/Translation/TranslationCharacteristic";
 import { checkCurrentLanguage } from "../../../utils/checkCurrentLanguage";
 import { validateMongoId } from "../../../utils/validateMongoId";
 import CharacterCharacteristic from "../../../models/StoryData/CharacterCharacteristic";
@@ -9,17 +11,25 @@ import { subDays, subHours, subMinutes } from "date-fns";
 type GetByUpdatedAtAndLanguageTypes = {
   currentLanguage: string | undefined;
   updatedAt: string | undefined;
+  page: number | undefined;
+  limit: number | undefined;
 };
 
 export const getCharacteristicTranslationUpdatedAtAndLanguageService = async ({
   currentLanguage,
   updatedAt,
+  limit,
+  page,
 }: GetByUpdatedAtAndLanguageTypes) => {
   if (!currentLanguage?.trim().length) {
     throw createHttpError(400, "Language is required");
   }
 
   checkCurrentLanguage({ currentLanguage });
+
+  if (!page || !limit) {
+    throw createHttpError(400, "Page and limit are required");
+  }
 
   let startDate: Date | undefined;
   let endDate = new Date();
@@ -47,17 +57,127 @@ export const getCharacteristicTranslationUpdatedAtAndLanguageService = async ({
       throw createHttpError(400, "Invalid updatedAt value");
   }
 
-  const existingTranslations = await TranslationCharacteristic.find({
-    updatedAt: { $gte: startDate, $lt: endDate },
-    language: currentLanguage,
-  })
-    .lean()
-    .exec();
+  const pageNumber = Number(page);
+  const limitNumber = Number(limit);
 
-  if (!existingTranslations.length) {
-    return [];
+  const startIndex = (pageNumber - 1) * limitNumber;
+  const endIndex = pageNumber * limitNumber;
+
+  const results = {} as ResultTypes;
+
+  if (
+    endIndex <
+    (await TranslationCharacteristic.countDocuments({
+      language: currentLanguage,
+      updatedAt: { $gte: startDate, $lt: endDate },
+    }).exec())
+  ) {
+    results.next = {
+      page: pageNumber + 1,
+      limit: limitNumber,
+    };
   }
-  return existingTranslations;
+  if (startIndex > 0) {
+    results.prev = {
+      page: pageNumber - 1,
+      limit: limitNumber,
+    };
+  }
+  results.results = await TranslationCharacteristic.find({
+    language: currentLanguage,
+    updatedAt: { $gte: startDate, $lt: endDate },
+  })
+    .limit(limitNumber)
+    .skip(startIndex)
+    .exec();
+  const overAllAmountOfCharacteristics =
+    await TranslationCharacteristic.countDocuments({
+      language: currentLanguage,
+      updatedAt: { $gte: startDate, $lt: endDate },
+    });
+  results.amountOfCharacteristics = overAllAmountOfCharacteristics;
+
+  return results;
+};
+
+type GetPaginatedCharacteristicsTypes = {
+  currentLanguage: string | undefined;
+  limit: number | undefined;
+  page: number | undefined;
+  storyId: string | undefined;
+};
+
+type ResultTypes = {
+  next: {
+    page: number;
+    limit: number;
+  };
+  prev: {
+    page: number;
+    limit: number;
+  };
+  results: TranslationCharacteristicDocument[];
+  amountOfCharacteristics: number;
+};
+
+export const getPaginatedTranlsationCharacteristicsService = async ({
+  currentLanguage,
+  limit,
+  page,
+  storyId,
+}: GetPaginatedCharacteristicsTypes) => {
+  validateMongoId({ value: storyId, valueName: "Story" });
+
+  if (!currentLanguage?.trim().length) {
+    throw createHttpError(400, "Language is required");
+  }
+  checkCurrentLanguage({ currentLanguage });
+
+  if (!page || !limit) {
+    throw createHttpError(400, "Page and limit are required");
+  }
+
+  const pageNumber = Number(page);
+  const limitNumber = Number(limit);
+
+  const startIndex = (pageNumber - 1) * limitNumber;
+  const endIndex = pageNumber * limitNumber;
+
+  const results = {} as ResultTypes;
+
+  if (
+    endIndex <
+    (await TranslationCharacteristic.countDocuments({
+      language: currentLanguage,
+      storyId,
+    }).exec())
+  ) {
+    results.next = {
+      page: pageNumber + 1,
+      limit: limitNumber,
+    };
+  }
+  if (startIndex > 0) {
+    results.prev = {
+      page: pageNumber - 1,
+      limit: limitNumber,
+    };
+  }
+  results.results = await TranslationCharacteristic.find({
+    language: currentLanguage,
+    storyId,
+  })
+    .limit(limitNumber)
+    .skip(startIndex)
+    .exec();
+  const overAllAmountOfCharacteristics =
+    await TranslationCharacteristic.countDocuments({
+      language: currentLanguage,
+      storyId,
+    });
+  results.amountOfCharacteristics = overAllAmountOfCharacteristics;
+
+  return results;
 };
 
 type GetAllCharacteristicsByCharacteristicIdLanguageTypes = {
@@ -221,6 +341,7 @@ export const characteristicTranslationUpdateService = async ({
       existingCharacteristic.translations.push({
         text,
         textFieldName,
+        amountOfWords: text?.length || 0,
       });
     }
 

@@ -41,11 +41,19 @@ export const translationCharacteristicSchema = new mongoose.Schema(
 
 translationCharacteristicSchema.index({ updatedAt: -1 });
 
-type TranslationCharacteristic = InferSchemaType<
-  typeof translationCharacteristicSchema
->;
-
-export default model<TranslationCharacteristic>(
+export interface TranslationCharacteristicDocument extends Document {
+  storyId?: mongoose.Schema.Types.ObjectId;
+  characteristicId?: mongoose.Schema.Types.ObjectId;
+  language: string;
+  translations: {
+    textFieldName: string;
+    text?: string;
+    amountOfWords: number;
+  }[];
+  createdAt: Date;
+  updatedAt: Date;
+}
+export default model<TranslationCharacteristicDocument>(
   "TranslationCharacteristic",
   translationCharacteristicSchema
 );

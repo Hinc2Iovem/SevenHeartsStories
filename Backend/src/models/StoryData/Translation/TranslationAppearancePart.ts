@@ -45,11 +45,21 @@ export const translationAppearancePartSchema = new mongoose.Schema(
 
 translationAppearancePartSchema.index({ updatedAt: -1 });
 
-type TranslationAppearancePart = InferSchemaType<
-  typeof translationAppearancePartSchema
->;
+export interface TranslationAppearancePartDocument extends Document {
+  characterId?: mongoose.Schema.Types.ObjectId;
+  appearancePartId?: mongoose.Schema.Types.ObjectId;
+  type: string;
+  language: string;
+  translations: {
+    textFieldName: string;
+    text?: string;
+    amountOfWords: number;
+  }[];
+  createdAt: Date;
+  updatedAt: Date;
+}
 
-export default model<TranslationAppearancePart>(
+export default model<TranslationAppearancePartDocument>(
   "TranslationAppearancePart",
   translationAppearancePartSchema
 );

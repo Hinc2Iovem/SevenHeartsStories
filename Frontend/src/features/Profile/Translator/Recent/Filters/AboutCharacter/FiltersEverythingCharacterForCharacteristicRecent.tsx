@@ -12,6 +12,7 @@ type FiltersEverythingCharacterForCharacteristicTypes = {
   prevTranslateFromLanguage: CurrentlyAvailableLanguagesTypes;
   prevTranslateToLanguage: CurrentlyAvailableLanguagesTypes;
   updatedAt: UpdatedAtPossibleVariationTypes;
+  page: number;
 };
 
 export type CombinedTranslatedAndNonTranslatedCharacteristicTypes = {
@@ -25,6 +26,7 @@ export default function FiltersEverythingCharacterForCharacteristicRecent({
   prevTranslateFromLanguage,
   prevTranslateToLanguage,
   updatedAt,
+  page,
 }: FiltersEverythingCharacterForCharacteristicTypes) {
   useInvalidateTranslatorQueriesRecent({
     prevTranslateFromLanguage,
@@ -32,17 +34,23 @@ export default function FiltersEverythingCharacterForCharacteristicRecent({
     translateToLanguage,
     queryKey: "characteristic",
     updatedAt,
+    page,
+    limit: 3,
   });
 
   const { data: translatedCharacteristics } =
     useGetCharacteristicRecentTranslations({
       updatedAt,
       language: translateFromLanguage,
+      page,
+      limit: 3,
     });
   const { data: nonTranslatedCharacteristics } =
     useGetCharacteristicRecentTranslations({
       updatedAt,
       language: translateToLanguage,
+      page,
+      limit: 3,
     });
 
   const memoizedCombinedTranslations = useMemo(() => {
@@ -52,7 +60,7 @@ export default function FiltersEverythingCharacterForCharacteristicRecent({
       [key: string]: CombinedTranslatedAndNonTranslatedCharacteristicTypes;
     } = {};
 
-    translatedCharacteristics?.forEach((tc) => {
+    translatedCharacteristics?.results.forEach((tc) => {
       const characteristicId = tc.characteristicId;
       if (!characteristicMap[characteristicId]) {
         characteristicMap[characteristicId] = {
@@ -64,7 +72,7 @@ export default function FiltersEverythingCharacterForCharacteristicRecent({
       }
     });
 
-    nonTranslatedCharacteristics?.forEach((ntc) => {
+    nonTranslatedCharacteristics?.results.forEach((ntc) => {
       const characteristicId = ntc.characteristicId;
       if (!characteristicMap[characteristicId]) {
         characteristicMap[characteristicId] = {

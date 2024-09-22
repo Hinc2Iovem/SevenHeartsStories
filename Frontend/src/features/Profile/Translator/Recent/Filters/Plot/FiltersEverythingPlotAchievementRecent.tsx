@@ -12,6 +12,7 @@ type FiltersEverythingPlotAchievementTypes = {
   prevTranslateFromLanguage: CurrentlyAvailableLanguagesTypes;
   prevTranslateToLanguage: CurrentlyAvailableLanguagesTypes;
   updatedAt: UpdatedAtPossibleVariationTypes;
+  page: number;
 };
 
 export type CombinedTranslatedAndNonTranslatedAchievementTypes = {
@@ -25,6 +26,7 @@ export default function FiltersEverythingPlotAchievementRecent({
   prevTranslateToLanguage,
   translateToLanguage,
   updatedAt,
+  page,
 }: FiltersEverythingPlotAchievementTypes) {
   useInvalidateTranslatorQueriesRecent({
     prevTranslateFromLanguage,
@@ -32,15 +34,21 @@ export default function FiltersEverythingPlotAchievementRecent({
     queryKey: "achievement",
     translateToLanguage,
     updatedAt,
+    page,
+    limit: 3,
   });
   const { data: translatedAchievements } = useGetAchievementRecentTranslations({
     language: translateFromLanguage,
     updatedAt,
+    page,
+    limit: 3,
   });
   const { data: nonTranslatedAchievements } =
     useGetAchievementRecentTranslations({
       language: translateToLanguage,
       updatedAt,
+      page,
+      limit: 3,
     });
 
   const memoizedCombinedTranslations = useMemo(() => {
@@ -50,7 +58,7 @@ export default function FiltersEverythingPlotAchievementRecent({
       [key: string]: CombinedTranslatedAndNonTranslatedAchievementTypes;
     } = {};
 
-    translatedAchievements?.forEach((tc) => {
+    translatedAchievements?.results.forEach((tc) => {
       const achievementId = tc.commandId;
       if (!achievementMap[achievementId]) {
         achievementMap[achievementId] = {
@@ -62,7 +70,7 @@ export default function FiltersEverythingPlotAchievementRecent({
       }
     });
 
-    nonTranslatedAchievements?.forEach((ntc) => {
+    nonTranslatedAchievements?.results.forEach((ntc) => {
       const achievementId = ntc.commandId;
       if (!achievementMap[achievementId]) {
         achievementMap[achievementId] = {

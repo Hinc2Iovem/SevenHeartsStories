@@ -21,6 +21,8 @@ type InvalidateTranslatorQueriesTypes = {
   translateToLanguage: CurrentlyAvailableLanguagesTypes;
   queryKey: PossibleQueryKeys;
   updatedAt: string;
+  page: number;
+  limit: number;
 };
 
 export default function useInvalidateTranslatorQueriesRecent({
@@ -29,6 +31,8 @@ export default function useInvalidateTranslatorQueriesRecent({
   translateToLanguage,
   queryKey,
   updatedAt,
+  limit,
+  page,
 }: InvalidateTranslatorQueriesTypes) {
   const queryClient = useQueryClient();
 
@@ -36,6 +40,11 @@ export default function useInvalidateTranslatorQueriesRecent({
     if (prevTranslateFromLanguage) {
       queryClient.invalidateQueries({
         queryKey: [
+          "paginated",
+          "page",
+          page,
+          "limit",
+          limit,
           "translation",
           prevTranslateFromLanguage,
           queryKey,
@@ -45,6 +54,11 @@ export default function useInvalidateTranslatorQueriesRecent({
       });
       queryClient.invalidateQueries({
         queryKey: [
+          "paginated",
+          "page",
+          page,
+          "limit",
+          limit,
           "translation",
           translateToLanguage,
           queryKey,
@@ -56,6 +70,11 @@ export default function useInvalidateTranslatorQueriesRecent({
     if (prevTranslateToLanguage || prevTranslateFromLanguage) {
       queryClient.invalidateQueries({
         queryKey: [
+          "paginated",
+          "page",
+          page,
+          "limit",
+          limit,
           "translation",
           prevTranslateToLanguage,
           queryKey,

@@ -6,17 +6,20 @@ import {
   characterUpdateTranslationService,
   getAllTranslationCharactersByStoryIdService,
   getCharacterTranslationByCharacterIdService,
-  getCharacterTranslationUpdatedAtAndLanguageService,
+  getPaginatedCharacterTranslationUpdatedAtAndLanguageService,
+  getPaginatedTranlsationCharactersService,
 } from "../../../services/StoryData/Character/CharacterTranslationService";
 
 type GetUpdatedAtAndLanguageQuery = {
   currentLanguage: string | undefined;
   updatedAt: string | undefined;
+  limit: number | undefined;
+  page: number | undefined;
 };
 
-// @route GET http://localhost:3500/characters/recent/translations
+// @route GET http://localhost:3500/characters/paginated/recent/translations
 // @access Private
-export const getCharacterTranslationUpdatedAtAndLanguageController: RequestHandler<
+export const getPaginatedCharacterTranslationUpdatedAtAndLanguageController: RequestHandler<
   unknown,
   unknown,
   unknown,
@@ -24,12 +27,48 @@ export const getCharacterTranslationUpdatedAtAndLanguageController: RequestHandl
 > = async (req, res, next) => {
   try {
     const textFieldName =
-      await getCharacterTranslationUpdatedAtAndLanguageService({
+      await getPaginatedCharacterTranslationUpdatedAtAndLanguageService({
         currentLanguage: req.query.currentLanguage,
         updatedAt: req.query.updatedAt,
+        limit: req.query.limit,
+        page: req.query.page,
       });
     if (textFieldName) {
       return res.status(201).json(textFieldName);
+    } else {
+      return res.status(400).json({ message: "Something went wrong" });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
+type GetPaginatedTranlsationCharactersQuery = {
+  currentLanguage: string | undefined;
+  storyId: string;
+  limit: number | undefined;
+  page: number | undefined;
+  characterType: string | undefined;
+};
+
+// @route GET http://localhost:3500/characters/paginated/translations
+// @access Private
+export const getPaginatedTranlsationCharactersController: RequestHandler<
+  unknown,
+  unknown,
+  unknown,
+  GetPaginatedTranlsationCharactersQuery
+> = async (req, res, next) => {
+  try {
+    const characters = await getPaginatedTranlsationCharactersService({
+      currentLanguage: req.query.currentLanguage,
+      storyId: req.query.storyId,
+      page: req.query.page,
+      limit: req.query.limit,
+      characterType: req.query.characterType,
+    });
+    if (characters) {
+      return res.status(201).json(characters);
     } else {
       return res.status(400).json({ message: "Something went wrong" });
     }
@@ -217,7 +256,7 @@ type CharacterUpdateTranslationParams = {
 };
 
 type CharacterUpdateTranslationBody = {
-  textFieldName: string | undefined;
+  textFieldName: string;
   text: string | undefined;
   currentLanguage?: string;
 };

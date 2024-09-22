@@ -1,5 +1,5 @@
-import { useMemo } from "react";
-import useGetTranslationStories from "../../../../../hooks/Fetching/Translation/Story/useGetTranslationStories";
+import { useMemo, useState } from "react";
+import useGetPaginatedTranslationStories from "../../../../../hooks/Fetching/Translation/Story/useGetPaginatedTranslationStories";
 import useInvalidateTranslatorStoryQueries from "../../../../../hooks/helpers/Profile/Translator/useInvalidateTranslatorStoryQueries";
 import { CurrentlyAvailableLanguagesTypes } from "../../../../../types/Additional/CURRENTLY_AVAILABEL_LANGUAGES";
 import { TranslationStoryTypes } from "../../../../../types/Additional/TranslationTypes";
@@ -23,18 +23,26 @@ export default function FiltersEverythingStoryForStory({
   prevTranslateFromLanguage,
   prevTranslateToLanguage,
 }: FiltersEverythingCharacterForStoryTypes) {
+  const [page, setPage] = useState(1);
+
   useInvalidateTranslatorStoryQueries({
     prevTranslateFromLanguage,
     prevTranslateToLanguage,
     translateToLanguage,
+    page,
+    limit: 3,
   });
 
-  const { data: translatedStory } = useGetTranslationStories({
+  const { data: translatedStory } = useGetPaginatedTranslationStories({
     language: translateFromLanguage,
+    limit: 3,
+    page,
   });
 
-  const { data: nonTranslatedStory } = useGetTranslationStories({
+  const { data: nonTranslatedStory } = useGetPaginatedTranslationStories({
     language: translateToLanguage,
+    limit: 3,
+    page,
   });
 
   const memoizedCombinedTranslations = useMemo(() => {
@@ -43,7 +51,7 @@ export default function FiltersEverythingStoryForStory({
       [key: string]: CombinedTranslatedAndNonTranslatedStoryTypes;
     } = {};
 
-    translatedStory?.forEach((tc) => {
+    translatedStory?.results.forEach((tc) => {
       const storyId = tc.storyId;
       if (!storyMap[storyId]) {
         storyMap[storyId] = {
@@ -55,7 +63,7 @@ export default function FiltersEverythingStoryForStory({
       }
     });
 
-    nonTranslatedStory?.forEach((ntc) => {
+    nonTranslatedStory?.results.forEach((ntc) => {
       const storyId = ntc.storyId;
       if (!storyMap[storyId]) {
         storyMap[storyId] = {
@@ -76,6 +84,22 @@ export default function FiltersEverythingStoryForStory({
 
   return (
     <>
+      {/* <button
+        onClick={() => {
+          setPage((prev) => prev - 1);
+        }}
+        className="text-[1.5rem]"
+      >
+        -
+      </button>
+      <button
+        onClick={() => {
+          setPage((prev) => prev + 1);
+        }}
+        className="text-[1.5rem]"
+      >
+        +
+      </button> */}
       <main
         className={`grid grid-cols-[repeat(auto-fill,minmax(30rem,1fr))] sm:grid-cols-[repeat(auto-fill,minmax(50rem,1fr))] gap-[1rem] w-full`}
       >

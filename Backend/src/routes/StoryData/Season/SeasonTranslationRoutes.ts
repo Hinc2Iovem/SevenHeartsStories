@@ -5,7 +5,8 @@ import {
   seasonTranslationUpdateController,
   getAllSeasonsTranslationsAndSearchController,
   getAllSeasonsTranslationsByStoryIdAndLanguageController,
-  getSeasonTranslationUpdatedAtAndLanguageController,
+  getPaginatedSeasonTranslationUpdatedAtAndLanguageController,
+  getPaginatedTranlsationSeasonsController,
 } from "../../../controllers/StoryData/Season/SeasonTranslationController";
 import { verifyHeadScriptwriter } from "../../../middlewares/verifyHeadScriptwriter";
 import { verifyJWT } from "../../../middlewares/verifyJWT";
@@ -14,8 +15,12 @@ import { verifyJWT } from "../../../middlewares/verifyJWT";
 export const seasonTranslationRoute = express.Router();
 
 seasonTranslationRoute
-  .route("/recent/translations")
-  .get(getSeasonTranslationUpdatedAtAndLanguageController);
+  .route("/paginated/recent/translations")
+  .get(getPaginatedSeasonTranslationUpdatedAtAndLanguageController);
+
+seasonTranslationRoute
+  .route("/paginated/translations")
+  .get(getPaginatedTranlsationSeasonsController);
 
 seasonTranslationRoute
   .route("/stories/search/translations")

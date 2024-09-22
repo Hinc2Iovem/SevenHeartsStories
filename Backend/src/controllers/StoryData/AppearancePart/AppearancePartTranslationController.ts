@@ -5,18 +5,21 @@ import {
   createAppearancePartTranslationService,
   getAllAppearancePartsTranslationByCharacterIdAndTypeService,
   getAllAppearancePartsTranslationByCharacterIdService,
-  getAppearancePartTranslationUpdatedAtAndLanguageService,
+  getPaginatedAppearancePartTranslationUpdatedAtAndLanguageService,
+  getPaginatedTranlsationAppearancePartsService,
 } from "../../../services/StoryData/AppearancePart/AppearancePartTranslationService";
 import { AppearancePartsTypes } from "../../../consts/APPEARANCE_PARTS";
 
 type GetUpdatedAtAndLanguageQuery = {
   currentLanguage: string | undefined;
   updatedAt: string | undefined;
+  limit: number | undefined;
+  page: number | undefined;
 };
 
-// @route GET http://localhost:3500/appearanceParts/recent/translations
+// @route GET http://localhost:3500/appearanceParts/paginated/recent/translations
 // @access Private
-export const getAppearancePartTranslationUpdatedAtAndLanguageController: RequestHandler<
+export const getPaginatedAppearancePartTranslationUpdatedAtAndLanguageController: RequestHandler<
   unknown,
   unknown,
   unknown,
@@ -24,10 +27,46 @@ export const getAppearancePartTranslationUpdatedAtAndLanguageController: Request
 > = async (req, res, next) => {
   try {
     const textFieldName =
-      await getAppearancePartTranslationUpdatedAtAndLanguageService({
+      await getPaginatedAppearancePartTranslationUpdatedAtAndLanguageService({
         currentLanguage: req.query.currentLanguage,
         updatedAt: req.query.updatedAt,
+        limit: req.query.limit,
+        page: req.query.page,
       });
+    if (textFieldName) {
+      return res.status(201).json(textFieldName);
+    } else {
+      return res.status(400).json({ message: "Something went wrong" });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
+type GetPaginatedTranlsationAppearancePartsQuery = {
+  currentLanguage: string | undefined;
+  characterId: string | undefined;
+  limit: number | undefined;
+  page: number | undefined;
+  type: string | undefined;
+};
+
+// @route GET http://localhost:3500/appearanceParts/paginated/translations
+// @access Private
+export const getPaginatedTranlsationAppearancePartsController: RequestHandler<
+  unknown,
+  unknown,
+  unknown,
+  GetPaginatedTranlsationAppearancePartsQuery
+> = async (req, res, next) => {
+  try {
+    const textFieldName = await getPaginatedTranlsationAppearancePartsService({
+      currentLanguage: req.query.currentLanguage,
+      characterId: req.query.characterId,
+      type: req.query.type,
+      page: req.query.page,
+      limit: req.query.limit,
+    });
     if (textFieldName) {
       return res.status(201).json(textFieldName);
     } else {
@@ -173,7 +212,7 @@ type AppearancePartUpdateTranslationParams = {
 };
 
 type AppearancePartUpdateTranslationBody = {
-  textFieldName: string | undefined;
+  textFieldName: string;
   text: string | undefined;
   currentLanguage?: string;
 };

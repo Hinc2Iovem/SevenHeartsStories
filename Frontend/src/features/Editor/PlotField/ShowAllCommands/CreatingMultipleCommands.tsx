@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import addCommand from "../../../../assets/images/Editor/addCommand.png";
 import cross from "../../../../assets/images/Editor/cross.png";
 
@@ -12,6 +12,7 @@ type CreatingMultipleCommandsTypes = {
   >;
   setTime: React.Dispatch<React.SetStateAction<string | null>>;
   pc: string;
+  allCommandsToCreate: string[];
 };
 
 export default function CreatingMultipleCommands({
@@ -19,8 +20,19 @@ export default function CreatingMultipleCommands({
   setShowDefaultSettings,
   setTime,
   pc,
+  allCommandsToCreate,
 }: CreatingMultipleCommandsTypes) {
   const [amountOfCommands, setAmountOfCommands] = useState(0);
+
+  useEffect(() => {
+    if (!allCommandsToCreate.length) {
+      setAmountOfCommands(0);
+      setShowDefaultSettings({
+        choice: false,
+        wait: false,
+      });
+    }
+  }, [allCommandsToCreate]);
 
   const handleAddCommand = () => {
     setAmountOfCommands(1);

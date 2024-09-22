@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import useGetTranslationAppearanceParts from "../../../../../hooks/Fetching/Translation/AppearancePart/useGetTranslationAppearanceParts";
+import useGetPaginatedTranslationAppearanceParts from "../../../../../hooks/Fetching/Translation/AppearancePart/useGetPaginatedTranslationAppearanceParts";
 import useInvalidateTranslatorAppearancePartsQueries from "../../../../../hooks/helpers/Profile/Translator/useInvalidateTranslatorAppearancePartsQueries";
 import { CurrentlyAvailableLanguagesTypes } from "../../../../../types/Additional/CURRENTLY_AVAILABEL_LANGUAGES";
 import { TranslationTextFieldNameAppearancePartsTypes } from "../../../../../types/Additional/TRANSLATION_TEXT_FIELD_NAMES";
@@ -27,6 +27,7 @@ export default function FiltersEverythingCharacterForAppearancePart({
   prevTranslateToLanguage,
 }: FiltersEverythingCharacterForAppearancePartTypes) {
   const [characterId, setCharacterId] = useState("");
+  const [page, setPage] = useState(1);
   const [appearanceType, setAppearanceType] = useState(
     "" as TranslationTextFieldNameAppearancePartsTypes
   );
@@ -37,17 +38,26 @@ export default function FiltersEverythingCharacterForAppearancePart({
     translateToLanguage,
     characterId,
     type: appearanceType,
+    limit: 3,
+    page,
   });
 
-  const { data: translatedAppearancePart } = useGetTranslationAppearanceParts({
-    characterId,
-    language: translateFromLanguage,
-  });
+  const { data: translatedAppearancePart } =
+    useGetPaginatedTranslationAppearanceParts({
+      characterId,
+      language: translateFromLanguage,
+      type: appearanceType,
+      page,
+      limit: 3,
+    });
 
   const { data: nonTranslatedAppearancePart } =
-    useGetTranslationAppearanceParts({
+    useGetPaginatedTranslationAppearanceParts({
       characterId,
       language: translateToLanguage,
+      type: appearanceType,
+      page,
+      limit: 3,
     });
 
   const memoizedCombinedTranslations = useMemo(() => {
@@ -57,7 +67,7 @@ export default function FiltersEverythingCharacterForAppearancePart({
       [key: string]: CombinedTranslatedAndNonTranslatedAppearancePartTypes;
     } = {};
 
-    translatedAppearancePart?.forEach((tc) => {
+    translatedAppearancePart?.results.forEach((tc) => {
       const appearancePartId = tc.appearancePartId;
       if (!appearancePartMap[appearancePartId]) {
         appearancePartMap[appearancePartId] = {
@@ -69,7 +79,7 @@ export default function FiltersEverythingCharacterForAppearancePart({
       }
     });
 
-    nonTranslatedAppearancePart?.forEach((ntc) => {
+    nonTranslatedAppearancePart?.results.forEach((ntc) => {
       const appearancePartId = ntc.appearancePartId;
       if (!appearancePartMap[appearancePartId]) {
         appearancePartMap[appearancePartId] = {

@@ -6,15 +6,20 @@ import {
   characterUpdateTranslationController,
   getAllTranslationCharactersByStoryIdController,
   getCharacterTranslationByCharacterIdController,
-  getCharacterTranslationUpdatedAtAndLanguageController,
+  getPaginatedCharacterTranslationUpdatedAtAndLanguageController,
+  getPaginatedTranlsationCharactersController,
 } from "../../../controllers/StoryData/Character/CharacterTranslationController";
 
 // Default route === /characters
 export const characterTranslationRoute = express.Router();
 
 characterTranslationRoute
-  .route("/recent/translations")
-  .get(getCharacterTranslationUpdatedAtAndLanguageController);
+  .route("/paginated/recent/translations")
+  .get(getPaginatedCharacterTranslationUpdatedAtAndLanguageController);
+
+characterTranslationRoute
+  .route("/paginated/translations")
+  .get(getPaginatedTranlsationCharactersController);
 
 characterTranslationRoute
   .route("/stories/:storyId")

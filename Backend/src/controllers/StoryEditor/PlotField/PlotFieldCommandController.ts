@@ -9,6 +9,7 @@ import {
   plotFieldCommandUpdateCommandOrderService,
   getAllPlotFieldCommandsByIfIdInsideElseService,
   plotFieldCommandUpdateAllOrdersAfterDuplicationService,
+  plotFieldCommandCreateMultipleService,
 } from "../../../services/StoryEditor/PlotField/PlotFieldCommandService";
 
 type GetAllPlotFieldCommandsByIfId = {
@@ -78,6 +79,47 @@ export const getAllPlotFieldCommandsController: RequestHandler<
     });
     if (plotFieldCommands) {
       return res.status(201).json(plotFieldCommands);
+    } else {
+      return res.status(400).json({ message: "Something went wrong" });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
+type PlotFieldCommandMultipleParams = {
+  topologyBlockId: string;
+};
+
+type PlotFieldCommandMultipleBody = {
+  allCommands?: string;
+  amountOfOptions?: number;
+  choiceType?: string;
+  optionVariations?: string;
+  storyId?: string;
+  waitValue?: number;
+};
+
+// @route POST http://localhost:3500/plotField/topologyBlocks/:topologyBlockId/cultipleCommands
+// @access Private
+export const plotFieldCommandMultipleController: RequestHandler<
+  PlotFieldCommandMultipleParams,
+  unknown,
+  PlotFieldCommandMultipleBody,
+  unknown
+> = async (req, res, next) => {
+  try {
+    const plotFieldCommand = await plotFieldCommandCreateMultipleService({
+      topologyBlockId: req.params.topologyBlockId,
+      allCommands: req.body.allCommands,
+      amountOfOptions: req.body.amountOfOptions,
+      choiceType: req.body.choiceType,
+      optionVariations: req.body.optionVariations,
+      storyId: req.body.storyId,
+      waitValue: req.body.waitValue,
+    });
+    if (plotFieldCommand) {
+      return res.status(201).json(plotFieldCommand);
     } else {
       return res.status(400).json({ message: "Something went wrong" });
     }

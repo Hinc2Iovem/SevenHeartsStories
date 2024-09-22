@@ -6,16 +6,19 @@ import {
   getAllCharacteristicsTranslationsByStoryIdAndLanguageService,
   getAllCharacteristicsTranslationsByCharacteristicIdAndLanguageService,
   getCharacteristicTranslationUpdatedAtAndLanguageService,
+  getPaginatedTranlsationCharacteristicsService,
 } from "../../../services/StoryData/Characteristic/CharacteristicTranslationService";
 
 type GetUpdatedAtAndLanguageQuery = {
   currentLanguage: string | undefined;
   updatedAt: string | undefined;
+  page: number | undefined;
+  limit: number | undefined;
 };
 
-// @route GET http://localhost:3500/characteristics/recent/translations
+// @route GET http://localhost:3500/characteristics/paginated/recent/translations
 // @access Private
-export const getCharacteristicTranslationUpdatedAtAndLanguageController: RequestHandler<
+export const getPaginatedCharacteristicTranslationUpdatedAtAndLanguageController: RequestHandler<
   unknown,
   unknown,
   unknown,
@@ -26,7 +29,41 @@ export const getCharacteristicTranslationUpdatedAtAndLanguageController: Request
       await getCharacteristicTranslationUpdatedAtAndLanguageService({
         currentLanguage: req.query.currentLanguage,
         updatedAt: req.query.updatedAt,
+        page: req.query.page,
+        limit: req.query.limit,
       });
+    if (textFieldName) {
+      return res.status(201).json(textFieldName);
+    } else {
+      return res.status(400).json({ message: "Something went wrong" });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
+type GetPaginatedTranlsationCharacteristicsQuery = {
+  currentLanguage: string | undefined;
+  storyId: string | undefined;
+  limit: number | undefined;
+  page: number | undefined;
+};
+
+// @route GET http://localhost:3500/characteristics/paginated/translations
+// @access Private
+export const getPaginatedTranlsationCharacteristicsController: RequestHandler<
+  unknown,
+  unknown,
+  unknown,
+  GetPaginatedTranlsationCharacteristicsQuery
+> = async (req, res, next) => {
+  try {
+    const textFieldName = await getPaginatedTranlsationCharacteristicsService({
+      currentLanguage: req.query.currentLanguage,
+      storyId: req.query.storyId,
+      page: req.query.page,
+      limit: req.query.limit,
+    });
     if (textFieldName) {
       return res.status(201).json(textFieldName);
     } else {

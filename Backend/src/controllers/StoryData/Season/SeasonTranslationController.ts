@@ -2,8 +2,9 @@ import { RequestHandler } from "express";
 import {
   getAllSeasonsTranslationsAndSearchService,
   getAllSeasonsTranslationsByStoryIdAndLanguageService,
+  getPaginatedTranlsationSeasonsService,
   getSeasonByIdAndLanguageService,
-  getSeasonTranslationUpdatedAtAndLanguageService,
+  getPaginatedSeasonTranslationUpdatedAtAndLanguageService,
   seasonCreateService,
   seasonTranslationUpdateService,
 } from "../../../services/StoryData/Season/SeasonTranslationService";
@@ -11,23 +12,58 @@ import {
 type GetUpdatedAtAndLanguageQuery = {
   currentLanguage: string | undefined;
   updatedAt: string | undefined;
+  limit: number | undefined;
+  page: number | undefined;
 };
 
-// @route GET http://localhost:3500/seasons/recent/translations
+// @route GET http://localhost:3500/seasons/paginated/recent/translations
 // @access Private
-export const getSeasonTranslationUpdatedAtAndLanguageController: RequestHandler<
+export const getPaginatedSeasonTranslationUpdatedAtAndLanguageController: RequestHandler<
   unknown,
   unknown,
   unknown,
   GetUpdatedAtAndLanguageQuery
 > = async (req, res, next) => {
   try {
-    const textFieldName = await getSeasonTranslationUpdatedAtAndLanguageService(
-      {
+    const textFieldName =
+      await getPaginatedSeasonTranslationUpdatedAtAndLanguageService({
         currentLanguage: req.query.currentLanguage,
         updatedAt: req.query.updatedAt,
-      }
-    );
+        limit: req.query.limit,
+        page: req.query.page,
+      });
+    if (textFieldName) {
+      return res.status(201).json(textFieldName);
+    } else {
+      return res.status(400).json({ message: "Something went wrong" });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
+type GetPaginatedTranlsationSeasonsQuery = {
+  currentLanguage: string | undefined;
+  limit: number | undefined;
+  page: number | undefined;
+  storyId: string | undefined;
+};
+
+// @route GET http://localhost:3500/seasons/paginated/translations
+// @access Private
+export const getPaginatedTranlsationSeasonsController: RequestHandler<
+  unknown,
+  unknown,
+  unknown,
+  GetPaginatedTranlsationSeasonsQuery
+> = async (req, res, next) => {
+  try {
+    const textFieldName = await getPaginatedTranlsationSeasonsService({
+      currentLanguage: req.query.currentLanguage,
+      page: req.query.page,
+      limit: req.query.limit,
+      storyId: req.query.storyId,
+    });
     if (textFieldName) {
       return res.status(201).json(textFieldName);
     } else {

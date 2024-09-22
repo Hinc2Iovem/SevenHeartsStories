@@ -5,17 +5,20 @@ import {
   episodeTranslationUpdateService,
   getAllEpisodesTranslationsByTypeAndSearchService,
   getEpisodeByIdAndLanguageService,
-  getEpisodeTranslationUpdatedAtAndLanguageService,
+  getPaginatedEpisodeTranslationUpdatedAtAndLanguageService,
+  getPaginatedTranlsationEpisodesService,
 } from "../../../services/StoryData/Episode/EpisodeTranslationService";
 
 type GetUpdatedAtAndLanguageQuery = {
   currentLanguage: string | undefined;
   updatedAt: string | undefined;
+  limit: number | undefined;
+  page: number | undefined;
 };
 
-// @route GET http://localhost:3500/episodes/recent/translations
+// @route GET http://localhost:3500/episodes/paginated/recent/translations
 // @access Private
-export const getEpisodeTranslationUpdatedAtAndLanguageController: RequestHandler<
+export const getPaginatedEpisodeTranslationUpdatedAtAndLanguageController: RequestHandler<
   unknown,
   unknown,
   unknown,
@@ -23,10 +26,44 @@ export const getEpisodeTranslationUpdatedAtAndLanguageController: RequestHandler
 > = async (req, res, next) => {
   try {
     const textFieldName =
-      await getEpisodeTranslationUpdatedAtAndLanguageService({
+      await getPaginatedEpisodeTranslationUpdatedAtAndLanguageService({
         currentLanguage: req.query.currentLanguage,
         updatedAt: req.query.updatedAt,
+        page: req.query.page,
+        limit: req.query.limit,
       });
+    if (textFieldName) {
+      return res.status(201).json(textFieldName);
+    } else {
+      return res.status(400).json({ message: "Something went wrong" });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
+type GetPaginatedTranlsationEpisodesQuery = {
+  currentLanguage: string | undefined;
+  seasonId: string | undefined;
+  limit: number | undefined;
+  page: number | undefined;
+};
+
+// @route GET http://localhost:3500/episodes/paginated/translations
+// @access Private
+export const getPaginatedTranlsationEpisodesController: RequestHandler<
+  unknown,
+  unknown,
+  unknown,
+  GetPaginatedTranlsationEpisodesQuery
+> = async (req, res, next) => {
+  try {
+    const textFieldName = await getPaginatedTranlsationEpisodesService({
+      currentLanguage: req.query.currentLanguage,
+      seasonId: req.query.seasonId,
+      page: req.query.page,
+      limit: req.query.limit,
+    });
     if (textFieldName) {
       return res.status(201).json(textFieldName);
     } else {

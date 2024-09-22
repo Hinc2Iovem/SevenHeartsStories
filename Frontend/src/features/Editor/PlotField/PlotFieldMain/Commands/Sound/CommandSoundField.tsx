@@ -33,16 +33,16 @@ export default function CommandSoundField({
     if (soundName) {
       const filtered =
         res?.filter((a) =>
-          a.soundName.toLowerCase().includes(soundName.toLowerCase())
+          a.soundName?.toLowerCase().includes(soundName?.toLowerCase())
         ) || [];
-      return filtered.map((f) => f.soundName.toLowerCase());
+      return filtered.map((f) => f.soundName?.toLowerCase());
     } else {
-      return res.map((r) => r.soundName.toLowerCase());
+      return res.map((r) => r.soundName?.toLowerCase());
     }
   }, [allSound, soundName]);
 
   const allSoundMemoized = useMemo(() => {
-    return allSound?.map((a) => a.soundName.toLowerCase()) || [];
+    return allSound?.map((a) => a.soundName?.toLowerCase()) || [];
   }, [allSound]);
 
   const { data: commandSound } = useGetCommandSound({
@@ -50,7 +50,7 @@ export default function CommandSoundField({
   });
   const [commandSoundId, setCommandSoundId] = useState("");
   const { data: sound } = useGetSoundById({
-    soundId: commandSound?.soundId ?? "",
+    soundId: commandSound?.soundId || "",
   });
 
   useEffect(() => {
@@ -79,7 +79,7 @@ export default function CommandSoundField({
     if (mm?.trim().length) {
       updateSoundText.mutate({ soundName: mm });
     } else if (soundName?.trim().length) {
-      if (!allSoundMemoized?.includes(soundName.toLowerCase())) {
+      if (!allSoundMemoized?.includes(soundName?.toLowerCase() || "")) {
         // suggest to create new sound
         setShowCreateSoundModal(true);
       } else {

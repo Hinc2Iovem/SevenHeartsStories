@@ -5,15 +5,20 @@ import {
   appearancePartTranslationByAppearancePartIdController,
   getAllAppearancePartsTranslationByCharacterIdAndTypeController,
   getAllAppearancePartsTranslationByCharacterIdController,
-  getAppearancePartTranslationUpdatedAtAndLanguageController,
+  getPaginatedAppearancePartTranslationUpdatedAtAndLanguageController,
+  getPaginatedTranlsationAppearancePartsController,
 } from "../../../controllers/StoryData/AppearancePart/AppearancePartTranslationController";
 
 // Default route === /appearanceParts
 export const appearancePartTranslationsRoute = express.Router();
 
 appearancePartTranslationsRoute
-  .route("/recent/translations")
-  .get(getAppearancePartTranslationUpdatedAtAndLanguageController);
+  .route("/paginated/recent/translations")
+  .get(getPaginatedAppearancePartTranslationUpdatedAtAndLanguageController);
+
+appearancePartTranslationsRoute
+  .route("/paginated/translations")
+  .get(getPaginatedTranlsationAppearancePartsController);
 
 appearancePartTranslationsRoute
   .route("/:appearancePartId/translations")

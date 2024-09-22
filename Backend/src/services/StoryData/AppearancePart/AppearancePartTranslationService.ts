@@ -4,7 +4,9 @@ import {
   AppearancePartsTypes,
 } from "../../../consts/APPEARANCE_PARTS";
 import AppearancePart from "../../../models/StoryData/AppearancePart";
-import TranslationAppearancePart from "../../../models/StoryData/Translation/TranslationAppearancePart";
+import TranslationAppearancePart, {
+  TranslationAppearancePartDocument,
+} from "../../../models/StoryData/Translation/TranslationAppearancePart";
 import { checkCurrentLanguage } from "../../../utils/checkCurrentLanguage";
 import { validateMongoId } from "../../../utils/validateMongoId";
 import { subDays, subHours, subMinutes } from "date-fns";
@@ -12,55 +14,179 @@ import { subDays, subHours, subMinutes } from "date-fns";
 type GetByUpdatedAtAndLanguageTypes = {
   currentLanguage: string | undefined;
   updatedAt: string | undefined;
+  page: number | undefined;
+  limit: number | undefined;
 };
 
-export const getAppearancePartTranslationUpdatedAtAndLanguageService = async ({
+export const getPaginatedAppearancePartTranslationUpdatedAtAndLanguageService =
+  async ({
+    currentLanguage,
+    updatedAt,
+    page,
+    limit,
+  }: GetByUpdatedAtAndLanguageTypes) => {
+    if (!currentLanguage?.trim().length) {
+      throw createHttpError(400, "Language is required");
+    }
+
+    checkCurrentLanguage({ currentLanguage });
+
+    if (!page || !limit) {
+      throw createHttpError(400, "Page and limit are required");
+    }
+
+    let startDate: Date | undefined;
+    let endDate = new Date();
+
+    switch (updatedAt) {
+      case "30min":
+        startDate = subMinutes(endDate, 30);
+        break;
+      case "1hr":
+        startDate = subHours(endDate, 1);
+        break;
+      case "5hr":
+        startDate = subHours(endDate, 5);
+        break;
+      case "1d":
+        startDate = subDays(endDate, 1);
+        break;
+      case "3d":
+        startDate = subDays(endDate, 3);
+        break;
+      case "7d":
+        startDate = subDays(endDate, 7);
+        break;
+      default:
+        throw createHttpError(400, "Invalid updatedAt value");
+    }
+
+    const pageNumber = Number(page);
+    const limitNumber = Number(limit);
+
+    const startIndex = (pageNumber - 1) * limitNumber;
+    const endIndex = pageNumber * limitNumber;
+
+    const results = {} as ResultTypes;
+
+    if (
+      endIndex <
+      (await TranslationAppearancePart.countDocuments({
+        updatedAt: { $gte: startDate, $lt: endDate },
+        language: currentLanguage,
+      }).exec())
+    ) {
+      results.next = {
+        page: pageNumber + 1,
+        limit: limitNumber,
+      };
+    }
+    if (startIndex > 0) {
+      results.prev = {
+        page: pageNumber - 1,
+        limit: limitNumber,
+      };
+    }
+    results.results = await TranslationAppearancePart.find({
+      updatedAt: { $gte: startDate, $lt: endDate },
+      language: currentLanguage,
+    })
+      .limit(limitNumber)
+      .skip(startIndex)
+      .exec();
+    const overAllAmountOfAppearanceParts =
+      await TranslationAppearancePart.countDocuments({
+        updatedAt: { $gte: startDate, $lt: endDate },
+        language: currentLanguage,
+      });
+    results.amountOfAppearanceParts = overAllAmountOfAppearanceParts;
+
+    return results;
+  };
+
+type GetPaginatedAppearancePartsTypes = {
+  currentLanguage: string | undefined;
+  limit: number | undefined;
+  page: number | undefined;
+  characterId: string | undefined;
+  type: string | undefined;
+};
+
+type ResultTypes = {
+  next: {
+    page: number;
+    limit: number;
+  };
+  prev: {
+    page: number;
+    limit: number;
+  };
+  results: TranslationAppearancePartDocument[];
+  amountOfAppearanceParts: number;
+};
+
+export const getPaginatedTranlsationAppearancePartsService = async ({
   currentLanguage,
-  updatedAt,
-}: GetByUpdatedAtAndLanguageTypes) => {
+  limit,
+  page,
+  characterId,
+  type,
+}: GetPaginatedAppearancePartsTypes) => {
+  validateMongoId({ value: characterId, valueName: "Character" });
+
   if (!currentLanguage?.trim().length) {
     throw createHttpError(400, "Language is required");
   }
-
   checkCurrentLanguage({ currentLanguage });
 
-  let startDate: Date | undefined;
-  let endDate = new Date();
-
-  switch (updatedAt) {
-    case "30min":
-      startDate = subMinutes(endDate, 30);
-      break;
-    case "1hr":
-      startDate = subHours(endDate, 1);
-      break;
-    case "5hr":
-      startDate = subHours(endDate, 5);
-      break;
-    case "1d":
-      startDate = subDays(endDate, 1);
-      break;
-    case "3d":
-      startDate = subDays(endDate, 3);
-      break;
-    case "7d":
-      startDate = subDays(endDate, 7);
-      break;
-    default:
-      throw createHttpError(400, "Invalid updatedAt value");
+  if (!page || !limit) {
+    throw createHttpError(400, "Page and limit are required");
   }
 
-  const existingTranslations = await TranslationAppearancePart.find({
-    updatedAt: { $gte: startDate, $lt: endDate },
+  const pageNumber = Number(page);
+  const limitNumber = Number(limit);
+
+  const startIndex = (pageNumber - 1) * limitNumber;
+  const endIndex = pageNumber * limitNumber;
+
+  const results = {} as ResultTypes;
+
+  const queryObj: {
+    language: string;
+    characterId: string | undefined;
+    type?: string;
+  } = {
     language: currentLanguage,
-  })
-    .lean()
-    .exec();
+    characterId,
+  };
 
-  if (!existingTranslations.length) {
-    return [];
+  if (type?.trim().length) {
+    queryObj.type = type;
   }
-  return existingTranslations;
+
+  if (
+    endIndex < (await TranslationAppearancePart.countDocuments(queryObj).exec())
+  ) {
+    results.next = {
+      page: pageNumber + 1,
+      limit: limitNumber,
+    };
+  }
+  if (startIndex > 0) {
+    results.prev = {
+      page: pageNumber - 1,
+      limit: limitNumber,
+    };
+  }
+  results.results = await TranslationAppearancePart.find(queryObj)
+    .limit(limitNumber)
+    .skip(startIndex)
+    .exec();
+  const overAllAmountOfAppearanceParts =
+    await TranslationAppearancePart.countDocuments(queryObj);
+  results.amountOfAppearanceParts = overAllAmountOfAppearanceParts;
+
+  return results;
 };
 
 type AppearancePartByAppearancePartIdTypes = {
@@ -202,7 +328,7 @@ export const createAppearancePartTranslationService = async ({
 type UpdateAppearancePartTypes = {
   appearancePartId: string;
   characterId: string;
-  textFieldName: string | undefined;
+  textFieldName: string;
   text: string | undefined;
   currentLanguage?: string;
 };
@@ -231,6 +357,7 @@ export const appearancePartUpdateTranslationService = async ({
       existingAppearancePart.translations.push({
         text,
         textFieldName,
+        amountOfWords: text?.length || 0,
       });
     }
 
