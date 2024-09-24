@@ -28,6 +28,7 @@ export default function ButtonCreateCommands({
   time,
   halfSizeOfContainer,
 }: ButtonCreateCommandsTypes) {
+  const { episodeId } = useParams();
   const { storyId } = useParams();
   const [isPending, setTransition] = useTransition();
 
@@ -39,6 +40,7 @@ export default function ButtonCreateCommands({
     waitValue: Number(time),
     optionVariations: optionVariations.toString(),
     storyId,
+    episodeId,
   });
 
   useEffect(() => {
@@ -69,8 +71,8 @@ export default function ButtonCreateCommands({
       className={`${allCommandsToCreate.length ? "" : "hidden"} ${
         createMultipleCommands.status === "pending"
           ? "flex gap-[.5rem] items-center bg-blue-300 w-[12rem]"
-          : "hover:bg-green-400"
-      } fixed px-[1rem] py-[.5rem] rounded-md shadow-md bg-green-300 text-white transition-all bottom-[2rem] text-[1.5rem]`}
+          : "hover:bg-green-400 bg-green-300"
+      } fixed px-[1rem] py-[.5rem] rounded-md shadow-md text-white transition-all bottom-[2rem] text-[1.5rem]`}
     >
       {createMultipleCommands.status === "pending" ? (
         <>

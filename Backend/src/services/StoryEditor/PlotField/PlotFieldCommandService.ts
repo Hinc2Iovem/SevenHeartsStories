@@ -33,6 +33,7 @@ import OptionCharacteristic from "../../../models/StoryEditor/PlotField/Choice/O
 import OptionPremium from "../../../models/StoryEditor/PlotField/Choice/OptionPremium";
 import OptionRelationship from "../../../models/StoryEditor/PlotField/Choice/OptionRelationship";
 import TranslationChoiceOption from "../../../models/StoryData/Translation/TranslationChoiceOption";
+import TopologyBlockConnection from "../../../models/StoryEditor/Topology/TopologyBlockConnection";
 
 type GetAllPlotFieldCommandsByIfIdTypes = {
   commandIfId: string;
@@ -131,6 +132,7 @@ type PlotFieldCommandCreateMultipleTypes = {
   choiceType?: string;
   amountOfOptions?: number;
   optionVariations?: string;
+  episodeId?: string;
 };
 
 export const plotFieldCommandCreateMultipleService = async ({
@@ -141,6 +143,7 @@ export const plotFieldCommandCreateMultipleService = async ({
   amountOfOptions,
   choiceType,
   optionVariations,
+  episodeId,
 }: PlotFieldCommandCreateMultipleTypes) => {
   validateMongoId({ value: topologyBlockId, valueName: "TopologyBlock" });
   if (!allCommands?.trim().length) {
@@ -237,6 +240,15 @@ export const plotFieldCommandCreateMultipleService = async ({
       if (optionVariations) {
         const optionVariationsArray: OptionVariationTypes[] =
           optionVariations.split(",") as OptionVariationTypes[];
+        const lastTopologyBlock = await TopologyBlock.findOne({ episodeId })
+          .sort({ createdAt: -1 })
+          .limit(1);
+
+        const coordinatesValue = {
+          coordinatesX: lastTopologyBlock?.coordinatesX || 0,
+          coordinatesY: lastTopologyBlock?.coordinatesY || 0,
+        };
+        let number = 1;
         for (const ov of optionVariationsArray) {
           const newChoiceOption = await ChoiceOption.create({
             plotFieldCommandChoiceId: newChoice._id,
@@ -245,6 +257,24 @@ export const plotFieldCommandCreateMultipleService = async ({
 
           newChoice.amountOfOptions += 1;
           await newChoice.save();
+          const newTopologyBlock = await TopologyBlock.create({
+            coordinatesValue,
+            episodeId,
+            name: lastTopologyBlock?.name + "-" + ov + "-" + number,
+          });
+
+          number++;
+
+          await TopologyBlockConnection.create({
+            sourceBlockId: topologyBlockId,
+            targetBlockId: newTopologyBlock._id,
+            episodeId,
+          });
+
+          newChoiceOption.topologyBlockId = newTopologyBlock._id;
+          coordinatesValue.coordinatesY += 50;
+
+          await newChoiceOption.save();
 
           if (ov === "characteristic") {
             await OptionCharacteristic.create({

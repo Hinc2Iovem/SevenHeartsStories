@@ -9,16 +9,26 @@ import OptionPremiumBlock from "./OptionVariations/OptionPremiumBlock";
 import OptionRelationshipBlock from "./OptionVariations/OptionRelationshipBlock";
 import useGetChoiceOptionById from "../../hooks/Choice/ChoiceOption/useGetChoiceOptionById";
 import OptionSelectOrder from "./OptionSelectOrder";
+import ChoiceOptionShowPlot from "./ChoiceOptionShowPlot";
+import { ChoiceOptionTypesAndTopologyBlockIdsTypes } from "./ChoiceOptionBlocksList";
 
 type ChoiceOptionBlockTypes = {
   currentTopologyBlockId: string;
   plotFieldCommandId: string;
+  showOptionPlot: boolean;
   amountOfOptions: number;
   setOptionOrderToRevalidate: React.Dispatch<
     React.SetStateAction<number | undefined>
   >;
+  setShowOptionPlot: React.Dispatch<React.SetStateAction<boolean>>;
+  setShowedOptionPlotTopologyBlockId: React.Dispatch<
+    React.SetStateAction<string>
+  >;
   setOptionOrderIdNotToRevalidate: React.Dispatch<React.SetStateAction<string>>;
   setOptionOrderIdToRevalidate: React.Dispatch<React.SetStateAction<string>>;
+  setAllChoiceOptionTypesAndTopologyBlockIds: React.Dispatch<
+    React.SetStateAction<ChoiceOptionTypesAndTopologyBlockIdsTypes[]>
+  >;
   optionOrderIdNotToRevalidate: string;
   optionOrderToRevalidate: number | undefined;
 } & TranslationChoiceOptionTypes;
@@ -27,6 +37,7 @@ export default function ChoiceOptionBlock({
   type,
   choiceOptionId,
   translations,
+  showOptionPlot,
   plotFieldCommandId,
   currentTopologyBlockId,
   amountOfOptions,
@@ -35,6 +46,9 @@ export default function ChoiceOptionBlock({
   setOptionOrderIdNotToRevalidate,
   setOptionOrderToRevalidate,
   setOptionOrderIdToRevalidate,
+  setShowOptionPlot,
+  setShowedOptionPlotTopologyBlockId,
+  setAllChoiceOptionTypesAndTopologyBlockIds,
 }: ChoiceOptionBlockTypes) {
   const [showAllSexualOrientationBlocks, setShowAllSexualOrientationBlocks] =
     useState(false);
@@ -51,10 +65,19 @@ export default function ChoiceOptionBlock({
       setTopologyBlockId(choiceOption?.topologyBlockId || "");
       setSexualOrientationType(choiceOption?.sexualOrientationType || "");
       setCurrentOrder(choiceOption?.optionOrder);
+      setAllChoiceOptionTypesAndTopologyBlockIds((prev) => {
+        return [
+          ...prev,
+          {
+            type: choiceOption.type,
+            topologyBlockId: choiceOption?.topologyBlockId || "",
+            option: translations[0]?.text || "",
+            choiceOptionId,
+          },
+        ];
+      });
     }
   }, [choiceOption]);
-
-  console.log(choiceOptionId, ": ", choiceOption?.optionOrder);
 
   useEffect(() => {
     if (
@@ -105,7 +128,9 @@ export default function ChoiceOptionBlock({
 
   return (
     <div
-      className={`w-full bg-white min-h-[10rem] h-full rounded-md shadow-md`}
+      className={`${
+        showOptionPlot ? "hidden" : ""
+      } w-full bg-white min-h-[10rem] h-full rounded-md shadow-md`}
     >
       <div className="w-full flex justify-between flex-col h-full">
         <input
@@ -134,6 +159,7 @@ export default function ChoiceOptionBlock({
                 setShowAllSexualOrientationBlocks={
                   setShowAllSexualOrientationBlocks
                 }
+                setShowAllTopologyBlocks={setShowAllTopologyBlocks}
                 showAllSexualOrientationBlocks={showAllSexualOrientationBlocks}
                 choiceOptionId={choiceOptionId}
                 sexualOrientation={sexualOrientationType}
@@ -142,8 +168,15 @@ export default function ChoiceOptionBlock({
             <div
               className={`${
                 showAllTopologyBlocks || showAllOrders ? "" : "overflow-hidden"
-              } w-full flex flex-col`}
+              } w-[18rem] flex flex-col`}
             >
+              <ChoiceOptionShowPlot
+                setShowOptionPlot={setShowOptionPlot}
+                setShowedOptionPlotTopologyBlockId={
+                  setShowedOptionPlotTopologyBlockId
+                }
+                topologyBlockId={topologyBlockId}
+              />
               <OptionSelectOrder
                 amountOfOptions={amountOfOptions}
                 choiceId={choiceOption?.plotFieldCommandChoiceId || ""}

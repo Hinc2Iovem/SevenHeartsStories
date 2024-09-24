@@ -22,7 +22,7 @@ export default function DraggableExpansionDiv({
   const [startX, setStartX] = useState(0);
   const [totalDeltaX, setTotalDeltaX] = useState(0);
   const divRef = useRef<HTMLDivElement>(null);
-  const dragThreshold = 10;
+  const dragThreshold = 5;
 
   const handleMouseDown = (e: React.MouseEvent) => {
     if (e.button !== 0) return;

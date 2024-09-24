@@ -50,14 +50,14 @@ export default function OptionSelectTopologyBlock({
   });
 
   return (
-    <div className="relative self-end pr-[.2rem] pb-[.2rem]">
+    <div className="relative self-end pr-[.2rem] pb-[.2rem] w-fit bg-white shadow-md">
       <button
         onClick={(e) => {
           e.stopPropagation();
           setShowAllTopologyBlocks((prev) => !prev);
           setShowAllOrders(false);
         }}
-        className="text-[1.3rem] self-end outline-gray-300 text-gray-700 shadow-md rounded-md px-[1rem] py-[.5rem] whitespace-nowrap"
+        className="text-[1.3rem] relative z-[10] outline-gray-300 text-gray-700 shadow-md rounded-md px-[1rem] py-[.5rem] whitespace-nowrap bg-white"
         type="button"
       >
         {currentTopologyBlockName || "Текущая Ветка"}
@@ -66,7 +66,7 @@ export default function OptionSelectTopologyBlock({
         ref={modalRef}
         className={`${
           showAllTopologyBlocks ? "" : "hidden"
-        } overflow-y-auto max-h-[15rem] z-[10] flex flex-col gap-[1rem] p-[.5rem] absolute min-w-fit w-full rounded-md shadow-md bg-white right-[0rem] translate-y-[.5rem] | containerScroll`}
+        } overflow-y-auto max-h-[15rem] z-[20] flex flex-col gap-[1rem] p-[.5rem] pt-[1rem] absolute min-w-fit w-full rounded-md shadow-md bg-white right-[0rem] translate-y-[.2rem] | containerScroll`}
       >
         {(topologyBlockId && (allTopologyBlocks?.length || 0) > 1) ||
         (!topologyBlockId && allTopologyBlocks?.length) ? (

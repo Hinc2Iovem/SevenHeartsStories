@@ -245,6 +245,7 @@ export default function ChoiceQuestionField({
 
         <CreateChoiceOptionTypeModal
           plotFieldCommandId={plotFieldCommandId}
+          topologyBlockId={topologyBlockId}
           plotFieldCommandChoiceId={choiceId}
           setShowCreateChoiceOptionModal={setShowCreateChoiceOptionModal}
           showCreateChoiceOptionModal={showCreateChoiceOptionModal}

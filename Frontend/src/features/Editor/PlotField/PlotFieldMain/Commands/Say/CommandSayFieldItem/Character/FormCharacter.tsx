@@ -128,6 +128,7 @@ export default function FormCharacter({
               e.stopPropagation();
               setShowCharacters((prev) => !prev);
             }}
+            placeholder="Персонаж"
             className="text-[1.3rem] w-full outline-gray-300 px-[1rem] py-[.5rem] rounded-md shadow-md"
             onChange={(e) => {
               setNameValue(e.target.value);

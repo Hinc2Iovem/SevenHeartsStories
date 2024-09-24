@@ -89,9 +89,9 @@ export default function CommandChoiceField({
         }
       }}
       onClick={() => {
-        if (showCopyCursor) {
-          handleCopyingCommand();
-        }
+        // if (showCopyCursor) {
+        //   handleCopyingCommand();
+        // }
       }}
       onMouseLeave={() => {
         setShowCopyCursor(false);
@@ -143,6 +143,7 @@ export default function CommandChoiceField({
       />
 
       <ChoiceOptionBlocksList
+        choiceId={commandChoiceId}
         amountOfOptions={amountOfOptions || 0}
         plotFieldCommandId={plotFieldCommandId}
         currentTopologyBlockId={topologyBlockId}

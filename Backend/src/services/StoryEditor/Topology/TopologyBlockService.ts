@@ -221,14 +221,14 @@ export const unrelatedTopologyBlockCreateService = async ({
     name: `Блок - ${amountOfTopologyBlockInEpisode}`,
   });
 
-  await TopologyBlockInfo.create({
-    topologyBlockId: newTopologyBlock._id,
-    amountOfAchievements: 0,
-    amountOfAmethysts: 0,
-    amountOfAuthorWords: 0,
-    amountOfCharacterWords: 0,
-    amountOfWords: 0,
-  });
+  // await TopologyBlockInfo.create({
+  //   topologyBlockId: newTopologyBlock._id,
+  //   amountOfAchievements: 0,
+  //   amountOfAmethysts: 0,
+  //   amountOfAuthorWords: 0,
+  //   amountOfCharacterWords: 0,
+  //   amountOfWords: 0,
+  // });
   return newTopologyBlock;
 };
 

@@ -126,7 +126,8 @@ export default function EditorMain({ setShowHeader }: EditorMainTypes) {
               }
               setExpansionDivDirection={setExpansionDivDirection}
             />
-          ) : null}
+          ) : // this is a button in the middle of the screen to expand flowchart or plotfield
+          null}
           <div
             className={`${
               keyCombinationToExpandPlotField === "expandPlotField" ||

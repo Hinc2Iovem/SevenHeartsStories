@@ -74,6 +74,8 @@ export type ChoiceOptionType =
 
 type CreateChoiceOptionBody = {
   type: ChoiceOptionType | undefined;
+  episodeId?: string;
+  topologyBlockId?: string;
 };
 
 // TODO KAKAYTA ZALUPA
@@ -90,6 +92,8 @@ export const createChoiceOptionController: RequestHandler<
       plotFieldCommandChoiceId: req.params.plotFieldCommandChoiceId,
       plotFieldCommandId: req.params.plotFieldCommandId,
       type: req.body.type,
+      episodeId: req.body.episodeId,
+      topologyBlockId: req.body.topologyBlockId,
     });
     if (choiceOption) {
       return res.status(201).json(choiceOption);

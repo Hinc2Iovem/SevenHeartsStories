@@ -8,6 +8,7 @@ type createMultipleCommandsTypes = {
   choiceType?: string;
   optionVariations?: string;
   storyId?: string;
+  episodeId?: string;
   waitValue?: number;
 };
 
@@ -19,6 +20,7 @@ export default function useCreateMultipleCommands({
   optionVariations,
   storyId,
   waitValue,
+  episodeId,
 }: createMultipleCommandsTypes) {
   const queryClient = useQueryClient();
   return useMutation({
@@ -32,11 +34,18 @@ export default function useCreateMultipleCommands({
           optionVariations,
           storyId,
           waitValue,
+          episodeId,
         }
       ),
     onSettled: () => {
       queryClient.invalidateQueries({
         queryKey: ["plotfield", "topologyBlock", topologyBlockId],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["topologyBlock", topologyBlockId],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["connection", "episode", episodeId],
       });
     },
   });

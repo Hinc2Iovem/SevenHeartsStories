@@ -170,9 +170,6 @@ function ChoiceTimeLimitBlock({
     number | undefined
   >();
 
-  console.log("currentChoiceOptionOrder", currentChoiceOptionOrder);
-  console.log("currentChoiceOption", currentChoiceOption);
-
   useEffect(() => {
     if (currentChoiceOption) {
       setCurrentChoiceOptionOrder(currentChoiceOption.optionOrder);

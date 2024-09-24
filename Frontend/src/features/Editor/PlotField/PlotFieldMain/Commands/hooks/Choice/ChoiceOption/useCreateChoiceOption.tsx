@@ -6,6 +6,8 @@ import { CurrentlyAvailableLanguagesTypes } from "../../../../../../../../types/
 type CreateChoiceOptionTypes = {
   plotFieldCommandChoiceId: string;
   plotFieldCommandId: string;
+  topologyBlockId: string;
+  episodeId: string;
   language?: CurrentlyAvailableLanguagesTypes;
 };
 type CreateChoiceOptionOnMutationTypes = {
@@ -15,6 +17,8 @@ type CreateChoiceOptionOnMutationTypes = {
 export default function useCreateChoiceOption({
   plotFieldCommandChoiceId,
   plotFieldCommandId,
+  topologyBlockId,
+  episodeId,
   language = "russian",
 }: CreateChoiceOptionTypes) {
   const queryClient = useQueryClient();
@@ -24,9 +28,11 @@ export default function useCreateChoiceOption({
         `/plotFieldCommands/${plotFieldCommandId}/choices/${plotFieldCommandChoiceId}/options`,
         {
           type,
+          topologyBlockId,
+          episodeId
         }
       ),
-    onSuccess: () => {
+    onSettled: () => {
       queryClient.invalidateQueries({
         queryKey: [
           "choice",
@@ -35,8 +41,6 @@ export default function useCreateChoiceOption({
           language,
           "option",
         ],
-        exact: true,
-        type: "active",
       });
       queryClient.invalidateQueries({
         queryKey: ["plotfieldCommand", plotFieldCommandId, "choice"],

@@ -39,11 +39,6 @@ export default function useCreateBlankCommand({
         topologyBlockId,
       ]);
 
-      // queryClient.setQueryData(
-      //   ["plotfield", "topologyBlock", topologyBlockId],
-      //   (old: PlotFieldTypes[]) => [...old, newCommand]
-      // );
-
       addCommand({
         _id: newCommand._id,
         command: "",
@@ -59,12 +54,5 @@ export default function useCreateBlankCommand({
         context?.prevCommands
       );
     },
-    // onSettled: () => {
-    //   queryClient.invalidateQueries({
-    //     queryKey: ["plotfield", "topologyBlock", topologyBlockId],
-    //     type: "active",
-    //     exact: true,
-    //   });
-    // },
   });
 }

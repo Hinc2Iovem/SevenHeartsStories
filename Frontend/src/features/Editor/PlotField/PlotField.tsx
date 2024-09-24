@@ -33,13 +33,6 @@ export default function PlotField({
   });
   const [showAllCommands, setShowAllCommands] = useState<boolean>(false);
 
-  console.log(
-    "currentTopologyBlock amountOfCommands: ",
-    currentTopologyBlock?.topologyBlockInfo.amountOfCommands
-  );
-
-  console.log(topologyBlockId);
-
   return (
     <section
       className={`${

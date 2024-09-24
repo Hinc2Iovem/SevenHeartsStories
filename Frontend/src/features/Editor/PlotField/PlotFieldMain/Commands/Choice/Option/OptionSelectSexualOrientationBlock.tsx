@@ -11,12 +11,14 @@ type OptionSelectSexualOrientationBlockTypes = {
   setShowAllSexualOrientationBlocks: React.Dispatch<
     React.SetStateAction<boolean>
   >;
+  setShowAllTopologyBlocks: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 export default function OptionSelectSexualOrientationBlock({
   sexualOrientation,
   choiceOptionId,
   setShowAllSexualOrientationBlocks,
+  setShowAllTopologyBlocks,
   showAllSexualOrientationBlocks,
 }: OptionSelectSexualOrientationBlockTypes) {
   const modalRef = useRef<HTMLDivElement>(null);
@@ -53,6 +55,7 @@ export default function OptionSelectSexualOrientationBlock({
       <button
         onClick={(e) => {
           e.stopPropagation();
+          setShowAllTopologyBlocks(false);
           setShowAllSexualOrientationBlocks((prev) => !prev);
         }}
         className="text-[1.3rem] text-white outline-gray-300 shadow-md rounded-md px-[1rem] py-[.5rem] | rainbowBtn"

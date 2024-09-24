@@ -15,11 +15,13 @@ import { PlotFieldTypes } from "../../../../types/StoryEditor/PlotField/PlotFiel
 type PlotFieldMainTypes = {
   topologyBlockId: string;
   showAllCommands: boolean;
+  renderedAsSubPlotfield?: boolean;
 };
 
 export default function PlotFieldMain({
   topologyBlockId,
   showAllCommands,
+  renderedAsSubPlotfield = false,
 }: PlotFieldMainTypes) {
   const { commands: optimisticCommands } = usePlotfieldCommands();
 
@@ -34,10 +36,12 @@ export default function PlotFieldMain({
       setCommands(plotfieldCommands);
     }
   }, [plotfieldCommands]);
-  console.log(optimisticCommands);
 
   useEffect(() => {
-    if (optimisticCommands) {
+    if (
+      optimisticCommands &&
+      topologyBlockId === optimisticCommands[0]?.topologyBlockId
+    ) {
       setCommands((prev) => {
         return [
           ...prev,
@@ -45,7 +49,7 @@ export default function PlotFieldMain({
         ];
       });
     }
-  }, [optimisticCommands]);
+  }, [optimisticCommands, topologyBlockId]);
 
   const updateCommandOrder = useUpdateCommandOrder();
 
@@ -64,9 +68,11 @@ export default function PlotFieldMain({
 
   return (
     <main
-      className={`${
-        showAllCommands ? "hidden" : ""
-      } mt-[.5rem] h-[calc(100vh-8rem)] overflow-y-auto | containerScroll`}
+      className={`${showAllCommands ? "hidden" : ""} ${
+        renderedAsSubPlotfield
+          ? "h-fit max-h-[calc(100vh-8rem)] bg-white"
+          : "h-[calc(100vh-8rem)]"
+      } mt-[.5rem] overflow-y-auto | containerScroll`}
     >
       <DragDropContext onDragEnd={handleOnDragEnd}>
         <Droppable droppableId="plotFieldCommands">

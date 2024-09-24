@@ -34,6 +34,10 @@ export default function PlotfieldHeader({
   const [currentAmountOfCommands, setCurrentAmountOfCommands] =
     useState(amountOfCommands);
 
+  useEffect(() => {
+    setCurrentAmountOfCommands(amountOfCommands);
+  }, [amountOfCommands]);
+
   const createCommand = useCreateBlankCommand({ topologyBlockId });
 
   const commandCreatedByKeyCombinationBlankCommand =

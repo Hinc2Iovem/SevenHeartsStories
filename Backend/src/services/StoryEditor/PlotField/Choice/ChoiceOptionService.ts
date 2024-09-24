@@ -128,13 +128,17 @@ export const updateChoiceOptionTopologyBlockService = async ({
 type CreateChoiceOptionTypes = {
   plotFieldCommandChoiceId: string;
   plotFieldCommandId: string;
+  episodeId?: string;
   type: ChoiceOptionType | undefined;
+  topologyBlockId?: string;
 };
 
 export const createChoiceOptionService = async ({
   plotFieldCommandChoiceId,
   plotFieldCommandId,
   type,
+  episodeId,
+  topologyBlockId,
 }: CreateChoiceOptionTypes) => {
   validateMongoId({
     value: plotFieldCommandChoiceId,
@@ -144,6 +148,14 @@ export const createChoiceOptionService = async ({
     value: plotFieldCommandId,
     valueName: "PlotFieldCommand",
   });
+  validateMongoId({
+    value: episodeId,
+    valueName: "Episode",
+  });
+  validateMongoId({
+    value: topologyBlockId,
+    valueName: "TopologyBlock",
+  });
 
   checkChoiceOptionType({ type });
 
@@ -151,7 +163,6 @@ export const createChoiceOptionService = async ({
   if (!existingChoice) {
     throw createHttpError(400, "Choice with such id wasn't found");
   }
-
   const newChoiceOption = await ChoiceOption.create({
     plotFieldCommandChoiceId,
     type: type ?? "common",
@@ -159,6 +170,27 @@ export const createChoiceOptionService = async ({
 
   existingChoice.amountOfOptions += 1;
   await existingChoice.save();
+
+  const lastTopologyBlock = await TopologyBlock.findOne({ episodeId })
+    .sort({ createdAt: -1 })
+    .limit(1);
+
+  const coordinatesValue = {
+    coordinatesX: lastTopologyBlock?.coordinatesX || 0,
+    coordinatesY: (lastTopologyBlock?.coordinatesY || 0) + 50 || 0,
+  };
+
+  const newTopologyBlock = await TopologyBlock.create({
+    coordinatesValue,
+    episodeId,
+    name: lastTopologyBlock?.name + "-" + existingChoice.amountOfOptions,
+  });
+
+  await TopologyBlockConnection.create({
+    episodeId,
+    sourceBlockId: topologyBlockId,
+    targetBlockId: newTopologyBlock._id,
+  });
 
   if (type === "characteristic") {
     await OptionCharacteristic.create({

@@ -17,5 +17,6 @@ export default function useGetConditionValueByConditionBlockId({
           `/plotFieldCommands/conditionBlocks/${conditionBlockId}/conditionValues`
         )
         .then((r) => r.data),
+    enabled: !!conditionBlockId,
   });
 }

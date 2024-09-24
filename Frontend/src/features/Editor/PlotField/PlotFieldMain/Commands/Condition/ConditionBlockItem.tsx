@@ -75,8 +75,6 @@ export default function ConditionBlockItem({
     modalRef,
   });
 
-  console.log(allTopologyBlocks?.length);
-
   return (
     <>
       {!isElse ? (
