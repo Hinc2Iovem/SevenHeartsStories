@@ -75,6 +75,7 @@ function DisplayEpisodes({ seasonId }: DisplayEpisodesTypes) {
   const { data: fetchedEpisodes } = useGetEpisodesBySeasonId({
     seasonId,
   });
+
   useEffect(() => {
     if (fetchedEpisodes) {
       setEpisodes(fetchedEpisodes);
@@ -165,6 +166,7 @@ function CreateEpisodeBlock({
   };
 
   useOutOfModal({ modalRef, setShowModal, showModal });
+
   return (
     <div
       ref={modalRef}

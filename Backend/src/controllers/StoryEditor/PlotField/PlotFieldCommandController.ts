@@ -99,9 +99,10 @@ type PlotFieldCommandMultipleBody = {
   storyId?: string;
   waitValue?: number;
   episodeId?: string;
+  currentAmountOfCommands: number;
 };
 
-// @route POST http://localhost:3500/plotField/topologyBlocks/:topologyBlockId/cultipleCommands
+// @route POST http://localhost:3500/plotField/topologyBlocks/:topologyBlockId/multipleCommands
 // @access Private
 export const plotFieldCommandMultipleController: RequestHandler<
   PlotFieldCommandMultipleParams,
@@ -119,6 +120,7 @@ export const plotFieldCommandMultipleController: RequestHandler<
       storyId: req.body.storyId,
       waitValue: req.body.waitValue,
       episodeId: req.body.episodeId,
+      currentAmountOfCommands: req.body.currentAmountOfCommands,
     });
     if (plotFieldCommand) {
       return res.status(201).json(plotFieldCommand);

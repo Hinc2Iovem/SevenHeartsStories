@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { PossibleCommandsCreatedByCombinationOfKeysTypes } from "../../../const/COMMANDS_CREATED_BY_KEY_COMBINATION";
 import PlotfieldHeader from "./PlotFieldHeader/PlotfieldHeader";
 import useGetTopologyBlockById from "./PlotFieldMain/Commands/hooks/TopologyBlock/useGetTopologyBlockById";
 import PlotFieldMain from "./PlotFieldMain/PlotFieldMain";
 import ShowAllCommandsPlotfield from "./ShowAllCommands/ShowAllCommandsPlotfield";
+import usePlotfieldCommands from "./PlotFieldContext";
 
 type PlotFieldProps = {
   topologyBlockId: string;
@@ -28,9 +29,23 @@ export default function PlotField({
   setHideFlowchartFromScriptwriter,
   setExpansionDivDirection,
 }: PlotFieldProps) {
+  const { setCurrentAmountOfCommands, commandsInfo } = usePlotfieldCommands();
+
   const { data: currentTopologyBlock } = useGetTopologyBlockById({
     topologyBlockId,
   });
+
+  useEffect(() => {
+    if (currentTopologyBlock) {
+      setCurrentAmountOfCommands(
+        topologyBlockId,
+        currentTopologyBlock.topologyBlockInfo.amountOfCommands
+      );
+    }
+  }, [currentTopologyBlock]);
+
+  console.log(commandsInfo);
+
   const [showAllCommands, setShowAllCommands] = useState<boolean>(false);
 
   return (
@@ -44,11 +59,10 @@ export default function PlotField({
       } flex-grow flex-shrink-0 bg-white rounded-md shadow-md min-h-[20rem] h-full relative p-[1rem]`}
     >
       <ShowAllCommandsPlotfield
-        amountOfCommands={
-          currentTopologyBlock?.topologyBlockInfo.amountOfCommands || 1
-        }
+        command={command}
         topologyBlockId={topologyBlockId}
         showAllCommands={showAllCommands}
+        plotfieldExpanded={command === "expandPlotField"}
         setShowAllCommands={setShowAllCommands}
       />
       {currentTopologyBlock ? (
@@ -56,9 +70,6 @@ export default function PlotField({
           setShowAllCommands={setShowAllCommands}
           showAllCommands={showAllCommands}
           hideFlowchartFromScriptwriter={hideFlowchartFromScriptwriter}
-          amountOfCommands={
-            currentTopologyBlock?.topologyBlockInfo.amountOfCommands || 1
-          }
           setExpansionDivDirection={setExpansionDivDirection}
           setShowHeader={setShowHeader}
           topologyBlockId={topologyBlockId}

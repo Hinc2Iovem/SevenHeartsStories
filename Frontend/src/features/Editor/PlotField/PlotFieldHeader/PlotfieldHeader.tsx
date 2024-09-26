@@ -1,14 +1,14 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import command from "../../../../assets/images/Editor/command.png";
 import plus from "../../../../assets/images/shared/add.png";
 import useCheckKeysCombinationCreateBlankCommand from "../../../../hooks/helpers/useCheckKeysCombinationCreateBlankCommand";
-import ButtonHoverPromptModal from "../../../shared/ButtonAsideHoverPromptModal/ButtonHoverPromptModal";
-import useCreateBlankCommand from "../PlotFieldMain/Commands/hooks/useCreateBlankCommand";
 import { generateMongoObjectId } from "../../../../utils/generateMongoObjectId";
+import ButtonHoverPromptModal from "../../../shared/ButtonAsideHoverPromptModal/ButtonHoverPromptModal";
+import usePlotfieldCommands from "../PlotFieldContext";
+import useCreateBlankCommand from "../PlotFieldMain/Commands/hooks/useCreateBlankCommand";
 
 type PlotFieldHeaderTypes = {
   topologyBlockId: string;
-  amountOfCommands: number;
   showAllCommands: boolean;
   hideFlowchartFromScriptwriter: boolean;
   setShowHeader: React.Dispatch<React.SetStateAction<boolean>>;
@@ -23,7 +23,6 @@ type PlotFieldHeaderTypes = {
 
 export default function PlotfieldHeader({
   topologyBlockId,
-  amountOfCommands,
   setShowHeader,
   setHideFlowchartFromScriptwriter,
   setExpansionDivDirection,
@@ -31,12 +30,8 @@ export default function PlotfieldHeader({
   showAllCommands,
   setShowAllCommands,
 }: PlotFieldHeaderTypes) {
-  const [currentAmountOfCommands, setCurrentAmountOfCommands] =
-    useState(amountOfCommands);
-
-  useEffect(() => {
-    setCurrentAmountOfCommands(amountOfCommands);
-  }, [amountOfCommands]);
+  const { updateCommandInfo, getCurrentAmountOfCommands } =
+    usePlotfieldCommands();
 
   const createCommand = useCreateBlankCommand({ topologyBlockId });
 
@@ -47,12 +42,12 @@ export default function PlotfieldHeader({
     const _id = generateMongoObjectId();
     createCommand.mutate({
       _id,
-      commandOrder: currentAmountOfCommands,
+      commandOrder: getCurrentAmountOfCommands(topologyBlockId),
       topologyBlockId,
     });
-    setCurrentAmountOfCommands((prev) => prev + 1);
+    updateCommandInfo(topologyBlockId, "add");
     if (createCommand.isError) {
-      setCurrentAmountOfCommands((prev) => prev - 1);
+      updateCommandInfo(topologyBlockId, "minus");
     }
   };
 

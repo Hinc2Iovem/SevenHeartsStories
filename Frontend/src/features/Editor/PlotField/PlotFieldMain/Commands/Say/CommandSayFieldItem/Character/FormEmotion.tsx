@@ -96,10 +96,7 @@ export default function FormEmotion({
 
   return (
     <>
-      <form
-        onSubmit={handleEmotionFormSubmit}
-        className="sm:w-[20%] flex-grow w-full"
-      >
+      <form onSubmit={handleEmotionFormSubmit} className="w-full">
         <div className="w-full relative">
           <input
             type="text"

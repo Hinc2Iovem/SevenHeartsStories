@@ -6,12 +6,14 @@ import {
 } from "../../../../types/StoryEditor/PlotField/Choice/ChoiceTypes";
 import SyncLoad from "../../../shared/Loaders/SyncLoader";
 import useCreateMultipleCommands from "../PlotFieldMain/Commands/hooks/useCreateMultipleCommands";
+import usePlotfieldCommands from "../PlotFieldContext";
 
 type ButtonCreateCommandsTypes = {
   allCommandsToCreate: string[];
   time: string | null;
   topologyBlockId: string;
   halfSizeOfContainer: number;
+  plotfieldExpanded: boolean;
   optionVariations: ChoiceOptionVariationsTypes[];
   choiceType: ChoiceVariationsTypes;
   setShowAllCommands: React.Dispatch<React.SetStateAction<boolean>>;
@@ -27,8 +29,10 @@ export default function ButtonCreateCommands({
   optionVariations,
   time,
   halfSizeOfContainer,
+  plotfieldExpanded,
 }: ButtonCreateCommandsTypes) {
   const { episodeId } = useParams();
+  const { getCurrentAmountOfCommands } = usePlotfieldCommands();
   const { storyId } = useParams();
   const [isPending, setTransition] = useTransition();
 
@@ -41,6 +45,7 @@ export default function ButtonCreateCommands({
     optionVariations: optionVariations.toString(),
     storyId,
     episodeId,
+    currentAmountOfCommands: getCurrentAmountOfCommands(topologyBlockId),
   });
 
   useEffect(() => {
@@ -64,15 +69,19 @@ export default function ButtonCreateCommands({
       }}
       disabled={isPending}
       style={{
-        right: halfSizeOfContainer
-          ? `calc(50% - ${halfSizeOfContainer}px)`
-          : "2rem",
+        right:
+          halfSizeOfContainer && plotfieldExpanded
+            ? `calc(50% - ${halfSizeOfContainer}px)`
+            : `-4rem`,
+        transform: !plotfieldExpanded ? `translateX(-50%)` : `translateX(0%)`,
       }}
       className={`${allCommandsToCreate.length ? "" : "hidden"} ${
         createMultipleCommands.status === "pending"
           ? "flex gap-[.5rem] items-center bg-blue-300 w-[12rem]"
           : "hover:bg-green-400 bg-green-300"
-      } fixed px-[1rem] py-[.5rem] rounded-md shadow-md text-white transition-all bottom-[2rem] text-[1.5rem]`}
+      } ${
+        plotfieldExpanded ? " fixed  bottom-[2rem]" : "absolute  bottom-[0rem]"
+      } px-[1rem] py-[.5rem] rounded-md shadow-md text-white transition-all text-[1.5rem]`}
     >
       {createMultipleCommands.status === "pending" ? (
         <>

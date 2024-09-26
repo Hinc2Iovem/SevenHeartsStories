@@ -84,30 +84,32 @@ export default function CommandSayCharacterFieldItem({
 
   return (
     <div className="flex flex-wrap gap-[1rem] w-full bg-primary-light-blue rounded-md p-[.5rem] sm:flex-row flex-col relative">
-      <FormCharacter
-        nameValue={nameValue}
-        setNameValue={setNameValue}
-        setEmotionValue={setEmotionValue}
-        plotFieldCommandId={plotFieldCommandId}
-        plotFieldCommandSayId={plotFieldCommandSayId}
-        setShowCreateCharacterModal={setShowCreateCharacterModal}
-        showCreateCharacterModal={showCreateCharacterModal}
-      />
-      <FormEmotion
-        setEmotionValue={setEmotionValue}
-        emotionValue={emotionValue}
-        emotions={currentCharacter?.emotions || []}
-        commandSayType={commandSayType}
-        characterId={characterId}
-        plotFieldCommandId={plotFieldCommandId}
-        plotFieldCommandSayId={plotFieldCommandSayId}
-        setShowCreateEmotionModal={setShowCreateEmotionModal}
-        showCreateEmotionModal={showCreateEmotionModal}
-      />
-      <form className="sm:w-[57%] flex-grow w-full">
+      <div className="flex flex-col gap-[1rem] sm:w-1/3 min-w-[20rem] w-full z-[2]">
+        <FormCharacter
+          nameValue={nameValue}
+          setNameValue={setNameValue}
+          setEmotionValue={setEmotionValue}
+          plotFieldCommandId={plotFieldCommandId}
+          plotFieldCommandSayId={plotFieldCommandSayId}
+          setShowCreateCharacterModal={setShowCreateCharacterModal}
+          showCreateCharacterModal={showCreateCharacterModal}
+        />
+        <FormEmotion
+          setEmotionValue={setEmotionValue}
+          emotionValue={emotionValue}
+          emotions={currentCharacter?.emotions || []}
+          commandSayType={commandSayType}
+          characterId={characterId}
+          plotFieldCommandId={plotFieldCommandId}
+          plotFieldCommandSayId={plotFieldCommandSayId}
+          setShowCreateEmotionModal={setShowCreateEmotionModal}
+          showCreateEmotionModal={showCreateEmotionModal}
+        />
+      </div>
+      <form className="sm:w-[57%] flex-grow w-full sm:h-full">
         <textarea
           value={textValue}
-          className=" w-full outline-gray-300 text-gray-600 text-[1.6rem] px-[1rem] py-[.5rem] rounded-md shadow-md sm:max-h-[20rem] max-h-[25rem] containerScroll"
+          className="h-full w-full outline-gray-300 text-gray-600 text-[1.6rem] px-[1rem] py-[.5rem] rounded-md shadow-md sm:max-h-[20rem] max-h-[25rem] containerScroll"
           placeholder="Such a lovely day"
           onChange={(e) => setTextValue(e.target.value)}
         />

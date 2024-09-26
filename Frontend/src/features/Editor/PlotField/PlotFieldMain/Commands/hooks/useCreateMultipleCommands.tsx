@@ -10,6 +10,7 @@ type createMultipleCommandsTypes = {
   storyId?: string;
   episodeId?: string;
   waitValue?: number;
+  currentAmountOfCommands: number;
 };
 
 export default function useCreateMultipleCommands({
@@ -21,6 +22,7 @@ export default function useCreateMultipleCommands({
   storyId,
   waitValue,
   episodeId,
+  currentAmountOfCommands,
 }: createMultipleCommandsTypes) {
   const queryClient = useQueryClient();
   return useMutation({
@@ -35,6 +37,7 @@ export default function useCreateMultipleCommands({
           storyId,
           waitValue,
           episodeId,
+          currentAmountOfCommands,
         }
       ),
     onSettled: () => {

@@ -31,23 +31,23 @@ import useCreateBlankCommand from "../PlotFieldMain/Commands/hooks/useCreateBlan
 import useUpdateCommandName from "../PlotFieldMain/Commands/hooks/useUpdateCommandName";
 import useCreateWait from "../PlotFieldMain/Commands/hooks/Wait/useCreateWait";
 import useCreateWardrobe from "../PlotFieldMain/Commands/hooks/Wardrobe/useCreateWardrobe";
+import usePlotfieldCommands from "../PlotFieldContext";
 
 type CreatingCommandViaButtonClickTypes = {
   pc: string;
   topologyBlockId: string;
-  currentAmountOfCommands: number;
-  setCurrentAmountOfCommands: React.Dispatch<React.SetStateAction<number>>;
   setShowAllCommands: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 export default function CreatingCommandViaButtonClick({
   pc,
   topologyBlockId,
-  currentAmountOfCommands,
   setShowAllCommands,
-  setCurrentAmountOfCommands,
 }: CreatingCommandViaButtonClickTypes) {
   const { storyId } = useParams();
+  const { getCurrentAmountOfCommands, updateCommandInfo } =
+    usePlotfieldCommands();
+
   const { data: translatedCharacters } = useGetTranslationCharacters({
     language: "russian",
     storyId: storyId || "",
@@ -262,10 +262,10 @@ export default function CreatingCommandViaButtonClick({
         const _id = generateMongoObjectId();
         newPlotFieldCommand.mutate({
           _id,
-          commandOrder: currentAmountOfCommands,
+          commandOrder: getCurrentAmountOfCommands(topologyBlockId),
           topologyBlockId,
         });
-        setCurrentAmountOfCommands((prev) => prev + 1);
+        updateCommandInfo(topologyBlockId, "add");
       }}
       className="text-[1.6rem] outline-black pr-[1rem] focus-within:px-[1rem] capitalize text-gray-700 hover:text-black transition-all border-b-[.1rem] border-gray-700 hover:border-black"
     >

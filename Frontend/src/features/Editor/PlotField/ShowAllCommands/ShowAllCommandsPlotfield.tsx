@@ -1,34 +1,36 @@
 import { useEffect, useRef, useState } from "react";
+import { PossibleCommandsCreatedByCombinationOfKeysTypes } from "../../../../const/COMMANDS_CREATED_BY_KEY_COMBINATION";
 import { AllPossiblePlotFieldCommandsWithSayVariations } from "../../../../const/PLOTFIELD_COMMANDS";
 import useEscapeOfModal from "../../../../hooks/UI/useEscapeOfModal";
-import CreatingCommandViaButtonClick from "./CreatingCommandViaButtonClick";
-import CreatingMultipleCommands from "./CreatingMultipleCommands";
-import WaitDefaultSettings from "./Default/Wait/WaitDefaultSettings";
-import ChoiceDefaultSettings from "./Default/Choice/ChoiceDefaultSettings";
 import {
   ChoiceOptionVariationsTypes,
   ChoiceVariationsTypes,
 } from "../../../../types/StoryEditor/PlotField/Choice/ChoiceTypes";
 import ButtonCreateCommands from "./ButtonCreateCommands";
+import CreatingCommandViaButtonClick from "./CreatingCommandViaButtonClick";
+import CreatingMultipleCommands from "./CreatingMultipleCommands";
+import ChoiceDefaultSettings from "./Default/Choice/ChoiceDefaultSettings";
+import WaitDefaultSettings from "./Default/Wait/WaitDefaultSettings";
 
 type ShowAllCommandsPlotfieldTypes = {
   showAllCommands: boolean;
-  amountOfCommands: number;
   topologyBlockId: string;
+  plotfieldExpanded: boolean;
+  command: PossibleCommandsCreatedByCombinationOfKeysTypes;
   setShowAllCommands: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 export default function ShowAllCommandsPlotfield({
   setShowAllCommands,
   showAllCommands,
-  amountOfCommands,
   topologyBlockId,
+  plotfieldExpanded,
+  command,
 }: ShowAllCommandsPlotfieldTypes) {
   const containerRef = useRef<HTMLDivElement>(null);
 
   const [halfSizeOfContainer, setHalfSizeOfContainer] = useState(0);
-  const [currentAmountOfCommands, setCurrentAmountOfCommands] =
-    useState(amountOfCommands);
+
   const [allCommandsToCreate, setAllCommandsToCreate] = useState<string[]>([]);
   const [showDefaultSettings, setShowDefaultSettings] = useState({
     wait: false,
@@ -46,7 +48,7 @@ export default function ShowAllCommandsPlotfield({
   useEffect(() => {
     const updateHalfSize = () => {
       if (containerRef.current) {
-        setHalfSizeOfContainer(containerRef.current.clientWidth / 2);
+        setHalfSizeOfContainer(containerRef.current.offsetWidth / 2);
       }
     };
 
@@ -57,7 +59,7 @@ export default function ShowAllCommandsPlotfield({
     return () => {
       window.removeEventListener("resize", updateHalfSize);
     };
-  }, []);
+  }, [command, showAllCommands]);
 
   useEscapeOfModal({
     setValue: setShowAllCommands,
@@ -71,7 +73,7 @@ export default function ShowAllCommandsPlotfield({
         showAllCommands ? "" : "hidden"
       } h-full w-full transition-all p-[1rem] overflow-y-auto | containerScroll`}
     >
-      <div className="flex flex-col gap-[1rem]">
+      <div className="flex flex-col gap-[1rem] relative">
         {AllPossiblePlotFieldCommandsWithSayVariations.map((pc) => (
           <div
             key={pc}
@@ -82,8 +84,6 @@ export default function ShowAllCommandsPlotfield({
               <CreatingCommandViaButtonClick
                 pc={pc}
                 topologyBlockId={topologyBlockId}
-                currentAmountOfCommands={currentAmountOfCommands}
-                setCurrentAmountOfCommands={setCurrentAmountOfCommands}
                 setShowAllCommands={setShowAllCommands}
               />
               <CreatingMultipleCommands
@@ -110,17 +110,18 @@ export default function ShowAllCommandsPlotfield({
             {/* Default */}
           </div>
         ))}
+        <ButtonCreateCommands
+          setShowAllCommands={setShowAllCommands}
+          choiceType={choiceType}
+          plotfieldExpanded={plotfieldExpanded}
+          halfSizeOfContainer={halfSizeOfContainer}
+          topologyBlockId={topologyBlockId}
+          optionVariations={optionVariations}
+          allCommandsToCreate={allCommandsToCreate}
+          setAllCommandsToCreate={setAllCommandsToCreate}
+          time={time}
+        />
       </div>
-      <ButtonCreateCommands
-        setShowAllCommands={setShowAllCommands}
-        choiceType={choiceType}
-        halfSizeOfContainer={halfSizeOfContainer}
-        topologyBlockId={topologyBlockId}
-        optionVariations={optionVariations}
-        allCommandsToCreate={allCommandsToCreate}
-        setAllCommandsToCreate={setAllCommandsToCreate}
-        time={time}
-      />
     </div>
   );
 }

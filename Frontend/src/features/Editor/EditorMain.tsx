@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import { PossibleCommandsCreatedByCombinationOfKeysTypes } from "../../const/COMMANDS_CREATED_BY_KEY_COMBINATION";
 import useCheckKeysCombinationExpandFlowchart from "../../hooks/helpers/useCheckKeysCombinationExpandFlowchart";
@@ -37,13 +37,13 @@ export default function EditorMain({ setShowHeader }: EditorMainTypes) {
       setExpansionDivDirection,
       command,
     });
-  const keyCombinationToExpandFlowChart =
-    useCheckKeysCombinationExpandFlowchart({
-      setCommand,
-      setHideFlowchartFromScriptwriter,
-      setExpansionDivDirection,
-      command,
-    });
+
+  useCheckKeysCombinationExpandFlowchart({
+    setCommand,
+    setHideFlowchartFromScriptwriter,
+    setExpansionDivDirection,
+    command,
+  });
 
   useEffect(() => {
     // makes only plotfield to show up(for roles below);
@@ -103,10 +103,39 @@ export default function EditorMain({ setShowHeader }: EditorMainTypes) {
     }
   }, [firstTopologyBlock, localTopologyBlockId]);
 
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [scaleDivPosition, setScaleDivPosition] = useState(0);
+
+  useEffect(() => {
+    const updateHalfSize = () => {
+      if (containerRef.current) {
+        if (command === "expandFlowchart") {
+          setScaleDivPosition(
+            window.innerWidth / 2 - containerRef.current.clientWidth / 2 + 10
+          );
+        } else {
+          setScaleDivPosition(window.innerWidth / 2 + 10);
+        }
+        console.log("containerRef.current: ", containerRef.current.offsetWidth);
+        console.log("window.innerWidth: ", window.innerWidth);
+        console.log("scaleDivPosition: ", scaleDivPosition);
+      }
+    };
+
+    updateHalfSize();
+
+    window.addEventListener("resize", updateHalfSize);
+
+    return () => {
+      window.removeEventListener("resize", updateHalfSize);
+    };
+  }, [command]);
+
   return (
     <>
       {typeof hideFlowchartFromScriptwriter === "boolean" && (
         <main
+          ref={containerRef}
           className={`flex w-full h-[calc(100vh-2.30rem)] justify-center relative`}
         >
           <PlotField
@@ -134,11 +163,10 @@ export default function EditorMain({ setShowHeader }: EditorMainTypes) {
               hideFlowchartFromScriptwriter
                 ? "hidden"
                 : ""
-            } ${
-              keyCombinationToExpandFlowChart === "expandFlowchart"
-                ? "left-[2rem]"
-                : "left-[calc(50%+1rem)]"
-            } fixed top-[2rem] active:scale-[0.98] text-[1.3rem] transition-all bg-white hover:bg-primary-light-blue hover:text-white text-gray-700 shadow-md px-[1rem] py-[.5rem] rounded-md z-[10]`}
+            } fixed top-[2rem] text-[1.3rem] transition-all bg-white hover:bg-primary-light-blue hover:text-white text-gray-700 shadow-md px-[1rem] py-[.5rem] rounded-md z-[10]`}
+            style={{
+              left: `${scaleDivPosition}px`,
+            }}
           >
             {(scale * 100).toFixed(0)}%
           </div>

@@ -133,6 +133,7 @@ type PlotFieldCommandCreateMultipleTypes = {
   amountOfOptions?: number;
   optionVariations?: string;
   episodeId?: string;
+  currentAmountOfCommands: number;
 };
 
 export const plotFieldCommandCreateMultipleService = async ({
@@ -144,8 +145,10 @@ export const plotFieldCommandCreateMultipleService = async ({
   choiceType,
   optionVariations,
   episodeId,
+  currentAmountOfCommands,
 }: PlotFieldCommandCreateMultipleTypes) => {
   validateMongoId({ value: topologyBlockId, valueName: "TopologyBlock" });
+
   if (!allCommands?.trim().length) {
     throw createHttpError(400, "You haven't chosen any of the commands");
   }
@@ -157,19 +160,21 @@ export const plotFieldCommandCreateMultipleService = async ({
     ","
   ) as MultipleCommandsType[];
 
+  let amountOfCommands = currentAmountOfCommands;
   for (const c of allCommandsArray) {
     const newPlotFieldCommand = await PlotFieldCommand.create({
       topologyBlockId,
-      commandOrder:
-        currentTopologyBlock?.topologyBlockInfo?.amountOfCommands || 1,
+      commandOrder: amountOfCommands,
     });
 
+    amountOfCommands++;
     if (
       currentTopologyBlock &&
       typeof currentTopologyBlock.topologyBlockInfo?.amountOfCommands ===
         "number"
     ) {
-      currentTopologyBlock.topologyBlockInfo.amountOfCommands += 1;
+      currentTopologyBlock.topologyBlockInfo.amountOfCommands =
+        amountOfCommands;
       await currentTopologyBlock.save();
     }
     if (c === "achievement") {
@@ -358,6 +363,7 @@ export const plotFieldCommandCreateMultipleService = async ({
         newPlotFieldCommand.command = "wait";
       } else {
         await Wait.create({ plotFieldCommandId: newPlotFieldCommand._id });
+        newPlotFieldCommand.command = "wait";
       }
     } else if (c === "wardrobe") {
       await CommandWardrobe.create({

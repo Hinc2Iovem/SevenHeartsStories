@@ -94,6 +94,8 @@ export default function PlotFieldMain({
           )}
         </Droppable>
       </DragDropContext>
+
+      <div className={`h-screen w-full bg-white`}></div>
     </main>
   );
 }

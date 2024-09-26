@@ -116,10 +116,7 @@ export default function FormCharacter({
 
   return (
     <>
-      <form
-        onSubmit={handleNameFormSubmit}
-        className="sm:w-[20%] flex-grow w-full relative"
-      >
+      <form onSubmit={handleNameFormSubmit} className="w-full relative">
         <div className="relative w-full">
           <input
             type="text"
