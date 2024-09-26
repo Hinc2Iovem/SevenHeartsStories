@@ -151,11 +151,15 @@ export const updateSayService = async ({
     throw createHttpError(400, "Say with such id wasn't found");
   }
 
+  console.log("characterEmotionId: ", characterEmotionId);
+
   if (characterEmotionId?.trim().length) {
     existingSay.characterEmotionId = new Types.ObjectId(characterEmotionId);
   }
   if (characterId?.trim().length) {
-    existingSay.characterEmotionId = null;
+    if (!existingSay.characterId?.equals(characterId)) {
+      existingSay.characterEmotionId = null;
+    }
     existingSay.characterId = new Types.ObjectId(characterId);
   }
 

@@ -43,7 +43,8 @@ export default function CommandSayCreateEmotionFieldModal({
   };
 
   useEffect(() => {
-    if (createEmotion.data) {
+    if (createEmotion.status === "success") {
+      console.log("happened?");
       const lastEmotion = createEmotion.data.emotions.length;
       setNewEmotionId(createEmotion.data.emotions[lastEmotion - 1]._id || "");
     }
