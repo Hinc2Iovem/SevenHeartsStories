@@ -5,12 +5,11 @@ import {
   DroppableProvided,
   DropResult,
 } from "@hello-pangea/dnd";
+import { useEffect } from "react";
+import usePlotfieldCommands from "../PlotFieldContext";
 import PlotfieldItem from "./Commands/PlotfieldItem";
 import useGetAllPlotFieldCommands from "./Commands/hooks/useGetAllPlotFieldCommands";
 import useUpdateCommandOrder from "./Commands/hooks/useUpdateCommandOrder";
-import { useEffect, useState } from "react";
-import usePlotfieldCommands from "../PlotFieldContext";
-import { PlotFieldTypes } from "../../../../types/StoryEditor/PlotField/PlotFieldTypes";
 
 type PlotFieldMainTypes = {
   topologyBlockId: string;
@@ -23,48 +22,39 @@ export default function PlotFieldMain({
   showAllCommands,
   renderedAsSubPlotfield = false,
 }: PlotFieldMainTypes) {
-  const { commands: optimisticCommands } = usePlotfieldCommands();
-
+  const { getCommandsByTopologyBlockId, setAllCommands } =
+    usePlotfieldCommands();
   const { data: plotfieldCommands } = useGetAllPlotFieldCommands({
     topologyBlockId,
   });
 
-  const [commands, setCommands] = useState(plotfieldCommands || []);
-
   useEffect(() => {
     if (plotfieldCommands) {
-      setCommands(plotfieldCommands);
+      setAllCommands(plotfieldCommands, topologyBlockId);
     }
   }, [plotfieldCommands]);
-
-  useEffect(() => {
-    if (
-      optimisticCommands &&
-      topologyBlockId === optimisticCommands[0]?.topologyBlockId
-    ) {
-      setCommands((prev) => {
-        return [
-          ...prev,
-          ...(optimisticCommands as unknown as PlotFieldTypes[]),
-        ];
-      });
-    }
-  }, [optimisticCommands, topologyBlockId]);
 
   const updateCommandOrder = useUpdateCommandOrder();
 
   const handleOnDragEnd = (result: DropResult) => {
     if (!result?.destination) return;
 
-    const orderedCommands = [...(commands ?? [])];
+    const orderedCommands = [
+      ...(getCommandsByTopologyBlockId(topologyBlockId) || []),
+    ];
     const [reorderedItem] = orderedCommands.splice(result.source.index, 1);
     orderedCommands.splice(result.destination.index, 0, reorderedItem);
     updateCommandOrder.mutate({
       newOrder: result.destination.index,
       plotFieldCommandId: result.draggableId,
     });
-    setCommands(orderedCommands);
+    setAllCommands(orderedCommands, topologyBlockId);
   };
+
+  console.log(
+    `getCommandsByTopologyBlockId(topologyBlockId:${topologyBlockId}): `,
+    getCommandsByTopologyBlockId(topologyBlockId)
+  );
 
   return (
     <main
@@ -82,7 +72,7 @@ export default function PlotFieldMain({
               ref={provided.innerRef}
               className="flex flex-col gap-[1rem] w-full"
             >
-              {commands?.map((p, i) => {
+              {getCommandsByTopologyBlockId(topologyBlockId)?.map((p, i) => {
                 return (
                   <Draggable key={p._id} draggableId={p._id} index={i}>
                     {(provided) => <PlotfieldItem provided={provided} {...p} />}

@@ -35,6 +35,7 @@ type PlotFieldBlankTypes = {
   plotFieldCommandId: string;
   topologyBlockId: string;
   commandIfId: string;
+  commandOrder: number;
 };
 
 const AllCommands = [
@@ -66,6 +67,7 @@ export default function PlotfieldBlank({
   plotFieldCommandId,
   topologyBlockId,
   commandIfId,
+  commandOrder,
 }: PlotFieldBlankTypes) {
   const { storyId } = useParams();
 
@@ -134,6 +136,7 @@ export default function PlotfieldBlank({
     value,
     topologyBlockId,
     commandIfId: commandIfId ?? "",
+    commandOrder,
   });
 
   const createSayCommand = useCreateSayCommand({

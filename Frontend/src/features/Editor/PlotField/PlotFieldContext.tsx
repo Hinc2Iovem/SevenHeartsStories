@@ -1,10 +1,13 @@
 import { create } from "zustand";
+import { AllPossiblePlotFieldComamndsTypes } from "../../../types/StoryEditor/PlotField/PlotFieldTypes";
 
 type PlotfieldCommand = {
   _id: string;
-  command: string;
+  command: AllPossiblePlotFieldComamndsTypes;
   commandOrder: number;
   topologyBlockId: string;
+  commandIfId?: string;
+  isElse?: boolean;
 };
 
 type CommandsInfo = {
@@ -15,11 +18,23 @@ type CommandsInfo = {
 type UpdateCommandInfoSignType = "add" | "minus";
 
 type PlotfieldCommandStore = {
-  commands: PlotfieldCommand[];
+  commands: {
+    topologyBlockId: string;
+    commands: PlotfieldCommand[];
+  }[];
   commandsInfo: CommandsInfo[];
   getCurrentAmountOfCommands: (topologyBlockId: string) => number;
-  addCommand: (newCommand: PlotfieldCommand) => void;
-  setCommand: (id: string, newCommand: string) => void;
+  getCommandsByTopologyBlockId: (topologyBlockId: string) => PlotfieldCommand[];
+  addCommand: (newCommand: PlotfieldCommand, topologyBlockId: string) => void;
+  updateCommandName: (
+    id: string,
+    newCommand: AllPossiblePlotFieldComamndsTypes
+  ) => void;
+  updateCommandOrder: (id: string, commandOrder: number) => void;
+  setAllCommands: (
+    commands: PlotfieldCommand[],
+    topologyBlockId: string
+  ) => void;
   setCurrentAmountOfCommands: (
     topologyBlockId: string,
     amountOfCommands: number
@@ -28,23 +43,87 @@ type PlotfieldCommandStore = {
     topologyBlockId: string,
     addOrMinus: UpdateCommandInfoSignType
   ) => void;
-  setId: (oldId: string, newId: string) => void;
   clearCommand: () => void;
 };
 
 const usePlotfieldCommands = create<PlotfieldCommandStore>((set, get) => ({
-  commands: [],
+  commands: [
+    {
+      topologyBlockId: "",
+      commands: [],
+    },
+  ],
   commandsInfo: [],
-  addCommand: (newCommand: PlotfieldCommand) =>
-    set(() => ({
-      commands: [newCommand],
-    })),
-  setCommand: (id, newCommand) =>
+  getCommandsByTopologyBlockId: (topologyBlockId: string) => {
+    const allCommands =
+      get().commands.find((c) => c.topologyBlockId === topologyBlockId)
+        ?.commands || [];
+    return allCommands;
+  },
+  addCommand: (newCommand: PlotfieldCommand, topologyBlockId: string) =>
+    set((state) => {
+      const existingBlock = state.commands.find(
+        (block) => block.topologyBlockId === topologyBlockId
+      );
+
+      if (existingBlock) {
+        return {
+          commands: state.commands.map((block) =>
+            block.topologyBlockId === topologyBlockId
+              ? {
+                  ...block,
+                  commands: [...block.commands, newCommand],
+                }
+              : block
+          ),
+        };
+      } else {
+        return {
+          commands: [
+            ...state.commands,
+            { topologyBlockId, commands: [newCommand] },
+          ],
+        };
+      }
+    }),
+  updateCommandName: (id, newCommand) =>
     set((state) => ({
-      commands: state.commands.map((command) =>
-        command._id === id ? { ...command, command: newCommand } : command
-      ),
+      commands: state.commands.map((block) => ({
+        ...block,
+        commands: block.commands.map((command) =>
+          command._id === id ? { ...command, command: newCommand } : command
+        ),
+      })),
     })),
+  updateCommandOrder: (id, commandOrder) =>
+    set((state) => ({
+      commands: state.commands.map((block) => ({
+        ...block,
+        commands: block.commands.map((command) =>
+          command._id === id ? { ...command, commandOrder } : command
+        ),
+      })),
+    })),
+  setAllCommands: (commands, topologyBlockId) =>
+    set((state) => {
+      const existingBlock = state.commands.find(
+        (block) => block.topologyBlockId === topologyBlockId
+      );
+
+      if (existingBlock) {
+        return {
+          commands: state.commands.map((block) =>
+            block.topologyBlockId === topologyBlockId
+              ? { ...block, commands }
+              : block
+          ),
+        };
+      } else {
+        return {
+          commands: [...state.commands, { topologyBlockId, commands }],
+        };
+      }
+    }),
   setCurrentAmountOfCommands: (topologyBlockId, amountOfCommands) =>
     set((state) => {
       const existingInfo = state.commandsInfo.find(
@@ -90,12 +169,7 @@ const usePlotfieldCommands = create<PlotfieldCommandStore>((set, get) => ({
           : c
       ),
     })),
-  setId: (oldId, newId) =>
-    set((state) => ({
-      commands: state.commands.map((command) =>
-        command._id === oldId ? { ...command, _id: newId } : command
-      ),
-    })),
+
   clearCommand: () =>
     set(() => ({
       commands: [],

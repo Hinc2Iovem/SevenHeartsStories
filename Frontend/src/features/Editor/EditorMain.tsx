@@ -116,9 +116,6 @@ export default function EditorMain({ setShowHeader }: EditorMainTypes) {
         } else {
           setScaleDivPosition(window.innerWidth / 2 + 10);
         }
-        console.log("containerRef.current: ", containerRef.current.offsetWidth);
-        console.log("window.innerWidth: ", window.innerWidth);
-        console.log("scaleDivPosition: ", scaleDivPosition);
       }
     };
 

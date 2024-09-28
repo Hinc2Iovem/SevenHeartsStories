@@ -1,11 +1,14 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { axiosCustomized } from "../../../../../../api/axios";
+import usePlotfieldCommands from "../../../PlotFieldContext";
+import { AllPossiblePlotFieldComamndsTypes } from "../../../../../../types/StoryEditor/PlotField/PlotFieldTypes";
 
 type UpdateCommandNameTypes = {
   plotFieldCommandId: string;
   value?: string;
   topologyBlockId: string;
   commandIfId?: string;
+  commandOrder: number;
 };
 
 type UpdateCommandNameOnMutationTypes = {
@@ -18,7 +21,9 @@ export default function useUpdateCommandName({
   value,
   topologyBlockId,
   commandIfId,
+  commandOrder,
 }: UpdateCommandNameTypes) {
+  const { updateCommandName } = usePlotfieldCommands();
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async ({
@@ -33,12 +38,19 @@ export default function useUpdateCommandName({
             : value?.toLowerCase() || valueOnMutation?.toLowerCase(),
         }
       ),
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ["plotfield", "topologyBlock", topologyBlockId],
-        exact: true,
-        type: "active",
-      });
+    onMutate: () => {
+      const checkForSay =
+        value === "author" ||
+        value === "character" ||
+        value === "notify" ||
+        value === "hint"
+          ? "say"
+          : value?.toLowerCase();
+
+      updateCommandName(
+        plotFieldCommandId,
+        checkForSay as AllPossiblePlotFieldComamndsTypes
+      );
       if (commandIfId?.trim().length) {
         queryClient.invalidateQueries({
           queryKey: ["plotfield", "commandIf", commandIfId, "insideIf"],

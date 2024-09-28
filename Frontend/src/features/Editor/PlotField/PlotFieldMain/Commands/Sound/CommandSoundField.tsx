@@ -131,7 +131,7 @@ export default function CommandSoundField({
           <ul className={`flex flex-col gap-[.5rem]`}>
             {allSoundFilteredMemoized.length ? (
               allSoundFilteredMemoized.map((mm, i) => (
-                <li key={mm + i}>
+                <li key={mm + plotFieldCommandId + i}>
                   <button
                     onClick={(e) => {
                       setSoundName(mm);

@@ -90,6 +90,7 @@ export default function CreatingCommandViaButtonClick({
     plotFieldCommandId: newPlotFieldCommand.data?._id || "",
     value,
     topologyBlockId,
+    commandOrder: getCurrentAmountOfCommands(topologyBlockId),
   });
 
   const createSayCommand = useCreateSayCommandBlank({

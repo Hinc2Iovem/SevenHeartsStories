@@ -17,5 +17,6 @@ export default function useGetCommandSound({
           `/plotFieldCommands/${plotFieldCommandId}/sounds`
         )
         .then((r) => r.data),
+    enabled: !!plotFieldCommandId,
   });
 }

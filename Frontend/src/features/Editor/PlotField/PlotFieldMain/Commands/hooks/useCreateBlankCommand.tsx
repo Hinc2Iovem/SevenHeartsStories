@@ -1,6 +1,9 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { axiosCustomized } from "../../../../../../api/axios";
-import { PlotFieldTypes } from "../../../../../../types/StoryEditor/PlotField/PlotFieldTypes";
+import {
+  AllPossiblePlotFieldComamndsTypes,
+  PlotFieldTypes,
+} from "../../../../../../types/StoryEditor/PlotField/PlotFieldTypes";
 import usePlotfieldCommands from "../../../PlotFieldContext";
 
 type NewCommandTypes = {
@@ -39,12 +42,15 @@ export default function useCreateBlankCommand({
         topologyBlockId,
       ]);
 
-      addCommand({
-        _id: newCommand._id,
-        command: "",
-        commandOrder: newCommand.commandOrder,
-        topologyBlockId,
-      });
+      addCommand(
+        {
+          _id: newCommand._id,
+          command: "" as AllPossiblePlotFieldComamndsTypes,
+          commandOrder: newCommand.commandOrder,
+          topologyBlockId,
+        },
+        topologyBlockId
+      );
 
       return { prevCommands };
     },

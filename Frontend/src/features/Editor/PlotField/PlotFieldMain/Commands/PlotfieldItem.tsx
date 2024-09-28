@@ -48,6 +48,7 @@ export default function PlotfieldItem({
           plotFieldCommandId={_id}
           commandIfId={commandIfId ?? ""}
           topologyBlockId={topologyBlockId}
+          commandOrder={commandOrder}
         />
       ) : command === "say" ? (
         <CommandSayField

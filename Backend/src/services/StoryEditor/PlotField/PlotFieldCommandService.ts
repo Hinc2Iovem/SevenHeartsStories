@@ -548,94 +548,74 @@ export const plotFieldCommandUpdateCommandOrderService = async ({
   }
 
   const topologyBlockId = existingPlotFieldCommand.topologyBlockId;
-
   const oldOrder = existingPlotFieldCommand.commandOrder as number;
-
   const difference = oldOrder - newOrder;
 
-  if (existingPlotFieldCommand?.commandIfId) {
+  if (existingPlotFieldCommand.commandIfId) {
     throw createHttpError(
       400,
       "Transporting from if command inside main plot is not supported, and same for vice versa"
     );
   }
 
-  if (difference === 1 || difference === -1) {
-    const prevPlotfieldCommand = await PlotFieldCommand.findOne({
+  // If the difference is 1, only swap with the target order
+  if (Math.abs(difference) === 1) {
+    const prevPlotFieldCommand = await PlotFieldCommand.findOne({
       topologyBlockId,
       commandOrder: newOrder,
     }).exec();
-    if (prevPlotfieldCommand?.commandIfId) {
+
+    if (prevPlotFieldCommand?.commandIfId) {
       throw createHttpError(
         400,
         "Transporting from if command inside main plot is not supported, and same for vice versa"
       );
     }
-    if (prevPlotfieldCommand) {
-      prevPlotfieldCommand.commandOrder = oldOrder;
-      await prevPlotfieldCommand.save();
-    }
-    existingPlotFieldCommand.commandOrder = newOrder;
-  } else {
-    const allPlotFieldCommandIds = [];
-    if (oldOrder > newOrder) {
-      for (let i = newOrder; i < oldOrder; i++) {
-        const plotFieldCommand = await PlotFieldCommand.findOne({
-          topologyBlockId,
-          commandOrder: i,
-        }).exec();
-        if (plotFieldCommand?.commandIfId) {
-          throw createHttpError(
-            400,
-            "Transporting from if command inside main plot is not supported, and same for vice versa"
-          );
-        }
-        if (plotFieldCommand) {
-          allPlotFieldCommandIds.push(plotFieldCommand._id);
-        }
-      }
-      for (const plotFieldCommandId of allPlotFieldCommandIds) {
-        const plotFieldCommand = await PlotFieldCommand.findById(
-          plotFieldCommandId
-        ).exec();
-        if (plotFieldCommand) {
-          plotFieldCommand.commandOrder =
-            (plotFieldCommand.commandOrder as number) + 1;
-          await plotFieldCommand.save();
-        }
-      }
+
+    if (prevPlotFieldCommand) {
+      // Bulk update both documents
+      await PlotFieldCommand.bulkWrite([
+        {
+          updateOne: {
+            filter: { _id: prevPlotFieldCommand._id },
+            update: { commandOrder: oldOrder },
+          },
+        },
+        {
+          updateOne: {
+            filter: { _id: plotFieldCommandId },
+            update: { commandOrder: newOrder },
+          },
+        },
+      ]);
     } else {
-      for (let i = oldOrder + 1; i <= newOrder; i++) {
-        const plotFieldCommand = await PlotFieldCommand.findOne({
-          topologyBlockId,
-          commandOrder: i,
-        }).exec();
-        if (plotFieldCommand?.commandIfId) {
-          throw createHttpError(
-            400,
-            "Transporting from if command inside main plot is not supported, and same for vice versa"
-          );
-        }
-        if (plotFieldCommand) {
-          allPlotFieldCommandIds.push(plotFieldCommand._id);
-        }
-      }
-
-      for (const plotFieldCommandId of allPlotFieldCommandIds) {
-        const plotFieldCommand = await PlotFieldCommand.findById(
-          plotFieldCommandId
-        ).exec();
-        if (plotFieldCommand) {
-          plotFieldCommand.commandOrder =
-            (plotFieldCommand.commandOrder as number) - 1;
-          await plotFieldCommand.save();
-        }
-      }
+      throw createHttpError(400, "Such Plotfield wasn't found");
     }
-
-    existingPlotFieldCommand.commandOrder = newOrder;
   }
 
+  // Handle larger movements, either up or down
+  let filter, update;
+  if (oldOrder > newOrder) {
+    // Moving the command upwards (shift others down)
+    filter = {
+      topologyBlockId,
+      commandOrder: { $gte: newOrder, $lt: oldOrder },
+    };
+    update = { $inc: { commandOrder: 1 } };
+  } else {
+    // Moving the command downwards (shift others up)
+    filter = {
+      topologyBlockId,
+      commandOrder: { $gt: oldOrder, $lte: newOrder },
+    };
+    update = { $inc: { commandOrder: -1 } };
+  }
+
+  // Bulk update the necessary range of commands
+  await PlotFieldCommand.updateMany(filter, update).exec();
+
+  // Finally update the current command
+  existingPlotFieldCommand.commandOrder = newOrder;
   return await existingPlotFieldCommand.save();
 };
 

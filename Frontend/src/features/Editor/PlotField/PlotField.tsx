@@ -29,7 +29,7 @@ export default function PlotField({
   setHideFlowchartFromScriptwriter,
   setExpansionDivDirection,
 }: PlotFieldProps) {
-  const { setCurrentAmountOfCommands, commandsInfo } = usePlotfieldCommands();
+  const { setCurrentAmountOfCommands } = usePlotfieldCommands();
 
   const { data: currentTopologyBlock } = useGetTopologyBlockById({
     topologyBlockId,
@@ -43,8 +43,6 @@ export default function PlotField({
       );
     }
   }, [currentTopologyBlock]);
-
-  console.log(commandsInfo);
 
   const [showAllCommands, setShowAllCommands] = useState<boolean>(false);
 
