@@ -46,7 +46,7 @@ export default function CommandSayCharacterFieldItem({
   });
 
   useEffect(() => {
-    if (translatedSayText) {
+    if (translatedSayText && !textValue.trim().length) {
       setTextValue((translatedSayText.translations || [])[0]?.text || "");
       setInitialValue((translatedSayText.translations || [])[0]?.text || "");
     }

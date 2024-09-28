@@ -1,11 +1,12 @@
 import { DraggableProvided } from "@hello-pangea/dnd";
-import { PlotFieldTypes } from "../../../../../types/StoryEditor/PlotField/PlotFieldTypes";
+import { PlotfieldOptimisticCommandTypes } from "../../PlotFieldContext";
 import CommandAchievementField from "./Achievement/CommandAchievementField";
 import CommandAmbientField from "./Ambient/CommandAmbientField";
 import CommandBackgroundField from "./Background/CommandBackgroundField";
 import PlotfieldBlank from "./Blank/PlotfieldBlank";
 import CommandCallField from "./Call/CommandCallField";
 import CommandChoiceField from "./Choice/CommandChoiceField";
+import CommandCommentField from "./Comment/CommandCommentField";
 import CommandConditionField from "./Condition/CommandConditionField";
 import CommandCutSceneField from "./CutScene/CommandCutSceneField";
 import CommandEffectField from "./Effect/CommandEffectField";
@@ -20,11 +21,10 @@ import CommandSoundField from "./Sound/CommandSoundField";
 import CommandSuitField from "./Suit/CommandSuitField";
 import CommandWaitField from "./Wait/CommandWaitField";
 import CommandWardrobeField from "./Wardrobe/CommandWardrobeField";
-import CommandCommentField from "./Comment/CommandCommentField";
 
 type PlotFieldItemTypes = {
   provided: DraggableProvided;
-} & PlotFieldTypes;
+} & PlotfieldOptimisticCommandTypes;
 
 export default function PlotfieldItem({
   _id,
@@ -33,6 +33,9 @@ export default function PlotfieldItem({
   commandIfId,
   provided,
   commandOrder,
+  characterId,
+  characterName,
+  sayType,
 }: PlotFieldItemTypes) {
   return (
     <li
@@ -54,6 +57,9 @@ export default function PlotfieldItem({
         <CommandSayField
           topologyBlockId={topologyBlockId}
           plotFieldCommandId={_id}
+          characterId={characterId}
+          characterName={characterName}
+          sayType={sayType}
         />
       ) : command === "achievement" ? (
         <CommandAchievementField

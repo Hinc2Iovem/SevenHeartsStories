@@ -36,7 +36,12 @@ export default function CommandGetItemField({
   });
 
   useEffect(() => {
-    if (getItem) {
+    if (
+      getItem &&
+      (!itemDescription.trim().length ||
+        !itemName.trim().length ||
+        !buttonText.trim().length)
+    ) {
       (getItem.translations || [])?.map((tgi) => {
         if (tgi.textFieldName === "itemDescription") {
           setItemDescription(tgi.text);

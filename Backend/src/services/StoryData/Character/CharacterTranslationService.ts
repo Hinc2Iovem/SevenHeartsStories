@@ -506,6 +506,7 @@ type CharacterCreateBlankTypes = {
   storyId: string;
   name: string | undefined;
   type: string | undefined;
+  characterId: string | undefined;
   currentLanguage: string | undefined;
 };
 
@@ -514,8 +515,11 @@ export const characterCreateBlankService = async ({
   name,
   storyId,
   type,
+  characterId,
 }: CharacterCreateBlankTypes) => {
   validateMongoId({ value: storyId, valueName: "Story" });
+  validateMongoId({ value: characterId, valueName: "Character" });
+
   if (!name?.trim().length) {
     throw createHttpError(400, "Name is required");
   }
@@ -539,6 +543,7 @@ export const characterCreateBlankService = async ({
     name,
     storyId,
     type: type.toLowerCase(),
+    _id: characterId,
   });
   const translations = [
     {
@@ -547,7 +552,7 @@ export const characterCreateBlankService = async ({
     },
   ];
   await TranslationCharacter.create({
-    characterId: character._id,
+    characterId,
     language: currentLanguage,
     characterType: "minorcharacter",
     translations: translations,

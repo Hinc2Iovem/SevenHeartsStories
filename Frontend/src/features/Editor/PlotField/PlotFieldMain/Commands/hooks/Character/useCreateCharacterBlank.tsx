@@ -11,6 +11,7 @@ type CreateCharacterTypes = {
   name: string;
   characterType: CharacterTypes;
   language?: CurrentlyAvailableLanguagesTypes;
+  onSuccessCallback?: (characterId: string) => void;
 };
 
 export default function useCreateCharacterBlank({
@@ -18,25 +19,30 @@ export default function useCreateCharacterBlank({
   name,
   characterType,
   language = "russian",
+  onSuccessCallback,
 }: CreateCharacterTypes) {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationKey: ["story", storyId, "new", "character", name],
-    mutationFn: async () =>
+    mutationFn: async ({ characterId }: { characterId: string }) =>
       await axiosCustomized
         .post<CharacterGetTypes>(`/characters/stories/${storyId}/blank`, {
           name,
           currentLanguage: language,
           type: characterType.toLowerCase(),
+          characterId,
         })
         .then((r) => r.data),
-    onSuccess: () => {
+    onSuccess: (data, variables) => {
       queryClient.invalidateQueries({
         queryKey: ["translation", language, "character", "story", storyId],
         exact: true,
         type: "active",
       });
+      if (onSuccessCallback) {
+        onSuccessCallback(variables.characterId);
+      }
       // queryClient.invalidateQueries({
       //   queryKey: ["plotfieldComamnd", plotFieldCommandId, "say"],
       //   exact: true,

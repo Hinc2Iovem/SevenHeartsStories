@@ -1,11 +1,15 @@
 import { create } from "zustand";
 import { AllPossiblePlotFieldComamndsTypes } from "../../../types/StoryEditor/PlotField/PlotFieldTypes";
+import { CommandSayVariationTypes } from "../../../types/StoryEditor/PlotField/Say/SayTypes";
 
-type PlotfieldCommand = {
+export type PlotfieldOptimisticCommandTypes = {
   _id: string;
   command: AllPossiblePlotFieldComamndsTypes;
   commandOrder: number;
   topologyBlockId: string;
+  sayType?: CommandSayVariationTypes;
+  characterId?: string;
+  characterName?: string;
   commandIfId?: string;
   isElse?: boolean;
 };
@@ -17,22 +21,38 @@ type CommandsInfo = {
 
 type UpdateCommandInfoSignType = "add" | "minus";
 
+type UpdateCommandNameTypes = {
+  id: string;
+  newCommand: AllPossiblePlotFieldComamndsTypes;
+  sayType?: CommandSayVariationTypes;
+  characterId?: string;
+  characterName?: string;
+};
+
 type PlotfieldCommandStore = {
   commands: {
     topologyBlockId: string;
-    commands: PlotfieldCommand[];
+    commands: PlotfieldOptimisticCommandTypes[];
   }[];
   commandsInfo: CommandsInfo[];
   getCurrentAmountOfCommands: (topologyBlockId: string) => number;
-  getCommandsByTopologyBlockId: (topologyBlockId: string) => PlotfieldCommand[];
-  addCommand: (newCommand: PlotfieldCommand, topologyBlockId: string) => void;
-  updateCommandName: (
-    id: string,
-    newCommand: AllPossiblePlotFieldComamndsTypes
+  getCommandsByTopologyBlockId: (
+    topologyBlockId: string
+  ) => PlotfieldOptimisticCommandTypes[];
+  addCommand: (
+    newCommand: PlotfieldOptimisticCommandTypes,
+    topologyBlockId: string
   ) => void;
+  updateCommandName: ({
+    id,
+    newCommand,
+    sayType,
+    characterId,
+    characterName,
+  }: UpdateCommandNameTypes) => void;
   updateCommandOrder: (id: string, commandOrder: number) => void;
   setAllCommands: (
-    commands: PlotfieldCommand[],
+    commands: PlotfieldOptimisticCommandTypes[],
     topologyBlockId: string
   ) => void;
   setCurrentAmountOfCommands: (
@@ -60,7 +80,10 @@ const usePlotfieldCommands = create<PlotfieldCommandStore>((set, get) => ({
         ?.commands || [];
     return allCommands;
   },
-  addCommand: (newCommand: PlotfieldCommand, topologyBlockId: string) =>
+  addCommand: (
+    newCommand: PlotfieldOptimisticCommandTypes,
+    topologyBlockId: string
+  ) =>
     set((state) => {
       const existingBlock = state.commands.find(
         (block) => block.topologyBlockId === topologyBlockId
@@ -86,12 +109,32 @@ const usePlotfieldCommands = create<PlotfieldCommandStore>((set, get) => ({
         };
       }
     }),
-  updateCommandName: (id, newCommand) =>
+  updateCommandName: ({
+    id,
+    newCommand,
+    sayType,
+    characterId,
+    characterName,
+  }: {
+    id: string;
+    newCommand: AllPossiblePlotFieldComamndsTypes;
+    sayType?: CommandSayVariationTypes;
+    characterId?: string;
+    characterName?: string;
+  }) =>
     set((state) => ({
       commands: state.commands.map((block) => ({
         ...block,
         commands: block.commands.map((command) =>
-          command._id === id ? { ...command, command: newCommand } : command
+          command._id === id
+            ? {
+                ...command,
+                command: newCommand,
+                sayType,
+                characterId,
+                characterName,
+              }
+            : command
         ),
       })),
     })),

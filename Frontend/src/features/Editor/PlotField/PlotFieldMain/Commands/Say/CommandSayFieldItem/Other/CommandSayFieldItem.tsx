@@ -26,12 +26,19 @@ export default function CommandSayFieldItem({
     language: "russian",
   });
 
+  const [sayVariationType, setSayVariationType] = useState(nameValue);
   const [initialTextValue, setInitialTextValue] = useState("");
   const [textValue, setTextValue] = useState("");
   const debouncedValue = useDebounce({ value: textValue, delay: 500 });
 
   useEffect(() => {
-    if (commandSayText) {
+    if (nameValue) {
+      setSayVariationType(nameValue);
+    }
+  }, [nameValue]);
+
+  useEffect(() => {
+    if (commandSayText && !textValue.trim().length) {
       setTextValue((commandSayText.translations || [])[0]?.text || "");
       setInitialTextValue((commandSayText.translations || [])[0]?.text || "");
     }
@@ -73,7 +80,7 @@ export default function CommandSayFieldItem({
           }}
           className="text-[1.3rem] text-start outline-gray-300 w-full capitalize px-[1rem] py-[.5rem] rounded-md shadow-md bg-white cursor-default"
         >
-          {nameValue}
+          {sayVariationType}
         </button>
         <aside
           ref={updateNameModalRef}
@@ -87,6 +94,7 @@ export default function CommandSayFieldItem({
                 <li
                   key={pv}
                   onClick={() => {
+                    setSayVariationType(pv);
                     updateCommandSayNameValue.mutate(
                       pv as CommandSayVariationTypes
                     );

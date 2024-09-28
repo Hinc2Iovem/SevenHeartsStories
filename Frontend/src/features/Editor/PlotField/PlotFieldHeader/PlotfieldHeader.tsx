@@ -71,7 +71,7 @@ export default function PlotfieldHeader({
           onClick={() => setShowAllCommands(true)}
           contentName="Все команды"
           positionByAbscissa="left"
-          asideClasses="text-[1.3rem] top-[3.5rem] bottom-[-3.5rem]"
+          asideClasses="text-[1.3rem] top-[3.5rem] bottom-[-3.5rem] z-[1000]"
           className="bg-primary-pastel-blue shadow-sm shadow-gray-400 active:scale-[.99]"
           variant="rectangle"
         >
@@ -81,7 +81,7 @@ export default function PlotfieldHeader({
           contentName="Создать строку"
           positionByAbscissa="left"
           className="bg-primary-light-blue shadow-sm shadow-gray-400 active:scale-[.99] relative "
-          asideClasses="text-[1.3rem] top-[3.5rem] bottom-[-3.5rem]"
+          asideClasses="text-[1.3rem] top-[3.5rem] bottom-[-3.5rem] z-[1000]"
           onClick={handleCreateCommand}
           variant="rectangle"
         >

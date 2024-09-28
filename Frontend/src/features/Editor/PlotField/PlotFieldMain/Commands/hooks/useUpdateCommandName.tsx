@@ -8,7 +8,7 @@ type UpdateCommandNameTypes = {
   value?: string;
   topologyBlockId: string;
   commandIfId?: string;
-  commandOrder: number;
+  commandOrder?: number;
 };
 
 type UpdateCommandNameOnMutationTypes = {
@@ -23,7 +23,6 @@ export default function useUpdateCommandName({
   commandIfId,
   commandOrder,
 }: UpdateCommandNameTypes) {
-  const { updateCommandName } = usePlotfieldCommands();
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async ({
@@ -39,18 +38,6 @@ export default function useUpdateCommandName({
         }
       ),
     onMutate: () => {
-      const checkForSay =
-        value === "author" ||
-        value === "character" ||
-        value === "notify" ||
-        value === "hint"
-          ? "say"
-          : value?.toLowerCase();
-
-      updateCommandName(
-        plotFieldCommandId,
-        checkForSay as AllPossiblePlotFieldComamndsTypes
-      );
       if (commandIfId?.trim().length) {
         queryClient.invalidateQueries({
           queryKey: ["plotfield", "commandIf", commandIfId, "insideIf"],

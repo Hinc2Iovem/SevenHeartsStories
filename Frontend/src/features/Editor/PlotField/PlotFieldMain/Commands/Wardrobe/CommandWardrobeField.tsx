@@ -49,7 +49,7 @@ export default function CommandWardrobeField({
   }, [commandWardrobe]);
 
   useEffect(() => {
-    if (translatedWardrobe) {
+    if (translatedWardrobe && !wardrobeTitle.trim().length) {
       translatedWardrobe.translations?.map((tw) => {
         if (tw.textFieldName === "commandWardrobeTitle") {
           setWardrobeTitle(tw.text);

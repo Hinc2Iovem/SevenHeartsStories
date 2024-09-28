@@ -126,7 +126,7 @@ export default function FormCharacter({
               setShowCharacters((prev) => !prev);
             }}
             placeholder="Персонаж"
-            className="text-[1.3rem] w-full outline-gray-300 px-[1rem] py-[.5rem] rounded-md shadow-md"
+            className="text-[1.3rem] w-full outline-gray-300 px-[1rem] py-[.5rem] rounded-md shadow-md capitalize"
             onChange={(e) => {
               setNameValue(e.target.value);
               setShowCharacters(true);

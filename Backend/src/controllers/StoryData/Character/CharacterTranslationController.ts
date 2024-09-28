@@ -260,6 +260,7 @@ type CharacterCreateBlankParams = {
 type CharacterCreateBlankBody = {
   name: string | undefined;
   currentLanguage: string | undefined;
+  characterId: string | undefined;
   type: CharacterTypeAlias | undefined;
 };
 
@@ -275,6 +276,7 @@ export const characterCreateBlankController: RequestHandler<
     const character = await characterCreateBlankService({
       storyId: req.params.storyId,
       name: req.body.name,
+      characterId: req.body.characterId,
       currentLanguage: req.body.currentLanguage,
       type: req.body.type,
     });

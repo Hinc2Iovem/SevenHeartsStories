@@ -8,11 +8,17 @@ import CommandSayFieldItem from "./CommandSayFieldItem/Other/CommandSayFieldItem
 type CommandSayFieldTypes = {
   plotFieldCommandId: string;
   topologyBlockId: string;
+  characterId?: string;
+  characterName?: string;
+  sayType?: CommandSayVariationTypes;
 };
 
 export default function CommandSayField({
   plotFieldCommandId,
   topologyBlockId,
+  characterId,
+  characterName,
+  sayType,
 }: CommandSayFieldTypes) {
   const { data: commandSay } = useGetCommandSay({ plotFieldCommandId });
   const [commandSayType, setCommandSayType] =
@@ -52,38 +58,48 @@ export default function CommandSayField({
 
   return (
     <>
-      {commandSayType === "author" ? (
-        <CommandSayFieldItem
-          topologyBlockId={topologyBlockId}
-          plotFieldCommandId={plotFieldCommandId}
-          plotFieldCommandSayId={commandSayId}
-          nameValue={nameValue}
-        />
-      ) : commandSayType === "character" ? (
-        <CommandSayCharacterFieldItem
-          topologyBlockId={topologyBlockId}
-          characterId={commandSay?.characterId || ""}
-          plotFieldCommandId={plotFieldCommandId}
-          plotFieldCommandSayId={commandSayId}
-          characterEmotionId={commandSay?.characterEmotionId || ""}
-          commandSayType={commandSayType}
-          nameValue={nameValue}
-          setNameValue={setNameValue}
-        />
-      ) : commandSayType === "notify" ? (
-        <CommandSayFieldItem
-          topologyBlockId={topologyBlockId}
-          plotFieldCommandId={plotFieldCommandId}
-          plotFieldCommandSayId={commandSayId}
-          nameValue={nameValue}
-        />
+      {sayType ? (
+        sayType !== "character" ? (
+          <CommandSayFieldItem
+            topologyBlockId={topologyBlockId}
+            plotFieldCommandId={plotFieldCommandId}
+            plotFieldCommandSayId={commandSayId}
+            nameValue={sayType}
+          />
+        ) : (
+          <CommandSayCharacterFieldItem
+            topologyBlockId={topologyBlockId}
+            characterId={characterId || ""}
+            plotFieldCommandId={plotFieldCommandId}
+            plotFieldCommandSayId={commandSayId}
+            characterEmotionId={""}
+            commandSayType={"character"}
+            nameValue={characterName || nameValue}
+            setNameValue={setNameValue}
+          />
+        )
       ) : (
-        <CommandSayFieldItem
-          topologyBlockId={topologyBlockId}
-          plotFieldCommandId={plotFieldCommandId}
-          plotFieldCommandSayId={commandSayId}
-          nameValue={nameValue}
-        />
+        <>
+          {commandSayType !== "character" ? (
+            <CommandSayFieldItem
+              topologyBlockId={topologyBlockId}
+              plotFieldCommandId={plotFieldCommandId}
+              plotFieldCommandSayId={commandSayId}
+              nameValue={nameValue}
+            />
+          ) : (
+            <CommandSayCharacterFieldItem
+              topologyBlockId={topologyBlockId}
+              characterId={commandSay?.characterId || ""}
+              plotFieldCommandId={plotFieldCommandId}
+              plotFieldCommandSayId={commandSayId}
+              characterEmotionId={commandSay?.characterEmotionId || ""}
+              commandSayType={commandSayType}
+              nameValue={nameValue}
+              setNameValue={setNameValue}
+            />
+          )}
+        </>
       )}
     </>
   );

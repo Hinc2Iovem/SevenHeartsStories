@@ -46,7 +46,7 @@ export default function ChoiceQuestionField({
   const [question, setQuestion] = useState("");
 
   useEffect(() => {
-    if (translatedQuestion) {
+    if (translatedQuestion && !question.trim().length) {
       translatedQuestion.translations?.map((tq) => {
         if (tq.textFieldName === "choiceQuestion") {
           setQuestion(tq.text);

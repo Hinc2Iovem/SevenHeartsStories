@@ -30,6 +30,7 @@ import useUpdateCommandName from "../hooks/useUpdateCommandName";
 import useCreateWait from "../hooks/Wait/useCreateWait";
 import useCreateWardrobe from "../hooks/Wardrobe/useCreateWardrobe";
 import PlotFieldBlankCreateCharacter from "./PlotFieldBlankCreateCharacter";
+import usePlotfieldCommands from "../../../PlotFieldContext";
 
 type PlotFieldBlankTypes = {
   plotFieldCommandId: string;
@@ -178,6 +179,46 @@ export default function PlotfieldBlank({
     topologyBlockId,
   });
 
+  const { updateCommandName: updateCommandNameOptimistic } =
+    usePlotfieldCommands();
+
+  const handleCreatingOptimisticCommand = ({
+    commandName,
+    valueForSay,
+    characterId,
+    sayType,
+    characterName,
+  }: {
+    valueForSay: boolean;
+    commandName: AllPossiblePlotFieldComamndsTypes;
+    sayType?: CommandSayVariationTypes;
+    characterId?: string;
+    characterName?: string;
+  }) => {
+    if (valueForSay) {
+      if (characterId?.trim().length) {
+        updateCommandNameOptimistic({
+          id: plotFieldCommandId,
+          newCommand: "say",
+          characterId,
+          characterName,
+          sayType: "character",
+        });
+      } else {
+        updateCommandNameOptimistic({
+          id: plotFieldCommandId,
+          newCommand: "say",
+          sayType,
+        });
+      }
+    } else {
+      updateCommandNameOptimistic({
+        id: plotFieldCommandId,
+        newCommand: commandName,
+      });
+    }
+  };
+
   const handleSubmit = ({
     submittedByCharacter,
     type,
@@ -193,11 +234,23 @@ export default function PlotfieldBlank({
               tct.textFieldName === "characterName" &&
               tct.text.toLowerCase() === value.toLowerCase()
             ) {
+              handleCreatingOptimisticCommand({
+                valueForSay: true,
+                commandName: "say",
+                characterId: tc.characterId,
+                characterName: value,
+                sayType: "character",
+              });
               createSayCommand.mutate({ type, characterId: tc.characterId });
             }
           });
         });
       } else {
+        handleCreatingOptimisticCommand({
+          valueForSay: true,
+          commandName: "say",
+          sayType: type,
+        });
         createSayCommand.mutate({ type });
       }
       updateCommandName.mutate({ valueForSay: true });
@@ -243,6 +296,11 @@ export default function PlotfieldBlank({
       } else if (allCommands === "comment") {
         createComment.mutate();
       }
+
+      handleCreatingOptimisticCommand({
+        valueForSay: false,
+        commandName: allCommands,
+      });
       updateCommandName.mutate({ valueForSay: false });
     }
   };
@@ -279,6 +337,7 @@ export default function PlotfieldBlank({
       handleSubmit({ submittedByCharacter });
     } else {
       // if it's not any command and if there's no such character, it suggests to create a new one
+
       setShowCreateCharacterModal(true);
       return;
     }
@@ -315,7 +374,9 @@ export default function PlotfieldBlank({
         />
         <aside
           ref={promptRef}
-          className={`${showPromptValues ? "" : "hidden"} 
+          className={`${
+            showPromptValues && !showCreateCharacterModal ? "" : "hidden"
+          } 
         z-[1000] w-full bg-white shadow-md rounded-md absolute left-0 max-h-[20rem] translate-y-[1rem] overflow-auto | containerScroll
         `}
         >

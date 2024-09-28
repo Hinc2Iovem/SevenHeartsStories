@@ -1,6 +1,8 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
 import useOutOfModal from "../../../../../../hooks/UI/useOutOfModal";
+import { generateMongoObjectId } from "../../../../../../utils/generateMongoObjectId";
+import usePlotfieldCommands from "../../../PlotFieldContext";
 import useCreateCharacterBlank from "../hooks/Character/useCreateCharacterBlank";
 import useCreateSayCommand from "../hooks/Say/useCreateSayCommand";
 import useUpdateCommandName from "../hooks/useUpdateCommandName";
@@ -21,15 +23,11 @@ export default function PlotFieldBlankCreateCharacter({
   topologyBlockId,
 }: PlotFieldBlankCreateCharacterTypes) {
   const { storyId } = useParams();
+  const { updateCommandName: updateCommandNameOptimistic } =
+    usePlotfieldCommands();
   const modalRef = useRef<HTMLDivElement | null>(null);
   const cursorRef = useRef<HTMLButtonElement | null>(null);
-  const [characterId, setCharacterId] = useState("");
-
-  useOutOfModal({
-    setShowModal,
-    showModal,
-    modalRef,
-  });
+  const characterId = generateMongoObjectId();
 
   useEffect(() => {
     if (showModal) {
@@ -37,29 +35,19 @@ export default function PlotFieldBlankCreateCharacter({
     }
   }, [showModal]);
 
-  const createCharacter = useCreateCharacterBlank({
-    characterType: "minorcharacter",
-    name: characterName,
-    storyId: storyId ?? "",
-  });
-
-  useEffect(() => {
-    if (createCharacter.data) {
-      setCharacterId(createCharacter.data._id);
-    }
-  }, [createCharacter]);
-
   const createSayCharacterCommand = useCreateSayCommand({
     plotFieldCommandId,
     topologyBlockId,
   });
 
-  useEffect(() => {
-    if (characterId?.trim().length) {
+  const createCharacter = useCreateCharacterBlank({
+    characterType: "minorcharacter",
+    name: characterName,
+    storyId: storyId || "",
+    onSuccessCallback: (characterId) => {
       createSayCharacterCommand.mutate({ type: "character", characterId });
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [characterId]);
+    },
+  });
 
   const updateCommandName = useUpdateCommandName({
     plotFieldCommandId,
@@ -69,10 +57,24 @@ export default function PlotFieldBlankCreateCharacter({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    createCharacter.mutate();
+    updateCommandNameOptimistic({
+      id: plotFieldCommandId,
+      characterId,
+      newCommand: "say",
+      characterName,
+      sayType: "character",
+    });
+
+    createCharacter.mutate({ characterId });
     updateCommandName.mutate({ valueForSay: true });
     setShowModal(false);
   };
+
+  useOutOfModal({
+    setShowModal,
+    showModal,
+    modalRef,
+  });
 
   return (
     <aside

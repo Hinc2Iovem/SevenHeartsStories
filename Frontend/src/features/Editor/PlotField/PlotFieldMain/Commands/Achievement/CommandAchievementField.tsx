@@ -25,7 +25,7 @@ export default function CommandAchievementField({
   });
 
   useEffect(() => {
-    if (translatedAchievement) {
+    if (translatedAchievement && !textValue.trim().length) {
       setTextValue((translatedAchievement.translations || [])[0]?.text || "");
       setInitialTextValue(
         (translatedAchievement.translations || [])[0]?.text || ""
