@@ -8,6 +8,7 @@ import useGetTranslationCharacters from "../../../../../../hooks/Fetching/Transl
 import useOutOfModal from "../../../../../../hooks/UI/useOutOfModal";
 import { AllPossiblePlotFieldComamndsTypes } from "../../../../../../types/StoryEditor/PlotField/PlotFieldTypes";
 import { CommandSayVariationTypes } from "../../../../../../types/StoryEditor/PlotField/Say/SayTypes";
+import usePlotfieldCommands from "../../../Context/PlotFieldContext";
 import useCreateAchievement from "../hooks/Achievement/useCreateAchievement";
 import useCreateAmbient from "../hooks/Ambient/useCreateAmbient";
 import useCreateBackground from "../hooks/Background/useCreateBackground";
@@ -30,13 +31,12 @@ import useUpdateCommandName from "../hooks/useUpdateCommandName";
 import useCreateWait from "../hooks/Wait/useCreateWait";
 import useCreateWardrobe from "../hooks/Wardrobe/useCreateWardrobe";
 import PlotFieldBlankCreateCharacter from "./PlotFieldBlankCreateCharacter";
-import usePlotfieldCommands from "../../../PlotFieldContext";
 
 type PlotFieldBlankTypes = {
   plotFieldCommandId: string;
   topologyBlockId: string;
   commandIfId: string;
-  commandOrder: number;
+  isElse?: boolean;
 };
 
 const AllCommands = [
@@ -68,7 +68,7 @@ export default function PlotfieldBlank({
   plotFieldCommandId,
   topologyBlockId,
   commandIfId,
-  commandOrder,
+  isElse,
 }: PlotFieldBlankTypes) {
   const { storyId } = useParams();
 
@@ -127,7 +127,7 @@ export default function PlotfieldBlank({
   const currentInput = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
-    if (!showCreateCharacterModal) {
+    if (!showCreateCharacterModal && !commandIfId?.trim().length) {
       currentInput.current?.focus();
     }
   }, [showCreateCharacterModal]);
@@ -135,9 +135,6 @@ export default function PlotfieldBlank({
   const updateCommandName = useUpdateCommandName({
     plotFieldCommandId,
     value,
-    topologyBlockId,
-    commandIfId: commandIfId ?? "",
-    commandOrder,
   });
 
   const createSayCommand = useCreateSayCommand({
@@ -179,8 +176,10 @@ export default function PlotfieldBlank({
     topologyBlockId,
   });
 
-  const { updateCommandName: updateCommandNameOptimistic } =
-    usePlotfieldCommands();
+  const {
+    updateCommandName: updateCommandNameOptimistic,
+    updateCommandIfName: updateCommandIfNameOptimistic,
+  } = usePlotfieldCommands();
 
   const handleCreatingOptimisticCommand = ({
     commandName,
@@ -219,6 +218,48 @@ export default function PlotfieldBlank({
     }
   };
 
+  const handleCreatingOptimisticCommandIf = ({
+    commandName,
+    valueForSay,
+    characterId,
+    sayType,
+    characterName,
+    isElse,
+  }: {
+    valueForSay: boolean;
+    commandName: AllPossiblePlotFieldComamndsTypes;
+    sayType?: CommandSayVariationTypes;
+    characterId?: string;
+    characterName?: string;
+    isElse: boolean;
+  }) => {
+    if (valueForSay) {
+      if (characterId?.trim().length) {
+        updateCommandIfNameOptimistic({
+          id: plotFieldCommandId,
+          newCommand: "say",
+          characterId,
+          characterName,
+          sayType: "character",
+          isElse,
+        });
+      } else {
+        updateCommandIfNameOptimistic({
+          id: plotFieldCommandId,
+          newCommand: "say",
+          sayType,
+          isElse,
+        });
+      }
+    } else {
+      updateCommandIfNameOptimistic({
+        id: plotFieldCommandId,
+        newCommand: commandName,
+        isElse,
+      });
+    }
+  };
+
   const handleSubmit = ({
     submittedByCharacter,
     type,
@@ -234,23 +275,44 @@ export default function PlotfieldBlank({
               tct.textFieldName === "characterName" &&
               tct.text.toLowerCase() === value.toLowerCase()
             ) {
-              handleCreatingOptimisticCommand({
-                valueForSay: true,
-                commandName: "say",
-                characterId: tc.characterId,
-                characterName: value,
-                sayType: "character",
-              });
+              if (commandIfId?.trim().length) {
+                handleCreatingOptimisticCommandIf({
+                  valueForSay: true,
+                  commandName: "say",
+                  characterId: tc.characterId,
+                  characterName: value,
+                  sayType: "character",
+                  isElse: isElse || false,
+                });
+              } else {
+                handleCreatingOptimisticCommand({
+                  valueForSay: true,
+                  commandName: "say",
+                  characterId: tc.characterId,
+                  characterName: value,
+                  sayType: "character",
+                });
+              }
+
               createSayCommand.mutate({ type, characterId: tc.characterId });
             }
           });
         });
       } else {
-        handleCreatingOptimisticCommand({
-          valueForSay: true,
-          commandName: "say",
-          sayType: type,
-        });
+        if (commandIfId?.trim().length) {
+          handleCreatingOptimisticCommandIf({
+            valueForSay: true,
+            commandName: "say",
+            sayType: type,
+            isElse: isElse || false,
+          });
+        } else {
+          handleCreatingOptimisticCommand({
+            valueForSay: true,
+            commandName: "say",
+            sayType: type,
+          });
+        }
         createSayCommand.mutate({ type });
       }
       updateCommandName.mutate({ valueForSay: true });
@@ -297,10 +359,18 @@ export default function PlotfieldBlank({
         createComment.mutate();
       }
 
-      handleCreatingOptimisticCommand({
-        valueForSay: false,
-        commandName: allCommands,
-      });
+      if (commandIfId?.trim().length) {
+        handleCreatingOptimisticCommandIf({
+          valueForSay: false,
+          commandName: allCommands,
+          isElse: isElse || false,
+        });
+      } else {
+        handleCreatingOptimisticCommand({
+          valueForSay: false,
+          commandName: allCommands,
+        });
+      }
       updateCommandName.mutate({ valueForSay: false });
     }
   };
@@ -362,6 +432,7 @@ export default function PlotfieldBlank({
           onClick={(e) => {
             e.stopPropagation();
             setShowPromptValues((prev) => !prev);
+            setShowCreateCharacterModal(false);
           }}
           placeholder="author"
           onChange={(e) => {
@@ -414,6 +485,8 @@ export default function PlotfieldBlank({
         plotFieldCommandId={plotFieldCommandId}
         topologyBlockId={topologyBlockId}
         showModal={showCreateCharacterModal}
+        commandIfId={commandIfId}
+        isElse={isElse}
       />
     </div>
   );

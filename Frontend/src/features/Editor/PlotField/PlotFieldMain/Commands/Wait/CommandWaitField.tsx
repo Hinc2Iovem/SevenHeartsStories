@@ -12,7 +12,7 @@ export default function CommandWaitField({
   command,
 }: CommandWaitFieldTypes) {
   const [nameValue] = useState<string>(command ?? "Wait");
-  const [waitValue, setWaitValue] = useState<number>(0);
+  const [waitValue, setWaitValue] = useState("");
 
   const { data: commandWait } = useGetCommandWait({
     plotFieldCommandId,
@@ -20,25 +20,26 @@ export default function CommandWaitField({
   const [commandWaitId, setCommandWaitId] = useState("");
 
   useEffect(() => {
-    if (commandWait) {
+    if (commandWait && !commandWaitId?.trim().length) {
       setCommandWaitId(commandWait._id);
     }
   }, [commandWait]);
 
   useEffect(() => {
     if (commandWait?.waitValue) {
-      setWaitValue(commandWait.waitValue);
+      setWaitValue(commandWait.waitValue.toString());
     }
   }, [commandWait]);
 
   const updateWaitText = useUpdateWaitText({
-    waitValue,
-    waitId: commandWaitId,
+    waitValue: Number(waitValue),
   });
 
   useEffect(() => {
     if (waitValue) {
-      updateWaitText.mutate();
+      updateWaitText.mutate({
+        waitId: commandWaitId || commandWait?._id || "",
+      });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [waitValue]);
@@ -56,10 +57,10 @@ export default function CommandWaitField({
       >
         <input
           value={waitValue || ""}
-          type="text"
+          type="number"
           className=" w-full outline-gray-300 text-gray-600 text-[1.6rem] px-[1rem] py-[.5rem] rounded-md shadow-md sm:max-h-[20rem] max-h-[40rem]"
           placeholder="Ожидание"
-          onChange={(e) => setWaitValue(+e.target.value)}
+          onChange={(e) => setWaitValue(e.target.value)}
         />
       </form>
     </div>

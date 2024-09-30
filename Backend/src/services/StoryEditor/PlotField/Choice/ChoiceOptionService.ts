@@ -180,11 +180,23 @@ export const createChoiceOptionService = async ({
     coordinatesY: (lastTopologyBlock?.coordinatesY || 0) + 50 || 0,
   };
 
+  let newName;
+  if (lastTopologyBlock?.name?.includes("-")) {
+    const newArray = lastTopologyBlock.name.split("-");
+    newName = newArray[0] + "-" + (Number(newArray[1]) + 1);
+  } else {
+    newName = lastTopologyBlock?.name + "-" + existingChoice.amountOfOptions;
+  }
+
   const newTopologyBlock = await TopologyBlock.create({
     coordinatesValue,
     episodeId,
-    name: lastTopologyBlock?.name + "-" + existingChoice.amountOfOptions,
+    name: newName,
   });
+
+  newChoiceOption.topologyBlockId = newTopologyBlock._id;
+
+  await newChoiceOption.save();
 
   await TopologyBlockConnection.create({
     episodeId,

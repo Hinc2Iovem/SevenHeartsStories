@@ -15,5 +15,6 @@ export default function useGetCommandWait({
       await axiosCustomized
         .get<WaitTypes>(`/plotFieldCommands/${plotFieldCommandId}/wait`)
         .then((r) => r.data),
+    enabled: !!plotFieldCommandId,
   });
 }

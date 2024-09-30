@@ -29,7 +29,7 @@ export default function CommandCallField({
   const [targetBlockId, setTargetBlockId] = useState("");
   const [currentTopologyBlockName, setCurrentTopologyBlockName] = useState("");
   const [currentReferencedCommandIndex, setCurrentReferencedCommandIndex] =
-    useState<number | undefined>();
+    useState<number | null>(null);
 
   const { data: currentTopologyBlock } = useGetTopologyBlockById({
     topologyBlockId: targetBlockId,
@@ -46,7 +46,7 @@ export default function CommandCallField({
       setCommandCallId(commandCall._id);
       setTargetBlockId(commandCall.targetBlockId);
       setCurrentReferencedCommandIndex(
-        commandCall?.referencedCommandIndex || 0
+        commandCall?.referencedCommandIndex || null
       );
     }
   }, [commandCall]);
@@ -58,7 +58,7 @@ export default function CommandCallField({
           {nameValue}
         </h3>
       </div>
-      <div className="flex gap-[.5rem]">
+      <div className="flex gap-[.5rem] sm:w-fit w-full flex-grow">
         <ChooseReferencedCommandIndex
           setCurrentReferencedCommandIndex={setCurrentReferencedCommandIndex}
           currentReferencedCommandIndex={currentReferencedCommandIndex}
@@ -85,9 +85,9 @@ export default function CommandCallField({
 type ChooseReferencedCommandIndexTypes = {
   callId: string;
   amountOfCommands: number;
-  currentReferencedCommandIndex?: number;
+  currentReferencedCommandIndex: number | null;
   setCurrentReferencedCommandIndex: React.Dispatch<
-    React.SetStateAction<number | undefined>
+    React.SetStateAction<number | null>
   >;
 };
 
@@ -116,7 +116,7 @@ function ChooseReferencedCommandIndex({
           setShowAllCommandIndexes((prev) => !prev);
         }}
       >
-        {currentReferencedCommandIndex || 0}
+        {currentReferencedCommandIndex || "Ссылаться на команду"}
       </button>
       <aside
         ref={modalRef}
@@ -124,7 +124,7 @@ function ChooseReferencedCommandIndex({
           showAllCommandIndexes ? "" : "hidden"
         } z-[10] flex flex-col gap-[1rem] p-[.5rem] max-h-[15rem] overflow-y-auto absolute min-w-fit w-full rounded-md shadow-md bg-white right-[0rem] translate-y-[.5rem] | containerScroll`}
       >
-        {amountOfCommands > 1 ? (
+        {amountOfCommands > 0 ? (
           [...Array.from({ length: amountOfCommands })]?.map((_, i) => {
             return (
               <button
@@ -167,7 +167,7 @@ type ChooseTopologyBlockTypes = {
   setCurrentTopologyBlockName: React.Dispatch<React.SetStateAction<string>>;
   setTargetBlockId: React.Dispatch<React.SetStateAction<string>>;
   setCurrentReferencedCommandIndex: React.Dispatch<
-    React.SetStateAction<number | undefined>
+    React.SetStateAction<number | null>
   >;
   topologyBlockId: string;
 };

@@ -15,5 +15,6 @@ export default function useGetAllIfValuesByCommandIfId({
       await axiosCustomized
         .get<IfValueTypes[]>(`/plotFieldCommands/ifs/${ifId}/ifValues`)
         .then((r) => r.data),
+    enabled: !!ifId,
   });
 }

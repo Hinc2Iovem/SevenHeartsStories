@@ -31,7 +31,7 @@ import useCreateBlankCommand from "../PlotFieldMain/Commands/hooks/useCreateBlan
 import useUpdateCommandName from "../PlotFieldMain/Commands/hooks/useUpdateCommandName";
 import useCreateWait from "../PlotFieldMain/Commands/hooks/Wait/useCreateWait";
 import useCreateWardrobe from "../PlotFieldMain/Commands/hooks/Wardrobe/useCreateWardrobe";
-import usePlotfieldCommands from "../PlotFieldContext";
+import usePlotfieldCommands from "../Context/PlotFieldContext";
 
 type CreatingCommandViaButtonClickTypes = {
   pc: string;
@@ -90,7 +90,7 @@ export default function CreatingCommandViaButtonClick({
     plotFieldCommandId: newPlotFieldCommand.data?._id || "",
     value,
     topologyBlockId,
-    commandOrder: getCurrentAmountOfCommands(topologyBlockId),
+    commandOrder: getCurrentAmountOfCommands({ topologyBlockId }),
   });
 
   const createSayCommand = useCreateSayCommandBlank({
@@ -263,10 +263,10 @@ export default function CreatingCommandViaButtonClick({
         const _id = generateMongoObjectId();
         newPlotFieldCommand.mutate({
           _id,
-          commandOrder: getCurrentAmountOfCommands(topologyBlockId),
+          commandOrder: getCurrentAmountOfCommands({ topologyBlockId }),
           topologyBlockId,
         });
-        updateCommandInfo(topologyBlockId, "add");
+        updateCommandInfo({ topologyBlockId, addOrMinus: "add" });
       }}
       className="text-[1.6rem] outline-black pr-[1rem] focus-within:px-[1rem] capitalize text-gray-700 hover:text-black transition-all border-b-[.1rem] border-gray-700 hover:border-black"
     >

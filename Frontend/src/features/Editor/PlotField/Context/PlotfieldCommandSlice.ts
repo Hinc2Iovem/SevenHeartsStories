@@ -1,6 +1,6 @@
-import { create } from "zustand";
-import { AllPossiblePlotFieldComamndsTypes } from "../../../types/StoryEditor/PlotField/PlotFieldTypes";
-import { CommandSayVariationTypes } from "../../../types/StoryEditor/PlotField/Say/SayTypes";
+import { StateCreator } from "zustand";
+import { AllPossiblePlotFieldComamndsTypes } from "../../../../types/StoryEditor/PlotField/PlotFieldTypes";
+import { CommandSayVariationTypes } from "../../../../types/StoryEditor/PlotField/Say/SayTypes";
 
 export type PlotfieldOptimisticCommandTypes = {
   _id: string;
@@ -14,13 +14,6 @@ export type PlotfieldOptimisticCommandTypes = {
   isElse?: boolean;
 };
 
-type CommandsInfo = {
-  amountOfCommands: number;
-  topologyBlockId: string;
-};
-
-type UpdateCommandInfoSignType = "add" | "minus";
-
 type UpdateCommandNameTypes = {
   id: string;
   newCommand: AllPossiblePlotFieldComamndsTypes;
@@ -29,20 +22,23 @@ type UpdateCommandNameTypes = {
   characterName?: string;
 };
 
-type PlotfieldCommandStore = {
+export type CreatePlotfieldCommandSliceTypes = {
   commands: {
     topologyBlockId: string;
     commands: PlotfieldOptimisticCommandTypes[];
   }[];
-  commandsInfo: CommandsInfo[];
-  getCurrentAmountOfCommands: (topologyBlockId: string) => number;
-  getCommandsByTopologyBlockId: (
-    topologyBlockId: string
-  ) => PlotfieldOptimisticCommandTypes[];
-  addCommand: (
-    newCommand: PlotfieldOptimisticCommandTypes,
-    topologyBlockId: string
-  ) => void;
+  getCommandsByTopologyBlockId: ({
+    topologyBlockId,
+  }: {
+    topologyBlockId: string;
+  }) => PlotfieldOptimisticCommandTypes[];
+  addCommand: ({
+    newCommand,
+    topologyBlockId,
+  }: {
+    newCommand: PlotfieldOptimisticCommandTypes;
+    topologyBlockId: string;
+  }) => void;
   updateCommandName: ({
     id,
     newCommand,
@@ -50,40 +46,43 @@ type PlotfieldCommandStore = {
     characterId,
     characterName,
   }: UpdateCommandNameTypes) => void;
-  updateCommandOrder: (id: string, commandOrder: number) => void;
-  setAllCommands: (
-    commands: PlotfieldOptimisticCommandTypes[],
-    topologyBlockId: string
-  ) => void;
-  setCurrentAmountOfCommands: (
-    topologyBlockId: string,
-    amountOfCommands: number
-  ) => void;
-  updateCommandInfo: (
-    topologyBlockId: string,
-    addOrMinus: UpdateCommandInfoSignType
-  ) => void;
+  removeCommandItem: ({ id }: { id: string }) => void;
+  updateCommandOrder: ({
+    commandOrder,
+    id,
+  }: {
+    id: string;
+    commandOrder: number;
+  }) => void;
+  setAllCommands: ({
+    commands,
+    topologyBlockId,
+  }: {
+    commands: PlotfieldOptimisticCommandTypes[];
+    topologyBlockId: string;
+  }) => void;
   clearCommand: () => void;
 };
 
-const usePlotfieldCommands = create<PlotfieldCommandStore>((set, get) => ({
+export const createPlotfieldCommandSlice: StateCreator<
+  CreatePlotfieldCommandSliceTypes,
+  [],
+  [],
+  CreatePlotfieldCommandSliceTypes
+> = (set, get) => ({
   commands: [
     {
       topologyBlockId: "",
       commands: [],
     },
   ],
-  commandsInfo: [],
-  getCommandsByTopologyBlockId: (topologyBlockId: string) => {
+  getCommandsByTopologyBlockId: ({ topologyBlockId }) => {
     const allCommands =
       get().commands.find((c) => c.topologyBlockId === topologyBlockId)
         ?.commands || [];
     return allCommands;
   },
-  addCommand: (
-    newCommand: PlotfieldOptimisticCommandTypes,
-    topologyBlockId: string
-  ) =>
+  addCommand: ({ newCommand, topologyBlockId }) =>
     set((state) => {
       const existingBlock = state.commands.find(
         (block) => block.topologyBlockId === topologyBlockId
@@ -138,7 +137,7 @@ const usePlotfieldCommands = create<PlotfieldCommandStore>((set, get) => ({
         ),
       })),
     })),
-  updateCommandOrder: (id, commandOrder) =>
+  updateCommandOrder: ({ id, commandOrder }) =>
     set((state) => ({
       commands: state.commands.map((block) => ({
         ...block,
@@ -147,7 +146,7 @@ const usePlotfieldCommands = create<PlotfieldCommandStore>((set, get) => ({
         ),
       })),
     })),
-  setAllCommands: (commands, topologyBlockId) =>
+  setAllCommands: ({ commands, topologyBlockId }) =>
     set((state) => {
       const existingBlock = state.commands.find(
         (block) => block.topologyBlockId === topologyBlockId
@@ -167,56 +166,15 @@ const usePlotfieldCommands = create<PlotfieldCommandStore>((set, get) => ({
         };
       }
     }),
-  setCurrentAmountOfCommands: (topologyBlockId, amountOfCommands) =>
-    set((state) => {
-      const existingInfo = state.commandsInfo.find(
-        (c) => c.topologyBlockId === topologyBlockId
-      );
-
-      if (existingInfo) {
-        return {
-          commandsInfo: state.commandsInfo.map((c) =>
-            c.topologyBlockId === topologyBlockId
-              ? { ...c, amountOfCommands }
-              : c
-          ),
-        };
-      }
-
-      return {
-        commandsInfo: [
-          ...state.commandsInfo,
-          { topologyBlockId, amountOfCommands },
-        ],
-      };
-    }),
-  getCurrentAmountOfCommands: (topologyBlockId: string) => {
-    const currentAmount =
-      get().commandsInfo.find((c) => c.topologyBlockId === topologyBlockId)
-        ?.amountOfCommands || 1;
-    return currentAmount;
-  },
-  updateCommandInfo: (topologyBlockId, addOrMinus) =>
+  removeCommandItem: ({ id }) =>
     set((state) => ({
-      commandsInfo: state.commandsInfo.map((c) =>
-        c.topologyBlockId === topologyBlockId
-          ? {
-              ...c,
-              amountOfCommands:
-                addOrMinus === "add"
-                  ? c.amountOfCommands + 1
-                  : c.amountOfCommands - 1 > 0
-                  ? 0
-                  : c.amountOfCommands - 1,
-            }
-          : c
-      ),
+      commands: state.commands.map((c) => ({
+        ...c,
+        commands: c.commands.filter((ce) => ce._id !== id),
+      })),
     })),
-
   clearCommand: () =>
     set(() => ({
       commands: [],
     })),
-}));
-
-export default usePlotfieldCommands;
+});

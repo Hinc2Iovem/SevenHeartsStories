@@ -43,7 +43,7 @@ export default function PlotfieldCharacterPromptMain({
       ref={modalRef}
       className={`${showCharacterModal ? "" : "hidden"} ${
         !allCharacters?.length && characterDebouncedValue ? "hidden" : ""
-      } translate-y-[2rem] absolute top-1/2 z-[10] p-[1rem] min-w-fit w-full max-h-[10rem] overflow-y-auto bg-white shadow-md rounded-md flex flex-col gap-[1rem] | containerScroll`}
+      } translate-y-[2rem] absolute top-1/2 z-[10] p-[1rem] min-w-fit w-full max-h-[15rem] overflow-y-auto bg-white shadow-md rounded-md flex flex-col gap-[1rem] | containerScroll`}
     >
       {allCharacters?.length ? (
         allCharacters?.map((c) => (

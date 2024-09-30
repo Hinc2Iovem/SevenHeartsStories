@@ -140,6 +140,7 @@ type PlotFieldCommandCreateInsideIfBlockParams = {
 type PlotFieldCommandCreateInsideIfBlockBody = {
   isElse?: boolean;
   commandOrder: number;
+  _id: string;
 };
 
 // @route POST http://localhost:3500/plotField/topologyBlocks/:topologyBlockId/commandIfs/:commandIfId
@@ -156,6 +157,7 @@ export const plotFieldCommandCreateInsideIfBlockController: RequestHandler<
       topologyBlockId: req.params.topologyBlockId,
       isElse: req.body.isElse,
       commandOrder: req.body.commandOrder,
+      _id: req.body._id,
     });
     if (plotFieldCommand) {
       return res.status(201).json(plotFieldCommand);

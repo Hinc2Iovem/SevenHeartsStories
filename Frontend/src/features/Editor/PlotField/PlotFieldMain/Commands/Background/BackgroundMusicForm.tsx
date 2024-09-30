@@ -92,7 +92,7 @@ export default function BackgroundMusicForm({
                       musicName === mm
                         ? "bg-orange-200 text-white"
                         : "bg-white text-gray-600 "
-                    } text-start hover:bg-orange-200 outline-gray-300 hover:text-white transition-all cursor-pointer hover:scale-[1.01] active:scale-[0.99] w-full text-[1.6rem] px-[1rem] py-[.5rem] rounded-md shadow-md`}
+                    } text-start hover:bg-orange-200 outline-gray-300 hover:text-white transition-all cursor-pointer hover:scale-[1.005] active:scale-[1] w-full text-[1.6rem] px-[1rem] py-[.5rem] rounded-md shadow-md`}
                   >
                     {mm}
                   </button>
@@ -104,7 +104,7 @@ export default function BackgroundMusicForm({
                   onClick={() => {
                     setShowMusicDropDown(false);
                   }}
-                  className={`bg-white outline-gray-300 text-gray-600 text-start hover:bg-orange-200 hover:text-white transition-all cursor-pointer hover:scale-[1.01] active:scale-[0.99] w-full text-[1.6rem] px-[1rem] py-[.5rem] rounded-md shadow-md`}
+                  className={`bg-white outline-gray-300 text-gray-600 text-start hover:bg-orange-200 hover:text-white transition-all cursor-pointer hover:scale-[1.005] active:scale-[1] w-full text-[1.6rem] px-[1rem] py-[.5rem] rounded-md shadow-md`}
                 >
                   Пусто
                 </button>

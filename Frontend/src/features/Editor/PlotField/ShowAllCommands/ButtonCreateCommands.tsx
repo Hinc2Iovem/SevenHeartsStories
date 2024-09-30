@@ -6,7 +6,7 @@ import {
 } from "../../../../types/StoryEditor/PlotField/Choice/ChoiceTypes";
 import SyncLoad from "../../../shared/Loaders/SyncLoader";
 import useCreateMultipleCommands from "../PlotFieldMain/Commands/hooks/useCreateMultipleCommands";
-import usePlotfieldCommands from "../PlotFieldContext";
+import usePlotfieldCommands from "../Context/PlotFieldContext";
 
 type ButtonCreateCommandsTypes = {
   allCommandsToCreate: string[];
@@ -45,7 +45,7 @@ export default function ButtonCreateCommands({
     optionVariations: optionVariations.toString(),
     storyId,
     episodeId,
-    currentAmountOfCommands: getCurrentAmountOfCommands(topologyBlockId),
+    currentAmountOfCommands: getCurrentAmountOfCommands({ topologyBlockId }),
   });
 
   useEffect(() => {

@@ -5,6 +5,7 @@ import TopologyBlock from "../../../models/StoryEditor/Topology/TopologyBlock";
 import TopologyBlockConnection from "../../../models/StoryEditor/Topology/TopologyBlockConnection";
 import TopologyBlockInfo from "../../../models/StoryEditor/Topology/TopologyBlockInfo";
 import { validateMongoId } from "../../../utils/validateMongoId";
+import PlotFieldCommand from "../../../models/StoryEditor/PlotField/PlotFieldCommand";
 
 type GetTargetBlocksBySourceBlockIdTypes = {
   sourceBlockId: string;
@@ -219,16 +220,17 @@ export const unrelatedTopologyBlockCreateService = async ({
     coordinatesX: lastTopologyBlock?.coordinatesX || 0,
     coordinatesY: (lastTopologyBlock?.coordinatesY || 0) + 50 || 150,
     name: `Блок - ${amountOfTopologyBlockInEpisode}`,
+    topologyBlockInfo: {
+      amountOfAchievements: 0,
+      amountOfCommands: 1,
+    },
   });
 
-  // await TopologyBlockInfo.create({
-  //   topologyBlockId: newTopologyBlock._id,
-  //   amountOfAchievements: 0,
-  //   amountOfAmethysts: 0,
-  //   amountOfAuthorWords: 0,
-  //   amountOfCharacterWords: 0,
-  //   amountOfWords: 0,
-  // });
+  await PlotFieldCommand.create({
+    topologyBlockId: newTopologyBlock._id,
+    commandOrder: 0,
+  });
+
   return newTopologyBlock;
 };
 

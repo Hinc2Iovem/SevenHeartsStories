@@ -1,5 +1,6 @@
+import { useRef } from "react";
 import { useParams } from "react-router-dom";
-import useEscapeOfModal from "../../../../../../../hooks/UI/useEscapeOfModal";
+import useOutOfModal from "../../../../../../../hooks/UI/useOutOfModal";
 import { ChoiceOptionVariations } from "../../../../../../../types/StoryEditor/PlotField/Choice/ChoiceTypes";
 import useCreateChoiceOption from "../../hooks/Choice/ChoiceOption/useCreateChoiceOption";
 
@@ -19,6 +20,7 @@ export default function CreateChoiceOptionTypeModal({
   setShowCreateChoiceOptionModal,
 }: CreateChoiceOptionTypeModalTypes) {
   const { episodeId } = useParams();
+  const modalRef = useRef<HTMLDivElement>(null);
   const createChoiceOption = useCreateChoiceOption({
     plotFieldCommandChoiceId: plotFieldCommandChoiceId,
     plotFieldCommandId,
@@ -26,12 +28,14 @@ export default function CreateChoiceOptionTypeModal({
     topologyBlockId,
   });
 
-  useEscapeOfModal({
-    value: showCreateChoiceOptionModal,
-    setValue: setShowCreateChoiceOptionModal,
+  useOutOfModal({
+    modalRef,
+    showModal: showCreateChoiceOptionModal,
+    setShowModal: setShowCreateChoiceOptionModal,
   });
   return (
     <aside
+      ref={modalRef}
       className={`${
         showCreateChoiceOptionModal ? "" : "hidden"
       } absolute right-0 z-[10] flex flex-col min-w-fit w-full rounded-md shadow-md p-[.5rem] bg-white`}

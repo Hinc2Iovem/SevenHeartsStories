@@ -43,7 +43,7 @@ export default function OptionSelectOrder({
   });
 
   return (
-    <div className="relative self-end pr-[.2rem] pb-[.2rem]">
+    <div className="relative self-end pr-[.2rem] pb-[.2rem] z-[15]">
       <button
         onClick={(e) => {
           e.stopPropagation();

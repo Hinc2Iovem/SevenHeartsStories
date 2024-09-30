@@ -6,7 +6,7 @@ import {
   DropResult,
 } from "@hello-pangea/dnd";
 import { useEffect } from "react";
-import usePlotfieldCommands from "../PlotFieldContext";
+import usePlotfieldCommands from "../Context/PlotFieldContext";
 import PlotfieldItem from "./Commands/PlotfieldItem";
 import useGetAllPlotFieldCommands from "./Commands/hooks/useGetAllPlotFieldCommands";
 import useUpdateCommandOrder from "./Commands/hooks/useUpdateCommandOrder";
@@ -30,7 +30,7 @@ export default function PlotFieldMain({
 
   useEffect(() => {
     if (plotfieldCommands) {
-      setAllCommands(plotfieldCommands, topologyBlockId);
+      setAllCommands({ commands: plotfieldCommands, topologyBlockId });
     }
   }, [plotfieldCommands]);
 
@@ -40,7 +40,7 @@ export default function PlotFieldMain({
     if (!result?.destination) return;
 
     const orderedCommands = [
-      ...(getCommandsByTopologyBlockId(topologyBlockId) || []),
+      ...(getCommandsByTopologyBlockId({ topologyBlockId }) || []),
     ];
     const [reorderedItem] = orderedCommands.splice(result.source.index, 1);
     orderedCommands.splice(result.destination.index, 0, reorderedItem);
@@ -48,13 +48,8 @@ export default function PlotFieldMain({
       newOrder: result.destination.index,
       plotFieldCommandId: result.draggableId,
     });
-    setAllCommands(orderedCommands, topologyBlockId);
+    setAllCommands({ commands: orderedCommands, topologyBlockId });
   };
-
-  console.log(
-    `getCommandsByTopologyBlockId(topologyBlockId:${topologyBlockId}): `,
-    getCommandsByTopologyBlockId(topologyBlockId)
-  );
 
   return (
     <main
@@ -72,13 +67,17 @@ export default function PlotFieldMain({
               ref={provided.innerRef}
               className="flex flex-col gap-[1rem] w-full"
             >
-              {getCommandsByTopologyBlockId(topologyBlockId)?.map((p, i) => {
-                return (
-                  <Draggable key={p._id} draggableId={p._id} index={i}>
-                    {(provided) => <PlotfieldItem provided={provided} {...p} />}
-                  </Draggable>
-                );
-              })}
+              {getCommandsByTopologyBlockId({ topologyBlockId })?.map(
+                (p, i) => {
+                  return (
+                    <Draggable key={p._id} draggableId={p._id} index={i}>
+                      {(provided) => (
+                        <PlotfieldItem provided={provided} {...p} />
+                      )}
+                    </Draggable>
+                  );
+                }
+              )}
               {provided.placeholder}
             </ul>
           )}

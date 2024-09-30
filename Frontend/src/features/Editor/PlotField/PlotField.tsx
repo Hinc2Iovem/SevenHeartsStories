@@ -4,7 +4,7 @@ import PlotfieldHeader from "./PlotFieldHeader/PlotfieldHeader";
 import useGetTopologyBlockById from "./PlotFieldMain/Commands/hooks/TopologyBlock/useGetTopologyBlockById";
 import PlotFieldMain from "./PlotFieldMain/PlotFieldMain";
 import ShowAllCommandsPlotfield from "./ShowAllCommands/ShowAllCommandsPlotfield";
-import usePlotfieldCommands from "./PlotFieldContext";
+import usePlotfieldCommands from "./Context/PlotFieldContext";
 
 type PlotFieldProps = {
   topologyBlockId: string;
@@ -37,10 +37,11 @@ export default function PlotField({
 
   useEffect(() => {
     if (currentTopologyBlock) {
-      setCurrentAmountOfCommands(
+      setCurrentAmountOfCommands({
         topologyBlockId,
-        currentTopologyBlock.topologyBlockInfo.amountOfCommands
-      );
+        amountOfCommands:
+          currentTopologyBlock.topologyBlockInfo.amountOfCommands,
+      });
     }
   }, [currentTopologyBlock]);
 

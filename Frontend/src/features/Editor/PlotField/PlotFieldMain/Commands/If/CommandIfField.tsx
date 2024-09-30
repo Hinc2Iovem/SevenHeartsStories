@@ -8,7 +8,11 @@ import {
 import { useEffect, useState } from "react";
 import commandImg from "../../../../../../assets/images/Editor/command.png";
 import plus from "../../../../../../assets/images/shared/add.png";
+import { AllPossiblePlotFieldComamndsTypes } from "../../../../../../types/StoryEditor/PlotField/PlotFieldTypes";
+import { generateMongoObjectId } from "../../../../../../utils/generateMongoObjectId";
 import ButtonHoverPromptModal from "../../../../../shared/ButtonAsideHoverPromptModal/ButtonHoverPromptModal";
+import { PlotfieldOptimisticCommandInsideIfTypes } from "../../../Context/PlotfieldCommandIfSlice";
+import usePlotfieldCommands from "../../../Context/PlotFieldContext";
 import useCreateBlankCommandInsideIf from "../hooks/If/useCreateBlankCommandInsideIf";
 import useGetCommandIf from "../hooks/If/useGetCommandIf";
 import useUpdateOrderInsideCommandIf from "../hooks/If/useUpdateOrderInsideCommandIf";
@@ -16,8 +20,6 @@ import useGetAllPlotFieldCommandsByIfIdInsideElse from "../hooks/useGetAllPlotFi
 import useGetAllPlotFieldCommandsByIfIdInsideIf from "../hooks/useGetAllPlotFieldCommandsByIfIdInsideIf";
 import PlotfieldItemInsideIf from "../PlotfieldItemInsideIf";
 import CommandIfValues from "./CommandIfValues";
-import { generateMongoObjectId } from "../../../../../../utils/generateMongoObjectId";
-import { AllPossiblePlotFieldComamndsTypes } from "../../../../../../types/StoryEditor/PlotField/PlotFieldTypes";
 
 type CommandIfFieldTypes = {
   plotFieldCommandId: string;
@@ -30,6 +32,15 @@ export default function CommandIfField({
   command,
   topologyBlockId,
 }: CommandIfFieldTypes) {
+  const {
+    addCommandIf,
+    setAllIfCommands,
+    updateCommandIfInfo,
+    setCurrentAmountOfIfCommands,
+    getCommandsByCommandIfId,
+    getCurrentAmountOfIfCommands,
+    removeCommandIfItem,
+  } = usePlotfieldCommands();
   const [nameValue] = useState<string>(command ?? "If");
 
   const { data: commandIf } = useGetCommandIf({
@@ -54,91 +65,100 @@ export default function CommandIfField({
       commandIfId,
     });
 
-  const [commandsIf, setCommandsIf] = useState(commandsInsideIf ?? []);
-  const [commandsElse, setCommandsElse] = useState(commandsInsideElse ?? []);
-
   useEffect(() => {
-    if (commandsInsideIf) {
-      setCommandsIf(commandsInsideIf);
+    if (commandsInsideElse && commandsInsideIf && commandIfId) {
+      setAllIfCommands({
+        commandIfId,
+        commandsInsideElse:
+          commandsInsideElse as PlotfieldOptimisticCommandInsideIfTypes[],
+        commandsInsideIf:
+          commandsInsideIf as PlotfieldOptimisticCommandInsideIfTypes[],
+      });
     }
-  }, [commandsInsideIf]);
-
-  useEffect(() => {
-    if (commandsInsideElse) {
-      setCommandsElse(commandsInsideElse);
-    }
-  }, [commandsInsideElse]);
+  }, [commandsInsideIf, commandsInsideElse, commandIfId]);
 
   const updateCommandOrder = useUpdateOrderInsideCommandIf({ commandIfId });
-
-  const [
-    currentAmountOfCommandsInsideElse,
-    setCurrentAmountOfCommandsInsideElse,
-  ] = useState(commandIf?.amountOfCommandsInsideElse);
-  const [currentAmountOfCommandsInsideIf, setCurrentAmountOfCommandsInsideIf] =
-    useState(commandIf?.amountOfCommandsInsideIf);
 
   useEffect(() => {
     if (commandIf) {
       setCommandIfId(commandIf._id);
-      setCurrentAmountOfCommandsInsideElse(
-        commandIf.amountOfCommandsInsideElse
-      );
-      setCurrentAmountOfCommandsInsideIf(commandIf.amountOfCommandsInsideIf);
+
+      setCurrentAmountOfIfCommands({
+        commandIfId: commandIf._id,
+        amountOfCommandsInsideElse: commandIf.amountOfCommandsInsideElse,
+        amountOfCommandsInsideIf: commandIf.amountOfCommandsInsideIf,
+      });
     }
   }, [commandIf]);
 
   const handleCreateCommand = (isElse: boolean) => {
     const _id = generateMongoObjectId();
     if (isElse) {
+      const elseCommandOrder = getCurrentAmountOfIfCommands({
+        commandIfId,
+        isElse: true,
+      });
+      addCommandIf({
+        commandIfId,
+        isElse: true,
+        newCommand: {
+          commandOrder: elseCommandOrder,
+          _id,
+          command: "" as AllPossiblePlotFieldComamndsTypes,
+          isElse: true,
+          topologyBlockId,
+          commandIfId,
+        },
+      });
       createCommandInsideElse.mutate({
-        commandOrder: currentAmountOfCommandsInsideElse as number,
+        commandOrder: elseCommandOrder,
         _id,
         command: "" as AllPossiblePlotFieldComamndsTypes,
-        isElse,
+        isElse: true,
         topologyBlockId,
         commandIfId,
       });
-      setCurrentAmountOfCommandsInsideElse((prev) => {
-        if (prev) {
-          return prev + 1;
-        } else {
-          return 1;
-        }
-      });
+      updateCommandIfInfo({ addOrMinus: "add", commandIfId, isElse: true });
       if (createCommandInsideElse.isError) {
-        setCurrentAmountOfCommandsInsideElse((prev) => {
-          if (prev) {
-            return prev - 1;
-          } else {
-            return 0;
-          }
-        });
+        removeCommandIfItem({ id: _id, isElse: true });
+        updateCommandIfInfo({ addOrMinus: "minus", commandIfId, isElse: true });
+        console.error(`Some error happened: ${createCommandInsideElse.error}`);
       }
     } else {
+      const ifCommandOrder = getCurrentAmountOfIfCommands({
+        commandIfId,
+        isElse: false,
+      });
+      addCommandIf({
+        commandIfId,
+        isElse: false,
+        newCommand: {
+          commandOrder: ifCommandOrder,
+          _id,
+          command: "" as AllPossiblePlotFieldComamndsTypes,
+          isElse,
+          topologyBlockId,
+          commandIfId,
+        },
+      });
       createCommandInsideIf.mutate({
-        commandOrder: currentAmountOfCommandsInsideIf as number,
+        commandOrder: ifCommandOrder,
         _id,
         command: "" as AllPossiblePlotFieldComamndsTypes,
         isElse,
         topologyBlockId,
         commandIfId,
       });
-      setCurrentAmountOfCommandsInsideIf((prev) => {
-        if (prev) {
-          return prev + 1;
-        } else {
-          return 1;
-        }
-      });
+      updateCommandIfInfo({ addOrMinus: "add", commandIfId, isElse: false });
+
       if (createCommandInsideIf.isError) {
-        setCurrentAmountOfCommandsInsideIf((prev) => {
-          if (prev) {
-            return prev - 1;
-          } else {
-            return 0;
-          }
+        removeCommandIfItem({ id: _id, isElse: false });
+        updateCommandIfInfo({
+          addOrMinus: "minus",
+          commandIfId,
+          isElse: false,
         });
+        console.error(`Some error happened: ${createCommandInsideIf.error}`);
       }
     }
   };
@@ -146,7 +166,9 @@ export default function CommandIfField({
   const handleOnDragEndInsideIf = (result: DropResult) => {
     if (!result?.destination) return;
 
-    const orderedCommandsInsideIf = [...(commandsInsideIf ?? [])];
+    const orderedCommandsInsideIf = [
+      ...(getCommandsByCommandIfId({ commandIfId, isElse: false }) ?? []),
+    ];
     const [reorderedItem] = orderedCommandsInsideIf.splice(
       result.source.index,
       1
@@ -157,13 +179,24 @@ export default function CommandIfField({
       newOrder: result.destination.index,
       plotFieldCommandId: result.draggableId,
     });
-    setCommandsIf(orderedCommandsInsideIf);
+    setAllIfCommands({
+      commandIfId,
+      commandsInsideIf:
+        orderedCommandsInsideIf as PlotfieldOptimisticCommandInsideIfTypes[],
+      commandsInsideElse: getCommandsByCommandIfId({
+        commandIfId,
+        isElse: true,
+      }),
+    });
   };
 
   const handleOnDragEndInsideElse = (result: DropResult) => {
     if (!result?.destination) return;
 
-    const orderedCommandsInsideElse = [...(commandsInsideElse || [])];
+    const orderedCommandsInsideElse = [
+      ...(getCommandsByCommandIfId({ commandIfId, isElse: true }) || []),
+    ];
+
     const [reorderedItem] = orderedCommandsInsideElse.splice(
       result.source.index,
       1
@@ -177,20 +210,36 @@ export default function CommandIfField({
       newOrder: result.destination.index,
       plotFieldCommandId: result.draggableId,
     });
-    setCommandsElse(orderedCommandsInsideElse);
+    setAllIfCommands({
+      commandIfId,
+      commandsInsideIf: getCommandsByCommandIfId({
+        commandIfId,
+        isElse: false,
+      }),
+      commandsInsideElse: orderedCommandsInsideElse,
+    });
   };
+
+  console.log(
+    "Else: ",
+    getCommandsByCommandIfId({ commandIfId, isElse: true })
+  );
+  console.log(
+    "Ife: ",
+    getCommandsByCommandIfId({ commandIfId, isElse: false })
+  );
 
   return (
     <div className="flex gap-[1rem] w-full bg-primary-light-blue rounded-md p-[.5rem] flex-col">
       <div className="min-w-[10rem] w-full flex flex-col gap-[1rem]">
-        <div className="flex flex-grow w-full relative items-center gap-[1rem]">
-          <h3 className="text-[1.4rem] text-start outline-gray-300 w-full capitalize px-[1rem] py-[.5rem] rounded-md shadow-md bg-green-200 text-gray-600 cursor-default">
+        <div className="flex w-full relative items-center gap-[1rem]">
+          <h3 className="text-[1.4rem] text-start outline-gray-300 w-full capitalize px-[1rem] py-[.5rem] rounded-md shadow-md bg-slate-50 text-gray-600 cursor-default">
             {nameValue}
           </h3>
           <ButtonHoverPromptModal
             contentName="Создать строку"
             positionByAbscissa="right"
-            className="shadow-sm shadow-gray-400 active:scale-[.99] relative bg-green-200"
+            className="shadow-sm shadow-gray-400 active:scale-[.99] relative bg-slate-50"
             asideClasses="text-[1.3rem] -translate-y-1/3"
             onClick={() => handleCreateCommand(false)}
             variant="rectangle"
@@ -205,29 +254,34 @@ export default function CommandIfField({
         </div>
       </div>
       <CommandIfValues ifId={commandIfId} />
-      <DragDropContext onDragEnd={handleOnDragEndInsideIf}>
-        <Droppable droppableId="commandIf">
-          {(provided: DroppableProvided) => (
-            <ul
-              {...provided.droppableProps}
-              ref={provided.innerRef}
-              className="flex flex-col gap-[1rem] py-[.5rem] w-full bg-green-200 rounded-md"
-            >
-              {commandsIf?.map((p, i) => {
-                return (
-                  <Draggable key={p._id} draggableId={p._id} index={i}>
-                    {(provided) => (
-                      <PlotfieldItemInsideIf provided={provided} {...p} />
-                    )}
-                  </Draggable>
-                );
-              })}
-              {provided.placeholder}
-            </ul>
-          )}
-        </Droppable>
-      </DragDropContext>
-      <div className="min-w-[10rem] flex-grow w-full relative flex items-center gap-[1rem] p-[.5rem]">
+      <div className="flex flex-col bg-neutral-magnolia rounded-md w-full">
+        <DragDropContext onDragEnd={handleOnDragEndInsideIf}>
+          <Droppable droppableId="commandIf">
+            {(provided: DroppableProvided) => (
+              <ul
+                {...provided.droppableProps}
+                ref={provided.innerRef}
+                className="flex flex-col gap-[.5rem] py-[.5rem] w-full bg-slate-50 rounded-md"
+              >
+                {getCommandsByCommandIfId({ commandIfId, isElse: false })?.map(
+                  (p, i) => {
+                    return (
+                      <Draggable key={p._id} draggableId={p._id} index={i}>
+                        {(provided) => (
+                          <PlotfieldItemInsideIf provided={provided} {...p} />
+                        )}
+                      </Draggable>
+                    );
+                  }
+                )}
+                {provided.placeholder}
+              </ul>
+            )}
+          </Droppable>
+        </DragDropContext>
+        <div className="h-[10vh] bg-slate-50 w-full rounded-b-md"></div>
+      </div>
+      <div className="min-w-[10rem] w-full relative flex items-center gap-[1rem] p-[.5rem]">
         <h3 className="text-[1.4rem] text-start outline-gray-300 w-full capitalize px-[1rem] py-[.5rem] rounded-md shadow-md bg-neutral-magnolia text-gray-700 cursor-default">
           Else
         </h3>
@@ -247,28 +301,33 @@ export default function CommandIfField({
           <img src={commandImg} alt="Commands" className="w-[3rem]" />
         </ButtonHoverPromptModal>
       </div>
-      <DragDropContext onDragEnd={handleOnDragEndInsideElse}>
-        <Droppable droppableId="commandIfElse">
-          {(provided: DroppableProvided) => (
-            <ul
-              {...provided.droppableProps}
-              ref={provided.innerRef}
-              className="flex flex-col gap-[1rem] py-[.5rem] w-full bg-neutral-magnolia rounded-md"
-            >
-              {commandsElse?.map((p, i) => {
-                return (
-                  <Draggable key={p._id} draggableId={p._id} index={i}>
-                    {(provided) => (
-                      <PlotfieldItemInsideIf provided={provided} {...p} />
-                    )}
-                  </Draggable>
-                );
-              })}
-              {provided.placeholder}
-            </ul>
-          )}
-        </Droppable>
-      </DragDropContext>
+      <div className="flex flex-col bg-neutral-magnolia rounded-md w-full">
+        <DragDropContext onDragEnd={handleOnDragEndInsideElse}>
+          <Droppable droppableId="commandIfElse">
+            {(provided: DroppableProvided) => (
+              <ul
+                {...provided.droppableProps}
+                ref={provided.innerRef}
+                className="flex flex-col gap-[.5rem] py-[.5rem] w-full bg-neutral-magnolia rounded-md"
+              >
+                {getCommandsByCommandIfId({ commandIfId, isElse: true })?.map(
+                  (p, i) => {
+                    return (
+                      <Draggable key={p._id} draggableId={p._id} index={i}>
+                        {(provided) => (
+                          <PlotfieldItemInsideIf provided={provided} {...p} />
+                        )}
+                      </Draggable>
+                    );
+                  }
+                )}
+                {provided.placeholder}
+              </ul>
+            )}
+          </Droppable>
+        </DragDropContext>
+        <div className="h-[10vh] bg-neutral-magnolia w-full rounded-b-md"></div>
+      </div>
     </div>
   );
 }

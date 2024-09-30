@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
 import useOutOfModal from "../../../../../../hooks/UI/useOutOfModal";
 import { generateMongoObjectId } from "../../../../../../utils/generateMongoObjectId";
-import usePlotfieldCommands from "../../../PlotFieldContext";
+import usePlotfieldCommands from "../../../Context/PlotFieldContext";
 import useCreateCharacterBlank from "../hooks/Character/useCreateCharacterBlank";
 import useCreateSayCommand from "../hooks/Say/useCreateSayCommand";
 import useUpdateCommandName from "../hooks/useUpdateCommandName";
@@ -13,6 +13,8 @@ type PlotFieldBlankCreateCharacterTypes = {
   characterName: string;
   plotFieldCommandId: string;
   topologyBlockId: string;
+  commandIfId?: string;
+  isElse?: boolean;
 };
 
 export default function PlotFieldBlankCreateCharacter({
@@ -21,10 +23,15 @@ export default function PlotFieldBlankCreateCharacter({
   characterName,
   plotFieldCommandId,
   topologyBlockId,
+  commandIfId,
+  isElse,
 }: PlotFieldBlankCreateCharacterTypes) {
   const { storyId } = useParams();
-  const { updateCommandName: updateCommandNameOptimistic } =
-    usePlotfieldCommands();
+  const {
+    updateCommandName: updateCommandNameOptimistic,
+    updateCommandIfName: updateCommandIfNameOptimistic,
+  } = usePlotfieldCommands();
+
   const modalRef = useRef<HTMLDivElement | null>(null);
   const cursorRef = useRef<HTMLButtonElement | null>(null);
   const characterId = generateMongoObjectId();
@@ -52,18 +59,28 @@ export default function PlotFieldBlankCreateCharacter({
   const updateCommandName = useUpdateCommandName({
     plotFieldCommandId,
     value: characterName,
-    topologyBlockId,
   });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    updateCommandNameOptimistic({
-      id: plotFieldCommandId,
-      characterId,
-      newCommand: "say",
-      characterName,
-      sayType: "character",
-    });
+    if (commandIfId?.trim().length) {
+      updateCommandIfNameOptimistic({
+        id: plotFieldCommandId,
+        characterId,
+        newCommand: "say",
+        characterName,
+        sayType: "character",
+        isElse: isElse || false,
+      });
+    } else {
+      updateCommandNameOptimistic({
+        id: plotFieldCommandId,
+        characterId,
+        newCommand: "say",
+        characterName,
+        sayType: "character",
+      });
+    }
 
     createCharacter.mutate({ characterId });
     updateCommandName.mutate({ valueForSay: true });

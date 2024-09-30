@@ -386,6 +386,7 @@ export const plotFieldCommandCreateMultipleService = async ({
 type PlotFieldCommandCreateInsideIfBlockTypes = {
   commandIfId: string;
   topologyBlockId: string;
+  _id: string;
   isElse?: boolean;
   commandOrder: number;
 };
@@ -395,8 +396,10 @@ export const plotFieldCommandCreateInsideIfBlockService = async ({
   topologyBlockId,
   isElse,
   commandOrder,
+  _id,
 }: PlotFieldCommandCreateInsideIfBlockTypes) => {
   validateMongoId({ value: commandIfId, valueName: "CommandIf" });
+  validateMongoId({ value: _id, valueName: "Plotfield" });
   validateMongoId({ value: topologyBlockId, valueName: "TopologyBlock" });
 
   const existingCommandIf = await IfModel.findById(commandIfId);
@@ -411,6 +414,7 @@ export const plotFieldCommandCreateInsideIfBlockService = async ({
       commandOrder,
       topologyBlockId,
       isElse,
+      _id,
     });
   } else {
     if (existingCommandIf) {
@@ -421,6 +425,7 @@ export const plotFieldCommandCreateInsideIfBlockService = async ({
       commandIfId,
       commandOrder,
       topologyBlockId,
+      _id,
     });
   }
 };
@@ -437,7 +442,6 @@ export const plotFieldCommandCreateService = async ({
   _id,
 }: PlotFieldCommandCreateTypes) => {
   validateMongoId({ value: topologyBlockId, valueName: "TopologyBlock" });
-  console.log("commandOrder: ", commandOrder);
 
   if (typeof commandOrder !== "number" || !_id?.trim().length) {
     throw createHttpError(400, "CommandOrder and _id are required");

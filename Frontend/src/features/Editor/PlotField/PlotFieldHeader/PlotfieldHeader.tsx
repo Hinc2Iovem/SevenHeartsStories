@@ -4,7 +4,7 @@ import plus from "../../../../assets/images/shared/add.png";
 import useCheckKeysCombinationCreateBlankCommand from "../../../../hooks/helpers/useCheckKeysCombinationCreateBlankCommand";
 import { generateMongoObjectId } from "../../../../utils/generateMongoObjectId";
 import ButtonHoverPromptModal from "../../../shared/ButtonAsideHoverPromptModal/ButtonHoverPromptModal";
-import usePlotfieldCommands from "../PlotFieldContext";
+import usePlotfieldCommands from "../Context/PlotFieldContext";
 import useCreateBlankCommand from "../PlotFieldMain/Commands/hooks/useCreateBlankCommand";
 
 type PlotFieldHeaderTypes = {
@@ -42,12 +42,12 @@ export default function PlotfieldHeader({
     const _id = generateMongoObjectId();
     createCommand.mutate({
       _id,
-      commandOrder: getCurrentAmountOfCommands(topologyBlockId),
+      commandOrder: getCurrentAmountOfCommands({ topologyBlockId }),
       topologyBlockId,
     });
-    updateCommandInfo(topologyBlockId, "add");
+    updateCommandInfo({ topologyBlockId, addOrMinus: "add" });
     if (createCommand.isError) {
-      updateCommandInfo(topologyBlockId, "minus");
+      updateCommandInfo({ topologyBlockId, addOrMinus: "minus" });
     }
   };
 

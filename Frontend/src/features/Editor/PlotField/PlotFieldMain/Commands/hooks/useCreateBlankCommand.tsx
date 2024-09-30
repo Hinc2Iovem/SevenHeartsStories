@@ -4,7 +4,7 @@ import {
   AllPossiblePlotFieldComamndsTypes,
   PlotFieldTypes,
 } from "../../../../../../types/StoryEditor/PlotField/PlotFieldTypes";
-import usePlotfieldCommands from "../../../PlotFieldContext";
+import usePlotfieldCommands from "../../../Context/PlotFieldContext";
 
 type NewCommandTypes = {
   _id: string;
@@ -42,15 +42,15 @@ export default function useCreateBlankCommand({
         topologyBlockId,
       ]);
 
-      addCommand(
-        {
+      addCommand({
+        newCommand: {
           _id: newCommand._id,
           command: "" as AllPossiblePlotFieldComamndsTypes,
           commandOrder: newCommand.commandOrder,
           topologyBlockId,
         },
-        topologyBlockId
-      );
+        topologyBlockId,
+      });
 
       return { prevCommands };
     },

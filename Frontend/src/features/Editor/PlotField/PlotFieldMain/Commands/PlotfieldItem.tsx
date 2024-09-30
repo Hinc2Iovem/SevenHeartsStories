@@ -1,5 +1,4 @@
 import { DraggableProvided } from "@hello-pangea/dnd";
-import { PlotfieldOptimisticCommandTypes } from "../../PlotFieldContext";
 import CommandAchievementField from "./Achievement/CommandAchievementField";
 import CommandAmbientField from "./Ambient/CommandAmbientField";
 import CommandBackgroundField from "./Background/CommandBackgroundField";
@@ -21,6 +20,7 @@ import CommandSoundField from "./Sound/CommandSoundField";
 import CommandSuitField from "./Suit/CommandSuitField";
 import CommandWaitField from "./Wait/CommandWaitField";
 import CommandWardrobeField from "./Wardrobe/CommandWardrobeField";
+import { PlotfieldOptimisticCommandTypes } from "../../Context/PlotfieldCommandSlice";
 
 type PlotFieldItemTypes = {
   provided: DraggableProvided;
@@ -32,10 +32,10 @@ export default function PlotfieldItem({
   topologyBlockId,
   commandIfId,
   provided,
-  commandOrder,
   characterId,
   characterName,
   sayType,
+  isElse,
 }: PlotFieldItemTypes) {
   return (
     <li
@@ -43,7 +43,7 @@ export default function PlotfieldItem({
       {...provided.dragHandleProps}
       ref={provided.innerRef}
       className={`${
-        commandIfId ? "ml-[1rem] pr-[1rem]" : ""
+        commandIfId ? "" : ""
       } w-full flex gap-[1rem] outline-gray-300`}
     >
       {!command ? (
@@ -51,7 +51,7 @@ export default function PlotfieldItem({
           plotFieldCommandId={_id}
           commandIfId={commandIfId ?? ""}
           topologyBlockId={topologyBlockId}
-          commandOrder={commandOrder}
+          isElse={isElse}
         />
       ) : command === "say" ? (
         <CommandSayField
@@ -128,9 +128,6 @@ export default function PlotfieldItem({
       ) : command === "comment" ? (
         <CommandCommentField command={command} plotFieldCommandId={_id} />
       ) : null}
-      <span className="bg-red-500 text-white text-[1.4rem] text-center w-[4rem]">
-        {commandOrder}
-      </span>
     </li>
   );
 }

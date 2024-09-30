@@ -1,5 +1,5 @@
 import { DraggableProvided } from "@hello-pangea/dnd";
-import { PlotFieldTypes } from "../../../../../types/StoryEditor/PlotField/PlotFieldTypes";
+import { PlotfieldOptimisticCommandInsideIfTypes } from "../../Context/PlotfieldCommandIfSlice";
 import CommandAchievementField from "./Achievement/CommandAchievementField";
 import CommandAmbientField from "./Ambient/CommandAmbientField";
 import CommandBackgroundField from "./Background/CommandBackgroundField";
@@ -20,10 +20,11 @@ import CommandSoundField from "./Sound/CommandSoundField";
 import CommandSuitField from "./Suit/CommandSuitField";
 import CommandWaitField from "./Wait/CommandWaitField";
 import CommandWardrobeField from "./Wardrobe/CommandWardrobeField";
+import CommandCommentField from "./Comment/CommandCommentField";
 
 type PlotFieldItemTypes = {
   provided: DraggableProvided;
-} & PlotFieldTypes;
+} & PlotfieldOptimisticCommandInsideIfTypes;
 
 export default function PlotfieldItemInsideIf({
   _id,
@@ -31,7 +32,10 @@ export default function PlotfieldItemInsideIf({
   topologyBlockId,
   commandIfId,
   provided,
-  commandOrder,
+  isElse,
+  characterId,
+  characterName,
+  sayType,
 }: PlotFieldItemTypes) {
   return (
     <li
@@ -41,20 +45,22 @@ export default function PlotfieldItemInsideIf({
       onDrag={(e) => {
         e.stopPropagation();
       }}
-      className={`${
-        commandIfId ? "ml-[1rem] pr-[2rem]" : ""
-      } w-full flex gap-[1rem] `}
+      className={`${commandIfId ? "px-[.5rem]" : ""} w-full flex gap-[1rem] `}
     >
       {!command ? (
         <PlotfieldBlank
           plotFieldCommandId={_id}
-          commandIfId={commandIfId ?? ""}
+          commandIfId={commandIfId || ""}
           topologyBlockId={topologyBlockId}
+          isElse={isElse}
         />
       ) : command === "say" ? (
         <CommandSayField
           topologyBlockId={topologyBlockId}
           plotFieldCommandId={_id}
+          characterId={characterId}
+          characterName={characterName}
+          sayType={sayType}
         />
       ) : command === "achievement" ? (
         <CommandAchievementField
@@ -120,10 +126,9 @@ export default function PlotfieldItemInsideIf({
           topologyBlockId={topologyBlockId}
           plotFieldCommandId={_id}
         />
+      ) : command === "comment" ? (
+        <CommandCommentField command={command} plotFieldCommandId={_id} />
       ) : null}
-      <span className="bg-black text-white text-[1.4rem] w-[4rem] text-center">
-        {commandOrder}
-      </span>
     </li>
   );
 }

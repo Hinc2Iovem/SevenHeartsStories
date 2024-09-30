@@ -233,7 +233,10 @@ export default function ChoiceQuestionField({
 
       <div className="relative ml-auto">
         <ButtonHoverPromptModal
-          onClick={() => setShowCreateChoiceOptionModal((prev) => !prev)}
+          onClick={(e) => {
+            e.stopPropagation();
+            setShowCreateChoiceOptionModal((prev) => !prev);
+          }}
           variant={"rectangle"}
           contentName="Создать Ответ"
           positionByAbscissa="right"

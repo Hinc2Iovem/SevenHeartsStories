@@ -185,23 +185,6 @@ export const commandIfUpdateCommandIfOrderService = async ({
   return await existingPlotFieldCommand.save();
 };
 
-// type AddAnotherValueBlockTypes = {
-//   commandIfId: string;
-// };
-
-// export const addAnotherBlockIfService = async ({
-//   commandIfId,
-// }: AddAnotherValueBlockTypes) => {
-//   validateMongoId({ value: commandIfId, valueName: "CommandIf" });
-
-//   const existingCommandIfId = await IfModel.findById(commandIfId).lean();
-//   if (!existingCommandIfId) {
-//     throw createHttpError(400, "CommandIfId with such id wasn't found");
-//   }
-
-//   return await IfValue.create({ plotFieldCommandIfId: commandIfId });
-// };
-
 type DeleteIfTypes = {
   ifId: string;
 };

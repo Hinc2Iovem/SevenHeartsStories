@@ -77,6 +77,8 @@ export const updateWaitService = async ({
   waitValue,
   waitId,
 }: UpdateWaitTypes) => {
+  console.log(waitId);
+
   validateMongoId({ value: waitId, valueName: "Wait" });
 
   const existingWait = await Wait.findById(waitId).exec();
