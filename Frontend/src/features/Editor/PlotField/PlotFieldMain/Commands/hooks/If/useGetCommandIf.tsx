@@ -16,5 +16,6 @@ export default function useGetCommandIf({
         .get<IfCommandTypes>(`/plotFieldCommands/${plotFieldCommandId}/ifs`)
         .then((r) => r.data),
     enabled: !!plotFieldCommandId,
+    refetchOnWindowFocus: false,
   });
 }

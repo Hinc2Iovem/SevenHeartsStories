@@ -5,7 +5,7 @@ import {
   DroppableProvided,
   DropResult,
 } from "@hello-pangea/dnd";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import commandImg from "../../../../../../assets/images/Editor/command.png";
 import plus from "../../../../../../assets/images/shared/add.png";
 import { AllPossiblePlotFieldComamndsTypes } from "../../../../../../types/StoryEditor/PlotField/PlotFieldTypes";
@@ -15,11 +15,14 @@ import { PlotfieldOptimisticCommandInsideIfTypes } from "../../../Context/Plotfi
 import usePlotfieldCommands from "../../../Context/PlotFieldContext";
 import useCreateBlankCommandInsideIf from "../hooks/If/useCreateBlankCommandInsideIf";
 import useGetCommandIf from "../hooks/If/useGetCommandIf";
+import useGetCurrentCommandOrderCommandIf from "../hooks/If/useGetCurrentCommandOrderCommandIf";
 import useUpdateOrderInsideCommandIf from "../hooks/If/useUpdateOrderInsideCommandIf";
 import useGetAllPlotFieldCommandsByIfIdInsideElse from "../hooks/useGetAllPlotFieldCommandsByIfIdInsideIElse";
 import useGetAllPlotFieldCommandsByIfIdInsideIf from "../hooks/useGetAllPlotFieldCommandsByIfIdInsideIf";
 import PlotfieldItemInsideIf from "../PlotfieldItemInsideIf";
 import CommandIfValues from "./CommandIfValues";
+import useReorderIfCommands from "./useReorderIfCommands";
+import useReorderElseCommands from "./useReorderElseCommands";
 
 type CommandIfFieldTypes = {
   plotFieldCommandId: string;
@@ -40,6 +43,7 @@ export default function CommandIfField({
     getCommandsByCommandIfId,
     getCurrentAmountOfIfCommands,
     removeCommandIfItem,
+    updateCommandIfOrder,
   } = usePlotfieldCommands();
   const [nameValue] = useState<string>(command ?? "If");
 
@@ -163,11 +167,61 @@ export default function CommandIfField({
     }
   };
 
+  const [newlyFetchedIfCommands, setNewlyFetchedIfCommands] = useState(false);
+  const { data: currentCommandOrdersIf, refetch } =
+    useGetCurrentCommandOrderCommandIf({
+      commandIfId,
+      isElse: false,
+    });
+  const timerRef = useRef<number | null>(null);
+  const delay = 5000;
+
+  const resetTimer = () => {
+    if (timerRef.current) {
+      clearTimeout(timerRef.current);
+    }
+
+    timerRef.current = setTimeout(() => {
+      refetch().then(() => {
+        setNewlyFetchedIfCommands(true);
+      });
+    }, delay);
+  };
+
+  const handleDragStart = () => {
+    setNewlyFetchedIfCommands(false);
+    resetTimer();
+  };
+
+  const handleDragEnd = () => {
+    setNewlyFetchedIfCommands(false);
+    resetTimer();
+  };
+
+  useEffect(() => {
+    return () => {
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+      }
+    };
+  }, []);
+
+  useReorderIfCommands({
+    currentCommandOrdersIf,
+    commandIfId,
+    currentCommandsState: getCommandsByCommandIfId({
+      commandIfId,
+      isElse: false,
+    }),
+    newlyFetchedIfCommands,
+  });
+
   const handleOnDragEndInsideIf = (result: DropResult) => {
     if (!result?.destination) return;
+    handleDragEnd();
 
     const orderedCommandsInsideIf = [
-      ...(getCommandsByCommandIfId({ commandIfId, isElse: false }) ?? []),
+      ...(getCommandsByCommandIfId({ commandIfId, isElse: false }) || []),
     ];
     const [reorderedItem] = orderedCommandsInsideIf.splice(
       result.source.index,
@@ -175,10 +229,7 @@ export default function CommandIfField({
     );
 
     orderedCommandsInsideIf.splice(result.destination.index, 0, reorderedItem);
-    updateCommandOrder.mutate({
-      newOrder: result.destination.index,
-      plotFieldCommandId: result.draggableId,
-    });
+
     setAllIfCommands({
       commandIfId,
       commandsInsideIf:
@@ -188,10 +239,69 @@ export default function CommandIfField({
         isElse: true,
       }),
     });
+    updateCommandIfOrder({
+      commandOrder: result.destination.index,
+      id: result.draggableId,
+      isElse: false,
+    });
+    updateCommandOrder.mutate({
+      newOrder: result.destination.index,
+      plotFieldCommandId: result.draggableId,
+    });
   };
+
+  const [newlyFetchedElseCommands, setNewlyFetchedElseCommands] =
+    useState(false);
+  const { data: currentCommandOrdersElse, refetch: refetchElse } =
+    useGetCurrentCommandOrderCommandIf({
+      commandIfId,
+      isElse: true,
+    });
+  const timerElseRef = useRef<number | null>(null);
+
+  const resetElseTimer = () => {
+    if (timerElseRef.current) {
+      clearTimeout(timerElseRef.current);
+    }
+
+    timerElseRef.current = setTimeout(() => {
+      refetchElse().then(() => {
+        setNewlyFetchedElseCommands(true);
+      });
+    }, delay);
+  };
+
+  const handleDragStartElse = () => {
+    setNewlyFetchedElseCommands(false);
+    resetElseTimer();
+  };
+
+  const handleDragEndElse = () => {
+    setNewlyFetchedElseCommands(false);
+    resetElseTimer();
+  };
+
+  useEffect(() => {
+    return () => {
+      if (timerElseRef.current) {
+        clearTimeout(timerElseRef.current);
+      }
+    };
+  }, []);
+
+  useReorderElseCommands({
+    currentCommandOrdersIf: currentCommandOrdersElse,
+    commandIfId,
+    currentCommandsState: getCommandsByCommandIfId({
+      commandIfId,
+      isElse: true,
+    }),
+    newlyFetchedIfCommands: newlyFetchedElseCommands,
+  });
 
   const handleOnDragEndInsideElse = (result: DropResult) => {
     if (!result?.destination) return;
+    handleDragEndElse();
 
     const orderedCommandsInsideElse = [
       ...(getCommandsByCommandIfId({ commandIfId, isElse: true }) || []),
@@ -206,10 +316,6 @@ export default function CommandIfField({
       0,
       reorderedItem
     );
-    updateCommandOrder.mutate({
-      newOrder: result.destination.index,
-      plotFieldCommandId: result.draggableId,
-    });
     setAllIfCommands({
       commandIfId,
       commandsInsideIf: getCommandsByCommandIfId({
@@ -218,16 +324,16 @@ export default function CommandIfField({
       }),
       commandsInsideElse: orderedCommandsInsideElse,
     });
+    updateCommandIfOrder({
+      commandOrder: result.destination.index,
+      id: result.draggableId,
+      isElse: true,
+    });
+    updateCommandOrder.mutate({
+      newOrder: result.destination.index,
+      plotFieldCommandId: result.draggableId,
+    });
   };
-
-  console.log(
-    "Else: ",
-    getCommandsByCommandIfId({ commandIfId, isElse: true })
-  );
-  console.log(
-    "Ife: ",
-    getCommandsByCommandIfId({ commandIfId, isElse: false })
-  );
 
   return (
     <div className="flex gap-[1rem] w-full bg-primary-light-blue rounded-md p-[.5rem] flex-col">
@@ -255,7 +361,10 @@ export default function CommandIfField({
       </div>
       <CommandIfValues ifId={commandIfId} />
       <div className="flex flex-col bg-neutral-magnolia rounded-md w-full">
-        <DragDropContext onDragEnd={handleOnDragEndInsideIf}>
+        <DragDropContext
+          onDragStart={handleDragStart}
+          onDragEnd={handleOnDragEndInsideIf}
+        >
           <Droppable droppableId="commandIf">
             {(provided: DroppableProvided) => (
               <ul
@@ -302,7 +411,10 @@ export default function CommandIfField({
         </ButtonHoverPromptModal>
       </div>
       <div className="flex flex-col bg-neutral-magnolia rounded-md w-full">
-        <DragDropContext onDragEnd={handleOnDragEndInsideElse}>
+        <DragDropContext
+          onDragStart={handleDragStartElse}
+          onDragEnd={handleOnDragEndInsideElse}
+        >
           <Droppable droppableId="commandIfElse">
             {(provided: DroppableProvided) => (
               <ul

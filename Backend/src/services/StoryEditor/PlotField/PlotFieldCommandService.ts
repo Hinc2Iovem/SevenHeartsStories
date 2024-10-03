@@ -462,6 +462,29 @@ export const plotFieldCommandCreateService = async ({
   return await PlotFieldCommand.create({ topologyBlockId, commandOrder, _id });
 };
 
+type PlotFieldCommandFixOrderTypes = {
+  plotFieldCommandId: string;
+  commandOrder: number;
+};
+
+export const plotFieldCommandFixCommandOrderService = async ({
+  commandOrder,
+  plotFieldCommandId,
+}: PlotFieldCommandFixOrderTypes) => {
+  validateMongoId({ value: plotFieldCommandId, valueName: "PlotField" });
+
+  const existingPlotFieldCommand = await PlotFieldCommand.findById(
+    plotFieldCommandId
+  ).exec();
+
+  if (!existingPlotFieldCommand) {
+    throw createHttpError(400, "Command with such id wasn't found");
+  }
+
+  existingPlotFieldCommand.commandOrder = commandOrder;
+
+  return await existingPlotFieldCommand.save();
+};
 type PlotFieldCommandNameUpdateTypes = {
   plotFieldCommandId: string;
   commandName: string | undefined;

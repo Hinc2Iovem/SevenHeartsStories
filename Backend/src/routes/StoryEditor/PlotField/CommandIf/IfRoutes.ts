@@ -5,6 +5,7 @@ import {
   getCommandIfByPlotFieldCommandIdController,
   updateCommandIfOrderController,
   createCommandIfDuplicateController,
+  getCommandIdsAndOrdersByCommandIfIdController,
 } from "../../../../controllers/StoryEditor/PlotField/CommandIf/IfController";
 
 // Default route === /plotFieldCommands
@@ -15,10 +16,15 @@ ifRoute
   .get(getCommandIfByPlotFieldCommandIdController);
 
 ifRoute
+  .route("/ifs/:commandIfId/checkOrder")
+  .get(getCommandIdsAndOrdersByCommandIfIdController);
+
+ifRoute
   .route("/ifs/topologyBlocks/:topologyBlockId/copy")
   .post(createCommandIfDuplicateController);
 
 ifRoute.route("/:plotFieldCommandId/ifs").post(createCommandIfController);
+
 ifRoute
   .route("/:plotFieldCommandId/ifs/:commandIfId/newOrder")
   .patch(updateCommandIfOrderController);

@@ -210,35 +210,65 @@ export const createPlotfieldIfCommandSlice: StateCreator<
       }),
     })),
   updateCommandIfOrder: ({ id, commandOrder, isElse }) =>
-    set((state) => ({
-      commandsIf: state.commandsIf.map((block) => {
-        if (isElse) {
-          return {
-            ...block,
-            commandsInsideElse: block.commandsInsideElse.map((ce) =>
-              ce._id === id
-                ? {
-                    ...ce,
-                    commandOrder,
-                  }
-                : ce
-            ),
-          };
-        } else {
-          return {
-            ...block,
-            commandsInsideIf: block.commandsInsideIf.map((ce) =>
-              ce._id === id
-                ? {
-                    ...ce,
-                    commandOrder,
-                  }
-                : ce
-            ),
-          };
+    set((state) => {
+      const blockIndex = state.commandsIf.findIndex(
+        (block) =>
+          block.commandsInsideIf.some((ci) => ci._id === id) ||
+          block.commandsInsideElse.some((ce) => ce._id === id)
+      );
+
+      if (blockIndex === -1) return state;
+
+      const block = state.commandsIf[blockIndex];
+      const commandsList = isElse
+        ? block.commandsInsideElse
+        : block.commandsInsideIf;
+
+      const commandIndex = commandsList.findIndex((cmd) => cmd._id === id);
+      if (commandIndex === -1) return state;
+
+      const oldOrder = commandsList[commandIndex].commandOrder;
+      const difference = oldOrder - commandOrder;
+
+      if (Math.abs(difference) === 1) {
+        const adjacentCommand = commandsList.find(
+          (cmd) => cmd.commandOrder === commandOrder
+        );
+
+        if (adjacentCommand) {
+          [
+            adjacentCommand.commandOrder,
+            commandsList[commandIndex].commandOrder,
+          ] = [oldOrder, commandOrder];
         }
-      }),
-    })),
+      } else {
+        const commandsToUpdate = commandsList.filter((cmd) =>
+          oldOrder > commandOrder
+            ? cmd.commandOrder >= commandOrder && cmd.commandOrder < oldOrder
+            : cmd.commandOrder > oldOrder && cmd.commandOrder <= commandOrder
+        );
+
+        commandsToUpdate.forEach((cmd) => {
+          cmd.commandOrder =
+            oldOrder > commandOrder
+              ? cmd.commandOrder + 1
+              : cmd.commandOrder - 1;
+        });
+
+        commandsList[commandIndex].commandOrder = commandOrder;
+      }
+
+      const updatedCommandsIf = state.commandsIf.map((block, i) => {
+        if (i === blockIndex) {
+          return isElse
+            ? { ...block, commandsInsideElse: commandsList }
+            : { ...block, commandsInsideIf: commandsList };
+        }
+        return block;
+      });
+
+      return { commandsIf: updatedCommandsIf };
+    }),
   setAllIfCommands: ({ commandsInsideElse, commandsInsideIf, commandIfId }) =>
     set((state) => {
       const existingBlock = state.commandsIf.find(

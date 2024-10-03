@@ -4,8 +4,40 @@ import {
   createIfDuplicateService,
   createIfService,
   deleteIfService,
+  getCommandIdsAndOrdersByCommandIfIdService,
   getIfByPlotFieldCommandIdService,
 } from "../../../../services/StoryEditor/PlotField/ServiceIf/IfService";
+
+type GetCommandIfByCommandIfIdParams = {
+  commandIfId: string;
+};
+
+type GetCommandIfByCommandIfIdQuery = {
+  isElse: boolean;
+};
+
+// @route GET http://localhost:3500/plotFieldCommands/ifs/:commandIfId/checkOrder
+// @access Private
+export const getCommandIdsAndOrdersByCommandIfIdController: RequestHandler<
+  GetCommandIfByCommandIfIdParams,
+  unknown,
+  unknown,
+  GetCommandIfByCommandIfIdQuery
+> = async (req, res, next) => {
+  try {
+    const commandIf = await getCommandIdsAndOrdersByCommandIfIdService({
+      commandIfId: req.params.commandIfId,
+      isElse: req.query.isElse,
+    });
+    if (commandIf) {
+      return res.status(201).json(commandIf);
+    } else {
+      return res.status(400).json({ message: "Something went wrong" });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
 
 type GetCommandIfByPlotFieldCommandIdParams = {
   plotFieldCommandId: string;

@@ -4,6 +4,34 @@ import { validateMongoId } from "../../../../utils/validateMongoId";
 import PlotFieldCommand from "../../../../models/StoryEditor/PlotField/PlotFieldCommand";
 import IfValue from "../../../../models/StoryEditor/PlotField/If/IfValue";
 
+type GetCommandIdsAndOrdersByCommandIfIdTypes = {
+  commandIfId: string;
+  isElse: boolean;
+};
+
+export const getCommandIdsAndOrdersByCommandIfIdService = async ({
+  commandIfId,
+  isElse,
+}: GetCommandIdsAndOrdersByCommandIfIdTypes) => {
+  validateMongoId({ value: commandIfId, valueName: "CommandIf" });
+
+  const existingIfCommands = await PlotFieldCommand.find({
+    commandIfId,
+    isElse,
+  }).exec();
+
+  if (!existingIfCommands.length) {
+    return [];
+  }
+
+  return existingIfCommands.map((ic) => {
+    return {
+      _id: ic._id,
+      commandOrder: ic.commandOrder,
+    };
+  });
+};
+
 type GetIfByPlotFieldCommandIdTypes = {
   plotFieldCommandId: string;
 };
@@ -91,97 +119,83 @@ export const commandIfUpdateCommandIfOrderService = async ({
   const existingPlotFieldCommand = await PlotFieldCommand.findById(
     plotFieldCommandId
   ).exec();
-
   if (!existingPlotFieldCommand) {
     throw createHttpError(400, "Command with such id wasn't found");
   }
-  if (!existingPlotFieldCommand?.commandIfId) {
-    throw createHttpError(
-      400,
-      "Transporting from if command inside main plot is not supported, and same for vice versa"
-    );
-  }
 
   const oldOrder = existingPlotFieldCommand.commandOrder as number;
-
   const difference = oldOrder - newOrder;
 
-  if (difference === 1 || difference === -1) {
-    const prevPlotfieldCommand = await PlotFieldCommand.findOne({
+  if (Math.abs(difference) === 1) {
+    const prevPlotFieldCommand = await PlotFieldCommand.findOne({
       commandIfId,
       commandOrder: newOrder,
+      isElse: existingPlotFieldCommand.isElse || false,
     }).exec();
-    if (!prevPlotfieldCommand?.commandIfId) {
+
+    if (!prevPlotFieldCommand) {
+      throw createHttpError(
+        400,
+        "You're trying to transport your command to non-allowed place"
+      );
+    }
+
+    [prevPlotFieldCommand.commandOrder, existingPlotFieldCommand.commandOrder] =
+      [oldOrder, newOrder];
+
+    await Promise.all([
+      prevPlotFieldCommand.save(),
+      existingPlotFieldCommand.save(),
+    ]);
+
+    return existingPlotFieldCommand;
+  }
+
+  const rangeQuery =
+    oldOrder > newOrder
+      ? {
+          commandIfId,
+          commandOrder: { $gte: newOrder, $lt: oldOrder },
+          isElse: existingPlotFieldCommand.isElse || false,
+        }
+      : {
+          commandIfId,
+          commandOrder: { $gt: oldOrder, $lte: newOrder },
+          isElse: existingPlotFieldCommand.isElse || false,
+        };
+
+  const plotFieldCommandsToUpdate = await PlotFieldCommand.find(
+    rangeQuery
+  ).exec();
+
+  for (const command of plotFieldCommandsToUpdate) {
+    if (!command.commandIfId) {
       throw createHttpError(
         400,
         "Transporting from if command inside main plot is not supported, and same for vice versa"
       );
     }
-    if (prevPlotfieldCommand) {
-      prevPlotfieldCommand.commandOrder = oldOrder;
-      await prevPlotfieldCommand.save();
-    }
-    existingPlotFieldCommand.commandOrder = newOrder;
-  } else {
-    const allPlotFieldCommandIds = [];
-    if (oldOrder > newOrder) {
-      for (let i = newOrder; i < oldOrder; i++) {
-        const plotFieldCommand = await PlotFieldCommand.findOne({
-          commandIfId,
-          commandOrder: i,
-        }).exec();
-        if (!plotFieldCommand?.commandIfId) {
-          throw createHttpError(
-            400,
-            "Transporting from if command inside main plot is not supported, and same for vice versa"
-          );
-        }
-        if (plotFieldCommand) {
-          allPlotFieldCommandIds.push(plotFieldCommand._id);
-        }
-      }
-      for (const plotFieldCommandId of allPlotFieldCommandIds) {
-        const plotFieldCommand = await PlotFieldCommand.findById(
-          plotFieldCommandId
-        ).exec();
-        if (plotFieldCommand) {
-          plotFieldCommand.commandOrder =
-            (plotFieldCommand.commandOrder as number) + 1;
-          await plotFieldCommand.save();
-        }
-      }
-    } else {
-      for (let i = oldOrder + 1; i <= newOrder; i++) {
-        const plotFieldCommand = await PlotFieldCommand.findOne({
-          commandIfId,
-          commandOrder: i,
-        }).exec();
-        if (!plotFieldCommand?.commandIfId) {
-          throw createHttpError(
-            400,
-            "Transporting from if command inside main plot is not supported, and same for vice versa"
-          );
-        }
-        if (plotFieldCommand) {
-          allPlotFieldCommandIds.push(plotFieldCommand._id);
-        }
-      }
-
-      for (const plotFieldCommandId of allPlotFieldCommandIds) {
-        const plotFieldCommand = await PlotFieldCommand.findById(
-          plotFieldCommandId
-        ).exec();
-        if (plotFieldCommand) {
-          plotFieldCommand.commandOrder =
-            (plotFieldCommand.commandOrder as number) - 1;
-          await plotFieldCommand.save();
-        }
-      }
-    }
-
-    existingPlotFieldCommand.commandOrder = newOrder;
   }
 
+  const bulkOps = plotFieldCommandsToUpdate.map((command) => ({
+    updateOne: {
+      filter: { _id: command._id },
+      update: {
+        $set: {
+          commandOrder:
+            oldOrder > newOrder
+              ? (command.commandOrder as number) + 1
+              : (command.commandOrder as number) - 1,
+        },
+      },
+    },
+  }));
+
+  if (bulkOps.length > 0) {
+    await PlotFieldCommand.bulkWrite(bulkOps);
+  }
+
+  existingPlotFieldCommand.commandOrder = newOrder;
   return await existingPlotFieldCommand.save();
 };
 

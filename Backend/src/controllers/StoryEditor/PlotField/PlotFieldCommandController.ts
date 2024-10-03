@@ -10,6 +10,7 @@ import {
   getAllPlotFieldCommandsByIfIdInsideElseService,
   plotFieldCommandUpdateAllOrdersAfterDuplicationService,
   plotFieldCommandCreateMultipleService,
+  plotFieldCommandFixCommandOrderService,
 } from "../../../services/StoryEditor/PlotField/PlotFieldCommandService";
 
 type GetAllPlotFieldCommandsByIfId = {
@@ -201,6 +202,36 @@ export const plotFieldCommandControllerCreate: RequestHandler<
   }
 };
 
+type PlotFieldCommandFixCommandOrderParams = {
+  plotFieldCommandId: string;
+};
+
+type PlotFieldCommandFixCommandOrderNameBody = {
+  commandOrder: number;
+};
+
+// @route PATCH http://localhost:3500/plotField/:plotFieldCommandId/fixOrder
+// @access Private
+export const plotFieldCommandControllerFixOrder: RequestHandler<
+  PlotFieldCommandFixCommandOrderParams,
+  unknown,
+  PlotFieldCommandFixCommandOrderNameBody,
+  unknown
+> = async (req, res, next) => {
+  try {
+    const plotFieldCommand = await plotFieldCommandFixCommandOrderService({
+      plotFieldCommandId: req.params.plotFieldCommandId,
+      commandOrder: req.body.commandOrder,
+    });
+    if (plotFieldCommand) {
+      return res.status(201).json(plotFieldCommand);
+    } else {
+      return res.status(400).json({ message: "Something went wrong" });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
 type PlotFieldCommandUpdateParams = {
   plotFieldCommandId: string;
 };
