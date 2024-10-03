@@ -13,6 +13,9 @@ type FormCharacterTypes = {
   plotFieldCommandId: string;
   setShowCreateCharacterModal: React.Dispatch<React.SetStateAction<boolean>>;
   setEmotionValue: React.Dispatch<React.SetStateAction<EmotionsTypes | null>>;
+  setShowCharacters: React.Dispatch<React.SetStateAction<boolean>>;
+  setShowAllEmotions: React.Dispatch<React.SetStateAction<boolean>>;
+  showCharacters: boolean;
   showCreateCharacterModal: boolean;
 };
 
@@ -23,9 +26,11 @@ export default function FormCharacter({
   setNameValue,
   setEmotionValue,
   setShowCreateCharacterModal,
+  setShowCharacters,
+  setShowAllEmotions,
+  showCharacters,
   showCreateCharacterModal,
 }: FormCharacterTypes) {
-  const [showCharacters, setShowCharacters] = useState(false);
   const charactersRef = useRef<HTMLDivElement>(null);
   const { storyId } = useParams();
   const [newCharacterId, setNewCharacterId] = useState("");
@@ -116,7 +121,10 @@ export default function FormCharacter({
 
   return (
     <>
-      <form onSubmit={handleNameFormSubmit} className="w-full relative">
+      <form
+        onSubmit={handleNameFormSubmit}
+        className={`${showCharacters ? "z-[10]" : ""} w-full`}
+      >
         <div className="relative w-full">
           <input
             type="text"
@@ -124,6 +132,7 @@ export default function FormCharacter({
             onClick={(e) => {
               e.stopPropagation();
               setShowCharacters((prev) => !prev);
+              setShowAllEmotions(false);
             }}
             placeholder="Персонаж"
             className="text-[1.3rem] w-full outline-gray-300 px-[1rem] py-[.5rem] rounded-md shadow-md capitalize"

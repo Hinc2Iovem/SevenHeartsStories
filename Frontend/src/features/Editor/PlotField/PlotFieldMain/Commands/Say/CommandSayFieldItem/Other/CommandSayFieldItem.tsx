@@ -70,13 +70,14 @@ export default function CommandSayFieldItem({
     setShowModal: setShowUpdateNameModal,
     showModal: showUpdateNameModal,
   });
+
   return (
     <div className="flex flex-wrap gap-[1rem] w-full bg-primary-light-blue rounded-md p-[.5rem] sm:flex-row flex-col">
       <div className="sm:w-[20%] min-w-[10rem] flex-grow w-full relative">
         <button
           onClick={(e) => {
             e.stopPropagation();
-            setShowUpdateNameModal(true);
+            setShowUpdateNameModal((prev) => !prev);
           }}
           className="text-[1.3rem] text-start outline-gray-300 w-full capitalize px-[1rem] py-[.5rem] rounded-md shadow-md bg-white cursor-default"
         >

@@ -107,7 +107,7 @@ export default function useMemoizeRefinedTranslations({
               characterTranslatedGroups[tc.characterId || -1] = [];
             }
             characterTranslatedGroups[tc.characterId || -1].push(
-              tc as TranslationCharacterTypes
+              tc as unknown as TranslationCharacterTypes
             );
             break;
           case "episodeName":
@@ -116,7 +116,7 @@ export default function useMemoizeRefinedTranslations({
               episodeTranslatedGroups[tc.episodeId || -1] = [];
             }
             episodeTranslatedGroups[tc.episodeId || -1].push(
-              tc as TranslationEpisodeTypes
+              tc as unknown as TranslationEpisodeTypes
             );
             break;
           case "storyName":
@@ -126,7 +126,7 @@ export default function useMemoizeRefinedTranslations({
               storyTranslatedGroups[tc.storyId || -1] = [];
             }
             storyTranslatedGroups[tc.storyId || -1].push(
-              tc as TranslationStoryTypes
+              tc as unknown as TranslationStoryTypes
             );
             break;
           case "achievementName":

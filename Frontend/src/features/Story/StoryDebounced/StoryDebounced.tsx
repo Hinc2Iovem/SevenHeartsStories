@@ -39,11 +39,13 @@ export default function StoryDebounced({
   useEffect(() => {
     if (storyTextFieldNamesTranslations.data) {
       storyTextFieldNamesTranslations.data.map((st) => {
-        if (st.textFieldName === "storyName") {
-          setStoryName(st.text);
-        } else if (st.textFieldName === "storyGenre") {
-          setGenres(st.text);
-        }
+        st.translations.map((stt) => {
+          if (stt.textFieldName === "storyName") {
+            setStoryName(stt.text);
+          } else if (stt.textFieldName === "storyGenre") {
+            setGenres(stt.text);
+          }
+        });
       });
     }
   }, [storyTextFieldNamesTranslations.data]);

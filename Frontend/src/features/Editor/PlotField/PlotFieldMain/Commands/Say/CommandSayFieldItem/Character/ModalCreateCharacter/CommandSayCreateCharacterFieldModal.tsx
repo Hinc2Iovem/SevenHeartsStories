@@ -63,7 +63,7 @@ export default function CommandSayCreateCharacterFieldModal({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    createCharacter.mutate();
+    createCharacter.mutate({ characterId });
     setShowModal(false);
   };
 

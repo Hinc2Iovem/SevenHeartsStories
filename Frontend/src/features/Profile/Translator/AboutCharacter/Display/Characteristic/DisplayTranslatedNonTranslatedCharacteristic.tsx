@@ -18,8 +18,6 @@ export default function DisplayTranslatedNonTranslatedCharacteristic({
   nonTranslated,
   languageToTranslate,
   translateFromLanguage,
-  currentIndex,
-  lastIndex,
 }: DisplayTranslatedNonTranslatedCharacteristicTypes) {
   const [
     translatedBackUpCharacterCharacteristic,

@@ -26,6 +26,7 @@ export default function FiltersEverythingCharacterForCharacteristic({
 }: FiltersEverythingCharacterForCharacteristicTypes) {
   const [page, setPage] = useState(1);
   const [storyId, setStoryId] = useState("");
+  console.log(setPage);
 
   useInvalidateTranslatorCharacteristicQueries({
     prevTranslateFromLanguage,

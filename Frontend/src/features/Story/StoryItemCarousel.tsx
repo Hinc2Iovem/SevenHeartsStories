@@ -1,13 +1,12 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import useGetTranslationStory from "../../hooks/Fetching/Translation/useGetTranslationStory";
 import useUpdateImg from "../../hooks/Patching/useUpdateImg";
 import { StoryTypes } from "../../types/StoryData/Story/StoryTypes";
 import SyncLoad from "../shared/Loaders/SyncLoader";
 import PreviewImage from "../shared/utilities/PreviewImage";
 
 export default function StoryItemCarousel({ _id, imgUrl }: StoryTypes) {
-  const { data } = useGetTranslationStory({ id: _id, language: "russian" });
+  // const { data } = useGetTranslationStory({ id: _id, language: "russian" });
 
   const [imagePreview, setPreview] = useState<string | ArrayBuffer | null>(
     null
@@ -53,13 +52,13 @@ export default function StoryItemCarousel({ _id, imgUrl }: StoryTypes) {
       )}
       <Link className="flex flex-col" to={`/stories/${_id}`}>
         <div className="flex flex-col gap-[.5rem] p-[1rem]">
-          <h3 className="text-[1.8rem] m-0 p-0">
+          {/* <h3 className="text-[1.8rem] m-0 p-0">
             {data?.find((d) => d.textFieldName === "storyName")?.text}
           </h3>
           <h4 className="text-[1.3rem]">
             {" "}
             {data?.find((d) => d.textFieldName === "storyGenre")?.text}
-          </h4>
+          </h4> */}
         </div>
         <p className="text-[1.2rem] self-end p-[1rem] mt-auto">Эпизодов 0</p>
       </Link>

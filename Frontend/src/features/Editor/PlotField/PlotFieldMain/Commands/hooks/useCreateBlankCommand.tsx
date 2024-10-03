@@ -54,7 +54,7 @@ export default function useCreateBlankCommand({
 
       return { prevCommands };
     },
-    onError: (err, newCommand, context) => {
+    onError: (_err, _newCommand, context) => {
       queryClient.setQueryData(
         ["plotfield", "topologyBlock", topologyBlockId],
         context?.prevCommands

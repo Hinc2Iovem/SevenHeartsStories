@@ -2,12 +2,11 @@ import { useEffect, useState } from "react";
 import useGetCharacterById from "../../../../../../../../hooks/Fetching/Character/useGetCharacterById";
 import useDebounce from "../../../../../../../../hooks/utilities/useDebounce";
 import { EmotionsTypes } from "../../../../../../../../types/StoryData/Character/CharacterTypes";
-import { CommandSayVariationTypes } from "../../../../../../../../types/StoryEditor/PlotField/Say/SayTypes";
+import "../../../../../../Flowchart/FlowchartStyles.css";
 import useGetTranslationSayEnabled from "../../../hooks/Say/useGetTranslationSayEnabled";
 import useUpdateCommandSayText from "../../../hooks/Say/useUpdateCommandSayText";
 import FormCharacter from "./FormCharacter";
 import FormEmotion from "./FormEmotion";
-import "../../../../../../Flowchart/FlowchartStyles.css";
 
 type CommandSayCharacterFieldItemTypes = {
   nameValue: string;
@@ -17,14 +16,12 @@ type CommandSayCharacterFieldItemTypes = {
   characterId: string;
   topologyBlockId: string;
   plotFieldCommandId: string;
-  commandSayType: CommandSayVariationTypes;
 };
 
 export default function CommandSayCharacterFieldItem({
   nameValue,
   setNameValue,
   characterEmotionId,
-  commandSayType,
   plotFieldCommandSayId,
   characterId,
   plotFieldCommandId,
@@ -82,9 +79,12 @@ export default function CommandSayCharacterFieldItem({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [debouncedValue]);
 
+  const [showCharacters, setShowCharacters] = useState(false);
+  const [showAllEmotions, setShowAllEmotions] = useState(false);
+
   return (
     <div className="flex flex-wrap gap-[1rem] w-full bg-primary-light-blue rounded-md p-[.5rem] sm:flex-row flex-col relative">
-      <div className="flex flex-col gap-[1rem] sm:w-1/3 min-w-[20rem] w-full z-[2]">
+      <div className="flex flex-col gap-[1rem] sm:w-1/3 min-w-[20rem] w-full">
         <FormCharacter
           nameValue={nameValue}
           setNameValue={setNameValue}
@@ -93,17 +93,22 @@ export default function CommandSayCharacterFieldItem({
           plotFieldCommandSayId={plotFieldCommandSayId}
           setShowCreateCharacterModal={setShowCreateCharacterModal}
           showCreateCharacterModal={showCreateCharacterModal}
+          setShowCharacters={setShowCharacters}
+          setShowAllEmotions={setShowAllEmotions}
+          showCharacters={showCharacters}
         />
         <FormEmotion
           setEmotionValue={setEmotionValue}
           emotionValue={emotionValue}
           emotions={currentCharacter?.emotions || []}
-          commandSayType={commandSayType}
           characterId={characterId}
           plotFieldCommandId={plotFieldCommandId}
           plotFieldCommandSayId={plotFieldCommandSayId}
           setShowCreateEmotionModal={setShowCreateEmotionModal}
           showCreateEmotionModal={showCreateEmotionModal}
+          setShowAllEmotions={setShowAllEmotions}
+          setShowCharacters={setShowCharacters}
+          showAllEmotions={showAllEmotions}
         />
       </div>
       <form className="sm:w-[57%] flex-grow w-full sm:h-full">

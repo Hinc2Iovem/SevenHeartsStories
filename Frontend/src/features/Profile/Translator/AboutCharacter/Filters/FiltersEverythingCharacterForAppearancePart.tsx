@@ -33,6 +33,7 @@ export default function FiltersEverythingCharacterForAppearancePart({
   const [appearanceType, setAppearanceType] = useState(
     "" as TranslationTextFieldNameAppearancePartsTypes
   );
+  console.log(setPage);
 
   useInvalidateTranslatorAppearancePartsQueries({
     prevTranslateFromLanguage,

@@ -37,12 +37,13 @@ export default function ProfileRightSideByTypeItem({
   });
 
   const [title, setTitle] = useState("");
+  const [showScriptwriters, setShowScriptwriters] = useState(false);
 
   useEffect(() => {
     if (translationStory) {
       translationStory.map((d) => {
-        if (d.textFieldName === "storyName") {
-          setTitle(d.text);
+        if (d.translations[0]?.textFieldName === "storyName") {
+          setTitle(d.translations[0]?.text);
         }
       });
     }
@@ -52,6 +53,8 @@ export default function ProfileRightSideByTypeItem({
     <ProfileRightSideItem
       characterIds={characterIds}
       imgUrl={imgUrl || ""}
+      setShowScriptwriters={setShowScriptwriters}
+      showScriptwriters={showScriptwriters}
       openedStoryId={openedStoryId}
       setCharacterIds={setCharacterIds}
       setOpenedStoryId={setOpenedStoryId}

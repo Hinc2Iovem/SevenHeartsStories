@@ -38,24 +38,28 @@ export default function useMemoizeChoiceOptions({
       [key: string]: CombinedTranslatedAndNonTranslatedChoiceOptionsTypes;
     } = {};
 
-    allTranslatedOptions?.forEach((tc) => {
+    allTranslatedOptions?.forEach((tc, i) => {
       const choiceOptionId = tc.choiceOptionId;
       if (!choiceMap[choiceOptionId]) {
         choiceMap[choiceOptionId] = {
           translated: tc,
           nonTranslated: null,
+          choiceOptionId,
+          type: allTranslatedOptions[i].type || "",
         };
       } else {
         choiceMap[choiceOptionId].translated = tc;
       }
     });
 
-    allNonTranslatedOptions?.forEach((ntc) => {
+    allNonTranslatedOptions?.forEach((ntc, i) => {
       const choiceOptionId = ntc.choiceOptionId;
       if (!choiceMap[choiceOptionId]) {
         choiceMap[choiceOptionId] = {
           translated: null,
           nonTranslated: ntc,
+          choiceOptionId,
+          type: allNonTranslatedOptions[i].type || "",
         };
       } else {
         choiceMap[choiceOptionId].nonTranslated = ntc;

@@ -46,7 +46,9 @@ export default function CommandCallField({
       setCommandCallId(commandCall._id);
       setTargetBlockId(commandCall.targetBlockId);
       setCurrentReferencedCommandIndex(
-        commandCall?.referencedCommandIndex || null
+        typeof commandCall.referencedCommandIndex === "number"
+          ? commandCall.referencedCommandIndex
+          : null
       );
     }
   }, [commandCall]);
@@ -110,13 +112,15 @@ function ChooseReferencedCommandIndex({
   return (
     <div className="relative">
       <button
-        className="text-[1.3rem] bg-white rounded-md shadow-md text-gray-700 px-[1rem] py-[.5rem]"
+        className="text-[1.3rem] outline-gray-300 bg-white rounded-md shadow-md text-gray-700 px-[1rem] py-[.5rem]"
         onClick={(e) => {
           e.stopPropagation();
           setShowAllCommandIndexes((prev) => !prev);
         }}
       >
-        {currentReferencedCommandIndex || "Ссылаться на команду"}
+        {typeof currentReferencedCommandIndex === "number"
+          ? currentReferencedCommandIndex
+          : "Ссылаться на команду"}
       </button>
       <aside
         ref={modalRef}
@@ -210,10 +214,11 @@ function ChooseTopologyBlock({
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [targetBlockId]);
+
   return (
     <div className="relative flex-grow">
       <button
-        className="text-[1.3rem] w-full bg-white rounded-md shadow-md text-gray-700 px-[1rem] py-[.5rem]"
+        className="text-[1.3rem] outline-gray-300 w-full bg-white rounded-md shadow-md text-gray-700 px-[1rem] py-[.5rem]"
         onClick={(e) => {
           e.stopPropagation();
           setShowAllTopologyBlocks((prev) => !prev);

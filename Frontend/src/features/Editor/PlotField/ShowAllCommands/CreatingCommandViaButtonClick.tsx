@@ -1,13 +1,13 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import {
   AllPossiblePlotFieldCommands,
   AllPossibleSayPlotFieldCommandsBlank,
 } from "../../../../const/PLOTFIELD_COMMANDS";
-import useGetTranslationCharacters from "../../../../hooks/Fetching/Translation/Characters/useGetTranslationCharacters";
 import { AllPossiblePlotFieldComamndsTypes } from "../../../../types/StoryEditor/PlotField/PlotFieldTypes";
 import { CommandSayVariationTypes } from "../../../../types/StoryEditor/PlotField/Say/SayTypes";
 import { generateMongoObjectId } from "../../../../utils/generateMongoObjectId";
+import usePlotfieldCommands from "../Context/PlotFieldContext";
 import useCreateAchievement from "../PlotFieldMain/Commands/hooks/Achievement/useCreateAchievement";
 import useCreateAmbient from "../PlotFieldMain/Commands/hooks/Ambient/useCreateAmbient";
 import useCreateBackground from "../PlotFieldMain/Commands/hooks/Background/useCreateBackground";
@@ -31,7 +31,6 @@ import useCreateBlankCommand from "../PlotFieldMain/Commands/hooks/useCreateBlan
 import useUpdateCommandName from "../PlotFieldMain/Commands/hooks/useUpdateCommandName";
 import useCreateWait from "../PlotFieldMain/Commands/hooks/Wait/useCreateWait";
 import useCreateWardrobe from "../PlotFieldMain/Commands/hooks/Wardrobe/useCreateWardrobe";
-import usePlotfieldCommands from "../Context/PlotFieldContext";
 
 type CreatingCommandViaButtonClickTypes = {
   pc: string;
@@ -48,49 +47,49 @@ export default function CreatingCommandViaButtonClick({
   const { getCurrentAmountOfCommands, updateCommandInfo } =
     usePlotfieldCommands();
 
-  const { data: translatedCharacters } = useGetTranslationCharacters({
-    language: "russian",
-    storyId: storyId || "",
-  });
+  // const { data: translatedCharacters } = useGetTranslationCharacters({
+  //   language: "russian",
+  //   storyId: storyId || "",
+  // });
 
   const [value, setValue] = useState("");
   const [showCreateCharacterModal, setShowCreateCharacterModal] =
     useState(false);
 
-  const [characterName, setCharacterName] = useState("");
+  console.log(showCreateCharacterModal);
 
-  const allCharacterNames = useMemo(() => {
-    const res: string[] = [];
-    if (translatedCharacters) {
-      translatedCharacters.map((tc) => {
-        const characterName = tc.translations?.find(
-          (t) => t.textFieldName === "characterName"
-        )?.text;
-        if (characterName) {
-          res.push(characterName.toLowerCase());
-        }
-      });
-    }
-    return res;
-  }, [translatedCharacters]);
+  // const [characterName, setCharacterName] = useState("");
 
-  const filteredPromptValues = useMemo(() => {
-    if (characterName?.trim().length) {
-      return allCharacterNames.filter((pv) =>
-        pv.toLowerCase().includes(characterName.toLowerCase())
-      );
-    } else {
-      return allCharacterNames;
-    }
-  }, [allCharacterNames, characterName]);
+  // const allCharacterNames = useMemo(() => {
+  //   const res: string[] = [];
+  //   if (translatedCharacters) {
+  //     translatedCharacters.map((tc) => {
+  //       const characterName = tc.translations?.find(
+  //         (t) => t.textFieldName === "characterName"
+  //       )?.text;
+  //       if (characterName) {
+  //         res.push(characterName.toLowerCase());
+  //       }
+  //     });
+  //   }
+  //   return res;
+  // }, [translatedCharacters]);
+
+  // const filteredPromptValues = useMemo(() => {
+  //   if (characterName?.trim().length) {
+  //     return allCharacterNames.filter((pv) =>
+  //       pv.toLowerCase().includes(characterName.toLowerCase())
+  //     );
+  //   } else {
+  //     return allCharacterNames;
+  //   }
+  // }, [allCharacterNames, characterName]);
 
   const newPlotFieldCommand = useCreateBlankCommand({ topologyBlockId });
 
   const updateCommandName = useUpdateCommandName({
     plotFieldCommandId: newPlotFieldCommand.data?._id || "",
     value,
-    topologyBlockId,
-    commandOrder: getCurrentAmountOfCommands({ topologyBlockId }),
   });
 
   const createSayCommand = useCreateSayCommandBlank({

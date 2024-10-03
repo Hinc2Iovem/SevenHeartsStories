@@ -26,6 +26,7 @@ export default function FiltersEverythingStoryForSeason({
 }: FiltersEverythingCharacterForSeasonTypes) {
   const [storyId, setStoryId] = useState("");
   const [page, setPage] = useState(1);
+  console.log(setPage);
 
   useInvalidateTranslatorSeasonQueries({
     prevTranslateFromLanguage,

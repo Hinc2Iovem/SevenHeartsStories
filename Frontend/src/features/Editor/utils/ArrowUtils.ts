@@ -4,7 +4,7 @@ export type PointTypes = {
 };
 
 const MAX_Y_CONTROL_POINT_SHIFT = 50;
-const MAX_X_CONTROL_POINT_SHIFT = 10;
+// const MAX_X_CONTROL_POINT_SHIFT = 10;
 
 export const calculateLowDyControlPointShift = (
   dx: number,

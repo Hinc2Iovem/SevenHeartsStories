@@ -9,10 +9,10 @@ type CharacterPromptTypes = {
   setCharacterId: React.Dispatch<React.SetStateAction<string>>;
   storyId?: string;
   characterId: string;
-  currentTranslationView: "appearancePart";
+  currentTranslationView?: "appearancePart";
   appearancePartVariation?: string;
   currentLanguage: CurrentlyAvailableLanguagesTypes;
-  translateToLanguage: CurrentlyAvailableLanguagesTypes;
+  translateToLanguage?: CurrentlyAvailableLanguagesTypes;
 };
 
 export default function CharacterPrompt({

@@ -5,7 +5,7 @@ import useGetDecodedJWTValues from "../../hooks/Auth/useGetDecodedJWTValues";
 
 type StoryFilterTypesProps = {
   setStoriesType: React.Dispatch<React.SetStateAction<StoryFilterTypes>>;
-  setLocalSearchValue: React.Dispatch<React.SetStateAction<string>>;
+  setLocalSearchValue?: React.Dispatch<React.SetStateAction<string>>;
   storiesType: StoryFilterTypes;
 };
 
@@ -43,7 +43,9 @@ export default function StoryFilterTypesHeader({
           onMouseEnter={() => prefetchAllAssignedStories("")}
           onFocus={() => prefetchAllAssignedStories("")}
           onClick={() => {
-            setLocalSearchValue("");
+            if (setLocalSearchValue) {
+              setLocalSearchValue("");
+            }
             setStoriesType("allAssigned");
           }}
           className={`text-[1.4rem] ${
@@ -60,7 +62,9 @@ export default function StoryFilterTypesHeader({
           onFocus={() => prefetchAllAssignedStories("done")}
           onMouseEnter={() => prefetchAllAssignedStories("done")}
           onClick={() => {
-            setLocalSearchValue("");
+            if (setLocalSearchValue) {
+              setLocalSearchValue("");
+            }
             setStoriesType("done");
           }}
           className={`text-[1.4rem] ${
@@ -77,7 +81,9 @@ export default function StoryFilterTypesHeader({
           onFocus={() => prefetchAllAssignedStories("doing")}
           onMouseEnter={() => prefetchAllAssignedStories("doing")}
           onClick={() => {
-            setLocalSearchValue("");
+            if (setLocalSearchValue) {
+              setLocalSearchValue("");
+            }
             setStoriesType("doing");
           }}
           className={`text-[1.4rem] ${

@@ -12,7 +12,7 @@ type StoryPromptTypes = {
   setStoryId: React.Dispatch<React.SetStateAction<string>>;
   setPrevStoryId?: React.Dispatch<React.SetStateAction<string>>;
   setSeasonValue?: React.Dispatch<React.SetStateAction<string>>;
-  currentTranslationView: CurrentTranslationViewTypes;
+  currentTranslationView?: CurrentTranslationViewTypes;
   characterType?: string;
   currentLanguage: CurrentlyAvailableLanguagesTypes;
   translateToLanguage: CurrentlyAvailableLanguagesTypes;
@@ -109,7 +109,7 @@ export default function StoryPrompt({
               characterType={characterType}
               currentLanguage={currentLanguage}
               translateToLanguage={translateToLanguage}
-              currentTranslationView={currentTranslationView}
+              currentTranslationView={currentTranslationView || null}
               setPrevStoryId={setPrevStoryId}
               setSeasonValue={setSeasonValue}
               prevStoryId={prevStoryId}
@@ -148,7 +148,7 @@ type StoryPromptButtonTypes = {
   setPrevStoryId?: React.Dispatch<React.SetStateAction<string>>;
   setShowStories: React.Dispatch<React.SetStateAction<boolean>>;
   setSeasonValue?: React.Dispatch<React.SetStateAction<string>>;
-  currentTranslationView: CurrentTranslationViewTypes;
+  currentTranslationView: CurrentTranslationViewTypes | null;
   characterType?: string;
   prevStoryId?: string;
   currentLanguage: CurrentlyAvailableLanguagesTypes;

@@ -29,6 +29,7 @@ export default function FiltersEverythingCharacterForCharacter({
   const [page, setPage] = useState(1);
   const [characterTypeRus, setCharacterTypeRus] = useState("");
   const [characterTypeEng, setCharacterTypeEng] = useState("");
+  console.log(setPage);
 
   useInvalidateTranslatorCharacterQueries({
     prevTranslateFromLanguage,

@@ -8,11 +8,11 @@ import CheckForCompletenessEpisode from "./CheckForCompletenessEpisode";
 type SeasonPromptTypes = {
   setSeasonId: React.Dispatch<React.SetStateAction<string>>;
   storyId: string;
-  currentLanguage: CurrentlyAvailableLanguagesTypes;
-  translateToLanguage: CurrentlyAvailableLanguagesTypes;
-  setSeasonValue: React.Dispatch<React.SetStateAction<string>>;
-  seasonValue: string;
-  currentTranslationView: "episode";
+  currentLanguage?: CurrentlyAvailableLanguagesTypes;
+  translateToLanguage?: CurrentlyAvailableLanguagesTypes;
+  setSeasonValue?: React.Dispatch<React.SetStateAction<string>>;
+  seasonValue?: string;
+  currentTranslationView?: "episode";
 };
 
 export default function SeasonPrompt({
@@ -29,7 +29,7 @@ export default function SeasonPrompt({
   const modalSeasonsRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const debouncedValue = useDebounce({ value: seasonValue, delay: 500 });
+  const debouncedValue = useDebounce({ value: seasonValue || "", delay: 500 });
 
   const { data: seasonsSearch, isLoading } =
     useGetSeasonTranslationsByStoryIdAndSearch({
@@ -39,14 +39,14 @@ export default function SeasonPrompt({
     });
 
   useEffect(() => {
-    if (!showSeasons && !seasonValue && seasonBackupValue) {
+    if (!showSeasons && !seasonValue && seasonBackupValue && setSeasonValue) {
       setSeasonValue(seasonBackupValue);
     }
   }, [showSeasons, seasonValue, seasonBackupValue]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!seasonValue.trim().length) {
+    if (!seasonValue?.trim().length) {
       console.log("Заполните Поле");
       return;
     }
@@ -79,11 +79,17 @@ export default function SeasonPrompt({
           if (seasonValue?.trim().length) {
             setSeasonBackupValue(seasonValue);
           }
-          setSeasonValue("");
+          if (setSeasonValue) {
+            setSeasonValue("");
+          }
           setShowSeasons(true);
         }}
         value={seasonValue}
-        onChange={(e) => setSeasonValue(e.target.value)}
+        onChange={(e) => {
+          if (setSeasonValue) {
+            setSeasonValue(e.target.value);
+          }
+        }}
       />
       {storyId ? (
         <aside
@@ -103,7 +109,9 @@ export default function SeasonPrompt({
                 type="button"
                 onClick={() => {
                   setSeasonId(s.seasonId);
-                  setSeasonValue(s.translations[0]?.text || "");
+                  if (setSeasonValue) {
+                    setSeasonValue(s.translations[0]?.text || "");
+                  }
                   setShowSeasons(false);
                 }}
                 className="text-[1.4rem] outline-gray-300 text-gray-600 text-start hover:bg-primary-pastel-blue hover:text-white rounded-md px-[1rem] py-[.5rem] hover:shadow-md relative"

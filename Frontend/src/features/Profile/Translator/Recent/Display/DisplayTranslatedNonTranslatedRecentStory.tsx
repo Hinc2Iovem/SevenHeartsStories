@@ -31,13 +31,15 @@ export default function DisplayTranslatedNonTranslatedRecentStory({
     if (translated) {
       translated.map((t) => {
         setStoryId(t.storyId);
-        if (t.textFieldName === "storyName") {
-          setTranslatedStoryName(t.text);
-        } else if (t.textFieldName === "storyDescription") {
-          setTranslatedStoryDescription(t.text);
-        } else if (t.textFieldName === "storyGenre") {
-          setTranslatedStoryGenre(t.text);
-        }
+        t.translations.map((tt) => {
+          if (tt.textFieldName === "storyName") {
+            setTranslatedStoryName(tt.text);
+          } else if (tt.textFieldName === "storyDescription") {
+            setTranslatedStoryDescription(tt.text);
+          } else if (tt.textFieldName === "storyGenre") {
+            setTranslatedStoryGenre(tt.text);
+          }
+        });
       });
     }
   }, [translated]);
@@ -50,13 +52,15 @@ export default function DisplayTranslatedNonTranslatedRecentStory({
   useEffect(() => {
     if (nonTranslatedStory) {
       nonTranslatedStory.map((nt) => {
-        if (nt.textFieldName === "storyName") {
-          setStoryName(nt.text);
-        } else if (nt.textFieldName === "storyDescription") {
-          setStoryDescription(nt.text);
-        } else if (nt.textFieldName === "storyGenre") {
-          setStoryGenre(nt.text);
-        }
+        nt.translations.map((ntt) => {
+          if (ntt.textFieldName === "storyName") {
+            setStoryName(ntt.text);
+          } else if (ntt.textFieldName === "storyDescription") {
+            setStoryDescription(ntt.text);
+          } else if (ntt.textFieldName === "storyGenre") {
+            setStoryGenre(ntt.text);
+          }
+        });
       });
     } else {
       setStoryName("");
@@ -87,7 +91,8 @@ export default function DisplayTranslatedNonTranslatedRecentStory({
   useEffect(() => {
     if (debouncedNameTranslated?.trim().length) {
       updateCharacterTranslationTranslated.mutate({
-        storyName: debouncedNameTranslated,
+        text: debouncedNameTranslated,
+        textFieldName: "storyName",
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -95,7 +100,8 @@ export default function DisplayTranslatedNonTranslatedRecentStory({
   useEffect(() => {
     if (debouncedGenreTranslated?.trim().length) {
       updateCharacterTranslationTranslated.mutate({
-        storyGenre: debouncedGenreTranslated,
+        text: debouncedGenreTranslated,
+        textFieldName: "storyGenre",
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -104,7 +110,8 @@ export default function DisplayTranslatedNonTranslatedRecentStory({
   useEffect(() => {
     if (debouncedDescriptionTranslated?.trim().length) {
       updateCharacterTranslationTranslated.mutate({
-        storyDescription: debouncedDescriptionTranslated,
+        text: debouncedDescriptionTranslated,
+        textFieldName: "storyDescription",
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -132,7 +139,8 @@ export default function DisplayTranslatedNonTranslatedRecentStory({
   useEffect(() => {
     if (debouncedName?.trim().length) {
       updateCharacterTranslation.mutate({
-        storyName: debouncedName,
+        text: debouncedName,
+        textFieldName: "storyName",
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -140,7 +148,8 @@ export default function DisplayTranslatedNonTranslatedRecentStory({
   useEffect(() => {
     if (debouncedGenre?.trim().length) {
       updateCharacterTranslation.mutate({
-        storyGenre: debouncedGenre,
+        text: debouncedGenre,
+        textFieldName: "storyGenre",
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -149,7 +158,8 @@ export default function DisplayTranslatedNonTranslatedRecentStory({
   useEffect(() => {
     if (debouncedDescription?.trim().length) {
       updateCharacterTranslation.mutate({
-        storyDescription: debouncedDescription,
+        text: debouncedDescription,
+        textFieldName: "storyDescription",
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

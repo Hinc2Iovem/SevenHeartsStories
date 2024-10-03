@@ -1,10 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import useOutOfModal from "../../../../../../../../hooks/UI/useOutOfModal";
 import { EmotionsTypes } from "../../../../../../../../types/StoryData/Character/CharacterTypes";
-import { CommandSayVariationTypes } from "../../../../../../../../types/StoryEditor/PlotField/Say/SayTypes";
+import "../../../../../../Flowchart/FlowchartStyles.css";
 import useUpdateNameOrEmotion from "../../../hooks/Say/useUpdateNameOrEmotion";
 import CommandSayCreateEmotionFieldModal from "./ModalCreateEmotion/CommandSayCreateEmotionFieldModal";
-import "../../../../../../Flowchart/FlowchartStyles.css";
 
 type FormEmotionTypes = {
   plotFieldCommandSayId: string;
@@ -14,8 +13,10 @@ type FormEmotionTypes = {
   showCreateEmotionModal: boolean;
   setEmotionValue: React.Dispatch<React.SetStateAction<EmotionsTypes | null>>;
   emotionValue: EmotionsTypes | null;
-  commandSayType: CommandSayVariationTypes;
   emotions: EmotionsTypes[];
+  setShowAllEmotions: React.Dispatch<React.SetStateAction<boolean>>;
+  setShowCharacters: React.Dispatch<React.SetStateAction<boolean>>;
+  showAllEmotions: boolean;
 };
 
 export default function FormEmotion({
@@ -26,11 +27,13 @@ export default function FormEmotion({
   showCreateEmotionModal,
   emotionValue,
   setEmotionValue,
+  setShowCharacters,
+  setShowAllEmotions,
+  showAllEmotions,
   emotions,
 }: FormEmotionTypes) {
   const [newEmotionId, setNewEmotionId] = useState("");
   const emotionsRef = useRef<HTMLDivElement>(null);
-  const [showAllEmotions, setShowAllEmotions] = useState(false);
 
   const allEmotions = useMemo(() => {
     const res = [...emotions];
@@ -96,7 +99,10 @@ export default function FormEmotion({
 
   return (
     <>
-      <form onSubmit={handleEmotionFormSubmit} className="w-full">
+      <form
+        onSubmit={handleEmotionFormSubmit}
+        className={`${showAllEmotions ? "z-[10]" : ""} w-full`}
+      >
         <div className="w-full relative">
           <input
             type="text"
@@ -105,6 +111,7 @@ export default function FormEmotion({
             onClick={(e) => {
               e.stopPropagation();
               setShowAllEmotions((prev) => !prev);
+              setShowCharacters(false);
             }}
             className="text-[1.3rem] w-full outline-gray-300 px-[1rem] py-[.5rem] rounded-md shadow-md"
             onChange={(e) => {

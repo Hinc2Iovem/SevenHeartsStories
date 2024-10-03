@@ -24,16 +24,22 @@ export default function DisplayTranslatedNonTranslatedRecentEpisode({
   const [episodeName, setEpisodeName] = useState("");
   const [episodeDescription, setEpisodeDescription] = useState("");
   const [episodeId, setEpisodeId] = useState("");
+  const [seasonId, setSeasonId] = useState("");
 
   useEffect(() => {
     if (translated) {
       translated.map((t) => {
         setEpisodeId(t.episodeId);
-        if (t.textFieldName === "episodeName") {
-          setTranslatedEpisodeName(t.text);
-        } else if (t.textFieldName === "episodeDescription") {
-          setTranslatedEpisodeDescription(t.text);
+        if (t.seasonId) {
+          setSeasonId(t.seasonId);
         }
+        t.translations.map((tt) => {
+          if (tt.textFieldName === "episodeName") {
+            setTranslatedEpisodeName(tt.text);
+          } else if (tt.textFieldName === "episodeDescription") {
+            setTranslatedEpisodeDescription(tt.text);
+          }
+        });
       });
     }
   }, [translated]);
@@ -45,7 +51,10 @@ export default function DisplayTranslatedNonTranslatedRecentEpisode({
 
   useEffect(() => {
     if (nonTranslatedEpisode) {
-      nonTranslatedEpisode.map((nt) => {
+      if (nonTranslatedEpisode.seasonId) {
+        setSeasonId(nonTranslatedEpisode.seasonId);
+      }
+      nonTranslatedEpisode.translations.map((nt) => {
         if (nt.textFieldName === "episodeName") {
           setEpisodeName(nt.text);
         } else if (nt.textFieldName === "episodeDescription") {
@@ -71,12 +80,14 @@ export default function DisplayTranslatedNonTranslatedRecentEpisode({
   const updateCharacterTranslationTranslated = useUpdateEpisodeTranslation({
     language: translateFromLanguage,
     episodeId,
+    seasonId,
   });
 
   useEffect(() => {
     if (debouncedNameTranslated?.trim().length) {
       updateCharacterTranslationTranslated.mutate({
-        episodeName: debouncedNameTranslated,
+        text: debouncedNameTranslated,
+        textFieldName: "episodeName",
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -85,7 +96,8 @@ export default function DisplayTranslatedNonTranslatedRecentEpisode({
   useEffect(() => {
     if (debouncedDescriptionTranslated?.trim().length) {
       updateCharacterTranslationTranslated.mutate({
-        description: debouncedDescriptionTranslated,
+        text: debouncedDescriptionTranslated,
+        textFieldName: "episodeDescription",
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -104,12 +116,14 @@ export default function DisplayTranslatedNonTranslatedRecentEpisode({
   const updateCharacterTranslation = useUpdateEpisodeTranslation({
     language: languageToTranslate,
     episodeId,
+    seasonId,
   });
 
   useEffect(() => {
     if (debouncedName?.trim().length) {
       updateCharacterTranslation.mutate({
-        episodeName: debouncedName,
+        text: debouncedName,
+        textFieldName: "episodeName",
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -118,7 +132,8 @@ export default function DisplayTranslatedNonTranslatedRecentEpisode({
   useEffect(() => {
     if (debouncedDescription?.trim().length) {
       updateCharacterTranslation.mutate({
-        description: debouncedDescription,
+        text: debouncedDescription,
+        textFieldName: "episodeDescription",
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

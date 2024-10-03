@@ -51,6 +51,7 @@ export default function HeaderCreateEmotion({
         characterId={characterId}
         setCharacterId={setCharacterId}
         storyId={storyId}
+        currentLanguage="russian"
       />
       <form onSubmit={handleSubmit} className="w-full flex flex-col gap-[1rem]">
         <input

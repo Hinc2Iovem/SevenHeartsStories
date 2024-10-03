@@ -46,7 +46,8 @@ export default function CommandIfField({
     updateCommandIfOrder,
   } = usePlotfieldCommands();
   const [nameValue] = useState<string>(command ?? "If");
-
+  const [hideIfCommands, setHideIfCommands] = useState(false);
+  const [hideElseCommands, setHideElseCommands] = useState(false);
   const { data: commandIf } = useGetCommandIf({
     plotFieldCommandId,
   });
@@ -339,9 +340,21 @@ export default function CommandIfField({
     <div className="flex gap-[1rem] w-full bg-primary-light-blue rounded-md p-[.5rem] flex-col">
       <div className="min-w-[10rem] w-full flex flex-col gap-[1rem]">
         <div className="flex w-full relative items-center gap-[1rem]">
-          <h3 className="text-[1.4rem] text-start outline-gray-300 w-full capitalize px-[1rem] py-[.5rem] rounded-md shadow-md bg-slate-50 text-gray-600 cursor-default">
-            {nameValue}
-          </h3>
+          <div className="flex gap-[.5rem] w-full">
+            <h3 className="text-[1.4rem] w-full text-start outline-gray-300 capitalize px-[1rem] py-[.5rem] rounded-md shadow-md bg-slate-50 text-gray-600 cursor-default">
+              {nameValue}
+            </h3>
+            <button
+              onClick={() => setHideIfCommands((prev) => !prev)}
+              className={`${
+                hideIfCommands
+                  ? "bg-green-200 focus-within:shadow-green-300 hover:shadow-green-300 text-gray-600"
+                  : "bg-orange-200 text-white focus-within:shadow-orange-200 hover:shadow-orange-200"
+              } px-[1rem] w-fit shadow-md focus-within:shadow-sm hover:shadow-sm outline-none transition-all active:scale-[0.95] py-[.5rem] rounded-md text-[1.5rem] text-gray-700`}
+            >
+              {hideIfCommands ? "Открыть" : "Скрыть"}
+            </button>
+          </div>
           <ButtonHoverPromptModal
             contentName="Создать строку"
             positionByAbscissa="right"
@@ -360,7 +373,11 @@ export default function CommandIfField({
         </div>
       </div>
       <CommandIfValues ifId={commandIfId} />
-      <div className="flex flex-col bg-neutral-magnolia rounded-md w-full">
+      <div
+        className={`${
+          hideIfCommands ? "hidden" : ""
+        } flex flex-col bg-neutral-magnolia rounded-md w-full`}
+      >
         <DragDropContext
           onDragStart={handleDragStart}
           onDragEnd={handleOnDragEndInsideIf}
@@ -391,9 +408,21 @@ export default function CommandIfField({
         <div className="h-[10vh] bg-slate-50 w-full rounded-b-md"></div>
       </div>
       <div className="min-w-[10rem] w-full relative flex items-center gap-[1rem] p-[.5rem]">
-        <h3 className="text-[1.4rem] text-start outline-gray-300 w-full capitalize px-[1rem] py-[.5rem] rounded-md shadow-md bg-neutral-magnolia text-gray-700 cursor-default">
-          Else
-        </h3>
+        <div className="flex gap-[.5rem] w-full">
+          <h3 className="text-[1.4rem] w-full text-start outline-gray-300 capitalize px-[1rem] py-[.5rem] rounded-md shadow-md bg-slate-50 text-gray-600 cursor-default">
+            Else
+          </h3>
+          <button
+            onClick={() => setHideElseCommands((prev) => !prev)}
+            className={`${
+              hideElseCommands
+                ? "bg-green-200 focus-within:shadow-green-300 hover:shadow-green-300 text-gray-600"
+                : "bg-orange-200 text-white focus-within:shadow-orange-200 hover:shadow-orange-200"
+            } px-[1rem] w-fit shadow-md focus-within:shadow-sm hover:shadow-sm outline-none transition-all active:scale-[0.95] py-[.5rem] rounded-md text-[1.5rem] text-gray-700`}
+          >
+            {hideElseCommands ? "Открыть" : "Скрыть"}
+          </button>
+        </div>
         <ButtonHoverPromptModal
           contentName="Создать строку"
           positionByAbscissa="right"
@@ -410,7 +439,11 @@ export default function CommandIfField({
           <img src={commandImg} alt="Commands" className="w-[3rem]" />
         </ButtonHoverPromptModal>
       </div>
-      <div className="flex flex-col bg-neutral-magnolia rounded-md w-full">
+      <div
+        className={`${
+          hideElseCommands ? "hidden" : ""
+        } flex flex-col bg-neutral-magnolia rounded-md w-full`}
+      >
         <DragDropContext
           onDragStart={handleDragStartElse}
           onDragEnd={handleOnDragEndInsideElse}

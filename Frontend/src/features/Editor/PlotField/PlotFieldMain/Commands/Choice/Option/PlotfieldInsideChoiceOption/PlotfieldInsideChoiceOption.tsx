@@ -36,8 +36,9 @@ export default function PlotfieldInsideChoiceOption({
   const { data: topologyBlock } = useGetTopologyBlockById({
     topologyBlockId: showedOptionPlotTopologyBlockId,
   });
-  const [showMessage, setShowMessage] = useState("");
+  // const [showMessage, setShowMessage] = useState("");
   const [showAllCommands, setShowAllCommands] = useState(false);
+  console.log(showAllCommands);
 
   const [currentAmountOfCommands, setCurrentAmountOfCommands] =
     useState<number>(0);

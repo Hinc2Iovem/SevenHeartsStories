@@ -33,6 +33,8 @@ export default function FiltersEverythingStoryForStory({
     limit: 3,
   });
 
+  console.log(setPage);
+
   const { data: translatedStory } = useGetPaginatedTranslationStories({
     language: translateFromLanguage,
     limit: 3,

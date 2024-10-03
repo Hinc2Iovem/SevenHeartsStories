@@ -191,7 +191,10 @@ function CreateEpisodeBlock({
           className="text-[1.5rem] text-gray-700 border-double border-l-neutral-light-gray border-[3px] rounded-md px-[1rem] py-[.5rem] rounde-md outline-none max-h-[30rem]"
           placeholder="Описание Эпизода"
         />
-        <button className="w-fit self-end outline-gray-300 text-[1.5rem] shadow-md rounded-md px-[1rem] py-[.5rem] hover:scale-[1.01] active:scale-[0.98]">
+        <button
+          disabled={isPending}
+          className="w-fit self-end outline-gray-300 text-[1.5rem] shadow-md rounded-md px-[1rem] py-[.5rem] hover:scale-[1.01] active:scale-[0.98]"
+        >
           Создать
         </button>
       </form>

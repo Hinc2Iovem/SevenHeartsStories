@@ -24,6 +24,7 @@ export default function Story() {
   } = useGetStoryTranslationByTextFieldNameAndSearch({
     debouncedValue,
     language: "russian",
+    storiesType,
   });
 
   if (isLoading) {

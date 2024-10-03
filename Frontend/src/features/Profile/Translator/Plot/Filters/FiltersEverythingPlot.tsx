@@ -54,7 +54,11 @@ export default function FiltersEverythingPlot({
   return (
     <>
       <div className="flex w-full gap-[1rem] bg-neutral-alabaster px-[.5rem] py-[.5rem] rounded-md shadow-sm">
-        <StoryPrompt setStoryId={setStoryId} />
+        <StoryPrompt
+          currentLanguage={translateFromLanguage}
+          translateToLanguage={translateToLanguage}
+          setStoryId={setStoryId}
+        />
         <SeasonPrompt setSeasonId={setSeasonId} storyId={storyId} />
         <EpisodePrompt seasonId={seasonId} setEpisodeId={setEpisodeId} />
         <TopologyBlockPrompt

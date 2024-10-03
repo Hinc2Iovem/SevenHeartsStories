@@ -22,9 +22,11 @@ export default function CommandSayField({
 }: CommandSayFieldTypes) {
   const { data: commandSay } = useGetCommandSay({ plotFieldCommandId });
   const [commandSayType, setCommandSayType] =
-    useState<CommandSayVariationTypes>("" as CommandSayVariationTypes);
+    useState<CommandSayVariationTypes>(
+      sayType || ("" as CommandSayVariationTypes)
+    );
   const [commandSayId, setCommandSayId] = useState("");
-  const [nameValue, setNameValue] = useState("");
+  const [nameValue, setNameValue] = useState(characterName || "");
 
   useEffect(() => {
     if (commandSay) {
@@ -39,6 +41,9 @@ export default function CommandSayField({
   });
 
   useEffect(() => {
+    if (characterName?.trim().length || sayType?.trim().length) {
+      return;
+    }
     if (commandSayType === "character") {
       if (translatedCharacter) {
         setNameValue(
@@ -54,7 +59,7 @@ export default function CommandSayField({
     } else if (commandSayType === "hint") {
       setNameValue("hint");
     }
-  }, [translatedCharacter, commandSayType]);
+  }, [translatedCharacter, commandSayType, characterName, sayType]);
 
   return (
     <>
@@ -73,8 +78,7 @@ export default function CommandSayField({
             plotFieldCommandId={plotFieldCommandId}
             plotFieldCommandSayId={commandSayId}
             characterEmotionId={""}
-            commandSayType={"character"}
-            nameValue={characterName || nameValue}
+            nameValue={nameValue}
             setNameValue={setNameValue}
           />
         )
@@ -94,7 +98,6 @@ export default function CommandSayField({
               plotFieldCommandId={plotFieldCommandId}
               plotFieldCommandSayId={commandSayId}
               characterEmotionId={commandSay?.characterEmotionId || ""}
-              commandSayType={commandSayType}
               nameValue={nameValue}
               setNameValue={setNameValue}
             />

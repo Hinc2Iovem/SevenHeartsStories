@@ -45,6 +45,8 @@ export default function FiltersEverythingRecent({
     "" as UpdatedAtPossibleVariationTypes
   );
 
+  console.log(setPage);
+
   return (
     <>
       <div className="flex w-full gap-[1rem] bg-neutral-alabaster px-[.5rem] py-[.5rem] rounded-md shadow-sm">

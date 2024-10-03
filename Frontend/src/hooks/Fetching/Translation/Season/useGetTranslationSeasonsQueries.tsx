@@ -13,6 +13,7 @@ export default function useGetTranslationSeasonsQueries({
 }) {
   const { data: seasons } = useGetSeasonsByStoryId({
     storyId: storyId ?? "",
+    language: "russian",
   });
   return useQueries({
     queries: (seasons ?? []).map((c) => {

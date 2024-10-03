@@ -5,8 +5,6 @@ import useUpdateChoiceIsAuthor from "../hooks/Choice/useUpdateChoiceIsAuthor";
 import ChoiceQuestionField from "./ChoiceQuestionField";
 import ChoiceVariationTypeBlock from "./ChoiceVariationTypeBlock";
 import ChoiceOptionBlocksList from "./Option/ChoiceOptionBlocksList";
-import useCreateChoice from "../hooks/Choice/useCreateChoice";
-import useUpdateChoice from "../hooks/Choice/useUpdateChoice";
 
 type CommandChoiceFieldTypes = {
   plotFieldCommandId: string;
@@ -71,13 +69,13 @@ export default function CommandChoiceField({
     }
   }, [updateChoiceIsAuthor]);
 
-  const createChoiceDuplicate = useCreateChoice({
-    plotFieldCommandId,
-    topologyBlockId,
-  });
-  const fillChoiceDuplicateWithData = useUpdateChoice({
-    choiceId: commandChoiceId,
-  });
+  // const createChoiceDuplicate = useCreateChoice({
+  //   plotFieldCommandId,
+  //   topologyBlockId,
+  // });
+  // const fillChoiceDuplicateWithData = useUpdateChoice({
+  //   choiceId: commandChoiceId,
+  // });
 
   return (
     <div

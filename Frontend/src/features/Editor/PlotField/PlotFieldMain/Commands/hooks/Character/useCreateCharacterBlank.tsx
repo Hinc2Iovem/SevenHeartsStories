@@ -34,7 +34,7 @@ export default function useCreateCharacterBlank({
           characterId,
         })
         .then((r) => r.data),
-    onSuccess: (data, variables) => {
+    onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({
         queryKey: ["translation", language, "character", "story", storyId],
         exact: true,

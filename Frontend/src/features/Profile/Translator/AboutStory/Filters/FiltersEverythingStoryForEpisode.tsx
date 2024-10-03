@@ -31,6 +31,8 @@ export default function FiltersEverythingStoryForEpisode({
   const [storyId, setStoryId] = useState("");
   const [seasonId, setSeasonId] = useState("");
 
+  console.log(setPage);
+
   useEffect(() => {
     if (storyId?.trim().length) {
       setSeasonId("");
